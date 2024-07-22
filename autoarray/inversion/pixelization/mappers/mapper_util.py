@@ -603,3 +603,33 @@ def mapped_to_source_via_mapping_matrix_from(
             mapped_to_source[j] /= source_pixel_count[j]
 
     return mapped_to_source
+
+@numba_util.jit()
+def data_weight_total_for_pix_from(
+    pix_indexes_for_sub_slim_index: np.ndarray,
+    pix_weights_for_sub_slim_index: np.ndarray,
+    pixels: int,
+) -> np.ndarray:
+    """
+    Returns the total weight of every pixelization pixel, which is the sum of the weights of all data-points that
+    map to that pixel.
+
+    Parameters
+    ----------
+    pix_indexes_for_sub_slim_index
+        The mappings from a data sub-pixel index to a pixelization pixel index.
+    pix_weights_for_sub_slim_index
+        The weights of the mappings of every data sub-pixel and pixelization pixel.
+    pixels
+        The number of pixels in the pixelization.
+    """
+
+    pix_weight_total = np.zeros(pixels)
+
+    for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
+        for pix_index, weight in zip(
+                pix_indexes, pix_weights_for_sub_slim_index[slim_index]
+        ):
+            pix_weight_total[int(pix_index)] += weight
+
+    return pix_weight_total

@@ -358,6 +358,23 @@ class AbstractMapper(LinearObj):
                 )
             return indexes
 
+    def data_weight_total_for_pix_from(self) -> np.ndarray:
+        """
+        Returns the total weight of every pixelization pixel, which is the sum of the weights of all data-points that
+        map to that pixel.
+        """
+
+        return mapper_util.data_weight_total_for_pix_from(
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
+            pixels=self.pixels,
+        )
+
+
+    def data_pixel_area_for_pix_from(self) -> np.ndarray:
+
+        pass
+
     def mapped_to_source_from(self, array: Array2D) -> np.ndarray:
         """
         Map a masked 2d image in the image domain to the source domain and sum up all mappings on the source-pixels.
@@ -365,7 +382,7 @@ class AbstractMapper(LinearObj):
         For example, suppose we have an image and a mapper. We can map every image-pixel to its corresponding mapper's
         source pixel and sum the values based on these mappings.
 
-        This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
+        This will produce something similar to a `reconstruction`, by passing the linear algebra / inversion.
 
         Parameters
         ----------

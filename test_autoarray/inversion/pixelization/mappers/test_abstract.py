@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import autoarray as aa
 
@@ -37,7 +38,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
     assert pixe_indexes_for_slim_indexes == [[0, 1, 2, 3], [5, 6]]
 
 
-def _test__sub_slim_indexes_for_pix_index():
+def test__sub_slim_indexes_for_pix_index():
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array(
@@ -99,6 +100,35 @@ def _test__sub_slim_indexes_for_pix_index():
             ]
         )
     ).all()
+
+
+def test__data_weight_total_for_pix_from():
+    mapper = aa.m.MockMapper(
+        pix_sub_weights=PixSubWeights(
+            mappings=np.array(
+                [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
+            ).astype("int"),
+            sizes=np.ones(8).astype("int"),
+            weights=np.array(
+                [
+                    [0.1, 0.9],
+                    [0.2, 0.8],
+                    [0.3, 0.7],
+                    [0.4, 0.6],
+                    [0.5, 0.5],
+                    [0.6, 0.4],
+                    [0.7, 0.3],
+                    [0.8, 0.2],
+                ]
+            ),
+        ),
+        parameters=5,
+    )
+
+    data_weight_total_for_pix = mapper.data_weight_total_for_pix_from()
+
+    assert data_weight_total_for_pix == pytest.approx([1.2, 0.7, 0.3, 1.4, 4.4], 1.0e-4)
+
 
 
 def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
