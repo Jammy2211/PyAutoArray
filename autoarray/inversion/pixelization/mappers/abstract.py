@@ -366,7 +366,9 @@ class AbstractMapper(LinearObj):
         pix_weight_total = np.zeros(self.pixels)
 
         for slim_index, pix_indexes in enumerate(self.pix_indexes_for_sub_slim_index):
-            for pix_index, weight in zip(pix_indexes, self.pix_weights_for_sub_slim_index[slim_index]):
+            for pix_index, weight in zip(
+                pix_indexes, self.pix_weights_for_sub_slim_index[slim_index]
+            ):
                 pix_weight_total[int(pix_index)] += weight
 
         return pix_weight_total

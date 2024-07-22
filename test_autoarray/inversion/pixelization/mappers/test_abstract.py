@@ -103,7 +103,6 @@ def test__sub_slim_indexes_for_pix_index():
 
 
 def test__data_weight_total_for_pix_from():
-
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array(
