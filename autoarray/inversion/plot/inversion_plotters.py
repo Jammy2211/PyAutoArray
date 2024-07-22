@@ -124,6 +124,7 @@ class InversionPlotter(Plotter):
         regularization_weights: bool = False,
         sub_pixels_per_image_pixels: bool = False,
         mesh_pixels_per_image_pixels: bool = False,
+        image_pixels_per_pixel: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
     ):
@@ -149,6 +150,9 @@ class InversionPlotter(Plotter):
         mesh_pixels_per_image_pixels
             Whether to make a 2D plot (via `imshow`) of the number of image-mesh pixels per image pixels in the 2D
             data's mask (only valid for pixelizations which use an `image_mesh`, e.g. Hilbert, KMeans).
+        image_pixels_per_pixel
+            Whether to make a 2D plot (via `imshow`) of the number of image pixels per source plane pixel, therefore
+            indicating how many image pixels map to each source pixel.
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
@@ -234,6 +238,22 @@ class InversionPlotter(Plotter):
             except TypeError:
                 pass
 
+        # TODO : NEed to understand why this raises an error in voronoi_drawer.
+
+        if regularization_weights:
+            try:
+                mapper_plotter.plot_source_from(
+                    pixel_values=self.inversion.regularization_weights_mapper_dict[
+                        mapper_plotter.mapper
+                    ],
+                    auto_labels=AutoLabels(
+                        title="Regularization weight_list",
+                        filename="regularization_weights",
+                    ),
+                )
+            except (IndexError, ValueError):
+                pass
+
         if sub_pixels_per_image_pixels:
             sub_size = Array2D(
                 values=mapper_plotter.mapper.over_sampler.sub_size,
@@ -266,21 +286,16 @@ class InversionPlotter(Plotter):
             except Exception:
                 pass
 
-        # TODO : NEed to understand why this raises an error in voronoi_drawer.
-
-        if regularization_weights:
+        if image_pixels_per_pixel:
             try:
                 mapper_plotter.plot_source_from(
-                    pixel_values=self.inversion.regularization_weights_mapper_dict[
-                        mapper_plotter.mapper
-                    ],
-                    auto_labels=AutoLabels(
-                        title="Regularization weight_list",
-                        filename="regularization_weights",
-                    ),
+                    pixel_values=mapper_plotter.mapper.data_weight_total_for_pix_from(),
+                    auto_labels=AutoLabels(title="Image Pixels Per Source Pixel", filename="image_pixels_per_pixel"),
                 )
-            except (IndexError, ValueError):
+
+            except TypeError:
                 pass
+
 
     def subplot_of_mapper(
         self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"
