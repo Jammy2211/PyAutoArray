@@ -363,6 +363,7 @@ class AbstractMapper(LinearObj):
         Returns the total weight of every pixelization pixel, which is the sum of the weights of all data-points that
         map to that pixel.
         """
+
         return mapper_util.data_weight_total_for_pix_from(
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,

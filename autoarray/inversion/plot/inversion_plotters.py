@@ -125,6 +125,7 @@ class InversionPlotter(Plotter):
         sub_pixels_per_image_pixels: bool = False,
         mesh_pixels_per_image_pixels: bool = False,
         image_pixels_per_mesh_pixel: bool = False,
+        magnification_per_mesh_pixel: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
     ):
@@ -153,6 +154,9 @@ class InversionPlotter(Plotter):
         image_pixels_per_mesh_pixel
             Whether to make a 2D plot (via `imshow`) of the number of image pixels per source plane pixel, therefore
             indicating how many image pixels map to each source pixel.
+        magnification_per_mesh_pixel
+            Whether to make a 2D plot (via `imshow`) of the magnification of each mesh pixel, which is the area
+            ratio of the image pixel to source pixel.
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
@@ -394,6 +398,8 @@ class InversionPlotter(Plotter):
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"
         )
+
+        self.mat_plot_2d.contour = contour_original
 
         self.close_subplot_figure()
 
