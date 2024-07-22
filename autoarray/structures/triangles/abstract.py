@@ -28,6 +28,12 @@ class AbstractTriangles(ABC):
         self.indices = indices
         self.vertices = vertices
 
+    def __str__(self):
+        return f"{self.__class__.__name__} with {len(self.indices)} triangles"
+
+    def __repr__(self):
+        return str(self)
+
     @classmethod
     def for_limits_and_scale(
         cls,
