@@ -178,3 +178,24 @@ class AbstractTriangles(ABC):
         -------
         The triangles that contain the point.
         """
+
+    @abstractmethod
+    def neighborhood(self) -> "AbstractTriangles":
+        """
+        Create a new set of triangles that are the neighborhood of the current triangles.
+
+        Includes the current triangles and the triangles that share an edge with the current triangles.
+        """
+
+    @abstractmethod
+    def up_sample(self) -> "AbstractTriangles":
+        """
+        Up-sample the triangles by adding a new vertex at the midpoint of each edge.
+
+        This means each triangle becomes four smaller triangles.
+        """
+
+    @property
+    @abstractmethod
+    def means(self):
+        pass
