@@ -33,7 +33,7 @@ class AbstractTriangles:
         x_min: float,
         x_max: float,
         scale: float,
-    ) -> "ArrayTriangles":
+    ) -> "AbstractTriangles":
         height = scale * HEIGHT_FACTOR
 
         vertices = []
@@ -98,7 +98,7 @@ class AbstractTriangles:
         )
 
     @classmethod
-    def for_grid(cls, grid: Grid2D) -> "ArrayTriangles":
+    def for_grid(cls, grid: Grid2D) -> "AbstractTriangles":
         """
         Create a grid of equilateral triangles from a regular grid.
 
