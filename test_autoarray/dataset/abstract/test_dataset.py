@@ -86,7 +86,7 @@ def test__grid__uses_mask_and_settings(
     assert (masked_imaging_7x7.grids.uniform == grid_2d_7x7).all()
 
 
-def test__grid_pixelization__uses_mask_and_settings(
+def test__grids.pixelization__uses_mask_and_settings(
     image_7x7,
     noise_map_7x7,
     mask_2d_7x7,
@@ -167,7 +167,7 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     # Which the code below tests.
 
     grid_sub_2 = dataset_7x7.grids.uniform
-    grid_pixelization_sub_2 = dataset_7x7.grids.pixelization
+    grids.pixelization_sub_2 = dataset_7x7.grids.pixelization
 
     print(dataset_7x7.grids.__dict__)
 

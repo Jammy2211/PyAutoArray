@@ -59,7 +59,7 @@ class AbstractDataset:
         over_sampling
             The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
             pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
-            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
+            This class controls over sampling for all the different grids (e.g. `grid`, `grids.pixelization).
         """
 
         self.data = data
