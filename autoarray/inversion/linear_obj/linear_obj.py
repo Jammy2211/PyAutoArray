@@ -156,9 +156,6 @@ class LinearObj:
         regularization it is bypassed.
         """
 
-        print(type(self))
-        print(self.regularization)
-
         if self.regularization is None:
             return np.zeros((self.params, self.params))
 
