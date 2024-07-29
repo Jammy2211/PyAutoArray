@@ -5,10 +5,10 @@ from typing import Optional, List, Union
 from autoconf import conf
 
 from autoarray.inversion.pixelization.mappers.rectangular import (
-    MapperRectangularNoInterp,
+    MapperRectangular,
 )
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.visuals.two_d import Visuals2D
@@ -75,7 +75,7 @@ class MatPlot2D(AbstractMatPlot):
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `MapperVoronoiNoInterp`: using `plt.fill`.
+        - `MapperVoronoi`: using `plt.fill`.
 
         Parameters
         ----------
@@ -484,14 +484,14 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_mapper(
         self,
-        mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
+        mapper: MapperRectangular,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = False,
         pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
-        if isinstance(mapper, MapperRectangularNoInterp):
+        if isinstance(mapper, MapperRectangular):
             self._plot_rectangular_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
@@ -521,7 +521,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_rectangular_mapper(
         self,
-        mapper: MapperRectangularNoInterp,
+        mapper: MapperRectangular,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         pixel_values: np.ndarray = Optional[None],
@@ -667,7 +667,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_voronoi_mapper(
         self,
-        mapper: MapperVoronoiNoInterp,
+        mapper: MapperVoronoi,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = False,

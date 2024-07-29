@@ -598,7 +598,7 @@ def voronoi_nn_interpolated_array_from(
         from autoarray.util.nn import nn_py
     except ImportError as e:
         raise ImportError(
-            "In order to use the VoronoiNN pixelization you must install the "
+            "In order to use the Voronoi pixelization you must install the "
             "Natural Neighbor Interpolation c package.\n\n"
             ""
             "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"

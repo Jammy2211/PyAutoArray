@@ -10,7 +10,7 @@ from autoarray.numba_util import profile_func
 from autoarray.geometry import geometry_util
 
 
-class MapperRectangularNoInterp(AbstractMapper):
+class MapperRectangular(AbstractMapper):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
     the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
