@@ -98,11 +98,17 @@ class ArrayTriangles(AbstractTriangles):
 
         selected_vertices = jax.vmap(valid_vertices)(flat_indices)
 
+        return ArrayTriangles(
+            indices=selected_indices,
+            vertices=selected_vertices,
+        ).unique()
+
+    def unique(self):
         unique_vertices, inv_indices = np.unique(
-            selected_vertices,
+            self.vertices,
             axis=0,
             return_inverse=True,
-            size=selected_vertices.shape[0],
+            size=self.vertices.shape[0],
             fill_value=np.nan,
             equal_nan=False,
         )
@@ -117,7 +123,7 @@ class ArrayTriangles(AbstractTriangles):
 
         inv_indices = jax.vmap(swap_nan)(inv_indices)
 
-        new_indices = inv_indices.reshape(selected_indices.shape)
+        new_indices = inv_indices.reshape(self.indices.shape)
 
         return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
 
