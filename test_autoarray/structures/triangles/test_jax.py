@@ -232,9 +232,9 @@ def test_negative_index(triangles):
 def test_up_sample(triangles):
     up_sampled = triangles.up_sample()
 
-    assert (
-        up_sampled.vertices
-        == np.array(
+    assert compare_with_nans(
+        up_sampled.vertices,
+        np.array(
             [
                 [0.0, 0.0],
                 [0.0, 0.5],
@@ -245,12 +245,12 @@ def test_up_sample(triangles):
                 [1.0, 0.0],
                 [1.0, 0.5],
                 [1.0, 1.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
-                [0.0, 0.0],
+                [np.nan, np.nan],
+                [np.nan, np.nan],
+                [np.nan, np.nan],
             ]
-        )
-    ).all()
+        ),
+    )
 
     assert (
         up_sampled.indices
