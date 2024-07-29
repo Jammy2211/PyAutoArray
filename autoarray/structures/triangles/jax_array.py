@@ -11,7 +11,7 @@ from autoarray.structures.triangles.abstract import AbstractTriangles
 @register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     @property
-    # @jit
+    @jit
     def triangles(self):
         def valid_triangle(index):
             return lax.cond(
