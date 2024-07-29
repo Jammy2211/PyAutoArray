@@ -110,7 +110,7 @@ class ArrayTriangles(AbstractTriangles):
             return_inverse=True,
             size=self.vertices.shape[0],
             fill_value=np.nan,
-            equal_nan=False,
+            equal_nan=True,
         )
 
         def swap_nan(index):
@@ -155,7 +155,20 @@ class ArrayTriangles(AbstractTriangles):
             axis=0,
             return_inverse=True,
             size=6 * triangles.shape[0],
+            fill_value=np.nan,
+            equal_nan=True,
         )
+
+        def swap_nan(index):
+            return lax.cond(
+                np.any(np.isnan(unique_vertices[index])),
+                lambda _: np.array([-1], dtype=np.int32),
+                lambda idx: idx,
+                operand=index,
+            )
+
+        inverse_indices = jax.vmap(swap_nan)(inverse_indices)
+
         new_indices = inverse_indices.reshape(-1, 3)
 
         return ArrayTriangles(
