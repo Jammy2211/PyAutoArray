@@ -220,3 +220,24 @@ class ArrayTriangles(AbstractTriangles):
             indices=children[0],
             vertices=children[1],
         )
+
+    @classmethod
+    def for_limits_and_scale(
+        cls,
+        y_min: float,
+        y_max: float,
+        x_min: float,
+        x_max: float,
+        scale: float,
+    ) -> "AbstractTriangles":
+        triangles = super().for_limits_and_scale(
+            y_min,
+            y_max,
+            x_min,
+            x_max,
+            scale,
+        )
+        return cls(
+            indices=np.array(triangles.indices),
+            vertices=np.array(triangles.vertices),
+        )
