@@ -1,6 +1,7 @@
 from typing import Tuple
 
-from jax import numpy as np
+import jax
+from jax import numpy as np, lax
 from jax.tree_util import register_pytree_node_class
 from jax import jit
 
@@ -51,7 +52,7 @@ class ArrayTriangles(AbstractTriangles):
 
         return np.where(inside, size=5, fill_value=-1)[0]
 
-    @jit
+    # @jit
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
         """
         Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
@@ -66,7 +67,16 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The new ArrayTriangles instance.
         """
-        selected_indices = self.indices[indexes]
+
+        def valid_indices(index):
+            return lax.cond(
+                index == -1,
+                lambda _: np.full((3,), -1, dtype=np.int32),
+                lambda idx: self.indices[idx],
+                operand=index,
+            )
+
+        selected_indices = jax.vmap(valid_indices)(indexes)
 
         flat_indices = selected_indices.flatten()
         unique_vertices, inverse_indices = np.unique(

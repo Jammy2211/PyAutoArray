@@ -1,4 +1,4 @@
-from autoarray.numpy_wrapper import numpy as np
+from jax import numpy as np
 import pytest
 
 from autoarray.structures.triangles.jax_array import ArrayTriangles
@@ -138,6 +138,29 @@ def test_for_indexes(
 
     assert (containing.indices == indices).all()
     assert (containing.vertices == vertices).all()
+
+
+def test_negative_index(triangles):
+    indexes = np.array([0, -1])
+
+    containing = triangles.for_indexes(indexes)
+
+    assert (
+        containing.indices
+        == np.array(
+            [0, 2, 1],
+        )
+    ).all()
+    assert (
+        containing.vertices
+        == np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 1.0],
+            ]
+        )
+    ).all()
 
 
 def test_up_sample(triangles):
