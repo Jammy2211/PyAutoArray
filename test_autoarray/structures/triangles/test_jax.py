@@ -198,19 +198,19 @@ def test_negative_index(triangles):
             ],
         )
     ).all()
-    assert (
-        containing.vertices
-        == np.array(
+    assert compare_with_nans(
+        containing.vertices,
+        np.array(
             [
                 [0.0, 0.0],
                 [1.0, 0.0],
                 [0.0, 1.0],
-                [-1.0, -1.0],
-                [-1.0, -1.0],
-                [-1.0, -1.0],
+                [np.nan, np.nan],
+                [np.nan, np.nan],
+                [np.nan, np.nan],
             ]
-        )
-    ).all()
+        ),
+    )
 
 
 def test_up_sample(triangles):

@@ -91,7 +91,7 @@ class ArrayTriangles(AbstractTriangles):
         def valid_vertices(index):
             return lax.cond(
                 index == -1,
-                lambda _: np.full((2,), -1, dtype=np.float32),
+                lambda _: np.full((2,), np.nan, dtype=np.float32),
                 lambda idx: self.vertices[idx],
                 operand=index,
             )
