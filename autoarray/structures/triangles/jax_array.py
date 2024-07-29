@@ -100,8 +100,23 @@ class ArrayTriangles(AbstractTriangles):
 
         # Remove duplicates and create a mapping from old indices to new indices
         unique_vertices, inv_indices = np.unique(
-            selected_vertices, axis=0, return_inverse=True
+            selected_vertices,
+            axis=0,
+            return_inverse=True,
+            size=selected_vertices.shape[0],
+            fill_value=np.nan,
+            equal_nan=False,
         )
+
+        def swap_nan(index):
+            return lax.cond(
+                np.any(np.isnan(unique_vertices[index])),
+                lambda _: np.array([-1], dtype=np.int32),
+                lambda idx: idx,
+                operand=index,
+            )
+
+        inv_indices = jax.vmap(swap_nan)(inv_indices)
 
         # Update indices to point to the new unique vertices
         new_indices = inv_indices.reshape(selected_indices.shape)

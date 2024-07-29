@@ -159,6 +159,8 @@ def test_contains_vertices(
                     [0.0, 1.0],
                     [1.0, 0.0],
                     [1.0, 1.0],
+                    [np.nan, np.nan],
+                    [np.nan, np.nan],
                 ],
             ),
             np.array(
@@ -179,7 +181,10 @@ def test_for_indexes(
     containing = triangles.for_indexes(indexes)
 
     assert (containing.indices == indices).all()
-    assert (containing.vertices == vertices).all()
+    assert compare_with_nans(
+        containing.vertices,
+        vertices,
+    ).all()
 
 
 def test_negative_index(triangles):
@@ -191,7 +196,7 @@ def test_negative_index(triangles):
         containing.indices
         == np.array(
             [
-                [0, 1, 2],
+                [0, 2, 1],
                 [-1, -1, -1],
             ],
         )
@@ -201,8 +206,8 @@ def test_negative_index(triangles):
         np.array(
             [
                 [0.0, 0.0],
-                [1.0, 0.0],
                 [0.0, 1.0],
+                [1.0, 0.0],
                 [np.nan, np.nan],
                 [np.nan, np.nan],
                 [np.nan, np.nan],
