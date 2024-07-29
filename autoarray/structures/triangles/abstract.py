@@ -11,8 +11,8 @@ HEIGHT_FACTOR = 3**0.5 / 2
 class AbstractTriangles(ABC):
     def __init__(
         self,
-        indices: np.ndarray,
-        vertices: np.ndarray,
+        indices,
+        vertices,
     ):
         """
         Represents a set of triangles in efficient NumPy arrays.

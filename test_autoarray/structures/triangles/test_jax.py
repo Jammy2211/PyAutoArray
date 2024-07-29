@@ -24,6 +24,50 @@ def triangles():
     )
 
 
+def compare_with_nans(arr1, arr2):
+    nan_mask1 = np.isnan(arr1)
+    nan_mask2 = np.isnan(arr2)
+
+    equal_elements = np.where(
+        nan_mask1 & nan_mask2,
+        True,
+        arr1 == arr2,
+    )
+
+    return np.all(equal_elements)
+
+
+def test_nan_triangles():
+    triangles = ArrayTriangles(
+        indices=np.array(
+            [
+                [0, 1, 2],
+                [1, 2, 3],
+                [-1, -1, -1],
+            ]
+        ),
+        vertices=np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [1.0, 1.0],
+            ]
+        ),
+    )
+
+    assert compare_with_nans(
+        triangles.triangles,
+        np.array(
+            [
+                [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]],
+                [[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
+                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+            ]
+        ),
+    ).all()
+
+
 @pytest.mark.parametrize(
     "point, vertices, indices",
     [

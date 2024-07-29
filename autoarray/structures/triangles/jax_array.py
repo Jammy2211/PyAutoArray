@@ -11,9 +11,17 @@ from autoarray.structures.triangles.abstract import AbstractTriangles
 @register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     @property
-    @jit
+    # @jit
     def triangles(self):
-        return self.vertices[self.indices]
+        def valid_triangle(index):
+            return lax.cond(
+                np.any(index == -1),
+                lambda _: np.full((3, 2), np.nan, dtype=np.float32),
+                lambda idx: self.vertices[idx],
+                operand=index,
+            )
+
+        return jax.vmap(valid_triangle)(self.indices)
 
     @property
     @jit
