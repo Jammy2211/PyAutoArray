@@ -127,7 +127,7 @@ class ArrayTriangles(AbstractTriangles):
 
         return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
 
-    @jit
+    # @jit
     def up_sample(self) -> "ArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.

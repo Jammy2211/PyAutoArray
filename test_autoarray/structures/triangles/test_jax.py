@@ -37,8 +37,9 @@ def compare_with_nans(arr1, arr2):
     return np.all(equal_elements)
 
 
-def test_nan_triangles():
-    triangles = ArrayTriangles(
+@pytest.fixture
+def nan_triangles():
+    return ArrayTriangles(
         indices=np.array(
             [
                 [0, 1, 2],
@@ -56,8 +57,10 @@ def test_nan_triangles():
         ),
     )
 
+
+def test_nan_triangles(nan_triangles):
     assert compare_with_nans(
-        triangles.triangles,
+        nan_triangles.triangles,
         np.array(
             [
                 [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]],
@@ -66,6 +69,16 @@ def test_nan_triangles():
             ]
         ),
     ).all()
+
+
+def test_up_sample_nan_triangles(nan_triangles):
+    up_sampled = nan_triangles.up_sample()
+
+    # print(up_sampled.indices.tolist())
+    # print(up_sampled.vertices.tolist())
+
+    for triangle in up_sampled.triangles:
+        print(triangle.tolist())
 
 
 @pytest.mark.parametrize(
