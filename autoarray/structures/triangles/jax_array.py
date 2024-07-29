@@ -60,7 +60,7 @@ class ArrayTriangles(AbstractTriangles):
 
         return np.where(inside, size=5, fill_value=-1)[0]
 
-    # @jit
+    @jit
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
         """
         Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
