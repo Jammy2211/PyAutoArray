@@ -79,16 +79,18 @@ class ArrayTriangles(AbstractTriangles):
         selected_indices = jax.vmap(valid_indices)(indexes)
 
         flat_indices = selected_indices.flatten()
-        unique_vertices, inverse_indices = np.unique(
-            self.vertices[flat_indices],
-            axis=0,
-            return_inverse=True,
-            size=3 * indexes.size,
-        )
 
-        new_indices = inverse_indices.reshape(selected_indices.shape)
+        def valid_vertices(index):
+            return lax.cond(
+                index == -1,
+                lambda _: np.full((2,), -1, dtype=np.float32),
+                lambda idx: self.vertices[idx],
+                operand=index,
+            )
 
-        return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
+        selected_vertices = jax.vmap(valid_vertices)(flat_indices)
+
+        return ArrayTriangles(indices=selected_indices, vertices=selected_vertices)
 
     @jit
     def up_sample(self) -> "ArrayTriangles":

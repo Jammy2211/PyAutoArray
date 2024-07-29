@@ -148,7 +148,10 @@ def test_negative_index(triangles):
     assert (
         containing.indices
         == np.array(
-            [0, 2, 1],
+            [
+                [0, 1, 2],
+                [-1, -1, -1],
+            ],
         )
     ).all()
     assert (
@@ -158,6 +161,9 @@ def test_negative_index(triangles):
                 [0.0, 0.0],
                 [1.0, 0.0],
                 [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, -1.0],
+                [-1.0, -1.0],
             ]
         )
     ).all()
