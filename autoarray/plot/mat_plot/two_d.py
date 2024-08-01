@@ -241,7 +241,9 @@ class MatPlot2D(AbstractMatPlot):
         else:
             buffer = 1
 
-        zoom_around_mask = conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]
+        zoom_around_mask = conf.instance["visualize"]["general"]["general"][
+            "zoom_around_mask"
+        ]
 
         if (
             self.output.format == "fits"
@@ -259,7 +261,6 @@ class MatPlot2D(AbstractMatPlot):
             extent = array.geometry.extent
 
         return array, extent
-
 
     def plot_array(
         self,

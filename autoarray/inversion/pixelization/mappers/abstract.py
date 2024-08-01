@@ -370,9 +370,7 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
         )
 
-
     def data_pixel_area_for_pix_from(self) -> np.ndarray:
-
         pass
 
     def mapped_to_source_from(self, array: Array2D) -> np.ndarray:
