@@ -57,6 +57,7 @@ use_jax = environ.get("USE_JAX", "0") == "1"
 if use_jax:
     try:
         import jax.numpy as jnp
+        from jax import jit
 
         numpy = Numpy(jnp)
 
@@ -67,6 +68,10 @@ if use_jax:
         )
 else:
     numpy = Numpy(np)
+
+    def jit(function, *_, **__):
+        return function
+
 
 try:
     from jax._src.tree_util import register_pytree_node
