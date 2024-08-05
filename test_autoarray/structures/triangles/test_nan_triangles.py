@@ -1,6 +1,6 @@
 import pytest
 
-from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.jax_array import ArrayTriangles
 from jax import numpy as np
 
 
