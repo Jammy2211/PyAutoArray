@@ -109,19 +109,20 @@ class Colorbar(AbstractMatWrap):
                 np.round(value * convert_factor, 2) for value in manual_tick_values
             ]
 
-            if self.manual_log10:
-                manual_tick_labels = [
-                    "{:.0e}".format(label) for label in manual_tick_labels
-                ]
+        if self.manual_log10:
 
-                manual_tick_labels = [
-                    label.replace("1e", "$10^{") + "}$" for label in manual_tick_labels
-                ]
+            manual_tick_labels = [
+                "{:.0e}".format(label) for label in manual_tick_labels
+            ]
 
-                manual_tick_labels = [
-                    label.replace("{-0", "{-").replace("{+0", "{+").replace("+", "")
-                    for label in manual_tick_labels
-                ]
+            manual_tick_labels = [
+                label.replace("1e", "$10^{") + "}$" for label in manual_tick_labels
+            ]
+
+            manual_tick_labels = [
+                label.replace("{-0", "{-").replace("{+0", "{+").replace("+", "")
+                for label in manual_tick_labels
+            ]
 
         if units.colorbar_label is None:
             if cb_unit is None:
