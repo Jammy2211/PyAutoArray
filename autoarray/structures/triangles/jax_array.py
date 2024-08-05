@@ -176,7 +176,7 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    # @jit
+    @jit
     def neighborhood(self) -> "ArrayTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
