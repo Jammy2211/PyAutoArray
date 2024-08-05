@@ -16,7 +16,7 @@ class Visuals2D(AbstractVisuals):
         origin: Optional[Grid2D] = None,
         mask: Optional[Mask2D] = None,
         border: Optional[Grid2D] = None,
-        lines: Optional[List[Array1D]] = None,
+        lines: Optional[Union[List[Array1D], Grid2DIrregular]] = None,
         positions: Optional[Union[Grid2DIrregular, List[Grid2DIrregular]]] = None,
         grid: Optional[Grid2D] = None,
         mesh_grid: Optional[Grid2D] = None,

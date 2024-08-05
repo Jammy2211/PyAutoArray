@@ -130,7 +130,6 @@ def test__data_weight_total_for_pix_from():
     assert data_weight_total_for_pix == pytest.approx([1.2, 0.7, 0.3, 1.4, 4.4], 1.0e-4)
 
 
-
 def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     pixels = 6
     signal_scale = 2.0

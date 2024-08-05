@@ -604,6 +604,7 @@ def mapped_to_source_via_mapping_matrix_from(
 
     return mapped_to_source
 
+
 @numba_util.jit()
 def data_weight_total_for_pix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
@@ -628,7 +629,7 @@ def data_weight_total_for_pix_from(
 
     for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
         for pix_index, weight in zip(
-                pix_indexes, pix_weights_for_sub_slim_index[slim_index]
+            pix_indexes, pix_weights_for_sub_slim_index[slim_index]
         ):
             pix_weight_total[int(pix_index)] += weight
 
