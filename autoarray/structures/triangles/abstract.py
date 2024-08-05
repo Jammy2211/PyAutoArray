@@ -42,6 +42,7 @@ class AbstractTriangles(ABC):
         x_min: float,
         x_max: float,
         scale: float,
+        **kwargs,
     ) -> "AbstractTriangles":
         height = scale * HEIGHT_FACTOR
 
@@ -104,10 +105,15 @@ class AbstractTriangles(ABC):
         return cls(
             indices=indices,
             vertices=vertices,
+            **kwargs,
         )
 
     @classmethod
-    def for_grid(cls, grid: Grid2D) -> "AbstractTriangles":
+    def for_grid(
+        cls,
+        grid: Grid2D,
+        **kwargs,
+    ) -> "AbstractTriangles":
         """
         Create a grid of equilateral triangles from a regular grid.
 
@@ -131,7 +137,14 @@ class AbstractTriangles(ABC):
         x_min = x.min()
         x_max = x.max()
 
-        return cls.for_limits_and_scale(y_min, y_max, x_min, x_max, scale)
+        return cls.for_limits_and_scale(
+            y_min,
+            y_max,
+            x_min,
+            x_max,
+            scale,
+            **kwargs,
+        )
 
     @abstractmethod
     def with_vertices(self, vertices: np.ndarray) -> "AbstractTriangles":

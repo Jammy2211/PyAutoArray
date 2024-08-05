@@ -8,8 +8,20 @@ from jax import jit
 from autoarray.structures.triangles.abstract import AbstractTriangles
 
 
+MAX_CONTAINING_SIZE = 10
+
+
 @register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
+    def __init__(
+        self,
+        indices,
+        vertices,
+        max_containing_size=MAX_CONTAINING_SIZE,
+    ):
+        super().__init__(indices, vertices)
+        self.max_containing_size = max_containing_size
+
     @property
     @jit
     def triangles(self):
@@ -58,7 +70,11 @@ class ArrayTriangles(AbstractTriangles):
 
         inside = (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
-        return np.where(inside, size=5, fill_value=-1)[0]
+        return np.where(
+            inside,
+            size=self.max_containing_size,
+            fill_value=-1,
+        )[0]
 
     @jit
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
@@ -265,7 +281,10 @@ class ArrayTriangles(AbstractTriangles):
         """
         Flatten this model as a PyTree.
         """
-        return (self.indices, self.vertices), ()
+        return (
+            self.indices,
+            self.vertices,
+        ), (self.max_containing_size,)
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
@@ -275,6 +294,7 @@ class ArrayTriangles(AbstractTriangles):
         return cls(
             indices=children[0],
             vertices=children[1],
+            max_containing_size=aux_data[0],
         )
 
     @classmethod
@@ -285,6 +305,7 @@ class ArrayTriangles(AbstractTriangles):
         x_min: float,
         x_max: float,
         scale: float,
+        max_containing_size=MAX_CONTAINING_SIZE,
     ) -> "AbstractTriangles":
         triangles = super().for_limits_and_scale(
             y_min,
@@ -296,4 +317,5 @@ class ArrayTriangles(AbstractTriangles):
         return cls(
             indices=np.array(triangles.indices),
             vertices=np.array(triangles.vertices),
+            max_containing_size=max_containing_size,
         )

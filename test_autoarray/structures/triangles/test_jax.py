@@ -21,6 +21,7 @@ def triangles():
                 [1.0, 1.0],
             ]
         ),
+        max_containing_size=5,
     )
 
 
