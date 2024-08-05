@@ -239,6 +239,7 @@ def test_simple_neighborhood(offset):
         )
         + offset,
     )
+
     assert (
         triangles.neighborhood().triangles
         == (
@@ -248,8 +249,8 @@ def test_simple_neighborhood(offset):
                     [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
                     [[0.0, 0.0], [1.0, -1.0], [1.0, 0.0]],
                     [[0.0, 1.0], [1.0, 0.0], [1.0, 1.0]],
-                    [[-1.0, 1.0], [0.0, 0.0], [0.0, 1.0]],
-                    [[-1.0, 1.0], [0.0, 0.0], [0.0, 1.0]],
+                    [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+                    [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 ]
             )
             + offset
