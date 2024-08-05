@@ -176,7 +176,7 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    @jit
+    # @jit
     def neighborhood(self) -> "ArrayTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
@@ -224,11 +224,14 @@ class ArrayTriangles(AbstractTriangles):
 
         new_indices_sorted = np.sort(new_indices, axis=1)
 
-        unique_triangles_indices, unique_index_positions = np.unique(
+        unique_triangles_indices = np.unique(
             new_indices_sorted,
             axis=0,
-            return_index=True,
             size=max_new_triangles,
+            fill_value=np.array(
+                [-1, -1, -1],
+                dtype=np.int32,
+            ),
         )
 
         return ArrayTriangles(
