@@ -24,63 +24,6 @@ def triangles():
     )
 
 
-def compare_with_nans(arr1, arr2):
-    nan_mask1 = np.isnan(arr1)
-    nan_mask2 = np.isnan(arr2)
-
-    equal_elements = np.where(
-        nan_mask1 & nan_mask2,
-        True,
-        arr1 == arr2,
-    )
-
-    return np.all(equal_elements)
-
-
-@pytest.fixture
-def nan_triangles():
-    return ArrayTriangles(
-        indices=np.array(
-            [
-                [0, 1, 2],
-                [1, 2, 3],
-                [-1, -1, -1],
-            ]
-        ),
-        vertices=np.array(
-            [
-                [0.0, 0.0],
-                [1.0, 0.0],
-                [0.0, 1.0],
-                [1.0, 1.0],
-            ]
-        ),
-    )
-
-
-def test_nan_triangles(nan_triangles):
-    assert compare_with_nans(
-        nan_triangles.triangles,
-        np.array(
-            [
-                [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]],
-                [[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-            ]
-        ),
-    ).all()
-
-
-def test_up_sample_nan_triangles(nan_triangles):
-    up_sampled = nan_triangles.up_sample()
-
-    # print(up_sampled.indices.tolist())
-    # print(up_sampled.vertices.tolist())
-
-    for triangle in up_sampled.triangles:
-        print(triangle.tolist())
-
-
 @pytest.mark.parametrize(
     "point, vertices, indices",
     [
@@ -190,6 +133,7 @@ def test_for_indexes(
     indexes,
     vertices,
     indices,
+    compare_with_nans,
 ):
     containing = triangles.for_indexes(indexes)
 
@@ -200,7 +144,10 @@ def test_for_indexes(
     ).all()
 
 
-def test_negative_index(triangles):
+def test_negative_index(
+    triangles,
+    compare_with_nans,
+):
     indexes = np.array([0, -1])
 
     containing = triangles.for_indexes(indexes)
@@ -229,7 +176,10 @@ def test_negative_index(triangles):
     )
 
 
-def test_up_sample(triangles):
+def test_up_sample(
+    triangles,
+    compare_with_nans,
+):
     up_sampled = triangles.up_sample()
 
     assert compare_with_nans(

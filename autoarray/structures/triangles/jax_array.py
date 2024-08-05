@@ -58,7 +58,7 @@ class ArrayTriangles(AbstractTriangles):
 
         inside = (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
-        return np.where(inside, size=10, fill_value=-1)[0]
+        return np.where(inside, size=5, fill_value=-1)[0]
 
     @jit
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
