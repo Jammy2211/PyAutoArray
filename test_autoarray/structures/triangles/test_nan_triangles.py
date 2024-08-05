@@ -26,7 +26,6 @@ def nan_triangles():
 
 
 def test_nan_triangles(nan_triangles, compare_with_nans):
-    print(nan_triangles.triangles.tolist())
     assert compare_with_nans(
         nan_triangles.triangles,
         np.array(
@@ -39,11 +38,25 @@ def test_nan_triangles(nan_triangles, compare_with_nans):
     ).all()
 
 
-def test_up_sample_nan_triangles(nan_triangles):
+def test_up_sample_nan_triangles(nan_triangles, compare_with_nans):
     up_sampled = nan_triangles.up_sample()
 
-    # print(up_sampled.indices.tolist())
-    # print(up_sampled.vertices.tolist())
-
-    for triangle in up_sampled.triangles:
-        print(triangle.tolist())
+    assert compare_with_nans(
+        up_sampled.triangles,
+        np.array(
+            [
+                [[0.0, 0.0], [0.5, 0.0], [0.0, 0.5]],
+                [[1.0, 0.0], [0.5, 0.5], [1.0, 0.5]],
+                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+                [[1.0, 0.0], [0.5, 0.5], [0.5, 0.0]],
+                [[0.0, 1.0], [0.5, 1.0], [0.5, 0.5]],
+                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+                [[0.0, 1.0], [0.0, 0.5], [0.5, 0.5]],
+                [[1.0, 1.0], [1.0, 0.5], [0.5, 1.0]],
+                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+                [[0.5, 0.0], [0.5, 0.5], [0.0, 0.5]],
+                [[0.5, 0.5], [0.5, 1.0], [1.0, 0.5]],
+                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+            ]
+        ),
+    )
