@@ -34,6 +34,11 @@ class AbstractTriangles(ABC):
     def __repr__(self):
         return str(self)
 
+    @property
+    @abstractmethod
+    def triangles(self):
+        pass
+
     @classmethod
     def for_limits_and_scale(
         cls,
