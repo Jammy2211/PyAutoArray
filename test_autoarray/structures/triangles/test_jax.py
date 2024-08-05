@@ -223,7 +223,7 @@ def test_up_sample(
     "offset",
     [-1, 0, 1],
 )
-def test_simple_neighborhood(offset):
+def test_simple_neighborhood(offset, compare_with_nans):
     triangles = ArrayTriangles(
         indices=np.array(
             [
@@ -240,9 +240,9 @@ def test_simple_neighborhood(offset):
         + offset,
     )
 
-    assert (
-        triangles.neighborhood().triangles
-        == (
+    assert compare_with_nans(
+        triangles.neighborhood().triangles,
+        (
             np.array(
                 [
                     [[-1.0, 1.0], [0.0, 0.0], [0.0, 1.0]],
@@ -254,8 +254,8 @@ def test_simple_neighborhood(offset):
                 ]
             )
             + offset
-        )
-    ).all()
+        ),
+    )
 
 
 def test_neighborhood(triangles, compare_with_nans):
