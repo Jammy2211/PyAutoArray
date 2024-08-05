@@ -1,6 +1,5 @@
 from typing import Tuple
 
-from autoarray import Grid2D
 import numpy as np
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
