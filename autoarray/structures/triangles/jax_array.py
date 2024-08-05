@@ -24,7 +24,11 @@ class ArrayTriangles(AbstractTriangles):
 
     @property
     @jit
-    def triangles(self):
+    def triangles(self) -> np.ndarray:
+        """
+        The triangles as a 3x2 array of vertices.
+        """
+
         def valid_triangle(index):
             return lax.cond(
                 np.any(index == -1),
@@ -37,7 +41,10 @@ class ArrayTriangles(AbstractTriangles):
 
     @property
     @jit
-    def means(self):
+    def means(self) -> np.ndarray:
+        """
+        The mean of each triangle.
+        """
         return np.mean(self.triangles, axis=1)
 
     @jit
@@ -207,7 +214,7 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    # @jit
+    @jit
     def neighborhood(self) -> "ArrayTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
