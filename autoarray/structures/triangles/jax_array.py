@@ -141,7 +141,22 @@ class ArrayTriangles(AbstractTriangles):
 
         new_indices = inv_indices.reshape(self.indices.shape)
 
-        return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
+        new_indices_sorted = np.sort(new_indices, axis=1)
+
+        unique_triangles_indices = np.unique(
+            new_indices_sorted,
+            axis=0,
+            size=new_indices_sorted.shape[0],
+            fill_value=np.array(
+                [-1, -1, -1],
+                dtype=np.int32,
+            ),
+        )
+
+        return ArrayTriangles(
+            indices=unique_triangles_indices,
+            vertices=unique_vertices,
+        )
 
     @jit
     def up_sample(self) -> "ArrayTriangles":

@@ -89,7 +89,7 @@ def test_contains_vertices(
             ),
             np.array(
                 [
-                    [0, 2, 1],
+                    [0, 1, 2],
                 ]
             ),
         ),
@@ -104,7 +104,7 @@ def test_contains_vertices(
             ),
             np.array(
                 [
-                    [1, 0, 2],
+                    [0, 1, 2],
                 ]
             ),
         ),
@@ -122,8 +122,8 @@ def test_contains_vertices(
             ),
             np.array(
                 [
-                    [0, 2, 1],
-                    [2, 1, 3],
+                    [0, 1, 2],
+                    [1, 2, 3],
                 ]
             ),
         ),
@@ -157,8 +157,8 @@ def test_negative_index(
         containing.indices
         == np.array(
             [
-                [0, 2, 1],
                 [-1, -1, -1],
+                [0, 1, 2],
             ],
         )
     ).all()
