@@ -127,7 +127,7 @@ class ArrayTriangles(AbstractTriangles):
 
         return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
 
-    # @jit
+    @jit
     def up_sample(self) -> "ArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
@@ -176,7 +176,7 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    @jit
+    # @jit
     def neighborhood(self) -> "ArrayTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
@@ -206,7 +206,20 @@ class ArrayTriangles(AbstractTriangles):
             axis=0,
             return_inverse=True,
             size=max_new_triangles,
+            fill_value=np.nan,
+            equal_nan=True,
         )
+
+        def swap_nan(index):
+            return lax.cond(
+                np.any(np.isnan(unique_vertices[index])),
+                lambda _: np.array([-1], dtype=np.int32),
+                lambda idx: idx,
+                operand=index,
+            )
+
+        inverse_indices = jax.vmap(swap_nan)(inverse_indices)
+
         new_indices = inverse_indices.reshape(-1, 3)
 
         new_indices_sorted = np.sort(new_indices, axis=1)
