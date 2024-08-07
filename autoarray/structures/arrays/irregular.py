@@ -50,6 +50,10 @@ class ArrayIrregular(Structure):
         super().__init__(values)
 
     @property
+    def values(self):
+        return self.array
+
+    @property
     def slim(self) -> "ArrayIrregular":
         """
         The ArrayIrregular in their `slim` representation, a 1D ndarray of shape [total_values].
