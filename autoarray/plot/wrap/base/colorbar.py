@@ -110,7 +110,6 @@ class Colorbar(AbstractMatWrap):
             ]
 
         if self.manual_log10:
-
             manual_tick_labels = [
                 "{:.0e}".format(label) for label in manual_tick_labels
             ]
