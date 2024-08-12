@@ -189,6 +189,7 @@ def test_up_sample(
     compare_with_nans,
 ):
     up_sampled = triangles.up_sample()
+    print(up_sampled.vertices.tolist())
 
     assert compare_with_nans(
         up_sampled.vertices,

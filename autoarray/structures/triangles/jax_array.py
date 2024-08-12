@@ -11,6 +11,30 @@ from autoarray.structures.triangles.abstract import AbstractTriangles
 MAX_CONTAINING_SIZE = 10
 
 
+def remove_duplicates(new_triangles):
+    unique_vertices, inverse_indices = np.unique(
+        new_triangles.reshape(-1, 2),
+        axis=0,
+        return_inverse=True,
+        size=int(1.5 * new_triangles.shape[0]),
+        fill_value=np.nan,
+        equal_nan=True,
+    )
+
+    def swap_nan(index):
+        return lax.cond(
+            np.any(np.isnan(unique_vertices[index])),
+            lambda _: np.array([-1], dtype=np.int32),
+            lambda idx: idx,
+            operand=index,
+        )
+
+    inverse_indices = jax.vmap(swap_nan)(inverse_indices)
+
+    new_indices = inverse_indices.reshape(-1, 3)
+    return new_indices, unique_vertices
+
+
 @register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     def __init__(
@@ -165,7 +189,7 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    @jit
+    # @jit
     def up_sample(self) -> "ArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
@@ -188,26 +212,7 @@ class ArrayTriangles(AbstractTriangles):
             axis=0,
         )
 
-        unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2),
-            axis=0,
-            return_inverse=True,
-            size=6 * triangles.shape[0],
-            fill_value=np.nan,
-            equal_nan=True,
-        )
-
-        def swap_nan(index):
-            return lax.cond(
-                np.any(np.isnan(unique_vertices[index])),
-                lambda _: np.array([-1], dtype=np.int32),
-                lambda idx: idx,
-                operand=index,
-            )
-
-        inverse_indices = jax.vmap(swap_nan)(inverse_indices)
-
-        new_indices = inverse_indices.reshape(-1, 3)
+        new_indices, unique_vertices = remove_duplicates(new_triangles)
 
         return ArrayTriangles(
             indices=new_indices,
