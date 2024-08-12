@@ -1,5 +1,5 @@
 from typing import Tuple, Union
-import numpy as np
+from autoarray.numpy_wrapper import np
 
 from autoarray import numba_util
 from autoarray import type as ty
