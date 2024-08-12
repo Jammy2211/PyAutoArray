@@ -258,8 +258,6 @@ def test_simple_neighborhood(offset, compare_with_nans):
                     [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
                     [[0.0, 0.0], [1.0, -1.0], [1.0, 0.0]],
                     [[0.0, 1.0], [1.0, 0.0], [1.0, 1.0]],
-                    [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                    [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 ]
             )
             + offset
@@ -300,10 +298,6 @@ def test_neighborhood(triangles, compare_with_nans):
                 [2, 3, 6],
                 [2, 5, 6],
                 [5, 6, 7],
-                [-1, -1, -1],
-                [-1, -1, -1],
-                [-1, -1, -1],
-                [-1, -1, -1],
                 [-1, -1, -1],
                 [-1, -1, -1],
             ]

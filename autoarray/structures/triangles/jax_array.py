@@ -242,35 +242,14 @@ class ArrayTriangles(AbstractTriangles):
             axis=0,
         )
 
-        max_new_triangles = 6 * triangles.shape[0]
-
-        unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2),
-            axis=0,
-            return_inverse=True,
-            size=max_new_triangles,
-            fill_value=np.nan,
-            equal_nan=True,
-        )
-
-        def swap_nan(index):
-            return lax.cond(
-                np.any(np.isnan(unique_vertices[index])),
-                lambda _: np.array([-1], dtype=np.int32),
-                lambda idx: idx,
-                operand=index,
-            )
-
-        inverse_indices = jax.vmap(swap_nan)(inverse_indices)
-
-        new_indices = inverse_indices.reshape(-1, 3)
+        new_indices, unique_vertices = remove_duplicates(new_triangles)
 
         new_indices_sorted = np.sort(new_indices, axis=1)
 
         unique_triangles_indices = np.unique(
             new_indices_sorted,
             axis=0,
-            size=max_new_triangles,
+            size=new_indices_sorted.shape[0],
             fill_value=np.array(
                 [-1, -1, -1],
                 dtype=np.int32,

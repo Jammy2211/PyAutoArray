@@ -87,12 +87,6 @@ def test_neighborhood(nan_triangles, compare_with_nans):
                 [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
             ]
         ),
     )
