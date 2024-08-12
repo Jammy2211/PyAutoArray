@@ -32,7 +32,20 @@ def remove_duplicates(new_triangles):
     inverse_indices = jax.vmap(swap_nan)(inverse_indices)
 
     new_indices = inverse_indices.reshape(-1, 3)
-    return new_indices, unique_vertices
+
+    new_indices_sorted = np.sort(new_indices, axis=1)
+
+    unique_triangles_indices = np.unique(
+        new_indices_sorted,
+        axis=0,
+        size=new_indices_sorted.shape[0],
+        fill_value=np.array(
+            [-1, -1, -1],
+            dtype=np.int32,
+        ),
+    )
+
+    return unique_triangles_indices, unique_vertices
 
 
 @register_pytree_node_class
@@ -218,20 +231,8 @@ class ArrayTriangles(AbstractTriangles):
 
         new_indices, unique_vertices = remove_duplicates(new_triangles)
 
-        new_indices_sorted = np.sort(new_indices, axis=1)
-
-        unique_triangles_indices = np.unique(
-            new_indices_sorted,
-            axis=0,
-            size=new_indices_sorted.shape[0],
-            fill_value=np.array(
-                [-1, -1, -1],
-                dtype=np.int32,
-            ),
-        )
-
         return ArrayTriangles(
-            indices=unique_triangles_indices,
+            indices=new_indices,
             vertices=unique_vertices,
         )
 
