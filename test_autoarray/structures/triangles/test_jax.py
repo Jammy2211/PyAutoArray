@@ -189,7 +189,6 @@ def test_up_sample(
     compare_with_nans,
 ):
     up_sampled = triangles.up_sample()
-    print(up_sampled.vertices.tolist())
 
     assert compare_with_nans(
         up_sampled.vertices,
@@ -215,14 +214,14 @@ def test_up_sample(
         up_sampled.indices
         == np.array(
             [
-                [0, 3, 1],
-                [6, 4, 7],
                 [6, 4, 3],
                 [2, 5, 4],
                 [2, 1, 4],
                 [8, 7, 5],
                 [3, 4, 1],
                 [4, 5, 7],
+                [0, 3, 1],
+                [6, 4, 7],
             ]
         )
     ).all()

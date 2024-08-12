@@ -45,6 +45,28 @@ class AbstractTriangles(ABC):
 
         return (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
+    @property
+    @abstractmethod
+    def numpy(self):
+        pass
+
+    def _up_sample_triangle(self):
+        triangles = self.triangles
+
+        m01 = (triangles[:, 0] + triangles[:, 1]) / 2
+        m12 = (triangles[:, 1] + triangles[:, 2]) / 2
+        m20 = (triangles[:, 2] + triangles[:, 0]) / 2
+
+        return self.numpy.concatenate(
+            [
+                self.numpy.stack([triangles[:, 1], m12, m01], axis=1),
+                self.numpy.stack([triangles[:, 2], m20, m12], axis=1),
+                self.numpy.stack([m01, m12, m20], axis=1),
+                self.numpy.stack([triangles[:, 0], m01, m20], axis=1),
+            ],
+            axis=0,
+        )
+
     def __str__(self):
         return f"{self.__class__.__name__} with {len(self.indices)} triangles"
 

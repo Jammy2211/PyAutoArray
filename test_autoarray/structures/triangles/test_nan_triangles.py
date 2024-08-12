@@ -53,9 +53,6 @@ def test_up_sample_nan_triangles(nan_triangles, compare_with_nans):
         up_sampled.triangles,
         np.array(
             [
-                [[0.0, 0.0], [0.5, 0.0], [0.0, 0.5]],
-                [[1.0, 0.0], [0.5, 0.5], [1.0, 0.5]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 [[1.0, 0.0], [0.5, 0.5], [0.5, 0.0]],
                 [[0.0, 1.0], [0.5, 1.0], [0.5, 0.5]],
                 [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
@@ -64,6 +61,9 @@ def test_up_sample_nan_triangles(nan_triangles, compare_with_nans):
                 [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 [[0.5, 0.0], [0.5, 0.5], [0.0, 0.5]],
                 [[0.5, 0.5], [0.5, 1.0], [1.0, 0.5]],
+                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
+                [[0.0, 0.0], [0.5, 0.0], [0.0, 0.5]],
+                [[1.0, 0.0], [0.5, 0.5], [1.0, 0.5]],
                 [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
             ]
         ),

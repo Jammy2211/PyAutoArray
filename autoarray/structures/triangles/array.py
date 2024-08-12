@@ -11,6 +11,10 @@ class ArrayTriangles(AbstractTriangles):
         return self.vertices[self.indices]
 
     @property
+    def numpy(self):
+        return np
+
+    @property
     def means(self):
         return np.mean(self.triangles, axis=1)
 
@@ -62,24 +66,8 @@ class ArrayTriangles(AbstractTriangles):
 
         This means each triangle becomes four smaller triangles.
         """
-        triangles = self.triangles
-
-        m01 = (triangles[:, 0] + triangles[:, 1]) / 2
-        m12 = (triangles[:, 1] + triangles[:, 2]) / 2
-        m20 = (triangles[:, 2] + triangles[:, 0]) / 2
-
-        new_triangles = np.concatenate(
-            [
-                np.stack([triangles[:, 0], m01, m20], axis=1),
-                np.stack([triangles[:, 1], m12, m01], axis=1),
-                np.stack([triangles[:, 2], m20, m12], axis=1),
-                np.stack([m01, m12, m20], axis=1),
-            ],
-            axis=0,
-        )
-
         unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2), axis=0, return_inverse=True
+            self._up_sample_triangle().reshape(-1, 2), axis=0, return_inverse=True
         )
         new_indices = inverse_indices.reshape(-1, 3)
 

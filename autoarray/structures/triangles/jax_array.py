@@ -47,6 +47,10 @@ class ArrayTriangles(AbstractTriangles):
         self.max_containing_size = max_containing_size
 
     @property
+    def numpy(self):
+        return np
+
+    @property
     @jit
     def triangles(self) -> np.ndarray:
         """
@@ -175,30 +179,14 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    # @jit
+    @jit
     def up_sample(self) -> "ArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
 
         This means each triangle becomes four smaller triangles.
         """
-        triangles = self.triangles
-
-        m01 = (triangles[:, 0] + triangles[:, 1]) / 2
-        m12 = (triangles[:, 1] + triangles[:, 2]) / 2
-        m20 = (triangles[:, 2] + triangles[:, 0]) / 2
-
-        new_triangles = np.concatenate(
-            [
-                np.stack([triangles[:, 0], m01, m20], axis=1),
-                np.stack([triangles[:, 1], m12, m01], axis=1),
-                np.stack([triangles[:, 2], m20, m12], axis=1),
-                np.stack([m01, m12, m20], axis=1),
-            ],
-            axis=0,
-        )
-
-        new_indices, unique_vertices = remove_duplicates(new_triangles)
+        new_indices, unique_vertices = remove_duplicates(self._up_sample_triangle())
 
         return ArrayTriangles(
             indices=new_indices,
