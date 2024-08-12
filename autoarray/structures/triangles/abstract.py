@@ -28,6 +28,23 @@ class AbstractTriangles(ABC):
         self.indices = indices
         self.vertices = vertices
 
+    def _containing_mask(self, point):
+        x, y = point
+
+        triangles = self.triangles
+
+        y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
+        y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
+        y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
+
+        denominator = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
+
+        a = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denominator
+        b = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denominator
+        c = 1 - a - b
+
+        return (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
+
     def __str__(self):
         return f"{self.__class__.__name__} with {len(self.indices)} triangles"
 
