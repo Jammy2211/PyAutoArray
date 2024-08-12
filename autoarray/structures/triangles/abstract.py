@@ -67,6 +67,23 @@ class AbstractTriangles(ABC):
             axis=0,
         )
 
+    def _neighborhood_triangles(self):
+        triangles = self.triangles
+
+        new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
+        new_v1 = triangles[:, 0] + triangles[:, 2] - triangles[:, 1]
+        new_v2 = triangles[:, 0] + triangles[:, 1] - triangles[:, 2]
+
+        return self.numpy.concatenate(
+            [
+                self.numpy.stack([new_v0, triangles[:, 1], triangles[:, 2]], axis=1),
+                self.numpy.stack([triangles[:, 0], new_v1, triangles[:, 2]], axis=1),
+                self.numpy.stack([triangles[:, 0], triangles[:, 1], new_v2], axis=1),
+                triangles,
+            ],
+            axis=0,
+        )
+
     def __str__(self):
         return f"{self.__class__.__name__} with {len(self.indices)} triangles"
 

@@ -82,23 +82,8 @@ class ArrayTriangles(AbstractTriangles):
 
         Includes the current triangles and the triangles that share an edge with the current triangles.
         """
-        triangles = self.triangles
-
-        new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
-        new_v1 = triangles[:, 0] + triangles[:, 2] - triangles[:, 1]
-        new_v2 = triangles[:, 0] + triangles[:, 1] - triangles[:, 2]
-
-        new_triangles = np.concatenate(
-            [
-                np.stack([new_v0, triangles[:, 1], triangles[:, 2]], axis=1),
-                np.stack([triangles[:, 0], new_v1, triangles[:, 2]], axis=1),
-                np.stack([triangles[:, 0], triangles[:, 1], new_v2], axis=1),
-                triangles,
-            ],
-            axis=0,
-        )
         unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2), axis=0, return_inverse=True
+            self._neighborhood_triangles().reshape(-1, 2), axis=0, return_inverse=True
         )
         new_indices = inverse_indices.reshape(-1, 3)
 
