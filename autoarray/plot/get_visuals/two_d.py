@@ -151,9 +151,7 @@ class GetVisuals2D(AbstractGetVisuals):
             + self.visuals.__class__(mesh_grid=mesh_grid)
         )
 
-    def via_mapper_for_source_from(
-        self, mapper: MapperRectangular
-    ) -> Visuals2D:
+    def via_mapper_for_source_from(self, mapper: MapperRectangular) -> Visuals2D:
         """
         From a `Mapper` get its attributes that can be plotted in the mapper's source-plane  (e.g. the reconstruction)
         and return them in a `Visuals2D` object.

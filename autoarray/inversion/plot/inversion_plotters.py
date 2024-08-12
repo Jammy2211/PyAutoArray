@@ -124,6 +124,8 @@ class InversionPlotter(Plotter):
         regularization_weights: bool = False,
         sub_pixels_per_image_pixels: bool = False,
         mesh_pixels_per_image_pixels: bool = False,
+        image_pixels_per_mesh_pixel: bool = False,
+        magnification_per_mesh_pixel: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
     ):
@@ -149,6 +151,12 @@ class InversionPlotter(Plotter):
         mesh_pixels_per_image_pixels
             Whether to make a 2D plot (via `imshow`) of the number of image-mesh pixels per image pixels in the 2D
             data's mask (only valid for pixelizations which use an `image_mesh`, e.g. Hilbert, KMeans).
+        image_pixels_per_mesh_pixel
+            Whether to make a 2D plot (via `imshow`) of the number of image pixels per source plane pixel, therefore
+            indicating how many image pixels map to each source pixel.
+        magnification_per_mesh_pixel
+            Whether to make a 2D plot (via `imshow`) of the magnification of each mesh pixel, which is the area
+            ratio of the image pixel to source pixel.
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
@@ -234,6 +242,22 @@ class InversionPlotter(Plotter):
             except TypeError:
                 pass
 
+        # TODO : NEed to understand why this raises an error in voronoi_drawer.
+
+        if regularization_weights:
+            try:
+                mapper_plotter.plot_source_from(
+                    pixel_values=self.inversion.regularization_weights_mapper_dict[
+                        mapper_plotter.mapper
+                    ],
+                    auto_labels=AutoLabels(
+                        title="Regularization weight_list",
+                        filename="regularization_weights",
+                    ),
+                )
+            except (IndexError, ValueError):
+                pass
+
         if sub_pixels_per_image_pixels:
             sub_size = Array2D(
                 values=mapper_plotter.mapper.over_sampler.sub_size,
@@ -266,20 +290,17 @@ class InversionPlotter(Plotter):
             except Exception:
                 pass
 
-        # TODO : NEed to understand why this raises an error in voronoi_drawer.
-
-        if regularization_weights:
+        if image_pixels_per_mesh_pixel:
             try:
                 mapper_plotter.plot_source_from(
-                    pixel_values=self.inversion.regularization_weights_mapper_dict[
-                        mapper_plotter.mapper
-                    ],
+                    pixel_values=mapper_plotter.mapper.data_weight_total_for_pix_from(),
                     auto_labels=AutoLabels(
-                        title="Regularization weight_list",
-                        filename="regularization_weights",
+                        title="Image Pixels Per Source Pixel",
+                        filename="image_pixels_per_mesh_pixel",
                     ),
                 )
-            except (IndexError, ValueError):
+
+            except TypeError:
                 pass
 
     def subplot_of_mapper(
@@ -295,7 +316,13 @@ class InversionPlotter(Plotter):
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
+
         self.open_subplot_figure(number_subplots=12)
+
+        contour_original = self.mat_plot_2d.contour
+
+        if self.mat_plot_2d.use_log10:
+            self.mat_plot_2d.contour = False
 
         mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
 
@@ -309,25 +336,24 @@ class InversionPlotter(Plotter):
             pixelization_index=mapper_index, reconstructed_image=True
         )
 
-        contour_original = self.mat_plot_2d.contour
-
         self.mat_plot_2d.use_log10 = True
         self.mat_plot_2d.contour = False
-
-        try:
-            self.mat_plot_2d.plot_array(
-                array=self.inversion.data,
-                visuals_2d=self.get_visuals_2d_for_data(),
-                auto_labels=AutoLabels(title=f" Data"),
-            )
-        except AttributeError:
-            pass
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
         )
 
         self.mat_plot_2d.use_log10 = False
+
+        self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
+        self.include_2d._mapper_image_plane_mesh_grid = True
+        self.set_title(label="Mesh Pixel Grid Overlaid")
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
+        )
+        self.set_title(label=None)
+
+        self.include_2d._mapper_image_plane_mesh_grid = False
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstruction=True
@@ -341,60 +367,39 @@ class InversionPlotter(Plotter):
         )
         self.set_title(label=None)
 
-        self.mat_plot_2d.use_log10 = True
-
-        self.set_title(label="Source Reconstruction (log10)")
-
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstruction=True
-        )
-
-        self.set_title(label="Source Reconstruction (Unzoomed log10)")
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index,
-            reconstruction=True,
-            zoom_to_brightest=False,
-        )
-        self.set_title(label=None)
-
-        self.mat_plot_2d.use_log10 = False
-        self.mat_plot_2d.contour = contour_original
-
-        self.include_2d._mapper_image_plane_mesh_grid = True
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstructed_image=True
-        )
-
-        self.include_2d._mapper_image_plane_mesh_grid = False
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, mesh_pixels_per_image_pixels=True
-        )
-
-        self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
-
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, sub_pixels_per_image_pixels=True
-        )
-
         self.set_title(label="Errors (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
 
-        # self.set_title(label="Regularization Weights (Unzoomed)")
-        # try:
-        #     self.figures_2d_of_pixelization(
-        #         pixelization_index=mapper_index,
-        #         regularization_weights=True,
-        #         zoom_to_brightest=False,
-        #     )
-        # except IndexError:
-        #     pass
-        # self.set_title(label=None)
+        self.set_title(label="Regularization Weights (Unzoomed)")
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index,
+                regularization_weights=True,
+                zoom_to_brightest=False,
+            )
+        except IndexError:
+            pass
+        self.set_title(label=None)
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, sub_pixels_per_image_pixels=True
+        )
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, mesh_pixels_per_image_pixels=True
+        )
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, image_pixels_per_mesh_pixel=True
+        )
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"
         )
+
+        self.mat_plot_2d.contour = contour_original
 
         self.close_subplot_figure()
 

@@ -32,7 +32,7 @@ class OverSamplingDataset:
 
         `grid`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data.
 
-        - `grid_pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
+        - `grids.pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
         the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
         can benefit from using different oversampling schemes than the normal grid.
 
