@@ -214,14 +214,14 @@ def test_up_sample(
         up_sampled.indices
         == np.array(
             [
-                [0, 3, 1],
-                [6, 4, 7],
-                [6, 4, 3],
-                [2, 5, 4],
-                [2, 1, 4],
-                [8, 7, 5],
-                [3, 4, 1],
+                [0, 1, 3],
+                [1, 2, 4],
+                [1, 3, 4],
+                [2, 4, 5],
+                [3, 4, 6],
                 [4, 5, 7],
+                [4, 6, 7],
+                [5, 7, 8],
             ]
         )
     ).all()
@@ -257,8 +257,6 @@ def test_simple_neighborhood(offset, compare_with_nans):
                     [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
                     [[0.0, 0.0], [1.0, -1.0], [1.0, 0.0]],
                     [[0.0, 1.0], [1.0, 0.0], [1.0, 1.0]],
-                    [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                    [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 ]
             )
             + offset
@@ -299,10 +297,6 @@ def test_neighborhood(triangles, compare_with_nans):
                 [2, 3, 6],
                 [2, 5, 6],
                 [5, 6, 7],
-                [-1, -1, -1],
-                [-1, -1, -1],
-                [-1, -1, -1],
-                [-1, -1, -1],
                 [-1, -1, -1],
                 [-1, -1, -1],
             ]

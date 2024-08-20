@@ -11,6 +11,43 @@ from autoarray.structures.triangles.abstract import AbstractTriangles
 MAX_CONTAINING_SIZE = 10
 
 
+def remove_duplicates(new_triangles):
+    unique_vertices, inverse_indices = np.unique(
+        new_triangles.reshape(-1, 2),
+        axis=0,
+        return_inverse=True,
+        size=int(1.5 * new_triangles.shape[0]),
+        fill_value=np.nan,
+        equal_nan=True,
+    )
+
+    def swap_nan(index):
+        return lax.cond(
+            np.any(np.isnan(unique_vertices[index])),
+            lambda _: np.array([-1], dtype=np.int32),
+            lambda idx: idx,
+            operand=index,
+        )
+
+    inverse_indices = jax.vmap(swap_nan)(inverse_indices)
+
+    new_indices = inverse_indices.reshape(-1, 3)
+
+    new_indices_sorted = np.sort(new_indices, axis=1)
+
+    unique_triangles_indices = np.unique(
+        new_indices_sorted,
+        axis=0,
+        size=new_indices_sorted.shape[0],
+        fill_value=np.array(
+            [-1, -1, -1],
+            dtype=np.int32,
+        ),
+    )
+
+    return unique_triangles_indices, unique_vertices
+
+
 @register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     def __init__(
@@ -21,6 +58,10 @@ class ArrayTriangles(AbstractTriangles):
     ):
         super().__init__(indices, vertices)
         self.max_containing_size = max_containing_size
+
+    @property
+    def numpy(self):
+        return np
 
     @property
     @jit
@@ -61,21 +102,7 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The triangles that contain the point.
         """
-        x, y = point
-
-        triangles = self.triangles
-
-        y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
-        y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
-        y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
-
-        denominator = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
-
-        a = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denominator
-        b = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denominator
-        c = 1 - a - b
-
-        inside = (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
+        inside = self._containing_mask(point)
 
         return np.where(
             inside,
@@ -121,17 +148,11 @@ class ArrayTriangles(AbstractTriangles):
 
         selected_vertices = jax.vmap(valid_vertices)(flat_indices)
 
-        return ArrayTriangles(
-            indices=selected_indices,
-            vertices=selected_vertices,
-        ).unique()
-
-    def unique(self):
         unique_vertices, inv_indices = np.unique(
-            self.vertices,
+            selected_vertices,
             axis=0,
             return_inverse=True,
-            size=self.vertices.shape[0],
+            size=selected_vertices.shape[0],
             fill_value=np.nan,
             equal_nan=True,
         )
@@ -146,7 +167,7 @@ class ArrayTriangles(AbstractTriangles):
 
         inv_indices = jax.vmap(swap_nan)(inv_indices)
 
-        new_indices = inv_indices.reshape(self.indices.shape)
+        new_indices = inv_indices.reshape(selected_indices.shape)
 
         new_indices_sorted = np.sort(new_indices, axis=1)
 
@@ -172,42 +193,7 @@ class ArrayTriangles(AbstractTriangles):
 
         This means each triangle becomes four smaller triangles.
         """
-        triangles = self.triangles
-
-        m01 = (triangles[:, 0] + triangles[:, 1]) / 2
-        m12 = (triangles[:, 1] + triangles[:, 2]) / 2
-        m20 = (triangles[:, 2] + triangles[:, 0]) / 2
-
-        new_triangles = np.concatenate(
-            [
-                np.stack([triangles[:, 0], m01, m20], axis=1),
-                np.stack([triangles[:, 1], m12, m01], axis=1),
-                np.stack([triangles[:, 2], m20, m12], axis=1),
-                np.stack([m01, m12, m20], axis=1),
-            ],
-            axis=0,
-        )
-
-        unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2),
-            axis=0,
-            return_inverse=True,
-            size=6 * triangles.shape[0],
-            fill_value=np.nan,
-            equal_nan=True,
-        )
-
-        def swap_nan(index):
-            return lax.cond(
-                np.any(np.isnan(unique_vertices[index])),
-                lambda _: np.array([-1], dtype=np.int32),
-                lambda idx: idx,
-                operand=index,
-            )
-
-        inverse_indices = jax.vmap(swap_nan)(inverse_indices)
-
-        new_indices = inverse_indices.reshape(-1, 3)
+        new_indices, unique_vertices = remove_duplicates(self._up_sample_triangle())
 
         return ArrayTriangles(
             indices=new_indices,
@@ -221,59 +207,10 @@ class ArrayTriangles(AbstractTriangles):
 
         Includes the current triangles and the triangles that share an edge with the current triangles.
         """
-        triangles = self.triangles
-
-        new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
-        new_v1 = triangles[:, 0] + triangles[:, 2] - triangles[:, 1]
-        new_v2 = triangles[:, 0] + triangles[:, 1] - triangles[:, 2]
-
-        new_triangles = np.concatenate(
-            [
-                np.stack([new_v0, triangles[:, 1], triangles[:, 2]], axis=1),
-                np.stack([triangles[:, 0], new_v1, triangles[:, 2]], axis=1),
-                np.stack([triangles[:, 0], triangles[:, 1], new_v2], axis=1),
-                triangles,
-            ],
-            axis=0,
-        )
-
-        max_new_triangles = 6 * triangles.shape[0]
-
-        unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2),
-            axis=0,
-            return_inverse=True,
-            size=max_new_triangles,
-            fill_value=np.nan,
-            equal_nan=True,
-        )
-
-        def swap_nan(index):
-            return lax.cond(
-                np.any(np.isnan(unique_vertices[index])),
-                lambda _: np.array([-1], dtype=np.int32),
-                lambda idx: idx,
-                operand=index,
-            )
-
-        inverse_indices = jax.vmap(swap_nan)(inverse_indices)
-
-        new_indices = inverse_indices.reshape(-1, 3)
-
-        new_indices_sorted = np.sort(new_indices, axis=1)
-
-        unique_triangles_indices = np.unique(
-            new_indices_sorted,
-            axis=0,
-            size=max_new_triangles,
-            fill_value=np.array(
-                [-1, -1, -1],
-                dtype=np.int32,
-            ),
-        )
+        new_indices, unique_vertices = remove_duplicates(self._neighborhood_triangles())
 
         return ArrayTriangles(
-            indices=unique_triangles_indices,
+            indices=new_indices,
             vertices=unique_vertices,
         )
 
