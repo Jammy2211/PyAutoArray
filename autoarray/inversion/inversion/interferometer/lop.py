@@ -76,7 +76,7 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
                 tol=self.settings.tolerance,
                 atol=self.settings.tolerance,
                 **dict(maxiter=self.settings.maxiter),
-            )
+            )[0]
 
 
     @property
