@@ -105,4 +105,6 @@ try:
 
 except OSError:
     print("natural neighbour interpolation not loaded.")
-    pass
+    raise ImportError
+
+natural_interpolation_weights
