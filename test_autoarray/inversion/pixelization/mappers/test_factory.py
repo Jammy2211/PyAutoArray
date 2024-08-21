@@ -114,6 +114,9 @@ def test__delaunay_mapper():
 
 
 def test__voronoi_mapper():
+
+    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -150,8 +153,6 @@ def test__voronoi_mapper():
 
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
-
-    print(mapper.mapping_matrix)
 
     assert mapper.mapping_matrix == pytest.approx(
         np.array(
