@@ -136,7 +136,7 @@ def test__figure_2d(
 
     assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
-    pytest.importorskip("autoarray.util.nn.nn_py")
+    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
 
     plot_patch.paths = []
 
@@ -184,7 +184,7 @@ def test__subplot_image_and_mapper(
     mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.data)
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 
-    pytest.importorskip("autoarray.util.nn.nn_py")
+    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
 
     plot_patch.paths = []
 
