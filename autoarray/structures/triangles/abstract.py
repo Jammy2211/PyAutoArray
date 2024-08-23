@@ -283,6 +283,25 @@ class AbstractTriangles(ABC):
         """
 
     @abstractmethod
+    def containing_indices_circle(
+        self, center: Tuple[float, float], radius: float
+    ) -> np.ndarray:
+        """
+        Find the triangles that intersect a given circle.
+
+        Parameters
+        ----------
+        center
+            The center of the circle.
+        radius
+            The radius of the circle.
+
+        Returns
+        -------
+        The triangles that contain the circle.
+        """
+
+    @abstractmethod
     def neighborhood(self) -> "AbstractTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
