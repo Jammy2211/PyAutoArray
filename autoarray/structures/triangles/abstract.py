@@ -45,6 +45,35 @@ class AbstractTriangles(ABC):
 
         return (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
+    def _containing_circle_mask(self, center, radius):
+        triangles = self.triangles
+
+        x, y = center
+
+        y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
+        y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
+        y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
+
+        a = x1 - x
+        b = y1 - y
+        c = x2 - x
+        d = y2 - y
+        e = x3 - x
+        f = y3 - y
+
+        aa = a * a + b * b
+        bb = c * c + d * d
+        cc = e * e + f * f
+
+        radius_2 = radius * radius
+
+        return (
+            (aa <= radius_2)
+            | (bb <= radius_2)
+            | (cc <= radius_2)
+            | self._containing_mask(point=center)
+        )
+
     @property
     @abstractmethod
     def numpy(self):
