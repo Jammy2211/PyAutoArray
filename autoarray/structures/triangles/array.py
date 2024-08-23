@@ -39,7 +39,7 @@ class ArrayTriangles(AbstractTriangles):
         self, center: Tuple[float, float], radius: float
     ) -> np.ndarray:
         """
-        Find the triangles that contain a given circle.
+        Find the triangles that intersect a given circle.
 
         Parameters
         ----------
