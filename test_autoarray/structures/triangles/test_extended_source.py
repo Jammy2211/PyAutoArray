@@ -29,15 +29,15 @@ def triangles():
     [
         (
             (0.1, 0.1),
-            np.array([0]),
+            [0],
         ),
         (
             (0.6, 0.6),
-            np.array([1]),
+            [1],
         ),
         (
             (0.5, 0.5),
-            np.array([0, 1]),
+            [0, 1],
         ),
     ],
 )
@@ -46,5 +46,24 @@ def test_small_point(triangles, point, indices):
         point,
         radius=0.001,
     )
-    print(containing_triangles)
-    assert (containing_triangles == indices).all()
+    assert containing_triangles.tolist() == indices
+
+
+@pytest.mark.parametrize(
+    "radius, indices",
+    [
+        (0.1, []),
+        (1, [0]),
+        (2, [0, 1]),
+    ],
+)
+def test_large_circle(
+    triangles,
+    radius,
+    indices,
+):
+    containing_triangles = triangles.containing_indices_circle(
+        (-1.0, 0.0),
+        radius=radius,
+    )
+    assert containing_triangles.tolist() == indices
