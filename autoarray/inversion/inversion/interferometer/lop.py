@@ -51,18 +51,33 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
 
         MOp = pylops.MatrixMult(sparse.bsr_matrix(self.preconditioner_matrix_inverse))
 
-        return pylops.NormalEquationsInversion(
-            Op=Op,
-            Regs=None,
-            epsNRs=[1.0],
-            data=self.data.ordered_1d,
-            Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
-            NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
-            M=MOp,
-            tol=self.settings.tolerance,
-            atol=self.settings.tolerance,
-            **dict(maxiter=self.settings.maxiter),
-        )
+        try:
+            return pylops.NormalEquationsInversion(
+                Op=Op,
+                Regs=None,
+                epsNRs=[1.0],
+                data=self.data.ordered_1d,
+                Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
+                NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
+                M=MOp,
+                tol=self.settings.tolerance,
+                atol=self.settings.tolerance,
+                **dict(maxiter=self.settings.maxiter),
+            )
+        except AttributeError:
+            return pylops.normal_equations_inversion(
+                Op=Op,
+                Regs=None,
+                epsNRs=[1.0],
+                y=self.data.ordered_1d,
+                Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
+                NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
+                M=MOp,
+                tol=self.settings.tolerance,
+                atol=self.settings.tolerance,
+                **dict(maxiter=self.settings.maxiter),
+            )[0]
+
 
     @property
     @profile_func

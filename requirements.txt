@@ -1,7 +1,7 @@
-astropy>=5.0
+astropy>=5.0,<=6.1.2
 decorator>=4.0.0
 dill>=0.3.1.1
-matplotlib>=3.3.0
-scipy>=1.5.4,<=1.11.3
-scikit-image>=0.14.2,<=0.22.0
-scikit-learn>=0.21.3,<=1.2.2
+matplotlib>=3.7.0
+scipy<=1.14.0
+scikit-image<=0.24.0
+scikit-learn<=1.5.1

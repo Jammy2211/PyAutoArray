@@ -2,7 +2,7 @@ from __future__ import annotations
 import numpy as np
 from skimage import measure
 from scipy.spatial import ConvexHull
-from scipy.spatial.qhull import QhullError
+from scipy.spatial import QhullError
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
