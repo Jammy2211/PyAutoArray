@@ -25,40 +25,18 @@ def triangles():
 
 
 @pytest.mark.parametrize(
-    "point, vertices, indices",
+    "point, indices",
     [
         (
             (0.1, 0.1),
-            np.array(
-                [
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [1.0, 0.0],
-                ]
-            ),
             np.array([0]),
         ),
         (
             (0.6, 0.6),
-            np.array(
-                [
-                    [0.0, 1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                ]
-            ),
             np.array([1]),
         ),
         (
             (0.5, 0.5),
-            np.array(
-                [
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                ]
-            ),
             np.array([0, 1]),
         ),
     ],
@@ -66,7 +44,6 @@ def triangles():
 def test_contains_vertices(
     triangles,
     point,
-    vertices,
     indices,
 ):
     containing_indices = triangles.containing_indices(point)

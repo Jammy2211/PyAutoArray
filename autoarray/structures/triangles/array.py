@@ -35,6 +35,27 @@ class ArrayTriangles(AbstractTriangles):
 
         return np.where(inside)[0]
 
+    def containing_indices_circle(
+        self, center: Tuple[float, float], radius: float
+    ) -> np.ndarray:
+        """
+        Find the triangles that intersect a given circle.
+
+        Parameters
+        ----------
+        center
+            The center of the circle.
+        radius
+            The radius of the circle.
+
+        Returns
+        -------
+        The triangles that contain the circle.
+        """
+        inside = self._containing_circle_mask(center, radius)
+
+        return np.where(inside)[0]
+
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
         """
         Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
