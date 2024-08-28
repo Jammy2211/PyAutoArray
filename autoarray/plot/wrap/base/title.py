@@ -4,7 +4,7 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Title(AbstractMatWrap):
-    def __init__(self, prefix : str = None, **kwargs):
+    def __init__(self, prefix: str = None, **kwargs):
         """
         The settings used to customize the figure's title.
 
@@ -13,7 +13,7 @@ class Title(AbstractMatWrap):
         - plt.title: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.title.html
 
         The title will automatically be set if not specified, using the name of the function used to plot the data.
-        
+
         Parameters
         ----------
         prefix

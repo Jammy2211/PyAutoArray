@@ -3,9 +3,12 @@ import numpy as np
 
 import pytest
 
-def test__returning_weights_correct():
 
-    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+def test__returning_weights_correct():
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
     from autoarray.util.nn import nn_py
 
@@ -59,10 +62,11 @@ def test__returning_weights_correct():
     assert (weights == weights_answer).all()
 
 
-
 def test__nn_interpolation_correct():
-
-    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
     from autoarray.util.nn import nn_py
 
