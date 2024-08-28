@@ -147,7 +147,10 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
     mapper = copy.copy(voronoi_mapper_9_3x3)
     mapper.regularization = regularization_constant
@@ -219,10 +222,8 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
 
 
 def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_to_zero(
-    masked_imaging_7x7_no_blur,
-    delaunay_mapper_9_3x3
+    masked_imaging_7x7_no_blur, delaunay_mapper_9_3x3
 ):
-
     mask = masked_imaging_7x7_no_blur.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -621,7 +622,10 @@ def test__inversion_matrices__x2_mappers(
     ).all()
 
     operated_mapping_matrix = np.hstack(
-        [rectangular_mapper_7x7_3x3.mapping_matrix, delaunay_mapper_9_3x3.mapping_matrix]
+        [
+            rectangular_mapper_7x7_3x3.mapping_matrix,
+            delaunay_mapper_9_3x3.mapping_matrix,
+        ]
     )
 
     assert inversion.operated_mapping_matrix == pytest.approx(

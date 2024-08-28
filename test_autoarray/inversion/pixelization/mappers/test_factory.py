@@ -114,8 +114,10 @@ def test__delaunay_mapper():
 
 
 def test__voronoi_mapper():
-
-    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
     mask = aa.Mask2D(
         mask=[

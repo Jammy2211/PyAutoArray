@@ -46,7 +46,10 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "errors.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
-    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
     plot_patch.paths = []
 

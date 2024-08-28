@@ -25,7 +25,10 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=source_plane_mesh_grid,
     )
-    pytest.importorskip("autoarray.util.nn.nn_py", reason="Voronoi C library not installed, see util.nn README.md")
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
     mapper = aa.Mapper(
         mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
