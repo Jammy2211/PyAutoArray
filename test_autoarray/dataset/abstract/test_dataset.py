@@ -169,8 +169,6 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     grid_sub_2 = dataset_7x7.grids.uniform
     grids_pixelization_sub_2 = dataset_7x7.grids.pixelization
 
-    print(dataset_7x7.grids.__dict__)
-
     dataset_7x7.grids.__dict__["uniform"][0][0] = 100.0
     dataset_7x7.grids.__dict__["pixelization"][0][0] = 100.0
 
