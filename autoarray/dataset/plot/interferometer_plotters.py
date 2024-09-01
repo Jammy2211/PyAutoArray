@@ -164,7 +164,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if amplitudes_vs_uv_distances:
-
             self.mat_plot_1d.plot_yx(
                 y=self.dataset.amplitudes,
                 x=self.dataset.uv_distances / 10**3.0,
