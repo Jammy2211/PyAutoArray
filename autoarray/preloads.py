@@ -290,12 +290,17 @@ class Preloads:
             The second fit corresponding to a model with a different set of unit-values.
         """
 
+        from autoarray.inversion.pixelization.pixelization import Pixelization
+
         self.linear_func_operated_mapping_matrix_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
 
         if inversion_0 is None:
+            return
+
+        if not inversion_0.has(cls=Pixelization):
             return
 
         if not inversion_0.has(cls=AbstractLinearObjFuncList):
