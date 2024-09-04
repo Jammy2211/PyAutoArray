@@ -300,7 +300,7 @@ class Preloads:
         if inversion_0 is None:
             return
 
-        if not inversion_0.has(cls=Pixelization):
+        if not inversion_0.has(cls=AbstractMapper):
             return
 
         if not inversion_0.has(cls=AbstractLinearObjFuncList):
