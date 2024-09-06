@@ -56,7 +56,7 @@ def test_small_point(triangles, point, indices):
     "radius, indices",
     [
         (0.1, []),
-        (1, [0]),
+        (1.5, [0]),
         (2, [0, 1]),
     ],
 )
