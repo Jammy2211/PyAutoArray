@@ -59,29 +59,22 @@ class Circle(Point):
         self.radius = radius
 
     def mask(self, triangles: np.ndarray) -> np.ndarray:
+        # Get the vertices of the triangles
         y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
         y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
         y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
 
-        a = x1 - self.x
-        b = y1 - self.y
-        c = x2 - self.x
-        d = y2 - self.y
-        e = x3 - self.x
-        f = y3 - self.y
+        centroid_x = (x1 + x2 + x3) / 3
+        centroid_y = (y1 + y2 + y3) / 3
 
-        aa = a * a + b * b
-        bb = c * c + d * d
-        cc = e * e + f * f
+        a = centroid_x - self.x
+        b = centroid_y - self.y
+
+        distance_squared = a * a + b * b
 
         radius_2 = self.radius * self.radius
 
-        return (
-            (aa <= radius_2)
-            | (bb <= radius_2)
-            | (cc <= radius_2)
-            | super().mask(triangles)
-        )
+        return (distance_squared <= radius_2) | super().mask(triangles)
 
     def tree_flatten(self):
         """
