@@ -6,18 +6,56 @@ from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 class Shape(ABC):
+    """
+    A shape in the source plane for which we identify corresponding image plane
+    pixels using up-sampling.
+    """
+
     @abstractmethod
     def mask(self, triangles: np.ndarray) -> np.ndarray:
-        pass
+        """
+        Determine which triangles contain the shape.
+
+        Parameters
+        ----------
+        triangles
+            The vertices of the triangles.
+
+        Returns
+        -------
+        A boolean array indicating which triangles contain the shape.
+        """
 
 
 @register_pytree_node_class
 class Point(Shape):
     def __init__(self, x: float, y: float):
+        """
+        A point in the source plane for which we want to identify pixels in the
+        image plane that trace to it.
+
+        Parameters
+        ----------
+        x
+        y
+            The coordinates of the point.
+        """
         self.x = x
         self.y = y
 
     def mask(self, triangles: np.ndarray) -> np.ndarray:
+        """
+        Determine which triangles contain the point.
+
+        Parameters
+        ----------
+        triangles
+            The vertices of the triangles
+
+        Returns
+        -------
+        A boolean array indicating which triangles contain the point.
+        """
         y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
         y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
         y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
@@ -55,10 +93,37 @@ class Circle(Point):
         y: float,
         radius: float,
     ):
+        """
+        A circle in the source plane for which we want to identify pixels in the
+        image plane that trace to it.
+
+        Parameters
+        ----------
+        x
+        y
+            The coordinates of the center of the circle.
+        radius
+            The radius of the circle.
+        """
         super().__init__(x, y)
         self.radius = radius
 
     def mask(self, triangles: np.ndarray) -> np.ndarray:
+        """
+        Determine which triangles intersect the circle.
+
+        This is approximated by checking if the centroid of the triangle is within
+        the circle or if the triangle contains the centroid of the circle.
+
+        Parameters
+        ----------
+        triangles
+            The vertices of the triangles.
+
+        Returns
+        -------
+        A boolean array indicating which triangles intersect the circle.
+        """
         # Get the vertices of the triangles
         y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
         y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
