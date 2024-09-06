@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from autoarray.numpy_wrapper import register_pytree_node_class
+
 
 class Shape(ABC):
     @abstractmethod
@@ -9,6 +11,7 @@ class Shape(ABC):
         pass
 
 
+@register_pytree_node_class
 class Point(Shape):
     def __init__(self, x: float, y: float):
         self.x = x
@@ -27,7 +30,24 @@ class Point(Shape):
 
         return (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
+    def tree_flatten(self):
+        """
+        Flatten this model as a PyTree.
+        """
+        return (self.x, self.y), None
 
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        """
+        Unflatten a PyTree into a model.
+        """
+        return cls(
+            x=children[0],
+            y=children[1],
+        )
+
+
+@register_pytree_node_class
 class Circle(Point):
     def __init__(
         self,
@@ -61,4 +81,21 @@ class Circle(Point):
             | (bb <= radius_2)
             | (cc <= radius_2)
             | super().mask(triangles)
+        )
+
+    def tree_flatten(self):
+        """
+        Flatten this model as a PyTree.
+        """
+        return (self.x, self.y, self.radius), None
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        """
+        Unflatten a PyTree into a model.
+        """
+        return cls(
+            x=children[0],
+            y=children[1],
+            radius=children[2],
         )
