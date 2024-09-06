@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.shape import Point
 
 
 @pytest.fixture
@@ -28,15 +29,15 @@ def triangles():
     "point, indices",
     [
         (
-            (0.1, 0.1),
+            Point(0.1, 0.1),
             np.array([0]),
         ),
         (
-            (0.6, 0.6),
+            Point(0.6, 0.6),
             np.array([1]),
         ),
         (
-            (0.5, 0.5),
+            Point(0.5, 0.5),
             np.array([0, 1]),
         ),
     ],

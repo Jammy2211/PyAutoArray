@@ -9,7 +9,7 @@ class Shape(ABC):
         pass
 
 
-class Point:
+class Point(Shape):
     def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
