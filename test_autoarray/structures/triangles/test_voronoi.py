@@ -16,13 +16,25 @@ import numpy as np
         ((2.0, 2.0), False),
     ],
 )
-def test_triangle(centroid, is_inside):
-    triangle = Triangle(
-        (0.0, 0.0),
-        (1.0, 0.0),
-        (0.0, 1.0),
-    )
-    assert triangle.mask(
+@pytest.mark.parametrize(
+    "shape",
+    [
+        Triangle(
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+        ),
+        Polygon(
+            [
+                (0.0, 0.0),
+                (1.0, 0.0),
+                (0.0, 1.0),
+            ]
+        ),
+    ],
+)
+def test_triangle(centroid, is_inside, shape):
+    assert shape.mask(
         np.array(
             [3 * [centroid]],
         )
