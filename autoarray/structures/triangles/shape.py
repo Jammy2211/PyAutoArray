@@ -340,6 +340,6 @@ class Square(Point):
         return (
             (self.left <= centroid_x)
             & (centroid_x <= self.right)
-            & (self.bottom <= centroid_y)
-            & (centroid_y <= self.top)
+            & (self.bottom >= centroid_y)
+            & (centroid_y >= self.top)
         ) | super().mask(triangles)
