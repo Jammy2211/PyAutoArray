@@ -281,6 +281,13 @@ class Polygon(Point):
             for second, third in zip(vertices[1:], vertices[2:])
         ]
 
+    @property
+    def area(self) -> float:
+        """
+        The area of the polygon.
+        """
+        return sum(triangle.area for triangle in self.triangles)
+
     def tree_flatten(self):
         """
         Flatten this model as a PyTree.

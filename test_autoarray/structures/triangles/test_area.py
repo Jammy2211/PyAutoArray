@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autoarray.structures.triangles.array import ArrayTriangles
-from autoarray.structures.triangles.shape import Triangle, Circle, Square
+from autoarray.structures.triangles.shape import Triangle, Circle, Square, Polygon
 
 
 def test_triangles(triangles):
@@ -76,3 +76,15 @@ def test_square():
         right=1.0,
     )
     assert square.area == 1.0
+
+
+def test_polygon():
+    polygon = Polygon(
+        [
+            (0.0, 0.0),
+            (1.0, 0.0),
+            (1.0, 1.0),
+            (0.0, 1.0),
+        ],
+    )
+    assert polygon.area == 1.0
