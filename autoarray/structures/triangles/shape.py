@@ -310,6 +310,7 @@ class Square(Point):
         left
         right
             The coordinates of the top, bottom, left, and right edges of the square.
+            Coordinates are from the top-left corner of the image.
         """
         x = (left + right) / 2
         y = (top + bottom) / 2
