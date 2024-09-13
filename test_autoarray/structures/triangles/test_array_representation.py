@@ -5,26 +5,6 @@ from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.structures.triangles.shape import Point
 
 
-@pytest.fixture
-def triangles():
-    return ArrayTriangles(
-        indices=np.array(
-            [
-                [0, 1, 2],
-                [1, 2, 3],
-            ]
-        ),
-        vertices=np.array(
-            [
-                [0.0, 0.0],
-                [1.0, 0.0],
-                [0.0, 1.0],
-                [1.0, 1.0],
-            ]
-        ),
-    )
-
-
 @pytest.mark.parametrize(
     "point, indices",
     [
