@@ -21,15 +21,11 @@ def remove_duplicates(new_triangles):
         equal_nan=True,
     )
 
-    def swap_nan(index):
-        return lax.cond(
-            np.any(np.isnan(unique_vertices[index])),
-            lambda _: np.array([-1], dtype=np.int32),
-            lambda idx: idx,
-            operand=index,
-        )
-
-    inverse_indices = jax.vmap(swap_nan)(inverse_indices)
+    inverse_indices_flat = inverse_indices.reshape(-1)
+    selected_vertices = unique_vertices[inverse_indices_flat]
+    mask = np.any(np.isnan(selected_vertices), axis=1)
+    inverse_indices_flat = np.where(mask, -1, inverse_indices_flat)
+    inverse_indices = inverse_indices_flat.reshape(inverse_indices.shape)
 
     new_indices = inverse_indices.reshape(-1, 3)
 
