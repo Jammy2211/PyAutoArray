@@ -117,6 +117,13 @@ class Circle(Point):
         super().__init__(x, y)
         self.radius = radius
 
+    @property
+    def area(self) -> float:
+        """
+        The area of the circle.
+        """
+        return np.pi * self.radius**2
+
     def mask(self, triangles: np.ndarray) -> np.ndarray:
         """
         Determine which triangles intersect the circle.
@@ -330,6 +337,13 @@ class Square(Point):
         self.bottom = bottom
         self.left = left
         self.right = right
+
+    @property
+    def area(self) -> float:
+        """
+        The area of the square.
+        """
+        return (self.right - self.left) * (self.bottom - self.top)
 
     def mask(self, triangles: np.ndarray) -> np.ndarray:
         """
