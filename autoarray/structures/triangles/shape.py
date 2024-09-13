@@ -12,6 +12,13 @@ class Shape(ABC):
     pixels using up-sampling.
     """
 
+    @property
+    @abstractmethod
+    def area(self) -> float:
+        """
+        The area of the shape.
+        """
+
     @abstractmethod
     def mask(self, triangles: np.ndarray) -> np.ndarray:
         """
@@ -43,6 +50,13 @@ class Point(Shape):
         """
         self.x = x
         self.y = y
+
+    @property
+    def area(self) -> float:
+        """
+        The area of the point.
+        """
+        return 0.0
 
     def mask(self, triangles: np.ndarray) -> np.ndarray:
         """
