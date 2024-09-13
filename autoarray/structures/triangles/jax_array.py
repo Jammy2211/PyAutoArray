@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import jax
 from jax import numpy as np, lax
 from jax.tree_util import register_pytree_node_class
