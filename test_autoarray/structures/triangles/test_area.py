@@ -2,9 +2,10 @@ import numpy as np
 import pytest
 
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.shape import Triangle
 
 
-def test_area(triangles):
+def test_triangles(triangles):
     assert triangles.area == 1.0
 
 
@@ -47,3 +48,12 @@ def test_single_triangle(vertices, area):
         vertices=np.array(vertices),
     )
     assert triangles.area == area
+
+
+def test_triangle():
+    triangle = Triangle(
+        (0.0, 0.0),
+        (1.0, 0.0),
+        (0.0, 1.0),
+    )
+    assert triangle.area == 0.5

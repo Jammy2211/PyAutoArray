@@ -228,6 +228,17 @@ class Triangle(Point):
 
         return (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
+    @property
+    def area(self) -> float:
+        """
+        The area of the triangle.
+        """
+        return 0.5 * abs(
+            self.a[0] * (self.b[1] - self.c[1])
+            + self.b[0] * (self.c[1] - self.a[1])
+            + self.c[0] * (self.a[1] - self.b[1])
+        )
+
 
 class Polygon(Point):
     def __init__(
