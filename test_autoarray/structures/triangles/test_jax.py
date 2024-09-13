@@ -1,5 +1,8 @@
 try:
     from jax import numpy as np
+    import jax
+
+    jax.config.update("jax_log_compiles", True)
     from autoarray.structures.triangles.jax_array import ArrayTriangles
 except ImportError:
     import numpy as np
