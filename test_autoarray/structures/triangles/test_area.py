@@ -27,6 +27,14 @@ def test_area(triangles):
             ],
             0.5,
         ),
+        (
+            [
+                [0.0, 0.0],
+                [1.0, 1.0],
+                [2.0, 0.0],
+            ],
+            1.0,
+        ),
     ],
 )
 def test_single_triangle(vertices, area):
