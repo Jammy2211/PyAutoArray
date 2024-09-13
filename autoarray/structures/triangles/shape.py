@@ -295,3 +295,51 @@ class Polygon(Point):
             [triangle.mask(triangles) for triangle in self.triangles],
             axis=0,
         ) | super().mask(triangles)
+
+
+class Square(Point):
+    def __init__(self, top, bottom, left, right):
+        """
+        A square in the source plane for which we want to identify pixels in the
+        image plane that trace to it.
+
+        Parameters
+        ----------
+        top
+        bottom
+        left
+        right
+            The coordinates of the top, bottom, left, and right edges of the square.
+        """
+        x = (left + right) / 2
+        y = (top + bottom) / 2
+        super().__init__(x, y)
+        self.top = top
+        self.bottom = bottom
+        self.left = left
+        self.right = right
+
+    def mask(self, triangles: np.ndarray) -> np.ndarray:
+        """
+        Determine which triangles intersect the square.
+
+        This is approximated by checking if the centroid of the triangle is within
+        the square or if the triangle contains the centroid of the square.
+
+        Parameters
+        ----------
+        triangles
+            The vertices of the triangles.
+
+        Returns
+        -------
+        A boolean array indicating which triangles intersect the square.
+        """
+        centroid_x, centroid_y = centroid(triangles)
+
+        return (
+            (self.left <= centroid_x)
+            & (centroid_x <= self.right)
+            & (self.bottom <= centroid_y)
+            & (centroid_y <= self.top)
+        ) | super().mask(triangles)
