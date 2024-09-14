@@ -1,12 +1,10 @@
-from typing import Tuple
-
 import jax
 from jax import numpy as np, lax
 from jax.tree_util import register_pytree_node_class
 from jax import jit
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
-
+from autoarray.structures.triangles.shape import Shape
 
 MAX_CONTAINING_SIZE = 10
 
@@ -89,45 +87,20 @@ class ArrayTriangles(AbstractTriangles):
         return np.mean(self.triangles, axis=1)
 
     @jit
-    def containing_indices(self, point: Tuple[float, float]) -> np.ndarray:
+    def containing_indices(self, shape: Shape) -> np.ndarray:
         """
-        Find the triangles that contain a given point.
+        Find the triangles that insect with a given shape.
 
         Parameters
         ----------
-        point
-            The point to find the containing triangles for.
+        shape
+            The shape
 
         Returns
         -------
-        The triangles that contain the point.
+        The triangles that intersect the shape.
         """
-        inside = self._containing_mask(point)
-
-        return np.where(
-            inside,
-            size=self.max_containing_size,
-            fill_value=-1,
-        )[0]
-
-    def containing_indices_circle(
-        self, center: Tuple[float, float], radius: float
-    ) -> np.ndarray:
-        """
-        Find the triangles that intersect a given circle.
-
-        Parameters
-        ----------
-        center
-            The center of the circle.
-        radius
-            The radius of the circle.
-
-        Returns
-        -------
-        The triangles that contain the circle.
-        """
-        inside = self._containing_circle_mask(center, radius)
+        inside = shape.mask(self.triangles)
 
         return np.where(
             inside,
