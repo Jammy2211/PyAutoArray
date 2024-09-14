@@ -4,7 +4,7 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Title(AbstractMatWrap):
-    def __init__(self, prefix: str = None, **kwargs):
+    def __init__(self, prefix: str = None, disable_log10_label : bool = False, **kwargs):
         """
         The settings used to customize the figure's title.
 
@@ -18,11 +18,14 @@ class Title(AbstractMatWrap):
         ----------
         prefix
             A string that is added before the title, for example to put the name of the dataset and galaxy in the title.
+        disable_log10_label
+            If True, the (log10) label is not added to the title if the data is plotted on a log-scale.
         """
 
         super().__init__(**kwargs)
 
         self.prefix = prefix
+        self.disable_log10_label = disable_log10_label
         self.manual_label = self.kwargs.get("label")
 
     def set(self, auto_title=None, use_log10: bool = False):
@@ -33,7 +36,7 @@ class Title(AbstractMatWrap):
         if self.prefix is not None:
             label = f"{self.prefix} {label}"
 
-        if use_log10:
+        if use_log10 and not self.disable_log10_label:
             label = f"{label} (log10)"
 
         if "label" in config_dict:
