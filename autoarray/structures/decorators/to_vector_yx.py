@@ -1,4 +1,4 @@
-import numpy as np
+from autoarray.numpy_wrapper import np
 from functools import wraps
 
 from typing import List, Union
