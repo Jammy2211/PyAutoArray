@@ -1,5 +1,9 @@
 from __future__ import annotations
-import numpy as np
+from autoarray.numpy_wrapper import np, use_jax
+
+if use_jax:
+    import jax
+
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
@@ -53,7 +57,7 @@ def check_grid_2d(grid_2d: np.ndarray):
 
 def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
     if len(grid_2d.shape) == 2:
-        if grid_2d.shape[0] != mask_2d.pixels_in_mask:
+        def exception_message():
             raise exc.GridException(
                 f"""
                 The input 2D grid does not have the same number of values as pixels in
@@ -64,9 +68,18 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 The mask number of pixels is {mask_2d.pixels_in_mask}. 
                 """
             )
+        if use_jax:
+            jax.lax.cond(
+                grid_2d.shape[0] != mask_2d.pixels_in_mask,
+                lambda _: jax.debug.callback(exception_message),
+                lambda _: None,
+                None
+            )
+        elif grid_2d.shape[0] != mask_2d.pixels_in_mask:
+            exception_message()
 
     elif len(grid_2d.shape) == 3:
-        if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native:
+        def exception_message():
             raise exc.GridException(
                 f"""
                 The input 2D grid is not the same dimensions as the mask
@@ -76,6 +89,15 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 The mask shape_native is {mask_2d.shape_native}.
                 """
             )
+        if use_jax:
+            jax.lax.cond(
+                (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native,
+                lambda _: jax.debug.callback(exception_message),
+                lambda _: None,
+                None
+            )
+        elif (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native:
+            exception_message()
 
 
 def convert_grid_2d(
@@ -111,8 +133,12 @@ def convert_grid_2d(
     is_native = len(grid_2d.shape) == 3
 
     if is_native:
-        grid_2d[:, :, 0] *= np.invert(mask_2d)
-        grid_2d[:, :, 1] *= np.invert(mask_2d)
+        if use_jax:
+            grid_2d = grid_2d.at[:, :, 0].multiply(np.invert(mask_2d.array))
+            grid_2d = grid_2d.at[:, :, 1].multiply(np.invert(mask_2d.array))
+        else:
+            grid_2d[:, :, 0] *= np.invert(mask_2d)
+            grid_2d[:, :, 1] *= np.invert(mask_2d)
 
     if is_native == store_native:
         return grid_2d
@@ -121,10 +147,16 @@ def convert_grid_2d(
             grid_2d_native=np.array(grid_2d),
             mask=np.array(mask_2d),
         )
-    return grid_2d_native_from(
-        grid_2d_slim=np.array(grid_2d),
-        mask_2d=np.array(mask_2d),
-    )
+    if use_jax:
+        return grid_2d_native_from(
+            grid_2d_slim=np.array(grid_2d.array),
+            mask_2d=np.array(mask_2d),
+        )
+    else:
+        return grid_2d_native_from(
+            grid_2d_slim=np.array(grid_2d),
+            mask_2d=np.array(mask_2d),
+        )
 
 
 def convert_grid_2d_to_slim(
@@ -250,8 +282,12 @@ def grid_2d_slim_via_mask_from(
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                grid_slim[index, 0] = -(y - centres_scaled[0]) * pixel_scales[0]
-                grid_slim[index, 1] = (x - centres_scaled[1]) * pixel_scales[1]
+                if use_jax:
+                    grid_slim = grid_slim.at[index, 0].set(-(y - centres_scaled[0]) * pixel_scales[0])
+                    grid_slim = grid_slim.at[index, 1].set((x - centres_scaled[1]) * pixel_scales[1])
+                else:
+                    grid_slim[index, 0] = -(y - centres_scaled[0]) * pixel_scales[0]
+                    grid_slim[index, 1] = (x - centres_scaled[1]) * pixel_scales[1]
                 index += 1
 
     return grid_slim
