@@ -161,14 +161,6 @@ class ArrayTriangles(AbstractTriangles):
             equal_nan=True,
         )
 
-        def swap_nan(index):
-            return lax.cond(
-                np.any(np.isnan(unique_vertices[index])),
-                lambda _: np.array([-1], dtype=np.int32),
-                lambda idx: idx,
-                operand=index,
-            )
-
         selected_vertices = unique_vertices[inv_indices]
         nan_mask = np.any(np.isnan(selected_vertices), axis=1)
         inv_indices = np.where(nan_mask, -1, inv_indices)[:, 0]
