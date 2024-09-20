@@ -1,7 +1,6 @@
 import jax
 from jax import numpy as np, lax
 from jax.tree_util import register_pytree_node_class
-from jax import jit
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.structures.triangles.shape import Shape
@@ -74,14 +73,12 @@ class ArrayTriangles(AbstractTriangles):
         return np.where(invalid_mask[:, None, None], nan_array, triangle_vertices)
 
     @property
-    @jit
     def means(self) -> np.ndarray:
         """
         The mean of each triangle.
         """
         return np.mean(self.triangles, axis=1)
 
-    @jit
     def containing_indices(self, shape: Shape) -> np.ndarray:
         """
         Find the triangles that insect with a given shape.
@@ -103,7 +100,6 @@ class ArrayTriangles(AbstractTriangles):
             fill_value=-1,
         )[0]
 
-    @jit
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
         """
         Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
@@ -192,7 +188,6 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    @jit
     def neighborhood(self) -> "ArrayTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
@@ -206,7 +201,6 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    @jit
     def with_vertices(self, vertices: np.ndarray) -> "ArrayTriangles":
         """
         Create a new set of triangles with the vertices replaced.
