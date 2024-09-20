@@ -7,39 +7,6 @@ from autoarray.structures.triangles.shape import Shape
 MAX_CONTAINING_SIZE = 10
 
 
-def remove_duplicates(new_triangles):
-    unique_vertices, inverse_indices = np.unique(
-        new_triangles.reshape(-1, 2),
-        axis=0,
-        return_inverse=True,
-        size=int(1.5 * new_triangles.shape[0]),
-        fill_value=np.nan,
-        equal_nan=True,
-    )
-
-    inverse_indices_flat = inverse_indices.reshape(-1)
-    selected_vertices = unique_vertices[inverse_indices_flat]
-    mask = np.any(np.isnan(selected_vertices), axis=1)
-    inverse_indices_flat = np.where(mask, -1, inverse_indices_flat)
-    inverse_indices = inverse_indices_flat.reshape(inverse_indices.shape)
-
-    new_indices = inverse_indices.reshape(-1, 3)
-
-    new_indices_sorted = np.sort(new_indices, axis=1)
-
-    unique_triangles_indices = np.unique(
-        new_indices_sorted,
-        axis=0,
-        size=new_indices_sorted.shape[0],
-        fill_value=np.array(
-            [-1, -1, -1],
-            dtype=np.int32,
-        ),
-    )
-
-    return unique_triangles_indices, unique_vertices
-
-
 @register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     def __init__(
@@ -278,3 +245,36 @@ def select_and_handle_invalid(
     )
 
     return selected_data
+
+
+def remove_duplicates(new_triangles):
+    unique_vertices, inverse_indices = np.unique(
+        new_triangles.reshape(-1, 2),
+        axis=0,
+        return_inverse=True,
+        size=int(1.5 * new_triangles.shape[0]),
+        fill_value=np.nan,
+        equal_nan=True,
+    )
+
+    inverse_indices_flat = inverse_indices.reshape(-1)
+    selected_vertices = unique_vertices[inverse_indices_flat]
+    mask = np.any(np.isnan(selected_vertices), axis=1)
+    inverse_indices_flat = np.where(mask, -1, inverse_indices_flat)
+    inverse_indices = inverse_indices_flat.reshape(inverse_indices.shape)
+
+    new_indices = inverse_indices.reshape(-1, 3)
+
+    new_indices_sorted = np.sort(new_indices, axis=1)
+
+    unique_triangles_indices = np.unique(
+        new_indices_sorted,
+        axis=0,
+        size=new_indices_sorted.shape[0],
+        fill_value=np.array(
+            [-1, -1, -1],
+            dtype=np.int32,
+        ),
+    )
+
+    return unique_triangles_indices, unique_vertices
