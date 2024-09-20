@@ -114,16 +114,23 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The new ArrayTriangles instance.
         """
-
-        def valid_indices(index):
-            return lax.cond(
-                index == -1,
-                lambda _: np.full((3,), -1, dtype=np.int32),
-                lambda idx: self.indices[idx],
-                operand=index,
-            )
-
-        selected_indices = jax.vmap(valid_indices)(indexes)
+        invalid_mask = indexes == -1
+        invalid_array = np.full(
+            (indexes.shape[0], 3),
+            -1,
+            dtype=np.int32,
+        )
+        safe_indexes = np.where(
+            indexes == -1,
+            0,
+            indexes,
+        )
+        new_indices = self.indices[safe_indexes]
+        selected_indices = np.where(
+            invalid_mask[:, None],
+            invalid_array,
+            new_indices,
+        )
 
         flat_indices = selected_indices.flatten()
 
