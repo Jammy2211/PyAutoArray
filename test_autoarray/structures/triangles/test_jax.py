@@ -82,7 +82,7 @@ def test_contains_vertices(
     vertices,
     indices,
 ):
-    containing_indices = triangles.containing_indices(point)
+    containing_indices = jax.jit(triangles.containing_indices)(point)
 
     assert (containing_indices == indices).all()
 
@@ -148,7 +148,7 @@ def test_for_indexes(
     indices,
     compare_with_nans,
 ):
-    containing = triangles.for_indexes(indexes)
+    containing = jax.jit(triangles.for_indexes)(indexes)
 
     assert (containing.indices == indices).all()
     assert compare_with_nans(
@@ -163,7 +163,7 @@ def test_negative_index(
 ):
     indexes = np.array([0, -1])
 
-    containing = triangles.for_indexes(indexes)
+    containing = jax.jit(triangles.for_indexes)(indexes)
 
     assert (
         containing.indices
@@ -193,7 +193,7 @@ def test_up_sample(
     triangles,
     compare_with_nans,
 ):
-    up_sampled = triangles.up_sample()
+    up_sampled = jax.jit(triangles.up_sample)()
 
     assert compare_with_nans(
         up_sampled.vertices,
@@ -254,7 +254,7 @@ def test_simple_neighborhood(offset, compare_with_nans):
     )
 
     assert compare_with_nans(
-        triangles.neighborhood().triangles,
+        jax.jit(triangles.neighborhood)().triangles,
         (
             np.array(
                 [
@@ -270,7 +270,7 @@ def test_simple_neighborhood(offset, compare_with_nans):
 
 
 def test_neighborhood(triangles, compare_with_nans):
-    neighborhood = triangles.neighborhood()
+    neighborhood = jax.jit(triangles.neighborhood)()
 
     assert compare_with_nans(
         neighborhood.vertices,
