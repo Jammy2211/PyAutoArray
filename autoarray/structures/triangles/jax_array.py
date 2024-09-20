@@ -169,7 +169,9 @@ class ArrayTriangles(AbstractTriangles):
                 operand=index,
             )
 
-        inv_indices = jax.vmap(swap_nan)(inv_indices)
+        selected_vertices = unique_vertices[inv_indices]
+        nan_mask = np.any(np.isnan(selected_vertices), axis=1)
+        inv_indices = np.where(nan_mask, -1, inv_indices)[:, 0]
 
         new_indices = inv_indices.reshape(selected_indices.shape)
 
