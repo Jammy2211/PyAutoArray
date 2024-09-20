@@ -114,29 +114,18 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The new ArrayTriangles instance.
         """
-        invalid_mask = indexes == -1
-        invalid_array = np.full(
-            (indexes.shape[0], 3),
-            -1,
-            dtype=np.int32,
-        )
-        safe_indexes = np.where(
-            indexes == -1,
-            0,
+
+        selected_indices = filter_index(
             indexes,
-        )
-        new_indices = self.indices[safe_indexes]
-        selected_indices = np.where(
-            invalid_mask[:, None],
-            invalid_array,
-            new_indices,
+            self.indices,
+            np.int32,
         )
 
         flat_indices = selected_indices.flatten()
 
         invalid_mask = flat_indices == -1
         invalid_array = np.full(
-            (flat_indices.shape[0], 2),
+            (flat_indices.shape[0], self.vertices.shape[1]),
             np.nan,
             dtype=np.float32,
         )
@@ -279,3 +268,26 @@ class ArrayTriangles(AbstractTriangles):
             vertices=np.array(triangles.vertices),
             max_containing_size=max_containing_size,
         )
+
+
+def filter_index(index_array, target_array, dtype):
+    invalid_mask = index_array == -1
+    invalid_array = np.full(
+        (
+            index_array.shape[0],
+            target_array.shape[1],
+        ),
+        -1,
+        dtype=dtype,
+    )
+    safe_indexes = np.where(
+        index_array == -1,
+        0,
+        index_array,
+    )
+    new_array = target_array[safe_indexes]
+    return np.where(
+        invalid_mask[:, None],
+        invalid_array,
+        new_array,
+    )
