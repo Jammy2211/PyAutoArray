@@ -58,21 +58,20 @@ class ArrayTriangles(AbstractTriangles):
         return np
 
     @property
-    @jit
     def triangles(self) -> np.ndarray:
         """
         The triangles as a 3x2 array of vertices.
         """
 
-        def valid_triangle(index):
-            return lax.cond(
-                np.any(index == -1),
-                lambda _: np.full((3, 2), np.nan, dtype=np.float32),
-                lambda idx: self.vertices[idx],
-                operand=index,
-            )
-
-        return jax.vmap(valid_triangle)(self.indices)
+        invalid_mask = np.any(self.indices == -1, axis=1)
+        nan_array = np.full(
+            (self.indices.shape[0], 3, 2),
+            np.nan,
+            dtype=np.float32,
+        )
+        safe_indices = np.where(self.indices == -1, 0, self.indices)
+        triangle_vertices = self.vertices[safe_indices]
+        return np.where(invalid_mask[:, None, None], nan_array, triangle_vertices)
 
     @property
     @jit
@@ -180,7 +179,6 @@ class ArrayTriangles(AbstractTriangles):
             vertices=unique_vertices,
         )
 
-    @jit
     def up_sample(self) -> "ArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
