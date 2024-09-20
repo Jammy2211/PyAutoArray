@@ -102,6 +102,7 @@ class ArrayTriangles(AbstractTriangles):
             return_inverse=True,
             equal_nan=True,
             size=selected_indices.shape[0] * 3,
+            fill_value=np.nan,
         )
 
         nan_mask = np.isnan(unique_vertices).any(axis=1)
@@ -115,6 +116,7 @@ class ArrayTriangles(AbstractTriangles):
             new_indices_sorted,
             axis=0,
             size=new_indices_sorted.shape[0],
+            fill_value=-1,
         )
 
         return ArrayTriangles(
