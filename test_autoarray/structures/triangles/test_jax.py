@@ -1,3 +1,5 @@
+from autoarray.structures.triangles.shape import Point
+
 try:
     from jax import numpy as np
     import jax
@@ -39,7 +41,7 @@ def triangles():
     "point, vertices, indices",
     [
         (
-            (0.1, 0.1),
+            Point(0.1, 0.1),
             np.array(
                 [
                     [0.0, 0.0],
@@ -50,7 +52,7 @@ def triangles():
             np.array([0, -1, -1, -1, -1]),
         ),
         (
-            (0.6, 0.6),
+            Point(0.6, 0.6),
             np.array(
                 [
                     [0.0, 1.0],
@@ -61,7 +63,7 @@ def triangles():
             np.array([1, -1, -1, -1, -1]),
         ),
         (
-            (0.5, 0.5),
+            Point(0.5, 0.5),
             np.array(
                 [
                     [0.0, 0.0],

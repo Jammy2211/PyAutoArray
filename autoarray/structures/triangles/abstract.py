@@ -1,9 +1,9 @@
 from abc import abstractmethod, ABC
-from typing import Tuple
 
 import numpy as np
 
 from autoarray import Grid2D
+from autoarray.structures.triangles.shape import Shape
 
 HEIGHT_FACTOR = 3**0.5 / 2
 
@@ -28,50 +28,19 @@ class AbstractTriangles(ABC):
         self.indices = indices
         self.vertices = vertices
 
-    def _containing_mask(self, point):
-        x, y = point
-
+    @property
+    def area(self) -> float:
+        """
+        The total area covered by the triangles.
+        """
         triangles = self.triangles
-
-        y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
-        y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
-        y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
-
-        denominator = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
-
-        a = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denominator
-        b = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denominator
-        c = 1 - a - b
-
-        return (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
-
-    def _containing_circle_mask(self, center, radius):
-        triangles = self.triangles
-
-        x, y = center
-
-        y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
-        y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
-        y3, x3 = triangles[:, 2, 1], triangles[:, 2, 0]
-
-        a = x1 - x
-        b = y1 - y
-        c = x2 - x
-        d = y2 - y
-        e = x3 - x
-        f = y3 - y
-
-        aa = a * a + b * b
-        bb = c * c + d * d
-        cc = e * e + f * f
-
-        radius_2 = radius * radius
-
         return (
-            (aa <= radius_2)
-            | (bb <= radius_2)
-            | (cc <= radius_2)
-            | self._containing_mask(point=center)
+            0.5
+            * np.abs(
+                (triangles[:, 0, 0] * (triangles[:, 1, 1] - triangles[:, 2, 1]))
+                + (triangles[:, 1, 0] * (triangles[:, 2, 1] - triangles[:, 0, 1]))
+                + (triangles[:, 2, 0] * (triangles[:, 0, 1] - triangles[:, 1, 1]))
+            ).sum()
         )
 
     @property
@@ -268,37 +237,18 @@ class AbstractTriangles(ABC):
         """
 
     @abstractmethod
-    def containing_indices(self, point: Tuple[float, float]) -> np.ndarray:
+    def containing_indices(self, shape: Shape) -> np.ndarray:
         """
-        Find the triangles that contain a given point.
+        Find the triangles that insect with a given shape.
 
         Parameters
         ----------
-        point
-            The point to find the containing triangles for.
+        shape
+            The shape
 
         Returns
         -------
-        The triangles that contain the point.
-        """
-
-    @abstractmethod
-    def containing_indices_circle(
-        self, center: Tuple[float, float], radius: float
-    ) -> np.ndarray:
-        """
-        Find the triangles that intersect a given circle.
-
-        Parameters
-        ----------
-        center
-            The center of the circle.
-        radius
-            The radius of the circle.
-
-        Returns
-        -------
-        The triangles that contain the circle.
+        The triangles that intersect the shape.
         """
 
     @abstractmethod

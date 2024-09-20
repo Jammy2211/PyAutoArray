@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.shape import Circle
 
 
 @pytest.fixture
@@ -42,9 +43,11 @@ def triangles():
     ],
 )
 def test_small_point(triangles, point, indices):
-    containing_triangles = triangles.containing_indices_circle(
-        point,
-        radius=0.001,
+    containing_triangles = triangles.containing_indices(
+        Circle(
+            *point,
+            radius=0.001,
+        )
     )
     assert containing_triangles.tolist() == indices
 
@@ -53,7 +56,7 @@ def test_small_point(triangles, point, indices):
     "radius, indices",
     [
         (0.1, []),
-        (1, [0]),
+        (1.5, [0]),
         (2, [0, 1]),
     ],
 )
@@ -62,8 +65,11 @@ def test_large_circle(
     radius,
     indices,
 ):
-    containing_triangles = triangles.containing_indices_circle(
-        (-1.0, 0.0),
-        radius=radius,
+    containing_triangles = triangles.containing_indices(
+        Circle(
+            -1.0,
+            0.0,
+            radius=radius,
+        )
     )
     assert containing_triangles.tolist() == indices
