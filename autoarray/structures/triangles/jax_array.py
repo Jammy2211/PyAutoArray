@@ -1,5 +1,4 @@
-import jax
-from jax import numpy as np, lax
+from jax import numpy as np
 from jax.tree_util import register_pytree_node_class
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
@@ -114,56 +113,31 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The new ArrayTriangles instance.
         """
-        invalid_mask = indexes == -1
-        invalid_array = np.full(
-            (indexes.shape[0], 3),
-            -1,
-            dtype=np.int32,
-        )
-        safe_indexes = np.where(
-            indexes == -1,
-            0,
-            indexes,
-        )
-        new_indices = self.indices[safe_indexes]
-        selected_indices = np.where(
-            invalid_mask[:, None],
-            invalid_array,
-            new_indices,
+        selected_indices = select_and_handle_invalid(
+            data=self.indices,
+            indices=indexes,
+            invalid_value=-1,
+            invalid_replacement=np.array([-1, -1, -1], dtype=np.int32),
         )
 
         flat_indices = selected_indices.flatten()
 
-        invalid_mask = flat_indices == -1
-        invalid_array = np.full(
-            (flat_indices.shape[0], 2),
-            np.nan,
-            dtype=np.float32,
-        )
-        safe_indices = np.where(
-            flat_indices == -1,
-            0,
-            flat_indices,
-        )
-        selected_vertices = self.vertices[safe_indices]
-        selected_vertices = np.where(
-            invalid_mask[:, None],
-            invalid_array,
-            selected_vertices,
+        selected_vertices = select_and_handle_invalid(
+            data=self.vertices,
+            indices=flat_indices,
+            invalid_value=-1,
+            invalid_replacement=np.array([np.nan, np.nan], dtype=np.float32),
         )
 
         unique_vertices, inv_indices = np.unique(
             selected_vertices,
             axis=0,
             return_inverse=True,
-            size=selected_vertices.shape[0],
-            fill_value=np.nan,
             equal_nan=True,
         )
 
-        selected_vertices = unique_vertices[inv_indices]
-        nan_mask = np.any(np.isnan(selected_vertices), axis=1)
-        inv_indices = np.where(nan_mask, -1, inv_indices)[:, 0]
+        nan_mask = np.isnan(unique_vertices).any(axis=1)
+        inv_indices = np.where(nan_mask[inv_indices], -1, inv_indices)
 
         new_indices = inv_indices.reshape(selected_indices.shape)
 
@@ -172,11 +146,6 @@ class ArrayTriangles(AbstractTriangles):
         unique_triangles_indices = np.unique(
             new_indices_sorted,
             axis=0,
-            size=new_indices_sorted.shape[0],
-            fill_value=np.array(
-                [-1, -1, -1],
-                dtype=np.int32,
-            ),
         )
 
         return ArrayTriangles(
@@ -273,3 +242,39 @@ class ArrayTriangles(AbstractTriangles):
             vertices=np.array(triangles.vertices),
             max_containing_size=max_containing_size,
         )
+
+
+def select_and_handle_invalid(
+    data: np.ndarray,
+    indices: np.ndarray,
+    invalid_value,
+    invalid_replacement,
+):
+    """
+    Select data based on indices, handling invalid indices by replacing them with a specified value.
+
+    Parameters
+    ----------
+    data
+        The array from which to select data.
+    indices
+        The indices used to select data from the array.
+    invalid_value
+        The value representing invalid indices.
+    invalid_replacement
+        The value to use for invalid entries in the result.
+
+    Returns
+    -------
+    An array with selected data, where invalid indices are replaced with `invalid_replacement`.
+    """
+    invalid_mask = indices == invalid_value
+    safe_indices = np.where(invalid_mask, 0, indices)
+    selected_data = data[safe_indices]
+    selected_data = np.where(
+        invalid_mask[..., None],
+        invalid_replacement,
+        selected_data,
+    )
+
+    return selected_data
