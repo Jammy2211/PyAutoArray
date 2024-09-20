@@ -208,7 +208,7 @@ def inverse_transform_sampling_interpolated(probabilities, n_samples, gridx, gri
     intp_func = interp1d(cdf, id_range, kind="linear")
     intp_func_x = interp1d(id_range, gridx, kind="linear")
     intp_func_y = interp1d(id_range, gridy, kind="linear")
-    linear_points = np.linspace(0, 0.99999999, n_samples)
+    linear_points = np.linspace(0, 0.99999999, int(n_samples))
     output_ids = intp_func(linear_points)
     output_x = intp_func_x(output_ids)
     output_y = intp_func_y(output_ids)

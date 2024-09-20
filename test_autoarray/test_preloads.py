@@ -298,12 +298,12 @@ def test__set_linear_func_operated_mapping_matrix_dict():
     # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
     inversion_0 = aa.m.MockInversionImaging(
-        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        linear_obj_list=[aa.m.MockLinearObjFuncList(), aa.m.MockMapper()],
         linear_func_operated_mapping_matrix_dict=dict_0,
         data_linear_func_matrix_dict=dict_0,
     )
     inversion_1 = aa.m.MockInversionImaging(
-        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        linear_obj_list=[aa.m.MockLinearObjFuncList(), aa.m.MockMapper()],
         linear_func_operated_mapping_matrix_dict=dict_0,
         data_linear_func_matrix_dict=dict_0,
     )

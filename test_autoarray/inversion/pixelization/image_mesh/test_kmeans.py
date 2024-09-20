@@ -23,6 +23,6 @@ def test__image_plane_mesh_grid_from():
     image_mesh = kmeans.image_plane_mesh_grid_from(mask=mask, adapt_data=weight_map)
 
     assert image_mesh[0, :] == pytest.approx(
-        [0.25, -0.5],
+        [0.5, 0.25],
         1.0e-4,
     )

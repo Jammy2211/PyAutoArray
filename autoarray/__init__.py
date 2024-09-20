@@ -17,6 +17,7 @@ from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
 from .dataset.over_sampling import OverSamplingDataset
 from .dataset.dataset_model import DatasetModel
+from .fit.fit_dataset import AbstractFit
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
@@ -81,6 +82,7 @@ from .structures.mesh.delaunay_2d import Mesh2DDelaunay
 from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
+from .structures.triangles.abstract import AbstractTriangles
 from .structures import decorators as grid_dec
 from .structures.header import Header
 from .layout.region import Region1D

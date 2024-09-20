@@ -60,7 +60,6 @@ def test__inversion_imaging__via_mapper(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
@@ -148,48 +147,46 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    # Have to do this because NN library is optional.
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
-    try:
-        mapper = copy.copy(voronoi_mapper_9_3x3)
-        mapper.regularization = regularization_constant
+    mapper = copy.copy(voronoi_mapper_9_3x3)
+    mapper.regularization = regularization_constant
 
-        inversion = aa.Inversion(
-            dataset=masked_imaging_7x7_no_blur,
-            linear_obj_list=[mapper],
-            settings=aa.SettingsInversion(use_w_tilde=True),
-        )
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[mapper],
+        settings=aa.SettingsInversion(use_w_tilde=True),
+    )
 
-        assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-        assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-            10.66505, 1.0e-4
-        )
-        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+        10.66505, 1.0e-4
+    )
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-        mapper = copy.copy(voronoi_mapper_9_3x3)
-        mapper.regularization = regularization_constant_split
+    mapper = copy.copy(voronoi_mapper_9_3x3)
+    mapper.regularization = regularization_constant_split
 
-        inversion = aa.Inversion(
-            dataset=masked_imaging_7x7_no_blur,
-            linear_obj_list=[mapper],
-            settings=aa.SettingsInversion(use_w_tilde=True),
-        )
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[mapper],
+        settings=aa.SettingsInversion(use_w_tilde=True),
+    )
 
-        assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-        assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-            10.37955, 1.0e-4
-        )
-        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    except AttributeError:
-        pass
+    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+        10.37955, 1.0e-4
+    )
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
 
 def test__inversion_imaging__via_linear_obj_func_and_mapper(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     mask = masked_imaging_7x7_no_blur.mask
 
@@ -225,8 +222,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
 
 
 def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_to_zero(
-    masked_imaging_7x7_no_blur,
-    voronoi_mapper_9_3x3,
+    masked_imaging_7x7_no_blur, delaunay_mapper_9_3x3
 ):
     mask = masked_imaging_7x7_no_blur.mask
 
@@ -241,7 +237,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[linear_obj, voronoi_mapper_9_3x3],
+        linear_obj_list=[linear_obj, delaunay_mapper_9_3x3],
         settings=aa.SettingsInversion(
             use_w_tilde=False,
             no_regularization_add_to_curvature_diag_value=False,
@@ -250,12 +246,12 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
-    assert isinstance(inversion.linear_obj_list[1], aa.MapperVoronoi)
+    assert isinstance(inversion.linear_obj_list[1], aa.MapperDelaunay)
     assert isinstance(inversion, aa.InversionImagingMapping)
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[linear_obj, voronoi_mapper_9_3x3],
+        linear_obj_list=[linear_obj, delaunay_mapper_9_3x3],
         settings=aa.SettingsInversion(
             use_w_tilde=False,
             use_positive_only_solver=True,
@@ -265,7 +261,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
-    assert isinstance(inversion.linear_obj_list[1], aa.MapperVoronoi)
+    assert isinstance(inversion.linear_obj_list[1], aa.MapperDelaunay)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.reconstruction == pytest.approx(
         np.array([2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), 1.0e-4
@@ -273,17 +269,17 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
 
 
 def test__inversion_imaging__compare_mapping_and_w_tilde_values(
-    masked_imaging_7x7, voronoi_mapper_9_3x3
+    masked_imaging_7x7, delaunay_mapper_9_3x3
 ):
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging_7x7,
-        linear_obj_list=[voronoi_mapper_9_3x3],
+        linear_obj_list=[delaunay_mapper_9_3x3],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
-        linear_obj_list=[voronoi_mapper_9_3x3],
+        linear_obj_list=[delaunay_mapper_9_3x3],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
@@ -304,8 +300,6 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
 def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
-    delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
     masked_imaging_7x7_no_blur.data[4] = 2.0
@@ -351,7 +345,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
@@ -408,7 +401,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
             linear_obj,
             delaunay_mapper_9_3x3,
             linear_obj_1,
-            voronoi_mapper_9_3x3,
             linear_obj_2,
         ],
         settings=aa.SettingsInversion(use_w_tilde=False),
@@ -421,7 +413,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
             linear_obj,
             delaunay_mapper_9_3x3,
             linear_obj_1,
-            voronoi_mapper_9_3x3,
             linear_obj_2,
         ],
         settings=aa.SettingsInversion(use_w_tilde=True),
@@ -439,7 +430,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_data_
     masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
@@ -474,7 +464,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_data_
             linear_obj,
             delaunay_mapper_9_3x3,
             linear_obj_1,
-            voronoi_mapper_9_3x3,
             linear_obj_2,
         ],
         settings=aa.SettingsInversion(use_w_tilde=False),
@@ -491,7 +480,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_data_
             linear_obj,
             delaunay_mapper_9_3x3,
             linear_obj_1,
-            voronoi_mapper_9_3x3,
             linear_obj_2,
         ],
         preloads=preloads,
@@ -510,7 +498,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
     masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
@@ -545,7 +532,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
             linear_obj,
             delaunay_mapper_9_3x3,
             linear_obj_1,
-            voronoi_mapper_9_3x3,
             linear_obj_2,
         ],
         settings=aa.SettingsInversion(use_w_tilde=False),
@@ -562,7 +548,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
             linear_obj,
             delaunay_mapper_9_3x3,
             linear_obj_1,
-            voronoi_mapper_9_3x3,
             linear_obj_2,
         ],
         preloads=preloads,
@@ -582,7 +567,6 @@ def test__inversion_interferometer__via_mapper(
     interferometer_7_no_fft,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
 ):
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
@@ -620,12 +604,12 @@ def test__inversion_interferometer__via_mapper(
 def test__inversion_matrices__x2_mappers(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
-    voronoi_mapper_9_3x3,
+    delaunay_mapper_9_3x3,
     regularization_constant,
 ):
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[rectangular_mapper_7x7_3x3, voronoi_mapper_9_3x3],
+        linear_obj_list=[rectangular_mapper_7x7_3x3, delaunay_mapper_9_3x3],
     )
 
     assert (
@@ -634,11 +618,14 @@ def test__inversion_matrices__x2_mappers(
     ).all()
     assert (
         inversion.operated_mapping_matrix[0:9, 9:18]
-        == voronoi_mapper_9_3x3.mapping_matrix
+        == delaunay_mapper_9_3x3.mapping_matrix
     ).all()
 
     operated_mapping_matrix = np.hstack(
-        [rectangular_mapper_7x7_3x3.mapping_matrix, voronoi_mapper_9_3x3.mapping_matrix]
+        [
+            rectangular_mapper_7x7_3x3.mapping_matrix,
+            delaunay_mapper_9_3x3.mapping_matrix,
+        ]
     )
 
     assert inversion.operated_mapping_matrix == pytest.approx(
@@ -655,7 +642,7 @@ def test__inversion_matrices__x2_mappers(
         linear_obj=rectangular_mapper_7x7_3x3
     )
     regularization_matrix_of_reg_1 = regularization_constant.regularization_matrix_from(
-        linear_obj=voronoi_mapper_9_3x3
+        linear_obj=delaunay_mapper_9_3x3
     )
 
     assert (
@@ -674,7 +661,7 @@ def test__inversion_matrices__x2_mappers(
     assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3] == pytest.approx(
         reconstruction_0, 1.0e-4
     )
-    assert inversion.reconstruction_dict[voronoi_mapper_9_3x3] == pytest.approx(
+    assert inversion.reconstruction_dict[delaunay_mapper_9_3x3] == pytest.approx(
         reconstruction_1, 1.0e-4
     )
     assert inversion.reconstruction == pytest.approx(
@@ -685,7 +672,7 @@ def test__inversion_matrices__x2_mappers(
         rectangular_mapper_7x7_3x3
     ] == pytest.approx(0.5 * np.ones(9), 1.0e-4)
     assert inversion.mapped_reconstructed_data_dict[
-        voronoi_mapper_9_3x3
+        delaunay_mapper_9_3x3
     ] == pytest.approx(0.5 * np.ones(9), 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 

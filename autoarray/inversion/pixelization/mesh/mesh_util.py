@@ -535,7 +535,7 @@ def voronoi_revised_from(
     vertex_list = voronoi.vertices.tolist()
 
     center = voronoi.points.mean(axis=0)
-    radius = voronoi.points.ptp().max() * 2
+    radius = np.ptp(voronoi.points).max() * 2
 
     # Construct a map containing all ridges for a given point
     all_ridges = {}

@@ -379,7 +379,7 @@ class Imaging(AbstractDataset):
             noise_map=self.noise_map,
             psf=self.psf,
             over_sampling=over_sampling,
-            pad_for_convolver=True,
+            pad_for_convolver=False,
         )
 
     def output_to_fits(

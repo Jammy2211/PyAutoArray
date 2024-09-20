@@ -55,7 +55,8 @@ def unwrap_array(func):
         try:
             return func(self, other.array)
         except AttributeError:
-            return func(self, other)
+            pass
+        return func(self, other)
 
     return wrapper
 
