@@ -134,15 +134,23 @@ class ArrayTriangles(AbstractTriangles):
 
         flat_indices = selected_indices.flatten()
 
-        def valid_vertices(index):
-            return lax.cond(
-                index == -1,
-                lambda _: np.full((2,), np.nan, dtype=np.float32),
-                lambda idx: self.vertices[idx],
-                operand=index,
-            )
-
-        selected_vertices = jax.vmap(valid_vertices)(flat_indices)
+        invalid_mask = flat_indices == -1
+        invalid_array = np.full(
+            (flat_indices.shape[0], 2),
+            np.nan,
+            dtype=np.float32,
+        )
+        safe_indices = np.where(
+            flat_indices == -1,
+            0,
+            flat_indices,
+        )
+        selected_vertices = self.vertices[safe_indices]
+        selected_vertices = np.where(
+            invalid_mask[:, None],
+            invalid_array,
+            selected_vertices,
+        )
 
         unique_vertices, inv_indices = np.unique(
             selected_vertices,
