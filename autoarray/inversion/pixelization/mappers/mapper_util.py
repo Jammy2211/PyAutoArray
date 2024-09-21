@@ -296,7 +296,7 @@ def pix_size_weights_voronoi_nn_from(
             "In order to use the Voronoi pixelization you must install the "
             "Natural Neighbor Interpolation c package.\n\n"
             ""
-            "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
+            "See: https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/util/nn"
         ) from e
 
     max_nneighbours = conf.instance["general"]["pixelization"][
