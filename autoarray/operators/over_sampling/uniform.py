@@ -411,7 +411,7 @@ class OverSamplerUniform(AbstractOverSampler):
         binned_array_2d = over_sample_util.binned_array_2d_from(
             array_2d=np.array(array),
             mask_2d=np.array(self.mask),
-            sub_size=np.array(self.sub_size),
+            sub_size=np.array(self.sub_size).astype("int"),
         )
 
         return Array2D(
