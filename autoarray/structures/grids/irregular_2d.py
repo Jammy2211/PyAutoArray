@@ -1,4 +1,4 @@
-import numpy as np
+from autoarray.numpy_wrapper import np
 from typing import List, Optional, Tuple, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
