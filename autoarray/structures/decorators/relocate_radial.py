@@ -1,5 +1,3 @@
-import os
-
 from autofit.jax_wrapper import numpy as np, use_jax
 from functools import wraps
 
