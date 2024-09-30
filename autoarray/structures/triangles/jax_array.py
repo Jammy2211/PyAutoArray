@@ -122,6 +122,7 @@ class ArrayTriangles(AbstractTriangles):
         return ArrayTriangles(
             indices=unique_triangles_indices,
             vertices=unique_vertices,
+            max_containing_size=self.max_containing_size,
         )
 
     def up_sample(self) -> "ArrayTriangles":
@@ -135,6 +136,7 @@ class ArrayTriangles(AbstractTriangles):
         return ArrayTriangles(
             indices=new_indices,
             vertices=unique_vertices,
+            max_containing_size=self.max_containing_size,
         )
 
     def neighborhood(self) -> "ArrayTriangles":
@@ -148,6 +150,7 @@ class ArrayTriangles(AbstractTriangles):
         return ArrayTriangles(
             indices=new_indices,
             vertices=unique_vertices,
+            max_containing_size=self.max_containing_size,
         )
 
     def with_vertices(self, vertices: np.ndarray) -> "ArrayTriangles":
@@ -166,6 +169,7 @@ class ArrayTriangles(AbstractTriangles):
         return ArrayTriangles(
             indices=self.indices,
             vertices=vertices,
+            max_containing_size=self.max_containing_size,
         )
 
     def __iter__(self):
@@ -256,7 +260,7 @@ def remove_duplicates(new_triangles):
         new_triangles.reshape(-1, 2),
         axis=0,
         return_inverse=True,
-        size=int(1.5 * new_triangles.shape[0]),
+        size=2 * new_triangles.shape[0],
         fill_value=np.nan,
         equal_nan=True,
     )

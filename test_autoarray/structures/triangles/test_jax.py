@@ -128,8 +128,6 @@ def test_contains_vertices(
                     [0.0, 1.0],
                     [1.0, 0.0],
                     [1.0, 1.0],
-                    [np.nan, np.nan],
-                    [np.nan, np.nan],
                 ],
             ),
             np.array(
@@ -181,9 +179,6 @@ def test_negative_index(
                 [0.0, 0.0],
                 [0.0, 1.0],
                 [1.0, 0.0],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
             ]
         ),
     )
@@ -208,9 +203,6 @@ def test_up_sample(
                 [1.0, 0.0],
                 [1.0, 0.5],
                 [1.0, 1.0],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
             ]
         ),
     )
@@ -284,10 +276,6 @@ def test_neighborhood(triangles, compare_with_nans):
                 [1.0, 0.0],
                 [1.0, 1.0],
                 [2.0, 0.0],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
-                [np.nan, np.nan],
             ]
         ),
     )

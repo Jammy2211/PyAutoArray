@@ -13,6 +13,7 @@ class AbstractTriangles(ABC):
         self,
         indices,
         vertices,
+        **kwargs,
     ):
         """
         Represents a set of triangles in efficient NumPy arrays.
