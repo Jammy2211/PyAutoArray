@@ -72,8 +72,6 @@ def test__from_manual_adapt_radial_bin__centre_list_input():
         centre_list=[(0.0, -2.0), (0.0, 2.0)],
     )
 
-    print(over_sampling.sub_size.native)
-
     assert over_sampling.sub_size.native == pytest.approx(
         np.array(
             [
@@ -160,8 +158,6 @@ def test__binned_array_2d_from():
     arr = np.array([1.0, 5.0, 7.0, 10.0, 10.0])
 
     binned_array_2d = over_sampling.binned_array_2d_from(array=arr)
-
-    print(binned_array_2d.slim)
 
     assert binned_array_2d.slim == pytest.approx(np.array([1.0, 8.0]), 1.0e-4)
 

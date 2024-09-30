@@ -1,4 +1,5 @@
-import numpy as np
+import pytest
+
 import autoarray as aa
 
 
@@ -24,23 +25,23 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=source_plane_mesh_grid,
     )
+    pytest.importorskip(
+        "autoarray.util.nn.nn_py",
+        reason="Voronoi C library not installed, see util.nn README.md",
+    )
 
-    try:
-        mapper = aa.Mapper(
-            mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-        )
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
+    )
 
-        (
-            pix_indexes_for_sub_slim_index_util,
-            sizes,
-            weights,
-        ) = aa.util.mapper.pix_size_weights_voronoi_nn_from(
-            grid=grid_2d_7x7, mesh_grid=source_plane_mesh_grid
-        )
+    (
+        pix_indexes_for_sub_slim_index_util,
+        sizes,
+        weights,
+    ) = aa.util.mapper.pix_size_weights_voronoi_nn_from(
+        grid=grid_2d_7x7, mesh_grid=source_plane_mesh_grid
+    )
 
-        assert (
-            mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
-        ).all()
-
-    except AttributeError:
-        pass
+    assert (
+        mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
+    ).all()

@@ -3,6 +3,7 @@ from typing import Tuple
 import numpy as np
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
+from autoarray.structures.triangles.shape import Shape
 
 
 class ArrayTriangles(AbstractTriangles):
@@ -18,20 +19,20 @@ class ArrayTriangles(AbstractTriangles):
     def means(self):
         return np.mean(self.triangles, axis=1)
 
-    def containing_indices(self, point: Tuple[float, float]) -> np.ndarray:
+    def containing_indices(self, shape: Shape) -> np.ndarray:
         """
-        Find the triangles that contain a given point.
+        Find the triangles that insect with a given shape.
 
         Parameters
         ----------
-        point
-            The point to find the containing triangles for.
+        shape
+            The shape
 
         Returns
         -------
-        The triangles that contain the point.
+        The triangles that intersect the shape.
         """
-        inside = self._containing_mask(point)
+        inside = shape.mask(self.triangles)
 
         return np.where(inside)[0]
 

@@ -2,63 +2,22 @@ import numpy as np
 import pytest
 
 from autoarray.structures.triangles.array import ArrayTriangles
-
-
-@pytest.fixture
-def triangles():
-    return ArrayTriangles(
-        indices=np.array(
-            [
-                [0, 1, 2],
-                [1, 2, 3],
-            ]
-        ),
-        vertices=np.array(
-            [
-                [0.0, 0.0],
-                [1.0, 0.0],
-                [0.0, 1.0],
-                [1.0, 1.0],
-            ]
-        ),
-    )
+from autoarray.structures.triangles.shape import Point
 
 
 @pytest.mark.parametrize(
-    "point, vertices, indices",
+    "point, indices",
     [
         (
-            (0.1, 0.1),
-            np.array(
-                [
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [1.0, 0.0],
-                ]
-            ),
+            Point(0.1, 0.1),
             np.array([0]),
         ),
         (
-            (0.6, 0.6),
-            np.array(
-                [
-                    [0.0, 1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                ]
-            ),
+            Point(0.6, 0.6),
             np.array([1]),
         ),
         (
-            (0.5, 0.5),
-            np.array(
-                [
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                ]
-            ),
+            Point(0.5, 0.5),
             np.array([0, 1]),
         ),
     ],
@@ -66,7 +25,6 @@ def triangles():
 def test_contains_vertices(
     triangles,
     point,
-    vertices,
     indices,
 ):
     containing_indices = triangles.containing_indices(point)

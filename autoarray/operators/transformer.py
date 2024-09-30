@@ -93,6 +93,11 @@ class TransformerDFT(PyLopsOperator):
             2.0 * self.grid.shape_native[1]
         )
 
+        self.matvec_count = 0
+        self.rmatvec_count = 0
+        self.matmat_count = 0
+        self.rmatmat_count = 0
+
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
@@ -198,6 +203,11 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
             2.0 * self.grid.shape_native[1]
         )
+
+        self.matvec_count = 0
+        self.rmatvec_count = 0
+        self.matmat_count = 0
+        self.rmatmat_count = 0
 
     def initialize_plan(self, ratio=2, interp_kernel=(6, 6)):
         if not isinstance(ratio, int):

@@ -113,11 +113,13 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
+        from scipy.spatial import QhullError
+
         try:
             return scipy.spatial.Voronoi(
                 np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
             )
-        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
+        except (ValueError, OverflowError, QhullError) as e:
             raise exc.MeshException() from e
 
     @cached_property
