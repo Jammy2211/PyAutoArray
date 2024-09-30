@@ -256,7 +256,7 @@ def remove_duplicates(new_triangles):
         new_triangles.reshape(-1, 2),
         axis=0,
         return_inverse=True,
-        size=int(1.5 * new_triangles.shape[0]),
+        size=2 * new_triangles.shape[0],
         fill_value=np.nan,
         equal_nan=True,
     )

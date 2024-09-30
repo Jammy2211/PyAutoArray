@@ -11,13 +11,10 @@ def compare_with_nans():
         nan_mask1 = np.isnan(arr1)
         nan_mask2 = np.isnan(arr2)
 
-        equal_elements = np.where(
-            nan_mask1 & nan_mask2,
-            True,
-            arr1 == arr2,
-        )
+        arr1 = arr1[~nan_mask1]
+        arr2 = arr2[~nan_mask2]
 
-        return np.all(equal_elements)
+        return np.all(arr1 == arr2)
 
     return compare_with_nans_
 

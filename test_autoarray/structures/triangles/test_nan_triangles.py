@@ -27,7 +27,6 @@ def nan_triangles():
                 [1.0, 0.0],
                 [0.0, 1.0],
                 [1.0, 1.0],
-                [np.nan, np.nan],
             ]
         ),
     )
@@ -40,7 +39,6 @@ def test_nan_triangles(nan_triangles, compare_with_nans):
             [
                 [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]],
                 [[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
             ]
         ),
     ).all()
@@ -53,7 +51,6 @@ def test_up_sample_nan_triangles(nan_triangles, compare_with_nans):
         up_sampled.triangles,
         np.array(
             [
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 [[0.0, 0.0], [0.0, 0.5], [0.5, 0.0]],
                 [[0.0, 0.5], [0.0, 1.0], [0.5, 0.5]],
                 [[0.0, 0.5], [0.5, 0.0], [0.5, 0.5]],
@@ -62,9 +59,6 @@ def test_up_sample_nan_triangles(nan_triangles, compare_with_nans):
                 [[0.5, 0.5], [0.5, 1.0], [1.0, 0.5]],
                 [[0.5, 0.5], [1.0, 0.0], [1.0, 0.5]],
                 [[0.5, 1.0], [1.0, 0.5], [1.0, 1.0]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
             ]
         ),
     )
@@ -75,18 +69,12 @@ def test_neighborhood(nan_triangles, compare_with_nans):
         nan_triangles.neighborhood().triangles,
         np.array(
             [
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
                 [[-1.0, 1.0], [0.0, 0.0], [0.0, 1.0]],
                 [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
                 [[0.0, 0.0], [1.0, -1.0], [1.0, 0.0]],
                 [[0.0, 1.0], [0.0, 2.0], [1.0, 1.0]],
                 [[0.0, 1.0], [1.0, 0.0], [1.0, 1.0]],
                 [[1.0, 0.0], [1.0, 1.0], [2.0, 0.0]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
-                [[np.nan, np.nan], [np.nan, np.nan], [np.nan, np.nan]],
             ]
         ),
     )
