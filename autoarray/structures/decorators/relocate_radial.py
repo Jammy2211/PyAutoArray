@@ -1,4 +1,4 @@
-from autofit.jax_wrapper import numpy as np, use_jax
+from autoarray.numpy_wrapper import np, use_jax
 from functools import wraps
 
 from typing import Union
