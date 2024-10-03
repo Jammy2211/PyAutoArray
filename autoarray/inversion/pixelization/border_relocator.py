@@ -117,12 +117,12 @@ def sub_border_pixel_slim_indexes_from(
             int(border_pixel)
         ]
 
-        sub_border_pixels[
-            border_1d_index
-        ] = grid_2d_util.furthest_grid_2d_slim_index_from(
-            grid_2d_slim=sub_grid_2d_slim,
-            slim_indexes=sub_border_pixels_of_border_pixel,
-            coordinate=mask_centre,
+        sub_border_pixels[border_1d_index] = (
+            grid_2d_util.furthest_grid_2d_slim_index_from(
+                grid_2d_slim=sub_grid_2d_slim,
+                slim_indexes=sub_border_pixels_of_border_pixel,
+                coordinate=mask_centre,
+            )
         )
 
     return sub_border_pixels

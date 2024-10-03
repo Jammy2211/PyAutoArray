@@ -4,7 +4,6 @@ from . import util
 from . import fixtures
 from . import mock as m
 from .numba_util import profile_func
-from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
@@ -83,6 +82,10 @@ from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
 from .structures.triangles.abstract import AbstractTriangles
+from .structures.triangles.shape import Circle
+from .structures.triangles.shape import Triangle
+from .structures.triangles.shape import Square
+from .structures.triangles.shape import Polygon
 from .structures import decorators as grid_dec
 from .structures.header import Header
 from .layout.region import Region1D

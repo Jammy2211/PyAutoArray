@@ -5,7 +5,7 @@ general:
     zoom_around_mask: true
     disable_zoom_for_fits: true           # If True, the zoom-in around the masked region is disabled when outputting .fits files, which is useful to retain the same dimensions as the input data.
   include_2d:
-    border: true
+    border: false
     mapper_image_plane_mesh_grid: false
     mapper_source_plane_data_grid: false
     mapper_source_plane_mesh_grid: false
@@ -33,7 +33,7 @@ include:
     mask: false
     origin: false
   include_2d:
-    border: true
+    border: false
     mapper_image_plane_mesh_grid: false
     mapper_source_plane_data_grid: false
     mapper_source_plane_mesh_grid: false

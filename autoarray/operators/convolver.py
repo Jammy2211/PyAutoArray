@@ -223,12 +223,12 @@ class Convolver:
                         mask_index_array=self.mask_index_array,
                         kernel_2d=np.array(self.kernel.native[:, :]),
                     )
-                    self.image_frame_1d_indexes[
-                        mask_1d_index, :
-                    ] = image_frame_1d_indexes
-                    self.image_frame_1d_kernels[
-                        mask_1d_index, :
-                    ] = image_frame_1d_kernels
+                    self.image_frame_1d_indexes[mask_1d_index, :] = (
+                        image_frame_1d_indexes
+                    )
+                    self.image_frame_1d_kernels[mask_1d_index, :] = (
+                        image_frame_1d_kernels
+                    )
                     self.image_frame_1d_lengths[mask_1d_index] = image_frame_1d_indexes[
                         image_frame_1d_indexes >= 0
                     ].shape[0]
@@ -265,15 +265,15 @@ class Convolver:
                         mask_index_array=np.array(self.mask_index_array),
                         kernel_2d=np.array(self.kernel.native),
                     )
-                    self.blurring_frame_1d_indexes[
-                        mask_1d_index, :
-                    ] = image_frame_1d_indexes
-                    self.blurring_frame_1d_kernels[
-                        mask_1d_index, :
-                    ] = image_frame_1d_kernels
-                    self.blurring_frame_1d_lengths[
-                        mask_1d_index
-                    ] = image_frame_1d_indexes[image_frame_1d_indexes >= 0].shape[0]
+                    self.blurring_frame_1d_indexes[mask_1d_index, :] = (
+                        image_frame_1d_indexes
+                    )
+                    self.blurring_frame_1d_kernels[mask_1d_index, :] = (
+                        image_frame_1d_kernels
+                    )
+                    self.blurring_frame_1d_lengths[mask_1d_index] = (
+                        image_frame_1d_indexes[image_frame_1d_indexes >= 0].shape[0]
+                    )
                     mask_1d_index += 1
 
     @staticmethod
@@ -317,33 +317,28 @@ class Convolver:
 
         return frame, kernel_frame
 
-    def jax_convolve(self, image, blurring_image, method='auto'):
+    def jax_convolve(self, image, blurring_image, method="auto"):
         slim_to_2D_index_image = jnp.nonzero(
-            jnp.logical_not(self.mask.array),
-            size=image.shape[0]
+            jnp.logical_not(self.mask.array), size=image.shape[0]
         )
         slim_to_2D_index_blurring = jnp.nonzero(
-            jnp.logical_not(self.blurring_mask),
-            size=blurring_image.shape[0]
+            jnp.logical_not(self.blurring_mask), size=blurring_image.shape[0]
         )
         expanded_image_native = jnp.zeros(self.mask.shape)
-        expanded_image_native = expanded_image_native.at[
-            slim_to_2D_index_image
-        ].set(image.array)
-        expanded_image_native = expanded_image_native.at[
-            slim_to_2D_index_blurring
-        ].set(blurring_image.array)
+        expanded_image_native = expanded_image_native.at[slim_to_2D_index_image].set(
+            image.array
+        )
+        expanded_image_native = expanded_image_native.at[slim_to_2D_index_blurring].set(
+            blurring_image.array
+        )
         kernel = np.array(self.kernel.native.array)
         convolve_native = jax.scipy.signal.convolve(
-            expanded_image_native,
-            kernel,
-            mode='same',
-            method=method
+            expanded_image_native, kernel, mode="same", method=method
         )
         convolve_slim = convolve_native[slim_to_2D_index_image]
         return convolve_slim
 
-    def convolve_image(self, image, blurring_image, jax_method='fft'):
+    def convolve_image(self, image, blurring_image, jax_method="fft"):
         """
         For a given 1D array and blurring array, convolve the two using this convolver.
 
@@ -371,14 +366,10 @@ class Convolver:
                 self.blurring_mask is None,
                 lambda _: jax.debug.callback(exception_message),
                 lambda _: None,
-                None
+                None,
             )
 
-            return self.jax_convolve(
-                image,
-                blurring_image,
-                method=jax_method
-            )
+            return self.jax_convolve(image, blurring_image, method=jax_method)
 
         else:
             if self.blurring_mask is None:

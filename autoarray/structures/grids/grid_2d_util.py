@@ -57,6 +57,7 @@ def check_grid_2d(grid_2d: np.ndarray):
 
 def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
     if len(grid_2d.shape) == 2:
+
         def exception_message():
             raise exc.GridException(
                 f"""
@@ -68,17 +69,19 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 The mask number of pixels is {mask_2d.pixels_in_mask}. 
                 """
             )
+
         if use_jax:
             jax.lax.cond(
                 grid_2d.shape[0] != mask_2d.pixels_in_mask,
                 lambda _: jax.debug.callback(exception_message),
                 lambda _: None,
-                None
+                None,
             )
         elif grid_2d.shape[0] != mask_2d.pixels_in_mask:
             exception_message()
 
     elif len(grid_2d.shape) == 3:
+
         def exception_message():
             raise exc.GridException(
                 f"""
@@ -89,12 +92,13 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 The mask shape_native is {mask_2d.shape_native}.
                 """
             )
+
         if use_jax:
             jax.lax.cond(
                 (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native,
                 lambda _: jax.debug.callback(exception_message),
                 lambda _: None,
-                None
+                None,
             )
         elif (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native:
             exception_message()
@@ -283,8 +287,12 @@ def grid_2d_slim_via_mask_from(
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
                 if use_jax:
-                    grid_slim = grid_slim.at[index, 0].set(-(y - centres_scaled[0]) * pixel_scales[0])
-                    grid_slim = grid_slim.at[index, 1].set((x - centres_scaled[1]) * pixel_scales[1])
+                    grid_slim = grid_slim.at[index, 0].set(
+                        -(y - centres_scaled[0]) * pixel_scales[0]
+                    )
+                    grid_slim = grid_slim.at[index, 1].set(
+                        (x - centres_scaled[1]) * pixel_scales[1]
+                    )
                 else:
                     grid_slim[index, 0] = -(y - centres_scaled[0]) * pixel_scales[0]
                     grid_slim[index, 1] = (x - centres_scaled[1]) * pixel_scales[1]
@@ -786,9 +794,7 @@ def grid_2d_slim_upscaled_from(
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    grid_2d_slim_upscaled = np.zeros(
-        shape=(grid_slim.shape[0] * upscale_factor**2, 2)
-    )
+    grid_2d_slim_upscaled = np.zeros(shape=(grid_slim.shape[0] * upscale_factor**2, 2))
 
     upscale_index = 0
 

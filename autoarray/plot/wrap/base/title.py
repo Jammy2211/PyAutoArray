@@ -4,7 +4,7 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Title(AbstractMatWrap):
-    def __init__(self, prefix: str = None, disable_log10_label : bool = False, **kwargs):
+    def __init__(self, prefix: str = None, disable_log10_label: bool = False, **kwargs):
         """
         The settings used to customize the figure's title.
 

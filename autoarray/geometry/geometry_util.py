@@ -390,10 +390,12 @@ def transform_grid_2d_to_reference_frame(
     theta_coordinate_to_profile = np.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - np.radians(angle)
-    return np.vstack([
-        radius * np.sin(theta_coordinate_to_profile),
-        radius * np.cos(theta_coordinate_to_profile)
-    ]).T
+    return np.vstack(
+        [
+            radius * np.sin(theta_coordinate_to_profile),
+            radius * np.cos(theta_coordinate_to_profile),
+        ]
+    ).T
 
 
 def transform_grid_2d_from_reference_frame(

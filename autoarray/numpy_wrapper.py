@@ -9,7 +9,6 @@ if use_jax:
         import jax
         from jax import numpy as np, jit
 
-
         print("JAX mode enabled")
     except ImportError:
         raise ImportError(
