@@ -336,6 +336,55 @@ class Imaging(AbstractDataset):
 
         return dataset
 
+    def apply_noise_scaling(self, mask: Mask2D, noise_value : float = 1e8) -> "Imaging":
+        """
+        Apply a mask to the imaging dataset using noise scaling, whereby the mask increases noise-map values to be
+        extremely large such that they are never included in the likelihood calculation, but it does
+        not remove the image data values, which are set to zero.
+
+        For certain modeling tasks, the mask defines regions of the data that are used to calculate the likelihood.
+        For example, all data points in a mask may be used to create a pixel-grid, which is used in the likelihood.
+        When data points are moved via `apply_mask`, they would be omitted from this grid entirely, which would
+        lead to an incorrect likelihood calculation. Noise scaling retains these data points in the likelihood
+        calculation, but ensures they do not contribute to the fit.
+
+        This function can only be applied before actual masking.
+
+        Parameters
+        ----------
+        mask
+            The 2D mask that is applied to the image and noise-map, to scale the noise-map values to large values.
+        """
+        data = np.where(np.invert(mask), 0.0, self.data.native)
+        data = Array2D.no_mask(
+            values=data,
+            shape_native=self.data.shape_native,
+            pixel_scales=self.data.pixel_scales,
+        )
+
+        noise_map = self.noise_map.native
+        noise_map[mask == False] = noise_value
+        noise_map = Array2D.no_mask(
+            values=noise_map,
+            shape_native=self.data.shape_native,
+            pixel_scales=self.data.pixel_scales,
+        )
+
+        dataset = Imaging(
+            data=data,
+            noise_map=noise_map,
+            psf=self.psf,
+            noise_covariance_matrix=self.noise_covariance_matrix,
+            over_sampling=self.over_sampling,
+            pad_for_convolver=False,
+        )
+
+        logger.info(
+            f"IMAGING - Data noise scaling applied, a total of {mask.pixels_in_mask} pixels were scaled to large noise values."
+        )
+
+        return dataset
+
     def apply_over_sampling(
         self,
         over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
