@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
-from autoarray.preloads import Preloads
+
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
@@ -62,7 +62,6 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,
-        preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
@@ -95,9 +94,6 @@ class Rectangular(AbstractMesh):
             Not used for a rectangular pixelization.
         adapt_data
             Not used for a rectangular pixelization.
-        preloads
-            Object which may contain preloaded arrays of quantities computed in the pixelization, which are passed via
-            this object speed up the calculation.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
@@ -107,7 +103,6 @@ class Rectangular(AbstractMesh):
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
-            preloads=preloads,
         )
         mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
 
@@ -117,7 +112,6 @@ class Rectangular(AbstractMesh):
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 

@@ -31,7 +31,6 @@ class AbstractInversion:
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Optional["Preloads"] = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -70,16 +69,9 @@ class AbstractInversion:
             input dataset's data and whose values are solved for via the inversion.
         settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        preloads
-            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
-            for example certain matrices used by the linear algebra could be preloaded.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
-
-        from autoarray.preloads import Preloads
-
-        preloads = preloads or Preloads()
 
         # try:
         #     import numba
@@ -98,7 +90,6 @@ class AbstractInversion:
 
         self.settings = settings
 
-        self.preloads = preloads
         self.run_time_dict = run_time_dict
 
     @property

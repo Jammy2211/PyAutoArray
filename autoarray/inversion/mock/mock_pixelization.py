@@ -29,7 +29,6 @@ class MockPixelization(Pixelization):
         image_plane_mesh_grid=None,
         adapt_data=None,
         settings=None,
-        preloads=None,
         run_time_dict=None,
     ):
         return self.mapper

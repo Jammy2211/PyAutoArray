@@ -14,7 +14,6 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.inversion import inversion_util
@@ -28,7 +27,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -63,7 +61,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 

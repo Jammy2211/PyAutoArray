@@ -5,7 +5,6 @@ from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
 
 
 class MockInversionImaging(InversionImagingMapping):
@@ -19,7 +18,6 @@ class MockInversionImaging(InversionImagingMapping):
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
     ):
         dataset = DatasetInterface(
             data=data,
@@ -31,7 +29,6 @@ class MockInversionImaging(InversionImagingMapping):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
         )
 
         self._operated_mapping_matrix = operated_mapping_matrix
@@ -78,7 +75,6 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         linear_obj_list=None,
         curvature_matrix_mapper_diag=None,
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
     ):
         dataset = DatasetInterface(
             data=data,
@@ -91,7 +87,6 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
             w_tilde=w_tilde or MockWTildeImaging(),
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
         )
 
         self.__curvature_matrix_mapper_diag = curvature_matrix_mapper_diag

@@ -22,7 +22,6 @@ class AbstractInversionImaging(AbstractInversion):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads=None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -65,22 +64,14 @@ class AbstractInversionImaging(AbstractInversion):
             input dataset's data and whose values are solved for via the inversion.
         settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        preloads
-            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
-            for example certain matrices used by the linear algebra could be preloaded.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
-
-        from autoarray.preloads import Preloads
-
-        preloads = preloads or Preloads()
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 

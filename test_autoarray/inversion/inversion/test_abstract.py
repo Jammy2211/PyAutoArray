@@ -538,16 +538,6 @@ def test__regularization_term():
     assert inversion.regularization_term == 34.0
 
 
-def test__preload_of_log_det_regularization_term_overwrites_calculation():
-    inversion = aa.m.MockInversion(
-        linear_obj_list=[
-            aa.m.MockLinearObj(parameters=3, regularization=aa.m.MockRegularization())
-        ],
-        preloads=aa.Preloads(log_det_regularization_matrix_term=1.0),
-    )
-
-    assert inversion.log_det_regularization_matrix_term == 1.0
-
 
 def test__determinant_of_positive_definite_matrix_via_cholesky():
     matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])

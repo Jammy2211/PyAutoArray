@@ -24,7 +24,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads=None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -55,7 +54,6 @@ class InversionImagingMapping(AbstractInversionImaging):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
