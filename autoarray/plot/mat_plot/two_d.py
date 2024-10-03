@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Optional, List, Union
+from typing import Optional, List, Tuple, Union
 
 from autoconf import conf
 
@@ -216,6 +216,52 @@ class MatPlot2D(AbstractMatPlot):
 
         self.is_for_subplot = False
 
+    def zoomed_array_and_extent_from(self, array) -> Tuple[np.ndarray, Tuple]:
+        """
+        Returns the array and extent of the array, zoomed around the mask of the array, if the config file is set to
+        do this.
+
+        Many plots zoom in around the mask of an array, to emphasize the signal of the data and not waste
+        plotting space on empty pixels. This function computes the zoomed array and extent of this array, given the
+        array.
+
+        If the mask is all false, the array is returned without zooming by disabling the buffer.
+
+        Parameters
+        ----------
+        array
+
+        Returns
+        -------
+
+        """
+
+        if array.mask.is_all_false:
+            buffer = 0
+        else:
+            buffer = 1
+
+        zoom_around_mask = conf.instance["visualize"]["general"]["general"][
+            "zoom_around_mask"
+        ]
+
+        if (
+            self.output.format == "fits"
+            and conf.instance["visualize"]["general"]["general"][
+                "disable_zoom_for_fits"
+            ]
+        ):
+            zoom_around_mask = False
+
+        if zoom_around_mask:
+            extent = array.extent_of_zoomed_array(buffer=buffer)
+            array = array.zoomed_around_mask(buffer=buffer)
+
+        else:
+            extent = array.geometry.extent
+
+        return array, extent
+
     def plot_array(
         self,
         array: Array2D,
@@ -257,30 +303,7 @@ class MatPlot2D(AbstractMatPlot):
 
         #        array = array.resized_from(new_shape=(401, 401))
 
-        if array.mask.is_all_false:
-            buffer = 0
-        else:
-            buffer = 1
-
-        zoom_around_mask = False
-
-        if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
-            zoom_around_mask = True
-
-        if (
-            self.output.format == "fits"
-            and conf.instance["visualize"]["general"]["general"][
-                "disable_zoom_for_fits"
-            ]
-        ):
-            zoom_around_mask = False
-
-        if zoom_around_mask:
-            extent = array.extent_of_zoomed_array(buffer=buffer)
-            array = array.zoomed_around_mask(buffer=buffer)
-
-        else:
-            extent = array.geometry.extent
+        array, extent = self.zoomed_array_and_extent_from(array=array)
 
         ax = None
 

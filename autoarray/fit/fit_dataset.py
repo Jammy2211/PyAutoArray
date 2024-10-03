@@ -17,7 +17,7 @@ from autoarray.numba_util import profile_func
 from autoarray import type as ty
 
 
-class AbstractFitInversion(ABC):
+class AbstractFit(ABC):
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
@@ -109,7 +109,7 @@ class AbstractFitInversion(ABC):
         )
 
 
-class FitDataset(AbstractFitInversion):
+class FitDataset(AbstractFit):
     # noinspection PyUnresolvedReferences
     def __init__(
         self,

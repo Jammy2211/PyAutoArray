@@ -160,8 +160,6 @@ def test__from_extent():
 def test__uniform():
     grid_2d = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
 
-    print(grid_2d.native)
-
     assert type(grid_2d) == aa.Grid2D
     assert (
         grid_2d.native

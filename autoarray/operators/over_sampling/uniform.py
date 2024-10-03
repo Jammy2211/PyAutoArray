@@ -1,4 +1,4 @@
-import numpy as np
+from autoarray.numpy_wrapper import np
 from typing import List, Tuple, Union
 
 from autoconf import conf
@@ -188,7 +188,7 @@ class OverSamplingUniform(AbstractOverSampling):
         sub_size = np.zeros(grid.shape_slim)
 
         for centre in centre_list:
-            radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
+            radial_grid = grid.distances_to_coordinate_from(coordinate=centre).array
 
             sub_size_of_centre = over_sample_util.sub_size_radial_bins_from(
                 radial_grid=np.array(radial_grid),
@@ -379,7 +379,7 @@ class OverSamplerUniform(AbstractOverSampler):
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size).astype("int"),
+            sub_size=np.array(self.sub_size.array).astype("int"),
             origin=self.mask.origin,
         )
 
@@ -411,7 +411,7 @@ class OverSamplerUniform(AbstractOverSampler):
         binned_array_2d = over_sample_util.binned_array_2d_from(
             array_2d=np.array(array),
             mask_2d=np.array(self.mask),
-            sub_size=np.array(self.sub_size),
+            sub_size=np.array(self.sub_size).astype("int"),
         )
 
         return Array2D(

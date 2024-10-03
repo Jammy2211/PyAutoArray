@@ -1,5 +1,5 @@
 from typing import Tuple, Union
-import numpy as np
+from autoarray.numpy_wrapper import np, use_jax
 
 from autoarray import numba_util
 from autoarray import type as ty
@@ -382,15 +382,18 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    shifted_grid_2d = grid_2d - centre
-    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, 1))
+    if use_jax:
+        shifted_grid_2d = grid_2d.array - np.array(centre)
+    else:
+        shifted_grid_2d = grid_2d - np.array(centre)
+    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, axis=1))
     theta_coordinate_to_profile = np.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - np.radians(angle)
-    return np.vstack(
-        radius
-        * (np.sin(theta_coordinate_to_profile), np.cos(theta_coordinate_to_profile))
-    ).T
+    return np.vstack([
+        radius * np.sin(theta_coordinate_to_profile),
+        radius * np.cos(theta_coordinate_to_profile)
+    ]).T
 
 
 def transform_grid_2d_from_reference_frame(

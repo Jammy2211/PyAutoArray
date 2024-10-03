@@ -1,32 +1,39 @@
-import pytest
+from autoarray.numpy_wrapper import numpy as np
+from autoarray.structures.triangles.array import ArrayTriangles
 
-from autoarray import Grid2D
-from autoarray.structures.triangles.triangle import Triangle
-from autoarray.structures.triangles.triangles import Triangles
+
+import pytest
 
 
 @pytest.fixture
-def right_triangle():
-    return Triangle(
-        (0.0, 0.0),
-        (1.0, 0.0),
-        (0.0, 1.0),
-    )
+def compare_with_nans():
+    def compare_with_nans_(arr1, arr2):
+        nan_mask1 = np.isnan(arr1)
+        nan_mask2 = np.isnan(arr2)
+
+        arr1 = arr1[~nan_mask1]
+        arr2 = arr2[~nan_mask2]
+
+        return np.all(arr1 == arr2)
+
+    return compare_with_nans_
 
 
-@pytest.fixture(name="triangles")
-def make_triangles():
-    grid = Grid2D.uniform(
-        shape_native=(3, 3),
-        pixel_scales=0.5,
-    )
-    return Triangles.for_grid(grid=grid)
-
-
-@pytest.fixture(name="triangle")
-def make_triangle():
-    return Triangle(
-        (0.0, 0.0),
-        (1.0, 0.0),
-        (0.5, 3**0.5 / 2),
+@pytest.fixture
+def triangles():
+    return ArrayTriangles(
+        indices=np.array(
+            [
+                [0, 1, 2],
+                [1, 2, 3],
+            ]
+        ),
+        vertices=np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [1.0, 1.0],
+            ]
+        ),
     )
