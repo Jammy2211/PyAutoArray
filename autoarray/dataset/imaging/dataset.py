@@ -336,7 +336,7 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_noise_scaling(self, mask: Mask2D) -> "Imaging":
+    def apply_noise_scaling(self, mask: Mask2D, noise_value : float = 1e8) -> "Imaging":
         """
         Apply a mask to the imaging dataset using noise scaling, whereby the mask increases noise-map values to be
         extremely large such that they are never included in the likelihood calculation, but it does
@@ -363,7 +363,7 @@ class Imaging(AbstractDataset):
         )
 
         noise_map = self.noise_map.native
-        noise_map[mask == False] = 1.0e8
+        noise_map[mask == False] = noise_value
         noise_map = Array2D.no_mask(
             values=noise_map,
             shape_native=self.data.shape_native,
