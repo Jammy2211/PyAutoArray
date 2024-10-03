@@ -356,11 +356,19 @@ class Imaging(AbstractDataset):
             The 2D mask that is applied to the image and noise-map, to scale the noise-map values to large values.
         """
         data = np.where(np.invert(mask), 0.0, self.data.native)
-        data = Array2D(values=data, mask=mask)
+        data = Array2D.no_mask(
+            values=data,
+            shape_native=self.data.shape_native,
+            pixel_scales=self.data.pixel_scales,
+        )
 
         noise_map = self.noise_map.native
         noise_map[mask == False] = 1.0e8
-        noise_map = Array2D(values=noise_map, mask=mask)
+        noise_map = Array2D.no_mask(
+            values=noise_map,
+            shape_native=self.data.shape_native,
+            pixel_scales=self.data.pixel_scales,
+        )
 
         dataset = Imaging(
             data=data,
