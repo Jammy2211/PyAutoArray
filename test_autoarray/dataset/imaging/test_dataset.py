@@ -149,6 +149,15 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
     assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
 
 
+def test__apply_noise_scaling(imaging_7x7, mask_2d_7x7):
+    masked_imaging_7x7 = imaging_7x7.apply_noise_scaling(mask=mask_2d_7x7)
+
+    print(masked_imaging_7x7.data.native)
+
+    assert masked_imaging_7x7.data.native[4, 4] == 0.0
+    assert masked_imaging_7x7.noise_map.native[4, 4] == 1e8
+
+
 def test__apply_mask__noise_covariance_matrix():
     image = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=(1.0, 1.0))
 
