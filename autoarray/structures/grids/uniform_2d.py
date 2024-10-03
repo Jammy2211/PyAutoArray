@@ -845,10 +845,10 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
-        squared_distance = self.squared_distances_to_coordinate_from(coordinate=coordinate)
-        distances = np.sqrt(
-            squared_distance.array
+        squared_distance = self.squared_distances_to_coordinate_from(
+            coordinate=coordinate
         )
+        distances = np.sqrt(squared_distance.array)
         return Array2D(values=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(

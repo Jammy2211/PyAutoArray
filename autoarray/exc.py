@@ -106,7 +106,6 @@ class PlottingException(Exception):
     pass
 
 
-
 class ProfilingException(Exception):
     """
     Raises exceptions associated with in-built profiling tools (e.g. the `profile_func` decorator).

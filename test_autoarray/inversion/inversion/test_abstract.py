@@ -319,7 +319,6 @@ def test__regularization_matrix():
     assert inversion.regularization_matrix == pytest.approx(regularization_matrix)
 
 
-
 def test__reconstruction_reduced():
     linear_obj_list = [
         aa.m.MockLinearObj(parameters=2, regularization=aa.m.MockRegularization()),
@@ -536,7 +535,6 @@ def test__regularization_term():
     #                                    [5.0]
 
     assert inversion.regularization_term == 34.0
-
 
 
 def test__determinant_of_positive_definite_matrix_via_cholesky():
