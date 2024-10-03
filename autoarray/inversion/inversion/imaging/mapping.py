@@ -70,9 +70,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
         """
 
-        if self.preloads.data_vector_mapper is not None:
-            return self.preloads.data_vector_mapper
-
         if not self.has(cls=AbstractMapper):
             return None
 
@@ -117,16 +114,8 @@ class InversionImagingMapping(AbstractInversionImaging):
         The calculation is described in more detail in `inversion_util.data_vector_via_blurred_mapping_matrix_from`.
         """
 
-        if self.preloads.data_vector_mapper is not None:
-            return self.preloads.data_vector_mapper
-
-        if self.preloads.operated_mapping_matrix is not None:
-            operated_mapping_matrix = self.preloads.operated_mapping_matrix
-        else:
-            operated_mapping_matrix = self.operated_mapping_matrix
-
         return inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=operated_mapping_matrix,
+            blurred_mapping_matrix=self.operated_mapping_matrix,
             image=np.array(self.data),
             noise_map=np.array(self.noise_map),
         )
@@ -142,9 +131,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         This method computes the diagonal entries of all mapper objects in the `curvature_matrix`. It is separate from
         other calculations to enable preloading of this calculation.
         """
-
-        if self.preloads.curvature_matrix_mapper_diag is not None:
-            return self.preloads.curvature_matrix_mapper_diag
 
         if not self.has(cls=AbstractMapper):
             return None
@@ -200,11 +186,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-
-        if self.preloads.curvature_matrix is not None:
-            # Need to copy because of how curvature_reg_matirx overwrites memory.
-
-            return copy.copy(self.preloads.curvature_matrix)
 
         return inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix,

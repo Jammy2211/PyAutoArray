@@ -47,12 +47,9 @@ class AbstractMesh:
             Contains quantities which may already be computed and can be preloaded to speed up calculations, in this
             case the relocated grid.
         """
-        if preloads.relocated_grid is None:
-            if border_relocator is not None:
-                return border_relocator.relocated_grid_from(grid=source_plane_data_grid)
-            return source_plane_data_grid
-
-        return preloads.relocated_grid
+        if border_relocator is not None:
+            return border_relocator.relocated_grid_from(grid=source_plane_data_grid)
+        return source_plane_data_grid
 
     @profile_func
     def relocated_mesh_grid_from(

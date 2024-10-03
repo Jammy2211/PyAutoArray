@@ -322,10 +322,6 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-
-        if self.preloads.operated_mapping_matrix is not None:
-            return self.preloads.operated_mapping_matrix
-
         return np.hstack(self.operated_mapping_matrix_list)
 
     @cached_property
@@ -356,9 +352,6 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
-        if self.preloads.regularization_matrix is not None:
-            return self.preloads.regularization_matrix
-
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
@@ -734,9 +727,6 @@ class AbstractInversion:
 
         if not self.has(cls=AbstractRegularization):
             return 0.0
-
-        if self.preloads.log_det_regularization_matrix_term is not None:
-            return self.preloads.log_det_regularization_matrix_term
 
         try:
             lu = splu(csc_matrix(self.regularization_matrix_reduced))

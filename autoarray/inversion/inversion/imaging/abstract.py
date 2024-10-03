@@ -140,12 +140,6 @@ class AbstractInversionImaging(AbstractInversion):
         A dictionary mapping every linear function object to its operated mapping matrix.
         """
 
-        if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
-            return self._updated_cls_key_dict_from(
-                cls=AbstractLinearObjFuncList,
-                preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict,
-            )
-
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
@@ -192,12 +186,6 @@ class AbstractInversionImaging(AbstractInversion):
             A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum
             of the values of a linear object function convolved with the PSF kernel at the data pixel.
         """
-        if self.preloads.data_linear_func_matrix_dict is not None:
-            return self._updated_cls_key_dict_from(
-                cls=AbstractLinearObjFuncList,
-                preload_dict=self.preloads.data_linear_func_matrix_dict,
-            )
-
         linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
 
         data_linear_func_matrix_dict = {}
@@ -237,13 +225,6 @@ class AbstractInversionImaging(AbstractInversion):
         -------
         A dictionary mapping every mapper object to its operated mapping matrix.
         """
-
-        if self.preloads.mapper_operated_mapping_matrix_dict is not None:
-            return self._updated_cls_key_dict_from(
-                cls=AbstractMapper,
-                preload_dict=self.preloads.mapper_operated_mapping_matrix_dict,
-            )
-
         mapper_operated_mapping_matrix_dict = {}
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
