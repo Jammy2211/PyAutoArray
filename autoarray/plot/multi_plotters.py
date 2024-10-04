@@ -11,36 +11,34 @@ class MultiFigurePlotter:
         subplot_shape: Tuple[int, int] = None,
         subplot_title: Optional[str] = None,
     ):
-        
+
         self.plotter_list = plotter_list
         self.subplot_shape = subplot_shape
         self.subplot_title = subplot_title
 
-    def subplot_of_figure(self, func_name, figure_name, filename_suffix="", **kwargs):
-        number_subplots = len(self.plotter_list)
+    def setup_mat_plot_subplot(self, plotter, number_subplots, subplot_index):
 
-        self.plotter_list[0].open_subplot_figure(
-            number_subplots=number_subplots, subplot_shape=self.subplot_shape
-        )
+        try:
+            plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
+            plotter.mat_plot_2d.number_subplots = number_subplots
+            plotter.mat_plot_2d.subplot_shape = self.subplot_shape
+            plotter.mat_plot_2d.subplot_index = subplot_index
+        except AttributeError:
+            plotter.mat_plot_1d.set_for_subplot(is_for_subplot=True)
+            plotter.mat_plot_1d.number_subplots = number_subplots
+            plotter.mat_plot_1d.subplot_shape = self.subplot_shape
+            plotter.mat_plot_1d.subplot_index = subplot_index
 
-        for i, plotter in enumerate(self.plotter_list):
-            try:
-                plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
-                plotter.mat_plot_2d.number_subplots = number_subplots
-                plotter.mat_plot_2d.subplot_shape = self.subplot_shape
-                plotter.mat_plot_2d.subplot_index = i + 1
-            except AttributeError:
-                plotter.mat_plot_1d.set_for_subplot(is_for_subplot=True)
-                plotter.mat_plot_1d.number_subplots = number_subplots
-                plotter.mat_plot_1d.subplot_shape = self.subplot_shape
-                plotter.mat_plot_1d.subplot_index = i + 1
+    def plot_via_func(self, plotter, figure_name, func_name, kwargs):
 
-            func = getattr(plotter, func_name)
+        func = getattr(plotter, func_name)
 
-            if figure_name is None:
-                func(**{**{}, **kwargs})
-            else:
-                func(**{**{figure_name: True}, **kwargs})
+        if figure_name is None:
+            func(**{**{}, **kwargs})
+        else:
+            func(**{**{figure_name: True}, **kwargs})
+
+    def output_subplot(self, figure_name, filename_suffix=""):
 
         if self.plotter_list[0].mat_plot_1d is not None:
             self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
@@ -51,6 +49,27 @@ class MultiFigurePlotter:
                 auto_filename=f"subplot_{figure_name}{filename_suffix}"
             )
         self.plotter_list[0].close_subplot_figure()
+
+    def subplot_of_figure(self, func_name, figure_name, filename_suffix="", **kwargs):
+        number_subplots = len(self.plotter_list)
+
+        self.plotter_list[0].open_subplot_figure(
+            number_subplots=number_subplots, subplot_shape=self.subplot_shape
+        )
+
+        for i, plotter in enumerate(self.plotter_list):
+
+            self.setup_mat_plot_subplot(
+                plotter=plotter,
+                number_subplots=number_subplots,
+                subplot_index=i + 1
+            )
+
+            self.plot_via_func(
+                plotter=plotter, figure_name=figure_name, func_name=func_name, kwargs=kwargs
+            )
+
+        self.output_subplot(figure_name=figure_name, filename_suffix=filename_suffix)
 
     def subplot_of_figures_multi(self, func_name_list, figure_name_list, filename_suffix="", **kwargs):
         number_subplots = len(self.plotter_list) * len(func_name_list)
@@ -62,38 +81,17 @@ class MultiFigurePlotter:
         for i, plotter in enumerate(self.plotter_list):
             for j, (func_name, figure_name) in enumerate(zip(func_name_list, figure_name_list)):
 
-                subplot_index = (i * len(func_name_list)) + j + 1
+                self.setup_mat_plot_subplot(
+                    plotter=plotter,
+                    number_subplots=number_subplots,
+                    subplot_index=(i * len(func_name_list)) + j + 1
+                )
 
-                print(subplot_index)
+                self.plot_via_func(
+                    plotter=plotter, figure_name=figure_name, func_name=func_name, kwargs=kwargs
+                )
 
-                try:
-                    plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
-                    plotter.mat_plot_2d.number_subplots = number_subplots
-                    plotter.mat_plot_2d.subplot_shape = self.subplot_shape
-                    plotter.mat_plot_2d.subplot_index = subplot_index
-
-                except AttributeError:
-                    plotter.mat_plot_1d.set_for_subplot(is_for_subplot=True)
-                    plotter.mat_plot_1d.number_subplots = number_subplots
-                    plotter.mat_plot_1d.subplot_shape = self.subplot_shape
-                    plotter.mat_plot_1d.subplot_index = subplot_index
-
-                func = getattr(plotter, func_name)
-
-                if figure_name is None:
-                    func(**{**{}, **kwargs})
-                else:
-                    func(**{**{figure_name: True}, **kwargs})
-
-        if self.plotter_list[0].mat_plot_1d is not None:
-            self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
-                auto_filename=f"subplot_{filename_suffix}"
-            )
-        if self.plotter_list[0].mat_plot_2d is not None:
-            self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
-                auto_filename=f"subplot_{filename_suffix}"
-            )
-        self.plotter_list[0].close_subplot_figure()
+        self.output_subplot(figure_name="", filename_suffix=filename_suffix)
 
     def subplot_of_multi_yx_1d(self, filename_suffix="", **kwargs):
         number_subplots = len(self.plotter_list)
