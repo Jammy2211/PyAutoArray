@@ -150,7 +150,9 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
 
 
 def test__apply_noise_scaling(imaging_7x7, mask_2d_7x7):
-    masked_imaging_7x7 = imaging_7x7.apply_noise_scaling(mask=mask_2d_7x7, noise_value=1e5)
+    masked_imaging_7x7 = imaging_7x7.apply_noise_scaling(
+        mask=mask_2d_7x7, noise_value=1e5
+    )
 
     assert masked_imaging_7x7.data.native[4, 4] == 0.0
     assert masked_imaging_7x7.noise_map.native[4, 4] == 1e5
