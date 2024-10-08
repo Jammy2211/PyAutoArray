@@ -640,4 +640,3 @@ def test__errors_and_errors_with_covariance():
         np.array([[2.5, -1.0, -0.5], [-1.0, 1.0, 0.0], [-0.5, 0.0, 0.5]]), 1.0e-2
     )
     assert inversion.errors == pytest.approx(np.array([2.5, 1.0, 0.5]), 1.0e-3)
-

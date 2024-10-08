@@ -1,4 +1,3 @@
-
 import numpy as np
 from typing import List, Optional, Tuple
 
@@ -7,10 +6,9 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.inversion.inversion import inversion_util
 
+
 class MapperValued:
-
     def __init__(self, mapper, values):
-
         self.mapper = mapper
         self.values = values
 
@@ -43,22 +41,19 @@ class MapperValued:
             is input.
         """
         return self.mapper.interpolated_array_from(
-                values=self.values,
-                shape_native=shape_native,
-                extent=extent,
-            )
+            values=self.values,
+            shape_native=shape_native,
+            extent=extent,
+        )
 
     def max_pixel_list_from(
         self, total_pixels: int = 1, filter_neighbors: bool = False
     ) -> List[List[int]]:
-
         max_pixel_list = []
 
         pixel_list = []
 
-        pixels_ascending_list = list(
-            reversed(np.argsort(self.values))
-        )
+        pixels_ascending_list = list(reversed(np.argsort(self.values)))
 
         for pixel in range(total_pixels):
             pixel_index = pixels_ascending_list[pixel]
@@ -70,9 +65,7 @@ class MapperValued:
                 pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
 
                 brightness = self.values[pixel_index]
-                brightness_neighbors = self.values[
-                    pixel_neighbors
-                ]
+                brightness_neighbors = self.values[pixel_neighbors]
 
                 if brightness < np.max(brightness_neighbors):
                     add_pixel = False
@@ -86,7 +79,6 @@ class MapperValued:
 
     @property
     def max_pixel_centre(self):
-
         max_pixel = np.argmax(self.values)
 
         max_pixel_centre = Grid2DIrregular(
@@ -96,20 +88,21 @@ class MapperValued:
         return max_pixel_centre
 
     def magnification_via_interpolation_from(self) -> List[float]:
-
         magnification_list = []
 
         interpolated_reconstruction = self.interpolated_array_from(
             shape_native=(401, 401)
         )
 
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                    mapping_matrix=self.mapper.mapping_matrix,
-                    reconstruction=self.values,
-                )
-        
+        mapped_reconstructed_image = (
+            inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+                mapping_matrix=self.mapper.mapping_matrix,
+                reconstruction=self.values,
+            )
+        )
+
         dsgfgfd
-        
+
         magnification_list.append(
             np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction)
         )
