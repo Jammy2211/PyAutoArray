@@ -4,7 +4,7 @@ import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
-from typing import Dict, List, Optional, Tuple, Type, Union
+from typing import Dict, List, Optional, Type, Union
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
@@ -17,7 +17,6 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray import exc
@@ -761,43 +760,6 @@ class AbstractInversion:
     def errors_with_covariance(self) -> np.ndarray:
         return np.linalg.inv(self.curvature_reg_matrix)
 
-    def interpolated_reconstruction_list_from(
-        self,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> List[Array2D]:
-        """
-        The reconstruction of an `Inversion` can be on an irregular pixelization (e.g. a Delaunay triangulation,
-        Voronoi mesh).
-
-        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
-        this irregular grid.
-
-        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
-        The routine that performs the interpolation is specific to each pixelization and contained in its
-        corresponding `Mapper` and `Grid2DMesh` objects, which are called by this function.
-
-        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
-        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
-        be returned by instead inputting the optional `shape_scaled` tuple.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
-        extent
-            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
-            is input.
-        """
-        return [
-            mapper.interpolated_array_from(
-                values=self.reconstruction_dict[mapper],
-                shape_native=shape_native,
-                extent=extent,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        ]
-
     @property
     def errors(self):
         return np.diagonal(self.errors_with_covariance)
@@ -805,105 +767,6 @@ class AbstractInversion:
     @property
     def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
         return self.source_quantity_dict_from(source_quantity=self.errors)
-
-    def interpolated_errors_list_from(
-        self,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> List[Array2D]:
-        """
-        Analogous to the function `interpolated_reconstruction_list_from()` but for the error in every reconstructed
-        pixel.
-
-        See this function for a full description.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape in pixels of the interpolated errors, which is always returned using square pixels.
-        extent
-            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
-            is input.
-        """
-        return [
-            mapper.interpolated_array_from(
-                values=self.errors_dict[mapper],
-                shape_native=shape_native,
-                extent=extent,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        ]
-
-    @property
-    def magnification_list(self) -> List[float]:
-        magnification_list = []
-
-        interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(
-            shape_native=(401, 401)
-        )
-
-        for i, linear_obj in enumerate(self.linear_obj_list):
-            mapped_reconstructed_image = self.mapped_reconstructed_image_dict[
-                linear_obj
-            ]
-            interpolated_reconstruction = interpolated_reconstruction_list[i]
-
-            magnification_list.append(
-                np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction)
-            )
-
-        return magnification_list
-
-    def brightest_pixel_list_from(
-        self, total_pixels: int = 1, filter_neighbors: bool = False
-    ) -> List[List[int]]:
-        brightest_pixel_list = []
-
-        for mapper in self.cls_list_from(cls=AbstractMapper):
-            pixel_list = []
-
-            pixels_ascending_list = list(
-                reversed(np.argsort(self.reconstruction_dict[mapper]))
-            )
-
-            for pixel in range(total_pixels):
-                pixel_index = pixels_ascending_list[pixel]
-
-                add_pixel = True
-
-                if filter_neighbors:
-                    pixel_neighbors = mapper.neighbors[pixel_index]
-                    pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
-
-                    brightness = self.reconstruction_dict[mapper][pixel_index]
-                    brightness_neighbors = self.reconstruction_dict[mapper][
-                        pixel_neighbors
-                    ]
-
-                    if brightness < np.max(brightness_neighbors):
-                        add_pixel = False
-
-                if add_pixel:
-                    pixel_list.append(pixel_index)
-
-            brightest_pixel_list.append(pixel_list)
-
-        return brightest_pixel_list
-
-    @property
-    def brightest_pixel_centre_list(self):
-        brightest_pixel_centre_list = []
-
-        for mapper in self.cls_list_from(cls=AbstractMapper):
-            brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
-
-            centre = Grid2DIrregular(
-                values=[mapper.source_plane_mesh_grid[brightest_reconstruction_pixel]]
-            )
-
-            brightest_pixel_centre_list.append(centre)
-
-        return brightest_pixel_centre_list
 
     def regularization_weights_from(self, index: int) -> np.ndarray:
         linear_obj = self.linear_obj_list[index]
