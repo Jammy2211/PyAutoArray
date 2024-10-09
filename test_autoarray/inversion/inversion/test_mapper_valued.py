@@ -253,6 +253,7 @@ def test__magnification_map_from():
         source_plane_mesh_grid=source_plane_mesh_grid,
         mask=mask,
         mapping_matrix=np.ones((12, 10)),
+        over_sampler=aa.OverSamplerUniform(mask=mask, sub_size=2),
     )
 
     mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
