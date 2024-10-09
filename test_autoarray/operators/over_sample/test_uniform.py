@@ -38,6 +38,20 @@ def test__from_sub_size_int():
     )
 
 
+def test__sub_pixel_areas():
+
+    mask = aa.Mask2D(
+        mask=[[True, True, True], [True, False, False], [True, True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=np.array([1, 2]))
+
+    areas = over_sampling.sub_pixel_areas
+
+    assert areas == pytest.approx([1.0, 0.25, 0.25, 0.25, 0.25], 1.0e-4)
+
+
 def test__from_manual_adapt_radial_bin():
     mask = aa.Mask2D.circular(shape_native=(5, 5), pixel_scales=2.0, radius=3.0)
 
@@ -198,3 +212,5 @@ def test__slim_index_for_sub_slim_index():
     )
 
     assert (over_sampling.slim_for_sub_slim == slim_index_for_sub_slim_index_util).all()
+
+

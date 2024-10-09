@@ -300,3 +300,46 @@ class MapperValued:
         return np.sum(
             mapped_reconstructed_image * mapped_reconstructed_image.pixel_area
         ) / np.sum(interpolated_reconstruction * interpolated_reconstruction.pixel_area)
+
+    def magnification_map_from(self):
+
+        magnification_map = np.zeros(self.values.shape[0])
+
+        mesh_areas = self.mapper.source_plane_mesh_grid.areas_for_magnification
+
+        sub_pixel_area = self.mapper.over_sampler.sub_size
+        print(sub_pixel_area)
+        fdgdsfsd
+
+        for i in range(self.values.shape[0]):
+
+            if mesh_areas[i] > 0.0:
+
+                print(self.mapper.sub_slim_indexes_for_pix_index[i])
+                print(len(self.mapper.sub_slim_indexes_for_pix_index[i]))
+
+
+
+                fdfddsff
+
+                values_masked = self.values.copy()
+
+                values_masked[:i] = 0.0
+                values_masked[i+1:] = 0.0
+
+                mapping_matrix = self.mapper.mapping_matrix.copy()
+
+                mapping_matrix[:, :i] = 0.0
+                mapping_matrix[:, i+1:] = 0.0
+
+                mapped_reconstruction_image = Array2D(
+                values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+                    mapping_matrix=mapping_matrix, reconstruction=values_masked
+                ),
+                mask=self.mapper.mapper_grids.mask,
+            )
+
+                magnification_map[i] = np.sum(
+                mapped_reconstruction_image * mapped_reconstruction_image.pixel_area) / np.sum(values_masked[i] * mesh_areas[i])
+
+        return magnification_map

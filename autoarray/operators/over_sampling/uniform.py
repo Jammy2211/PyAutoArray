@@ -374,6 +374,24 @@ class OverSamplerUniform(AbstractOverSampler):
 
         return 1.0 / self.sub_length
 
+    @property
+    def sub_pixel_areas(self) -> np.ndarray:
+        """
+        The area of every sub-pixel in the mask.
+        """
+        sub_pixel_areas = np.zeros(self.sub_total)
+
+        k = 0
+
+        pixel_area = self.mask.pixel_scales[0] * self.mask.pixel_scales[1]
+
+        for i in range(self.sub_size.shape[0]):
+            for j in range(self.sub_size[i]**2):
+                sub_pixel_areas[k] = pixel_area / self.sub_size[i]**2
+                k += 1
+
+        return sub_pixel_areas
+
     @cached_property
     def over_sampled_grid(self) -> Grid2DIrregular:
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
