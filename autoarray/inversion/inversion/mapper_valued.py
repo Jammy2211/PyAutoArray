@@ -63,7 +63,9 @@ class MapperValued:
             is input.
         """
         values = self.values
-        values[mesh_pixel_mask] = 0.0
+
+        if mesh_pixel_mask is not None:
+            values[mesh_pixel_mask] = 0.0
 
         return self.mapper.interpolated_array_from(
             values=values,
