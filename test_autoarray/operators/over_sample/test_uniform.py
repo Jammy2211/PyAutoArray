@@ -39,7 +39,6 @@ def test__from_sub_size_int():
 
 
 def test__sub_pixel_areas():
-
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, True]],
         pixel_scales=1.0,
@@ -212,5 +211,3 @@ def test__slim_index_for_sub_slim_index():
     )
 
     assert (over_sampling.slim_for_sub_slim == slim_index_for_sub_slim_index_util).all()
-
-

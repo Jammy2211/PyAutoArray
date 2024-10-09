@@ -386,8 +386,8 @@ class OverSamplerUniform(AbstractOverSampler):
         pixel_area = self.mask.pixel_scales[0] * self.mask.pixel_scales[1]
 
         for i in range(self.sub_size.shape[0]):
-            for j in range(self.sub_size[i]**2):
-                sub_pixel_areas[k] = pixel_area / self.sub_size[i]**2
+            for j in range(self.sub_size[i] ** 2):
+                sub_pixel_areas[k] = pixel_area / self.sub_size[i] ** 2
                 k += 1
 
         return sub_pixel_areas

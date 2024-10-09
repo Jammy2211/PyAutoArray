@@ -7,23 +7,6 @@ from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
-from autoarray import numba_util
-
-
-# @numba_util.jit()
-def magnification_map_from(values_masked, mapping_matrix, sub_pixel_areas, sub_slim_indexes_for_pix_index, mesh_areas):
-    magnification_map = np.zeros(values_masked.shape[0])
-
-    for i in range(values_masked.shape[0]):
-
-        if values_masked[i] > 0.0:
-
-            image_reconstruction = np.sum(mapping_matrix[:, i])
-            image_area = np.sum(sub_pixel_areas[sub_slim_indexes_for_pix_index[i]])
-
-            magnification_map[i] = (image_reconstruction * image_area) / (mesh_areas[i])
-
-    return magnification_map
 
 
 class MapperValued:
@@ -79,9 +62,9 @@ class MapperValued:
         return values
 
     def interpolated_array_from(
-            self,
-            shape_native: Tuple[int, int] = (401, 401),
-            extent: Optional[Tuple[float, float, float, float]] = None,
+        self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
         """
         The values of a mapper can be on an irregular pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
@@ -113,7 +96,7 @@ class MapperValued:
         )
 
     def max_pixel_list_from(
-            self, total_pixels: int = 1, filter_neighbors: bool = False
+        self, total_pixels: int = 1, filter_neighbors: bool = False
     ) -> List[List[int]]:
         """
         Returns a list of lists of the maximum cell or pixel values in the mapper.
@@ -185,7 +168,7 @@ class MapperValued:
         return max_pixel_centre
 
     def mapped_reconstructed_image_from(
-            self,
+        self,
     ) -> Array2D:
         """
         Returns the image of the reconstruction computed via the mapping matrix, where the image is the reconstruction
@@ -214,7 +197,7 @@ class MapperValued:
         )
 
     def magnification_via_mesh_from(
-            self,
+        self,
     ) -> float:
         """
         Returns the magnification of the reconstruction computed via the mesh, where the magnification is the ratio
@@ -275,9 +258,9 @@ class MapperValued:
         ) / np.sum(self.values_masked * mesh_areas)
 
     def magnification_via_interpolation_from(
-            self,
-            shape_native: Tuple[int, int] = (401, 401),
-            extent: Optional[Tuple[float, float, float, float]] = None,
+        self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> float:
         """
         Returns the magnification of the reconstruction computed via interpolation, where the magnification is the ratio
@@ -317,14 +300,3 @@ class MapperValued:
         return np.sum(
             mapped_reconstructed_image * mapped_reconstructed_image.pixel_area
         ) / np.sum(interpolated_reconstruction * interpolated_reconstruction.pixel_area)
-
-    def magnification_map_from(self):
-
-        return magnification_map_from(
-            values_masked=self.values_masked,
-            mapping_matrix=self.mapper.mapping_matrix,
-            sub_pixel_areas=self.mapper.over_sampler.sub_pixel_areas,
-            sub_slim_indexes_for_pix_index=self.mapper.sub_slim_indexes_for_pix_index,
-            mesh_areas=self.mapper.source_plane_mesh_grid.areas_for_magnification
-        )
-
