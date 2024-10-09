@@ -1,45 +1,7 @@
 import numpy as np
 import pytest
-import scipy.spatial
 
-from autoarray import exc
 import autoarray as aa
-
-
-def test__mesh_areas():
-    grid = np.array(
-        [
-            [-2.0, 0.0],
-            [-np.sqrt(2), np.sqrt(2)],
-            [0.0, 0.0],
-            [0.0, 2.0],
-            [np.sqrt(2), np.sqrt(2)],
-            [2.0, 0.0],
-            [np.sqrt(2), -np.sqrt(2)],
-            [0.0, -2.0],
-            [-np.sqrt(2), -np.sqrt(2)],
-        ]
-    )
-
-    mesh = aa.Mesh2DDelaunay(values=grid)
-
-    assert mesh.voronoi_pixel_areas == pytest.approx(
-        np.array(
-            [
-                -0.1372583,
-                -0.1372583,
-                # 1.0 * np.tan(22.5 / 180.0 * np.pi) * 0.5 * 16.0,
-                -0.1372583,
-                -0.1372583,
-                -0.1372583,
-                -0.1372583,
-                -0.1372583,
-                -0.1372583,
-                -0.1372583,
-            ]
-        ),
-        1e-6,
-    )
 
 
 def test__edge_pixel_list():

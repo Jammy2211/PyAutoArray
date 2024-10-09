@@ -30,6 +30,7 @@ from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
 from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
+from .inversion.inversion.mapper_valued import MapperValued
 from .inversion.inversion.dataset_interface import DatasetInterface
 from .inversion.pixelization.border_relocator import BorderRelocator
 from .inversion.pixelization.pixelization import Pixelization
