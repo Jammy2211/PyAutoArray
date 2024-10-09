@@ -149,7 +149,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         The grid returned by this function is used by certain regularization schemes in the `Inversion` module to apply
         gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
         """
-        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.voronoi_pixel_areas)
+        half_region_area_sqrt_lengths = 0.5 * np.sqrt(
+            self.voronoi_pixel_areas_for_split
+        )
 
         splitted_array = np.zeros((self.pixels, 4, 2))
 
@@ -167,18 +169,15 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         return splitted_array.reshape((self.pixels * 4, 2))
 
-    @cached_property
+    @property
     def voronoi_pixel_areas(self) -> np.ndarray:
         """
         Returns the area of every Voronoi pixel in the Voronoi mesh.
 
-        These areas are used when performing gradient regularization in order to determine the size of the cross of
-        points where the derivative is evaluated and therefore where regularization is evaluated (see `split_cross`).
-
         Pixels at boundaries can sometimes have large unrealistic areas, in which case we set the maximum area to be
-        90.0% the maximum area of the Voronoi mesh.
+        an input value of N% the maximum area of the Voronoi mesh, which this value is suitable for different
+        calculations.
         """
-
         voronoi_vertices = self.voronoi.vertices
         voronoi_regions = self.voronoi.regions
         voronoi_point_region = self.voronoi.point_region
@@ -193,12 +192,29 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
                     voronoi_vertices[region_vertices_indexes]
                 )
 
-        max_area = np.percentile(region_areas, 90.0)
-
-        region_areas[region_areas == -1] = max_area
-        region_areas[region_areas > max_area] = max_area
-
         return region_areas
+
+    @cached_property
+    def voronoi_pixel_areas_for_split(self) -> np.ndarray:
+        """
+        Returns the area of every Voronoi pixel in the Voronoi mesh.
+
+        These areas are used when performing gradient regularization in order to determine the size of the cross of
+        points where the derivative is evaluated and therefore where regularization is evaluated (see `split_cross`).
+
+        Pixels at boundaries can sometimes have large unrealistic areas, in which case we set the maximum area to be
+        90.0% the maximum area of the Voronoi mesh. This large area values ensures that the pixels are regularized
+        with large regularization coefficients, which is preferred at the edge of the mesh where the reconstruction
+        goes to zero.
+        """
+        areas = self.voronoi_pixel_areas
+
+        max_area = np.percentile(areas, 90.0)
+
+        areas[areas == -1] = max_area
+        areas[areas > max_area] = max_area
+
+        return areas
 
     @property
     def origin(self) -> Tuple[float, float]:

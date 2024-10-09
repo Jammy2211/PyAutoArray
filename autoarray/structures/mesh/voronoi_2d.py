@@ -12,6 +12,21 @@ from autoarray.inversion.pixelization.mesh import mesh_util
 
 
 class Mesh2DVoronoi(Abstract2DMeshTriangulation):
+    @property
+    def areas_for_magnification(self) -> np.ndarray:
+        """
+        Returns the area of every Voronoi pixel in the Voronoi mesh.
+
+        Pixels at boundaries can sometimes have large unrealistic areas, which can impact the magnification
+        calculation. This method therefore sets their areas to zero so they do not impact the magnification
+        calculation.
+        """
+        areas = self.voronoi_pixel_areas
+
+        areas[areas == -1] = 0.0
+
+        return areas
+
     @cached_property
     def neighbors(self) -> Neighbors:
         """

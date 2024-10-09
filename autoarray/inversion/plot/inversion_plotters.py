@@ -421,11 +421,12 @@ class InversionPlotter(Plotter):
 
         mapper = self.inversion.cls_list_from(cls=AbstractMapper)[pixelization_index]
 
-        mapper_valued = MapperValued(values=self.inversion.reconstruction_dict[mapper], mapper=mapper)
+        mapper_valued = MapperValued(
+            values=self.inversion.reconstruction_dict[mapper], mapper=mapper
+        )
 
         pix_indexes = mapper_valued.max_pixel_list_from(
-            total_pixels=total_pixels,
-            filter_neighbors=True
+            total_pixels=total_pixels, filter_neighbors=True
         )
 
         self.visuals_2d.pix_indexes = [
