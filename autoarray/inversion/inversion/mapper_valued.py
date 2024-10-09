@@ -161,7 +161,7 @@ class MapperValued:
             mask=self.mapper.mapper_grids.mask,
         )
 
-    def magnification_via_mesh_from(self) -> float:
+    def magnification_via_mesh_from(self, pixel_mask : np.ndarray = None) -> float:
         """
         Returns the magnification of the reconstruction computed via the mesh, where the magnification is the ratio
         of the surface brightness of image in the image-plane over the surface brightness of the source in
@@ -231,7 +231,7 @@ class MapperValued:
         mapped_reconstructed_image = self.mapped_reconstructed_image_from()
 
         interpolated_reconstruction = self.interpolated_array_from(
-            shape_native=(801, 801)
+            shape_native=(401, 401)
         )
 
         return np.sum(
