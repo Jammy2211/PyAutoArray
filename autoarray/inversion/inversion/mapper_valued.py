@@ -10,7 +10,7 @@ from autoarray.inversion.inversion import inversion_util
 
 
 class MapperValued:
-    def __init__(self, mapper, values):
+    def __init__(self, mapper, values, mesh_pixel_mask: Optional[np.ndarray] = None):
         """
         Pairs a `Mapper` object with an array of values (e.g. the `reconstruction` values of each value of each
         mapper pixel) in order to perform calculations which use both the `Mapper` and these values.
@@ -30,15 +30,41 @@ class MapperValued:
         values
             The values of each pixel of the mapper, which could be the `reconstruction` values of an `Inversion`,
             but alternatively could be other quantities such as the errors on these values.
+        mesh_pixel_mask
+            The mask of pixels that are omitted from the reconstruction when computing the image, for example to
+            remove pixels with low signal-to-noise so they do not impact the magnification calculation.
+
         """
         self.mapper = mapper
         self.values = values
+        self.mesh_pixel_mask = mesh_pixel_mask
+
+    @property
+    def values_masked(self):
+        """
+        Applies the `mesh_pixel_mask` to the values, setting all masked pixels to 0.0, so that mesh pixels
+        can be removed to prevent them from impacting calculations.
+
+        For example, the magnification calculation uses the values of the reconstruction to compute the magnification,
+        but this can be impacted by pixels with low signal-to-noise. The `mesh_pixel_mask` can be used to remove
+        these pixels from the calculation.
+
+        Returns
+        -------
+        The values of the mapper with the `mesh_pixel_mask` applied.
+        """
+
+        values = self.values
+
+        if self.mesh_pixel_mask is not None:
+            values[self.mesh_pixel_mask] = 0.0
+
+        return values
 
     def interpolated_array_from(
         self,
         shape_native: Tuple[int, int] = (401, 401),
         extent: Optional[Tuple[float, float, float, float]] = None,
-        mesh_pixel_mask: Optional[np.ndarray] = None,
     ) -> Array2D:
         """
         The values of a mapper can be on an irregular pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
@@ -62,13 +88,9 @@ class MapperValued:
             The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
             is input.
         """
-        values = self.values
-
-        if mesh_pixel_mask is not None:
-            values[mesh_pixel_mask] = 0.0
 
         return self.mapper.interpolated_array_from(
-            values=values,
+            values=self.values_masked,
             shape_native=shape_native,
             extent=extent,
         )
@@ -104,7 +126,7 @@ class MapperValued:
 
         pixel_list = []
 
-        pixels_ascending_list = list(reversed(np.argsort(self.values)))
+        pixels_ascending_list = list(reversed(np.argsort(self.values_masked)))
 
         for pixel in range(total_pixels):
             pixel_index = pixels_ascending_list[pixel]
@@ -115,8 +137,8 @@ class MapperValued:
                 pixel_neighbors = self.mapper.neighbors[pixel_index]
                 pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
 
-                max_value = self.values[pixel_index]
-                max_value_neighbors = self.values[pixel_neighbors]
+                max_value = self.values_masked[pixel_index]
+                max_value_neighbors = self.values_masked[pixel_neighbors]
 
                 if max_value < np.max(max_value_neighbors):
                     add_pixel = False
@@ -137,7 +159,7 @@ class MapperValued:
         -------
         The centre of the brightest pixel in the mapper values.
         """
-        max_pixel = np.argmax(self.values)
+        max_pixel = np.argmax(self.values_masked)
 
         max_pixel_centre = Grid2DIrregular(
             values=[self.mapper.source_plane_mesh_grid[max_pixel]]
@@ -146,7 +168,7 @@ class MapperValued:
         return max_pixel_centre
 
     def mapped_reconstructed_image_from(
-        self, mesh_pixel_mask: Optional[np.ndarray] = None
+        self,
     ) -> Array2D:
         """
         Returns the image of the reconstruction computed via the mapping matrix, where the image is the reconstruction
@@ -157,34 +179,26 @@ class MapperValued:
         The image is used to compute magnification, where the magnification is the ratio of the surface brightness of
         image in the image-plane over the surface brightness of the source in the source-plane.
 
-        Parameters
-        ----------
-        mesh_pixel_mask
-            The mask of pixels that are omitted from the reconstruction when computing the image, for example to
-            remove pixels with low signal-to-noise so they do not impact the magnification calculation.
-
         Returns
         -------
         The image of the reconstruction computed via the mapping matrix, with the PSF convolution not accounted for.
         """
 
-        values = self.values
         mapping_matrix = self.mapper.mapping_matrix
 
-        if mesh_pixel_mask is not None:
-            values[mesh_pixel_mask] = 0.0
-            mapping_matrix[:, mesh_pixel_mask] = 0.0
+        if self.mesh_pixel_mask is not None:
+            mapping_matrix[:, self.mesh_pixel_mask] = 0.0
 
         return Array2D(
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=mapping_matrix,
-                reconstruction=values,
+                reconstruction=self.values_masked
             ),
             mask=self.mapper.mapper_grids.mask,
         )
 
     def magnification_via_mesh_from(
-        self, mesh_pixel_mask: Optional[np.ndarray] = None
+        self,
     ) -> float:
         """
         Returns the magnification of the reconstruction computed via the mesh, where the magnification is the ratio
@@ -226,9 +240,7 @@ class MapperValued:
                 """
             )
 
-        mapped_reconstructed_image = self.mapped_reconstructed_image_from(
-            mesh_pixel_mask=mesh_pixel_mask
-        )
+        mapped_reconstructed_image = self.mapped_reconstructed_image_from()
 
         mesh_areas = self.mapper.source_plane_mesh_grid.areas_for_magnification
 
@@ -244,10 +256,10 @@ class MapperValued:
 
         return np.sum(
             mapped_reconstructed_image * mapped_reconstructed_image.pixel_area
-        ) / np.sum(self.values * mesh_areas)
+        ) / np.sum(self.values_masked * mesh_areas)
 
     def magnification_via_interpolation_from(
-        self, mesh_pixel_mask: Optional[np.ndarray] = None
+        self,
     ) -> float:
         """
         Returns the magnification of the reconstruction computed via interpolation, where the magnification is the ratio
@@ -278,9 +290,7 @@ class MapperValued:
         -------
         The magnification of the reconstruction computed via interpolation.
         """
-        mapped_reconstructed_image = self.mapped_reconstructed_image_from(
-            mesh_pixel_mask=mesh_pixel_mask
-        )
+        mapped_reconstructed_image = self.mapped_reconstructed_image_from()
 
         interpolated_reconstruction = self.interpolated_array_from(
             shape_native=(401, 401)

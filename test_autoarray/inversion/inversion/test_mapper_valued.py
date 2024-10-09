@@ -73,12 +73,12 @@ def test__interpolated_array_from__with_pixel_mask():
 
     mapper = aa.m.MockMapper(parameters=4, interpolated_array=values)
 
-    mapper_valued = aa.MapperValued(values=values, mapper=mapper)
-
     mesh_pixel_mask = np.array([True, False, False, True])
 
+    mapper_valued = aa.MapperValued(values=values, mapper=mapper, mesh_pixel_mask=mesh_pixel_mask)
+
     values = mapper_valued.interpolated_array_from(
-        mesh_pixel_mask=mesh_pixel_mask, shape_native=(3, 3), extent=(-0.2, 0.2, -0.3, 0.3)
+        shape_native=(3, 3), extent=(-0.2, 0.2, -0.3, 0.3)
     )
 
     assert (values == np.array([0.0, 1.0, 1.0, 0.0])).all()
@@ -169,13 +169,14 @@ def test__magnification_via_mesh_from__with_pixel_mask():
         mapping_matrix=np.ones((12, 10)),
     )
 
-    mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
-
     mesh_pixel_mask = np.array(
         [True, True, True, True, True, True, True, True, False, False]
     )
 
-    magnification = mapper_valued.magnification_via_mesh_from(mesh_pixel_mask=mesh_pixel_mask)
+    mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper,mesh_pixel_mask=mesh_pixel_mask)
+
+
+    magnification = mapper_valued.magnification_via_mesh_from()
 
     assert magnification == pytest.approx(4.0, 1.0e-4)
 
