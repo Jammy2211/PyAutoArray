@@ -191,8 +191,7 @@ class MapperValued:
 
         return Array2D(
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=mapping_matrix,
-                reconstruction=self.values_masked
+                mapping_matrix=mapping_matrix, reconstruction=self.values_masked
             ),
             mask=self.mapper.mapper_grids.mask,
         )
@@ -260,6 +259,8 @@ class MapperValued:
 
     def magnification_via_interpolation_from(
         self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> float:
         """
         Returns the magnification of the reconstruction computed via interpolation, where the magnification is the ratio
@@ -293,7 +294,7 @@ class MapperValued:
         mapped_reconstructed_image = self.mapped_reconstructed_image_from()
 
         interpolated_reconstruction = self.interpolated_array_from(
-            shape_native=(401, 401)
+            shape_native=shape_native, extent=extent
         )
 
         return np.sum(
