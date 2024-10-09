@@ -161,7 +161,7 @@ class MapperValued:
             mask=self.mapper.mapper_grids.mask,
         )
 
-    def magnification_via_mesh_from(self, pixel_mask : np.ndarray = None) -> float:
+    def magnification_via_mesh_from(self, pixel_mask: np.ndarray = None) -> float:
         """
         Returns the magnification of the reconstruction computed via the mesh, where the magnification is the ratio
         of the surface brightness of image in the image-plane over the surface brightness of the source in
@@ -199,6 +199,16 @@ class MapperValued:
         mapped_reconstructed_image = self.mapped_reconstructed_image_from()
 
         mesh_areas = self.mapper.source_plane_mesh_grid.areas_for_magnification
+
+        if np.all(mesh_areas == 0.0):
+            raise exc.MeshException(
+                """
+                The magnification cannot be computed because the areas of the source-plane mesh pixels are all zero.
+                
+                This probably means you have specified an invalid source-plane mesh, for example a `Voronoi` mesh
+                where all pixels are on the edge of the source-plane and therefore have an infinite border.
+                """
+            )
 
         return np.sum(
             mapped_reconstructed_image * mapped_reconstructed_image.pixel_area

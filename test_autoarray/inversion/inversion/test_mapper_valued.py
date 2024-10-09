@@ -68,8 +68,47 @@ def test__interpolated_array_from():
     assert (interpolated_array == np.array([0.0, 1.0, 1.0, 1.0])).all()
 
 
-def test__magnification_via_interpolation_from():
+def test__magnification_via_mesh_from():
+    mask = aa.Mask2D(
+        mask=np.array([[False, False], [False, False], [False, False], [False, False]]),
+        pixel_scales=(0.5, 0.5),
+    )
 
+    magnification = aa.Array2D(
+        values=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        mask=mask,
+    )
+
+    source_plane_mesh_grid = aa.Mesh2DVoronoi(
+        values=np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.5],
+                [0.0, 1.0],
+                [1.0, 2.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [2.0, 0.0],
+                [0.0, 2.0],
+            ]
+        ),
+    )
+
+    mapper = aa.m.MockMapper(
+        parameters=3,
+        source_plane_mesh_grid=source_plane_mesh_grid,
+        mask=mask,
+        mapping_matrix=np.ones((8, 3)),
+    )
+
+    mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
+
+    magnification = mapper_valued.magnification_via_mesh_from()
+
+    assert magnification == pytest.approx(9.9130434782608, 1.0e-4)
+
+
+def test__magnification_via_interpolation_from():
     mask = aa.Mask2D(
         mask=np.array([[False, False], [False, False]]),
         pixel_scales=(0.5, 0.5),
@@ -84,13 +123,11 @@ def test__magnification_via_interpolation_from():
         parameters=3,
         mask=mask,
         interpolated_array=magnification,
-        mapping_matrix=np.ones((4, 3))
+        mapping_matrix=np.ones((4, 3)),
     )
 
     mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
 
     magnification = mapper_valued.magnification_via_interpolation_from()
-
-    print(magnification)
 
     assert magnification == pytest.approx(3.6666666666666665, 1.0e-4)
