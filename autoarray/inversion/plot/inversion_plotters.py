@@ -10,6 +10,7 @@ from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
 
@@ -418,7 +419,13 @@ class InversionPlotter(Plotter):
             "total_mappings_pixels"
         ]
 
-        pix_indexes = self.inversion.brightest_pixel_list_from(
+        mapper = self.inversion.cls_list_from(cls=AbstractMapper)[pixelization_index]
+
+        mapper_valued = MapperValued(
+            values=self.inversion.reconstruction_dict[mapper], mapper=mapper
+        )
+
+        pix_indexes = mapper_valued.max_pixel_list_from(
             total_pixels=total_pixels, filter_neighbors=True
         )
 

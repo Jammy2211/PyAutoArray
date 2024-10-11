@@ -622,6 +622,7 @@ class Mask2D(Mask):
         hdu: int = 0,
         origin: Tuple[float, float] = (0.0, 0.0),
         resized_mask_shape: Tuple[int, int] = None,
+        invert: bool = False,
     ) -> "Mask2D":
         """
         Loads the image from a .fits file.
@@ -639,10 +640,13 @@ class Mask2D(Mask):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
+        mask = array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=hdu)
+
+        if invert:
+            mask = np.invert(mask.astype("bool"))
+
         mask = Mask2D(
-            mask=array_2d_util.numpy_array_2d_via_fits_from(
-                file_path=file_path, hdu=hdu
-            ),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
         )
