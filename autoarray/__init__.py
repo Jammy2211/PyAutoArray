@@ -30,6 +30,7 @@ from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
 from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
+from .inversion.inversion.mapper_valued import MapperValued
 from .inversion.inversion.dataset_interface import DatasetInterface
 from .inversion.pixelization.border_relocator import BorderRelocator
 from .inversion.pixelization.pixelization import Pixelization
@@ -83,6 +84,10 @@ from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
 from .structures.triangles.abstract import AbstractTriangles
+from .structures.triangles.shape import Circle
+from .structures.triangles.shape import Triangle
+from .structures.triangles.shape import Square
+from .structures.triangles.shape import Polygon
 from .structures import decorators as grid_dec
 from .structures.header import Header
 from .layout.region import Region1D
