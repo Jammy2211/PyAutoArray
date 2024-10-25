@@ -56,7 +56,7 @@ def one_triangle():
 
 
 def test_trivial_triangles(one_triangle):
-    assert one_triangle.flip_mask == np.array([1])
+    assert one_triangle.flip_array == np.array([1])
     assert np.all(one_triangle.centres == np.array([[0, 0]]))
     assert np.all(
         one_triangle.triangles
@@ -70,14 +70,18 @@ def test_trivial_triangles(one_triangle):
     )
 
 
-def test_upside_down():
-    array = CoordinateArrayTriangles(
+@pytest.fixture
+def upside_down():
+    return CoordinateArrayTriangles(
         coordinates=np.array([[1, 0]]),
         side_length=1.0,
     )
-    assert np.all(array.centres == np.array([[0.5, 0]]))
+
+
+def test_upside_down(upside_down):
+    assert np.all(upside_down.centres == np.array([[0.5, 0]]))
     assert np.all(
-        array.triangles
+        upside_down.triangles
         == [
             [
                 [0.5, -HEIGHT_FACTOR / 2],
@@ -88,9 +92,7 @@ def test_upside_down():
     )
 
 
-def test_up_sample(one_triangle, plot):
-    plot(one_triangle)
-
+def test_up_sample(one_triangle):
     up_sampled = one_triangle.up_sample()
     assert up_sampled.side_length == 0.5
     assert np.all(
@@ -103,4 +105,16 @@ def test_up_sample(one_triangle, plot):
         ]
     )
 
-    plot(up_sampled, color="red")
+
+def test_up_sample_upside_down(upside_down):
+    up_sampled = upside_down.up_sample()
+    assert up_sampled.side_length == 0.5
+    assert np.all(
+        up_sampled.triangles
+        == [
+            [[0.5, -0.4330127018922193], [0.25, 0.0], [0.75, 0.0]],
+            [[0.75, 0.0], [0.5, 0.4330127018922193], [1.0, 0.4330127018922193]],
+            [[0.25, 0.0], [0.0, 0.4330127018922193], [0.5, 0.4330127018922193]],
+            [[0.5, 0.4330127018922193], [0.75, 0.0], [0.25, 0.0]],
+        ]
+    )

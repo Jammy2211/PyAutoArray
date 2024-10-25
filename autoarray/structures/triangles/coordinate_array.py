@@ -27,17 +27,17 @@ class CoordinateArrayTriangles:
         return np.stack(
             (
                 centres
-                + self.flip_mask
+                + self.flip_array
                 * np.array(
                     [0.0, 0.5 * self.side_length * HEIGHT_FACTOR],
                 ),
                 centres
-                + self.flip_mask
+                + self.flip_array
                 * np.array(
                     [0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
                 centres
-                + self.flip_mask
+                + self.flip_array
                 * np.array(
                     [-0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
@@ -51,9 +51,12 @@ class CoordinateArrayTriangles:
 
     @cached_property
     def flip_mask(self):
+        return (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
+
+    @cached_property
+    def flip_array(self):
         array = np.ones(self.coordinates.shape[0])
-        mask = (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
-        array[mask] = -1
+        array[self.flip_mask] = -1
         if self.flipped:
             array *= -1
 
@@ -63,15 +66,28 @@ class CoordinateArrayTriangles:
         return iter(self.triangles)
 
     def up_sample(self):
+        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
+        n_normal = np.sum(~self.flip_mask)
+
+        new_coordinates[:n_normal] = np.vstack(
+            (
+                2 * self.coordinates[~self.flip_mask],
+                2 * self.coordinates[~self.flip_mask] + np.array([1, 0]),
+                2 * self.coordinates[~self.flip_mask] + np.array([-1, 0]),
+                2 * self.coordinates[~self.flip_mask] + np.array([0, 1]),
+            )
+        )
+        new_coordinates[n_normal:] = np.vstack(
+            (
+                2 * self.coordinates[self.flip_mask],
+                2 * self.coordinates[self.flip_mask] + np.array([1, 1]),
+                2 * self.coordinates[self.flip_mask] + np.array([-1, 1]),
+                2 * self.coordinates[self.flip_mask] + np.array([0, 1]),
+            )
+        )
+
         return CoordinateArrayTriangles(
-            coordinates=np.vstack(
-                (
-                    2 * self.coordinates,
-                    2 * self.coordinates + np.array([1, 0]),
-                    2 * self.coordinates + np.array([-1, 0]),
-                    2 * self.coordinates + np.array([0, 1]),
-                )
-            ),
+            coordinates=new_coordinates,
             side_length=self.side_length / 2,
             flipped=not self.flipped,
             offset=-0.25 * HEIGHT_FACTOR * self.side_length,
