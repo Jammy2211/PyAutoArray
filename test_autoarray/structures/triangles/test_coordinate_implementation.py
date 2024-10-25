@@ -131,7 +131,9 @@ def test_up_sample_upside_down(upside_down):
 
 def test_up_sample_twice(one_triangle, plot):
     plot(one_triangle)
-    up_sampled = one_triangle.up_sample()
-    plot(up_sampled, color="red")
-    up_sampled = up_sampled.up_sample()
-    plot(up_sampled, color="green")
+    one = one_triangle.up_sample()
+    two = one.up_sample()
+    three = two.up_sample()
+    plot(three, color="blue")
+    plot(two, color="green")
+    plot(one, color="red")
