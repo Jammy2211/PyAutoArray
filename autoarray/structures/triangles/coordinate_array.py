@@ -50,7 +50,7 @@ class CoordinateArrayTriangles:
         array = np.ones(self.coordinates.shape[0])
         mask = (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
         array[mask] = -1
-        return array
+        return array[:, np.newaxis]
 
     def __iter__(self):
         return iter(self.triangles)

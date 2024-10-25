@@ -36,6 +36,7 @@ def test_two():
             ],
         ]
     )
+    plot(array)
 
 
 def test_trivial_triangles():
@@ -55,8 +56,6 @@ def test_trivial_triangles():
             ],
         ]
     )
-
-    plot(array)
 
 
 def test_upside_down():
