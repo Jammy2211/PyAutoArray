@@ -93,3 +93,30 @@ class CoordinateArrayTriangles:
             flipped=True,
             offset=self.offset + -0.25 * HEIGHT_FACTOR * self.side_length,
         )
+
+    def neighborhood(self):
+        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
+        n_normal = 4 * np.sum(~self.flip_mask)
+
+        new_coordinates[:n_normal] = np.vstack(
+            (
+                self.coordinates[~self.flip_mask],
+                self.coordinates[~self.flip_mask] + np.array([1, 0]),
+                self.coordinates[~self.flip_mask] + np.array([-1, 0]),
+                self.coordinates[~self.flip_mask] + np.array([0, -1]),
+            )
+        )
+        new_coordinates[n_normal:] = np.vstack(
+            (
+                self.coordinates[self.flip_mask],
+                self.coordinates[self.flip_mask] + np.array([1, 1]),
+                self.coordinates[self.flip_mask] + np.array([-1, 1]),
+                self.coordinates[self.flip_mask] + np.array([0, 1]),
+            )
+        )
+        return CoordinateArrayTriangles(
+            coordinates=new_coordinates,
+            side_length=self.side_length,
+            flipped=self.flipped,
+            offset=self.offset,
+        )
