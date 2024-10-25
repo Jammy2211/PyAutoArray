@@ -47,7 +47,7 @@ class GridMaker(AbstractMaker):
         ----------
         result
             The input result (e.g. of a decorated function) that is converted to an Grid2DIrregular or list of
-            Grid2DIrregular objects.
+            `Grid2DIrregular` objects.
         """
         if not isinstance(result, list):
             return Grid2DIrregular(values=result)

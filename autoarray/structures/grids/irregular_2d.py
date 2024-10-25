@@ -1,6 +1,7 @@
-from autoarray.numpy_wrapper import np
+import logging
 from typing import List, Optional, Tuple, Union
 
+from autoarray.numpy_wrapper import np
 from autoarray.abstract_ndarray import AbstractNDArray
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.mask.mask_2d import Mask2D
@@ -10,6 +11,7 @@ from autoarray import exc
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
+logger = logging.getLogger(__name__)
 
 class Grid2DIrregular(AbstractNDArray):
     def __init__(self, values: Union[np.ndarray, List]):
@@ -351,10 +353,11 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         if self.pixel_scales[0] == self.pixel_scales[1]:
             return self.pixel_scales[0]
         else:
-            raise exc.GridException(
-                "Cannot return a pixel_scale for a grid where each dimension has a "
-                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1])"
-            )
+            logger.warning(f"""
+                The `Grid2DIrregular` has pixel scales of {self.pixel_scales}, which are not the same in both
+                dimensions. This means that the pixel scale of the grid is not a single value and may cause
+                issues with calculations that assume a uniform pixel scale.
+            """)
 
     @classmethod
     def from_grid_sparse_uniform_upscale(
