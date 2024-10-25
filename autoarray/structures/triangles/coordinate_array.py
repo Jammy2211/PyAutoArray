@@ -12,6 +12,20 @@ class CoordinateArrayTriangles:
         flipped: bool = False,
         offset: float = 0.0,
     ):
+        """
+        Represents a set of triangles by integer coordinates.
+
+        Parameters
+        ----------
+        coordinates
+            Integer x y coordinates for each triangle.
+        side_length
+            The side length of the triangles.
+        flipped
+            Whether the triangles are flipped upside down.
+        offset
+            An offset to apply to the y coordinates so that up-sampled triangles align.
+        """
         self.coordinates = coordinates
         self.side_length = side_length
         self.flipped = flipped
@@ -23,6 +37,9 @@ class CoordinateArrayTriangles:
 
     @property
     def triangles(self) -> np.ndarray:
+        """
+        The vertices of the triangles as an Nx3x2 array.
+        """
         centres = self.centres
         return np.stack(
             (
@@ -47,17 +64,28 @@ class CoordinateArrayTriangles:
 
     @property
     def centres(self) -> np.ndarray:
+        """
+        The centres of the triangles.
+        """
         return self.scaling_factors * self.coordinates + np.array([0.0, self.offset])
 
     @cached_property
-    def flip_mask(self):
+    def flip_mask(self) -> np.ndarray:
+        """
+        A mask for the triangles that are flipped.
+
+        Every other triangle is flipped so that they tessellate.
+        """
         mask = (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
         if self.flipped:
             mask = ~mask
         return mask
 
     @cached_property
-    def flip_array(self):
+    def flip_array(self) -> np.ndarray:
+        """
+        An array of 1s and -1s to flip the triangles.
+        """
         array = np.ones(self.coordinates.shape[0])
         array[self.flip_mask] = -1
 
@@ -66,7 +94,10 @@ class CoordinateArrayTriangles:
     def __iter__(self):
         return iter(self.triangles)
 
-    def up_sample(self):
+    def up_sample(self) -> "CoordinateArrayTriangles":
+        """
+        Up-sample the triangles by adding a new vertex at the midpoint of each edge.
+        """
         new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
         n_normal = 4 * np.sum(~self.flip_mask)
 
@@ -94,7 +125,12 @@ class CoordinateArrayTriangles:
             offset=self.offset + -0.25 * HEIGHT_FACTOR * self.side_length,
         )
 
-    def neighborhood(self):
+    def neighborhood(self) -> "CoordinateArrayTriangles":
+        """
+        Create a new set of triangles that are the neighborhood of the current triangles.
+
+        Ensures that the new triangles are unique.
+        """
         new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
         n_normal = 4 * np.sum(~self.flip_mask)
 
