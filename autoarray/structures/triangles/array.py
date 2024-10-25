@@ -84,10 +84,7 @@ class ArrayTriangles(AbstractTriangles):
         Includes the current triangles and the triangles that share an edge with the current triangles.
         """
         unique_vertices, inverse_indices = np.unique(
-            np.round(
-                self._neighborhood_triangles().reshape(-1, 2),
-                self.triangle_precision,
-            ),
+            self._neighborhood_triangles().reshape(-1, 2),
             axis=0,
             return_inverse=True,
         )

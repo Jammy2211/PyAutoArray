@@ -13,7 +13,6 @@ class AbstractTriangles(ABC):
         self,
         indices,
         vertices,
-        triangle_precision: int = 4,
         **kwargs,
     ):
         """
@@ -29,7 +28,6 @@ class AbstractTriangles(ABC):
         """
         self.indices = indices
         self.vertices = vertices
-        self.triangle_precision = triangle_precision
 
     def __len__(self):
         return len(self.triangles)
