@@ -93,5 +93,14 @@ def test_up_sample(one_triangle, plot):
 
     up_sampled = one_triangle.up_sample()
     assert up_sampled.side_length == 0.5
+    assert np.all(
+        up_sampled.triangles
+        == [
+            [[0.0, -0.4330127018922193], [-0.25, 0.0], [0.25, 0.0]],
+            [[0.25, 0.0], [0.5, -0.4330127018922193], [0.0, -0.4330127018922193]],
+            [[-0.25, 0.0], [0.0, -0.4330127018922193], [-0.5, -0.4330127018922193]],
+            [[0.0, 0.4330127018922193], [0.25, 0.0], [-0.25, 0.0]],
+        ]
+    )
 
     plot(up_sampled, color="red")
