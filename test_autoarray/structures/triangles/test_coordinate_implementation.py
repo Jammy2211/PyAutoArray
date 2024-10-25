@@ -70,6 +70,15 @@ def test_trivial_triangles(one_triangle):
     )
 
 
+def test_above(plot):
+    triangles = CoordinateArrayTriangles(
+        coordinates=np.array([[0, 1]]),
+        side_length=1.0,
+    )
+    plot(triangles)
+    plot(triangles.up_sample(), color="red")
+
+
 @pytest.fixture
 def upside_down():
     return CoordinateArrayTriangles(
@@ -118,3 +127,11 @@ def test_up_sample_upside_down(upside_down):
             [[0.5, 0.4330127018922193], [0.75, 0.0], [0.25, 0.0]],
         ]
     )
+
+
+def test_up_sample_twice(one_triangle, plot):
+    plot(one_triangle)
+    up_sampled = one_triangle.up_sample()
+    plot(up_sampled, color="red")
+    up_sampled = up_sampled.up_sample()
+    plot(up_sampled, color="green")

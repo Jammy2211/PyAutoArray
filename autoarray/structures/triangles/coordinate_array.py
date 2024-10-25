@@ -51,14 +51,15 @@ class CoordinateArrayTriangles:
 
     @cached_property
     def flip_mask(self):
-        return (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
+        mask = (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
+        if self.flipped:
+            mask = ~mask
+        return mask
 
     @cached_property
     def flip_array(self):
         array = np.ones(self.coordinates.shape[0])
         array[self.flip_mask] = -1
-        if self.flipped:
-            array *= -1
 
         return array[:, np.newaxis]
 
@@ -89,6 +90,6 @@ class CoordinateArrayTriangles:
         return CoordinateArrayTriangles(
             coordinates=new_coordinates,
             side_length=self.side_length / 2,
-            flipped=not self.flipped,
-            offset=-0.25 * HEIGHT_FACTOR * self.side_length,
+            flipped=True,
+            offset=self.offset + -0.25 * HEIGHT_FACTOR * self.side_length,
         )
