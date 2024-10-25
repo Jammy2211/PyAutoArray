@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 
+from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 
@@ -19,14 +20,33 @@ def test_trivial_triangles():
         coordinates=np.array([[0, 0]]),
         side_length=1.0,
     )
+    assert array.flip_mask == np.array([1])
     assert np.all(array.centres == np.array([[0, 0]]))
     assert np.all(
         array.triangles
         == [
             [
-                [0.0, 0.4330127018922193],
-                [0.5, -0.4330127018922193],
-                [-0.5, -0.4330127018922193],
+                [0.0, HEIGHT_FACTOR / 2],
+                [0.5, -HEIGHT_FACTOR / 2],
+                [-0.5, -HEIGHT_FACTOR / 2],
+            ],
+        ]
+    )
+
+
+def test_upside_down():
+    array = CoordinateArrayTriangles(
+        coordinates=np.array([[1, 0]]),
+        side_length=1.0,
+    )
+    assert np.all(array.centres == np.array([[1, 0]]))
+    assert np.all(
+        array.triangles
+        == [
+            [
+                [0.5, -HEIGHT_FACTOR / 2],
+                [1.0, HEIGHT_FACTOR / 2],
+                [0.0, HEIGHT_FACTOR / 2],
             ],
         ]
     )

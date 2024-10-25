@@ -1,6 +1,7 @@
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
+from autoconf import cached_property
 
 
 class CoordinateArrayTriangles:
@@ -37,6 +38,13 @@ class CoordinateArrayTriangles:
     @property
     def centres(self) -> np.ndarray:
         return self.scaling_factors * self.coordinates
+
+    @cached_property
+    def flip_mask(self):
+        array = np.ones(self.coordinates.shape[0])
+        mask = (self.coordinates[:, 0] + self.coordinates[:, 1]) % 2 != 0
+        array[mask] = -1
+        return array
 
     def __iter__(self):
         return iter(self.triangles)
