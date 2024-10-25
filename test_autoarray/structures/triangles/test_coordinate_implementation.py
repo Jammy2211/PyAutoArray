@@ -39,14 +39,14 @@ def test_upside_down():
         coordinates=np.array([[1, 0]]),
         side_length=1.0,
     )
-    assert np.all(array.centres == np.array([[1, 0]]))
+    assert np.all(array.centres == np.array([[0.5, 0]]))
     assert np.all(
         array.triangles
         == [
             [
                 [0.5, -HEIGHT_FACTOR / 2],
-                [1.0, HEIGHT_FACTOR / 2],
                 [0.0, HEIGHT_FACTOR / 2],
+                [1.0, HEIGHT_FACTOR / 2],
             ],
         ]
     )

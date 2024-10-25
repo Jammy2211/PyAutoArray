@@ -13,7 +13,9 @@ class CoordinateArrayTriangles:
         self.coordinates = coordinates
         self.side_length = side_length
 
-        self.scaling_factors = np.array([side_length, HEIGHT_FACTOR * side_length])
+        self.scaling_factors = np.array(
+            [0.5 * side_length, HEIGHT_FACTOR * side_length]
+        )
 
     @property
     def triangles(self) -> np.ndarray:
@@ -21,15 +23,18 @@ class CoordinateArrayTriangles:
         return np.concatenate(
             (
                 centres
-                + np.array(
+                + self.flip_mask
+                * np.array(
                     [0.0, 0.5 * self.side_length * HEIGHT_FACTOR],
                 ),
                 centres
-                + np.array(
+                + self.flip_mask
+                * np.array(
                     [0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
                 centres
-                + np.array(
+                + self.flip_mask
+                * np.array(
                     [-0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
             )
