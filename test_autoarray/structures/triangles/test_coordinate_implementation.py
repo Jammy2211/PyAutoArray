@@ -193,7 +193,3 @@ def test_upside_down_neighborhood(upside_down):
             ],
         ]
     )
-
-
-def test_both_neighborhood(two_triangles, plot):
-    plot(two_triangles.neighborhood())
