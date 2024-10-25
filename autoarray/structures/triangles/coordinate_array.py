@@ -115,7 +115,7 @@ class CoordinateArrayTriangles:
             )
         )
         return CoordinateArrayTriangles(
-            coordinates=new_coordinates,
+            coordinates=np.unique(new_coordinates, axis=0),
             side_length=self.side_length,
             flipped=self.flipped,
             offset=self.offset,
