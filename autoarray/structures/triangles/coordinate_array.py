@@ -20,7 +20,7 @@ class CoordinateArrayTriangles:
     @property
     def triangles(self) -> np.ndarray:
         centres = self.centres
-        return np.concatenate(
+        return np.stack(
             (
                 centres
                 + self.flip_mask
@@ -37,7 +37,8 @@ class CoordinateArrayTriangles:
                 * np.array(
                     [-0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
-            )
+            ),
+            axis=1,
         )
 
     @property

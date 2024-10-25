@@ -15,6 +15,29 @@ def plot(triangles):
     plt.show()
 
 
+def test_two():
+    array = CoordinateArrayTriangles(
+        coordinates=np.array([[0, 0], [1, 0]]),
+        side_length=1.0,
+    )
+    assert np.all(array.centres == np.array([[0, 0], [0.5, 0]]))
+    assert np.all(
+        array.triangles
+        == [
+            [
+                [0.0, HEIGHT_FACTOR / 2],
+                [0.5, -HEIGHT_FACTOR / 2],
+                [-0.5, -HEIGHT_FACTOR / 2],
+            ],
+            [
+                [0.5, -HEIGHT_FACTOR / 2],
+                [0.0, HEIGHT_FACTOR / 2],
+                [1.0, HEIGHT_FACTOR / 2],
+            ],
+        ]
+    )
+
+
 def test_trivial_triangles():
     array = CoordinateArrayTriangles(
         coordinates=np.array([[0, 0]]),
@@ -32,6 +55,8 @@ def test_trivial_triangles():
             ],
         ]
     )
+
+    plot(array)
 
 
 def test_upside_down():
