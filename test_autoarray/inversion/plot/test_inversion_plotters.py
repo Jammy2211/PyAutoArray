@@ -67,6 +67,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         mesh_pixels_per_image_pixels=True,
         image_pixels_per_mesh_pixel=True,
         errors=True,
+        signal_to_noise_map=True,
         regularization_weights=True,
     )
 
@@ -76,6 +77,7 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "mesh_pixels_per_image_pixels.png") in plot_patch.paths
     assert path.join(plot_path, "image_pixels_per_mesh_pixel.png") in plot_patch.paths
     assert path.join(plot_path, "errors.png") in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     plot_patch.paths = []
