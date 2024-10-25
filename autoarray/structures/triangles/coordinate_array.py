@@ -67,7 +67,7 @@ class CoordinateArrayTriangles:
 
     def up_sample(self):
         new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
-        n_normal = np.sum(~self.flip_mask)
+        n_normal = 4 * np.sum(~self.flip_mask)
 
         new_coordinates[:n_normal] = np.vstack(
             (
