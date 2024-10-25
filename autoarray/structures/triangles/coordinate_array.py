@@ -109,8 +109,8 @@ class CoordinateArrayTriangles:
         new_coordinates[n_normal:] = np.vstack(
             (
                 self.coordinates[self.flip_mask],
-                self.coordinates[self.flip_mask] + np.array([1, 1]),
-                self.coordinates[self.flip_mask] + np.array([-1, 1]),
+                self.coordinates[self.flip_mask] + np.array([1, 0]),
+                self.coordinates[self.flip_mask] + np.array([-1, 0]),
                 self.coordinates[self.flip_mask] + np.array([0, 1]),
             )
         )
