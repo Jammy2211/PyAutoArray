@@ -67,9 +67,9 @@ class CoordinateArrayTriangles:
             coordinates=np.vstack(
                 (
                     2 * self.coordinates,
-                    # 2 * self.coordinates + np.array([1, 0]),
-                    # 2 * self.coordinates + np.array([-1, 0]),
-                    # 2 * self.coordinates + np.array([0, 1]),
+                    2 * self.coordinates + np.array([1, 0]),
+                    2 * self.coordinates + np.array([-1, 0]),
+                    2 * self.coordinates + np.array([0, 1]),
                 )
             ),
             side_length=self.side_length / 2,
