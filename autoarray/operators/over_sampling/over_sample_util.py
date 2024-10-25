@@ -219,9 +219,9 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     for sub_mask_y in range(sub_mask_2d.shape[0]):
         for sub_mask_x in range(sub_mask_2d.shape[1]):
             if sub_mask_2d[sub_mask_y, sub_mask_x] == False:
-                sub_slim_index_for_sub_native_index[
-                    sub_mask_y, sub_mask_x
-                ] = sub_mask_1d_index
+                sub_slim_index_for_sub_native_index[sub_mask_y, sub_mask_x] = (
+                    sub_mask_1d_index
+                )
                 sub_mask_1d_index += 1
 
     return sub_slim_index_for_sub_native_index
@@ -407,18 +407,32 @@ def grid_2d_slim_over_sampled_via_mask_from(
                     for x1 in range(sub):
                         if use_jax:
                             # while this makes it run, it is very, very slow
-                            grid_slim = grid_slim.at[sub_index, 0].set(-(
-                                y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
-                            ))
+                            grid_slim = grid_slim.at[sub_index, 0].set(
+                                -(
+                                    y_scaled
+                                    - y_sub_half
+                                    + y1 * y_sub_step
+                                    + (y_sub_step / 2.0)
+                                )
+                            )
                             grid_slim = grid_slim.at[sub_index, 1].set(
-                                x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
+                                x_scaled
+                                - x_sub_half
+                                + x1 * x_sub_step
+                                + (x_sub_step / 2.0)
                             )
                         else:
                             grid_slim[sub_index, 0] = -(
-                                y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
+                                y_scaled
+                                - y_sub_half
+                                + y1 * y_sub_step
+                                + (y_sub_step / 2.0)
                             )
                             grid_slim[sub_index, 1] = (
-                                x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
+                                x_scaled
+                                - x_sub_half
+                                + x1 * x_sub_step
+                                + (x_sub_step / 2.0)
                             )
                         sub_index += 1
 

@@ -10,7 +10,6 @@ from autoarray.inversion.inversion.interferometer.abstract import (
 )
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
@@ -25,7 +24,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -58,7 +56,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
