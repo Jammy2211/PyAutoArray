@@ -213,6 +213,7 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
+        check_noise_map: bool = True,
         over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
     ) -> "Imaging":
         """
@@ -250,6 +251,8 @@ class Imaging(AbstractDataset):
             The hdu the noise map is contained in the .fits file specified by `noise_map_path`.
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value.
+        check_noise_map
+            If True, the noise-map is checked to ensure all values are above zero.
         over_sampling
             The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
             pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
@@ -280,6 +283,7 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
+            check_noise_map=check_noise_map,
             over_sampling=over_sampling,
         )
 
