@@ -247,14 +247,17 @@ class InversionPlotter(Plotter):
                 pass
 
         if signal_to_noise_map:
-
             try:
-
-                signal_to_noise_values = self.inversion.reconstruction_dict[mapper_plotter.mapper] / self.inversion.errors_dict[mapper_plotter.mapper]
+                signal_to_noise_values = (
+                    self.inversion.reconstruction_dict[mapper_plotter.mapper]
+                    / self.inversion.errors_dict[mapper_plotter.mapper]
+                )
 
                 mapper_plotter.plot_source_from(
                     pixel_values=signal_to_noise_values,
-                    auto_labels=AutoLabels(title="Signal To Noise Map", filename="signal_to_noise_map"),
+                    auto_labels=AutoLabels(
+                        title="Signal To Noise Map", filename="signal_to_noise_map"
+                    ),
                 )
 
             except TypeError:
