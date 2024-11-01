@@ -251,3 +251,6 @@ class CoordinateArrayTriangles:
     @property
     def area(self):
         return (3**0.5 / 4 * self.side_length**2) * len(self.coordinates)
+
+    def __len__(self):
+        return len(self.coordinates)
