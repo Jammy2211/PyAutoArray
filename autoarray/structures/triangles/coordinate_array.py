@@ -1,6 +1,7 @@
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
+from autoarray.structures.triangles.array import ArrayTriangles
 from autoconf import cached_property
 
 
@@ -35,7 +36,7 @@ class CoordinateArrayTriangles:
         )
         self.offset = offset
 
-    @property
+    @cached_property
     def triangles(self) -> np.ndarray:
         """
         The vertices of the triangles as an Nx3x2 array.
@@ -160,3 +161,18 @@ class CoordinateArrayTriangles:
     @property
     def vertices(self):
         return np.unique(self.triangles.reshape((-1, 2)), axis=0)
+
+    @property
+    def indices(self):
+        flat_triangles = self.triangles.reshape(-1, 2)
+        vertices, inverse_indices = np.unique(
+            flat_triangles, axis=0, return_inverse=True
+        )
+        indices = inverse_indices.reshape(-1, 3)
+        return indices
+
+    def with_vertices(self, vertices: np.ndarray) -> ArrayTriangles:
+        return ArrayTriangles(
+            indices=self.indices,
+            vertices=vertices,
+        )

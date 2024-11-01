@@ -250,3 +250,8 @@ def test_up_sampled_vertices(one_triangle):
             [0.5, -0.4330127018922193],
         ]
     )
+
+
+def test_with_vertices(one_triangle):
+    triangle = one_triangle.with_vertices(np.array([[0, 0], [1, 0], [0.5, 1]]))
+    assert np.all(triangle.triangles == [[[1.0, 0.0], [0.5, 1.0], [0.0, 0.0]]])
