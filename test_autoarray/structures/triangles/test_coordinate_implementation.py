@@ -297,3 +297,7 @@ def test_for_limits_and_scale():
             ],
         ]
     )
+
+
+def test_means(one_triangle):
+    assert np.all(one_triangle.means == [[0.0, -0.14433756729740643]])

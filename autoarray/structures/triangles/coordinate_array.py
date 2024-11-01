@@ -243,3 +243,7 @@ class CoordinateArrayTriangles:
             x_offset=x_mean,
             y_offset=y_mean,
         )
+
+    @property
+    def means(self):
+        return np.mean(self.triangles, axis=1)
