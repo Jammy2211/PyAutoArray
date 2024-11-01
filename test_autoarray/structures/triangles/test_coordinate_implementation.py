@@ -238,7 +238,7 @@ def test_vertices(one_triangle):
     )
 
 
-def test_upsampled_vertices(one_triangle):
+def test_up_sampled_vertices(one_triangle):
     assert np.all(
         one_triangle.up_sample().vertices
         == [
