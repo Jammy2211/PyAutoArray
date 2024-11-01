@@ -270,11 +270,30 @@ def test_for_indexes(two_triangles):
     )
 
 
-def test_for_limits_and_scale(plot):
+def test_for_limits_and_scale():
     triangles = CoordinateArrayTriangles.for_limits_and_scale(
         x_min=-1.0,
         x_max=1.0,
         y_min=-1.0,
         y_max=1.0,
     )
-    plot(triangles)
+    assert np.all(
+        triangles.triangles
+        == [
+            [
+                [-1.1547005383792517, -1.0],
+                [-2.3094010767585034, 1.0],
+                [0.0, 1.0],
+            ],
+            [
+                [0.0, 1.0],
+                [1.1547005383792517, -1.0],
+                [-1.1547005383792517, -1.0],
+            ],
+            [
+                [1.1547005383792517, -1.0],
+                [0.0, 1.0],
+                [2.3094010767585034, 1.0],
+            ],
+        ]
+    )
