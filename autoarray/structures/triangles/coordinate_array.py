@@ -224,7 +224,7 @@ class CoordinateArrayTriangles:
         x_max: float,
         y_min: float,
         y_max: float,
-        **kwargs,
+        **_,
     ):
         x_mean = (x_min + x_max) / 2
         y_mean = (y_min + y_max) / 2
@@ -242,5 +242,4 @@ class CoordinateArrayTriangles:
             side_length=max_side_length / HEIGHT_FACTOR,
             x_offset=x_mean,
             y_offset=y_mean,
-            **kwargs,
         )
