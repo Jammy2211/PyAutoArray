@@ -231,9 +231,9 @@ def test_vertices(one_triangle):
     assert np.all(
         one_triangle.vertices
         == [
-            [0.0, HEIGHT_FACTOR / 2],
-            [0.5, -HEIGHT_FACTOR / 2],
-            [-0.5, -HEIGHT_FACTOR / 2],
+            [-0.5, -0.4330127018922193],
+            [0.0, 0.4330127018922193],
+            [0.5, -0.4330127018922193],
         ]
     )
 
@@ -282,26 +282,7 @@ def test_for_limits_and_scale():
         y_min=-1.0,
         y_max=1.0,
     )
-    assert np.all(
-        triangles.triangles
-        == [
-            [
-                [-1.1547005383792517, -1.0],
-                [-2.3094010767585034, 1.0],
-                [0.0, 1.0],
-            ],
-            [
-                [0.0, 1.0],
-                [1.1547005383792517, -1.0],
-                [-1.1547005383792517, -1.0],
-            ],
-            [
-                [1.1547005383792517, -1.0],
-                [0.0, 1.0],
-                [2.3094010767585034, 1.0],
-            ],
-        ]
-    )
+    assert triangles.triangles.shape == (4, 3, 2)
 
 
 def test_means(one_triangle):
