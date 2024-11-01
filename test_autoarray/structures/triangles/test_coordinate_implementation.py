@@ -314,3 +314,15 @@ def test_negative_triangles(plot):
 
     neighborhood = triangles.neighborhood()
     plot(neighborhood, color="green")
+
+
+def test_offset(plot):
+    for offset in range(3):
+        triangles = CoordinateArrayTriangles(
+            coordinates=np.array([[0, 0]]),
+            side_length=1.0,
+            x_offset=offset,
+            y_offset=offset,
+        )
+
+        plot(triangles)

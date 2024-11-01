@@ -70,7 +70,9 @@ class CoordinateArrayTriangles:
         """
         The centres of the triangles.
         """
-        return self.scaling_factors * self.coordinates + np.array([0.0, self.y_offset])
+        return self.scaling_factors * self.coordinates + np.array(
+            [self.x_offset, self.y_offset]
+        )
 
     @cached_property
     def flip_mask(self) -> np.ndarray:
@@ -126,6 +128,7 @@ class CoordinateArrayTriangles:
             side_length=self.side_length / 2,
             flipped=True,
             y_offset=self.y_offset + -0.25 * HEIGHT_FACTOR * self.side_length,
+            x_offset=self.x_offset,
         )
 
     def neighborhood(self) -> "CoordinateArrayTriangles":
@@ -158,6 +161,7 @@ class CoordinateArrayTriangles:
             side_length=self.side_length,
             flipped=self.flipped,
             y_offset=self.y_offset,
+            x_offset=self.x_offset,
         )
 
     @property
@@ -215,6 +219,7 @@ class CoordinateArrayTriangles:
             side_length=self.side_length,
             flipped=self.flipped,
             y_offset=self.y_offset,
+            x_offset=self.x_offset,
         )
 
     @classmethod
