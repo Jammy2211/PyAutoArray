@@ -11,7 +11,8 @@ class CoordinateArrayTriangles:
         coordinates: np.ndarray,
         side_length: float,
         flipped: bool = False,
-        offset: float = 0.0,
+        x_offset: float = 0.0,
+        y_offset: float = 0.0,
     ):
         """
         Represents a set of triangles by integer coordinates.
@@ -24,8 +25,8 @@ class CoordinateArrayTriangles:
             The side length of the triangles.
         flipped
             Whether the triangles are flipped upside down.
-        offset
-            An offset to apply to the y coordinates so that up-sampled triangles align.
+        y_offset
+            An y_offset to apply to the y coordinates so that up-sampled triangles align.
         """
         self.coordinates = coordinates
         self.side_length = side_length
@@ -34,7 +35,8 @@ class CoordinateArrayTriangles:
         self.scaling_factors = np.array(
             [0.5 * side_length, HEIGHT_FACTOR * side_length]
         )
-        self.offset = offset
+        self.x_offset = x_offset
+        self.y_offset = y_offset
 
     @cached_property
     def triangles(self) -> np.ndarray:
@@ -68,7 +70,7 @@ class CoordinateArrayTriangles:
         """
         The centres of the triangles.
         """
-        return self.scaling_factors * self.coordinates + np.array([0.0, self.offset])
+        return self.scaling_factors * self.coordinates + np.array([0.0, self.y_offset])
 
     @cached_property
     def flip_mask(self) -> np.ndarray:
@@ -123,7 +125,7 @@ class CoordinateArrayTriangles:
             coordinates=new_coordinates,
             side_length=self.side_length / 2,
             flipped=True,
-            offset=self.offset + -0.25 * HEIGHT_FACTOR * self.side_length,
+            y_offset=self.y_offset + -0.25 * HEIGHT_FACTOR * self.side_length,
         )
 
     def neighborhood(self) -> "CoordinateArrayTriangles":
@@ -155,7 +157,7 @@ class CoordinateArrayTriangles:
             coordinates=np.unique(new_coordinates, axis=0),
             side_length=self.side_length,
             flipped=self.flipped,
-            offset=self.offset,
+            y_offset=self.y_offset,
         )
 
     @property
@@ -212,5 +214,33 @@ class CoordinateArrayTriangles:
             coordinates=self.coordinates[indexes],
             side_length=self.side_length,
             flipped=self.flipped,
-            offset=self.offset,
+            y_offset=self.y_offset,
+        )
+
+    @classmethod
+    def for_limits_and_scale(
+        cls,
+        x_min: float,
+        x_max: float,
+        y_min: float,
+        y_max: float,
+        **kwargs,
+    ):
+        x_mean = (x_min + x_max) / 2
+        y_mean = (y_min + y_max) / 2
+
+        max_side_length = max(x_max - x_min, y_max - y_min)
+
+        return cls(
+            coordinates=np.array(
+                [
+                    [-1, 0],
+                    [0, 0],
+                    [1, 0],
+                ]
+            ),
+            side_length=max_side_length / HEIGHT_FACTOR,
+            x_offset=x_mean,
+            y_offset=y_mean,
+            **kwargs,
         )
