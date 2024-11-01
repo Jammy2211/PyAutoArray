@@ -164,24 +164,28 @@ class CoordinateArrayTriangles:
             x_offset=self.x_offset,
         )
 
+    @cached_property
+    def _vertices_and_indices(self):
+        flat_triangles = self.triangles.reshape(-1, 2)
+        vertices, inverse_indices = np.unique(
+            flat_triangles, axis=0, return_inverse=True
+        )
+        indices = inverse_indices.reshape(-1, 3)
+        return vertices, indices
+
     @property
     def vertices(self) -> np.ndarray:
         """
         The unique vertices of the triangles.
         """
-        return np.unique(self.triangles.reshape((-1, 2)), axis=0)
+        return self._vertices_and_indices[0]
 
     @property
     def indices(self) -> np.ndarray:
         """
         The indices of the vertices of the triangles.
         """
-        flat_triangles = self.triangles.reshape(-1, 2)
-        vertices, inverse_indices = np.unique(
-            flat_triangles, axis=0, return_inverse=True
-        )
-        indices = inverse_indices.reshape(-1, 3)
-        return indices
+        return self._vertices_and_indices[1]
 
     def with_vertices(self, vertices: np.ndarray) -> ArrayTriangles:
         """
