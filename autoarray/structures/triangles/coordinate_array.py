@@ -233,22 +233,24 @@ class CoordinateArrayTriangles:
         x_max: float,
         y_min: float,
         y_max: float,
+        scale: float = 1.0,
         **_,
     ):
+        coordinates = []
+        x = x_min
+        while x < x_max:
+            y = y_min
+            while y < y_max:
+                coordinates.append([x, y])
+                y += scale
+            x += scale
+
         x_mean = (x_min + x_max) / 2
         y_mean = (y_min + y_max) / 2
 
-        max_side_length = max(x_max - x_min, y_max - y_min)
-
         return cls(
-            coordinates=np.array(
-                [
-                    [-1, 0],
-                    [0, 0],
-                    [1, 0],
-                ]
-            ),
-            side_length=max_side_length / HEIGHT_FACTOR,
+            coordinates=np.array(coordinates),
+            side_length=scale,
             x_offset=x_mean,
             y_offset=y_mean,
         )
