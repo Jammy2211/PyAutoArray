@@ -156,3 +156,7 @@ class CoordinateArrayTriangles:
             flipped=self.flipped,
             offset=self.offset,
         )
+
+    @property
+    def vertices(self):
+        return self.triangles.reshape((-1, 2))

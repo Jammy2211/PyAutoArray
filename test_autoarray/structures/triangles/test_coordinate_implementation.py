@@ -218,3 +218,21 @@ def test_upside_down_neighborhood(upside_down):
             ],
         ]
     )
+
+
+def test_complicated(plot, one_triangle):
+    triangles = one_triangle.neighborhood().neighborhood()
+    up_sampled = triangles.up_sample()
+    plot(up_sampled, color="red")
+    plot(triangles)
+
+
+def test_vertices(one_triangle):
+    assert np.all(
+        one_triangle.vertices
+        == [
+            [0.0, HEIGHT_FACTOR / 2],
+            [0.5, -HEIGHT_FACTOR / 2],
+            [-0.5, -HEIGHT_FACTOR / 2],
+        ]
+    )
