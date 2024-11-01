@@ -236,3 +236,17 @@ def test_vertices(one_triangle):
             [-0.5, -HEIGHT_FACTOR / 2],
         ]
     )
+
+
+def test_upsampled_vertices(one_triangle):
+    assert np.all(
+        one_triangle.up_sample().vertices
+        == [
+            [-0.5, -0.4330127018922193],
+            [-0.25, 0.0],
+            [0.0, -0.4330127018922193],
+            [0.0, 0.4330127018922193],
+            [0.25, 0.0],
+            [0.5, -0.4330127018922193],
+        ]
+    )

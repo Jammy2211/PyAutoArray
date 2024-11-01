@@ -159,4 +159,4 @@ class CoordinateArrayTriangles:
 
     @property
     def vertices(self):
-        return self.triangles.reshape((-1, 2))
+        return np.unique(self.triangles.reshape((-1, 2)), axis=0)
