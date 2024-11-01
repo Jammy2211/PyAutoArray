@@ -1,5 +1,3 @@
-from typing import Tuple
-
 import numpy as np
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
@@ -84,7 +82,9 @@ class ArrayTriangles(AbstractTriangles):
         Includes the current triangles and the triangles that share an edge with the current triangles.
         """
         unique_vertices, inverse_indices = np.unique(
-            self._neighborhood_triangles().reshape(-1, 2), axis=0, return_inverse=True
+            self._neighborhood_triangles().reshape(-1, 2),
+            axis=0,
+            return_inverse=True,
         )
         new_indices = inverse_indices.reshape(-1, 3)
 
