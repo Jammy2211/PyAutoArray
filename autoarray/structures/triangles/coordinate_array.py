@@ -176,3 +176,11 @@ class CoordinateArrayTriangles:
             indices=self.indices,
             vertices=vertices,
         )
+
+    def for_indexes(self, indexes: np.ndarray) -> "CoordinateArrayTriangles":
+        return CoordinateArrayTriangles(
+            coordinates=self.coordinates[indexes],
+            side_length=self.side_length,
+            flipped=self.flipped,
+            offset=self.offset,
+        )

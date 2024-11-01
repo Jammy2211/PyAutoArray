@@ -255,3 +255,16 @@ def test_up_sampled_vertices(one_triangle):
 def test_with_vertices(one_triangle):
     triangle = one_triangle.with_vertices(np.array([[0, 0], [1, 0], [0.5, 1]]))
     assert np.all(triangle.triangles == [[[1.0, 0.0], [0.5, 1.0], [0.0, 0.0]]])
+
+
+def test_for_indexes(two_triangles):
+    assert np.all(
+        two_triangles.for_indexes(np.array([0])).triangles
+        == [
+            [
+                [0.0, 0.4330127018922193],
+                [0.5, -0.4330127018922193],
+                [-0.5, -0.4330127018922193],
+            ]
+        ]
+    )
