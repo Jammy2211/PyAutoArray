@@ -159,11 +159,17 @@ class CoordinateArrayTriangles:
         )
 
     @property
-    def vertices(self):
+    def vertices(self) -> np.ndarray:
+        """
+        The unique vertices of the triangles.
+        """
         return np.unique(self.triangles.reshape((-1, 2)), axis=0)
 
     @property
-    def indices(self):
+    def indices(self) -> np.ndarray:
+        """
+        The indices of the vertices of the triangles.
+        """
         flat_triangles = self.triangles.reshape(-1, 2)
         vertices, inverse_indices = np.unique(
             flat_triangles, axis=0, return_inverse=True
@@ -172,12 +178,36 @@ class CoordinateArrayTriangles:
         return indices
 
     def with_vertices(self, vertices: np.ndarray) -> ArrayTriangles:
+        """
+        Create a new set of triangles with the vertices replaced.
+
+        Parameters
+        ----------
+        vertices
+            The new vertices to use.
+
+        Returns
+        -------
+        The new set of triangles with the new vertices.
+        """
         return ArrayTriangles(
             indices=self.indices,
             vertices=vertices,
         )
 
     def for_indexes(self, indexes: np.ndarray) -> "CoordinateArrayTriangles":
+        """
+        Create a new CoordinateArrayTriangles containing triangles corresponding to the given indexes
+
+        Parameters
+        ----------
+        indexes
+            The indexes of the triangles to include in the new CoordinateArrayTriangles.
+
+        Returns
+        -------
+        The new CoordinateArrayTriangles instance.
+        """
         return CoordinateArrayTriangles(
             coordinates=self.coordinates[indexes],
             side_length=self.side_length,
