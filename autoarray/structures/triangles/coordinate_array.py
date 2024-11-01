@@ -247,3 +247,7 @@ class CoordinateArrayTriangles:
     @property
     def means(self):
         return np.mean(self.triangles, axis=1)
+
+    @property
+    def area(self):
+        return (3**0.5 / 4 * self.side_length**2) * len(self.coordinates)
