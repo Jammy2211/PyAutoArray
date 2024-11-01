@@ -301,3 +301,16 @@ def test_for_limits_and_scale():
 
 def test_means(one_triangle):
     assert np.all(one_triangle.means == [[0.0, -0.14433756729740643]])
+
+
+def test_negative_triangles(plot):
+    triangles = CoordinateArrayTriangles(
+        coordinates=np.array([[-1, -1]]),
+        side_length=1.0,
+    )
+    up_sampled = triangles.up_sample()
+    plot(triangles)
+    plot(up_sampled, color="red")
+
+    neighborhood = triangles.neighborhood()
+    plot(neighborhood, color="green")
