@@ -5,6 +5,7 @@ import warnings
 from autoarray import exc
 from autoarray import numba_util
 from autoarray import type as ty
+from autoarray.numpy_wrapper import use_jax, np as jnp
 
 
 @numba_util.jit()
@@ -66,15 +67,18 @@ def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
 
     total_regular_pixels = total_regular_pixels_from(mask=mask)
     """
+    if use_jax:
+        return (~mask_2d.astype(bool)).sum()
 
-    total_regular_pixels = 0
+    else:
+        total_regular_pixels = 0
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                total_regular_pixels += 1
+        for y in range(mask_2d.shape[0]):
+            for x in range(mask_2d.shape[1]):
+                if not mask_2d[y, x]:
+                    total_regular_pixels += 1
 
-    return total_regular_pixels
+        return total_regular_pixels
 
 
 @numba_util.jit()
@@ -1052,15 +1056,17 @@ def native_index_for_slim_index_2d_from(
 
     native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
     """
+    if use_jax:
+        return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
+    else:
+        total_pixels = total_pixels_2d_from(mask_2d=mask_2d)
+        native_index_for_slim_index_2d = np.zeros(shape=(total_pixels, 2))
+        slim_index = 0
 
-    total_pixels = total_pixels_2d_from(mask_2d=mask_2d)
-    native_index_for_slim_index_2d = np.zeros(shape=(total_pixels, 2))
-    slim_index = 0
+        for y in range(mask_2d.shape[0]):
+            for x in range(mask_2d.shape[1]):
+                if not mask_2d[y, x]:
+                    native_index_for_slim_index_2d[slim_index, :] = y, x
+                    slim_index += 1
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                native_index_for_slim_index_2d[slim_index, :] = y, x
-                slim_index += 1
-
-    return native_index_for_slim_index_2d
+        return native_index_for_slim_index_2d

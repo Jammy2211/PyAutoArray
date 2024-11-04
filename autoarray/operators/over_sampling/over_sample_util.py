@@ -1,4 +1,4 @@
-from autoarray.numpy_wrapper import np, register_pytree_node_class, use_jax
+from autoarray.numpy_wrapper import np, register_pytree_node_class, use_jax, jit
 
 from typing import List, Tuple
 
@@ -504,9 +504,14 @@ def binned_array_2d_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
-                        binned_array_2d_slim[index] += (
-                            array_2d[sub_index] * sub_fraction[index]
-                        )
+                        if use_jax:
+                            binned_array_2d_slim = binned_array_2d_slim.at[index].add(
+                                array_2d[sub_index] * sub_fraction[index]
+                            )
+                        else:
+                            binned_array_2d_slim[index] += (
+                                array_2d[sub_index] * sub_fraction[index]
+                            )
                         sub_index += 1
 
                 index += 1

@@ -1009,10 +1009,16 @@ class Grid2D(Structure):
         The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        return (
-            np.amin(self[:, 0]).astype("float"),
-            np.amin(self[:, 1]).astype("float"),
-        )
+        if use_jax:
+            return (
+                np.amin(self.array[:, 0]).astype("float"),
+                np.amin(self.array[:, 1]).astype("float"),
+            )
+        else:
+            return (
+                np.amin(self[:, 0]).astype("float"),
+                np.amin(self[:, 1]).astype("float"),
+            )
 
     @property
     def scaled_maxima(self) -> Tuple:
@@ -1020,10 +1026,16 @@ class Grid2D(Structure):
         The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        return (
-            np.amax(self[:, 0]).astype("float"),
-            np.amax(self[:, 1]).astype("float"),
-        )
+        if use_jax:
+            return (
+                np.amax(self.array[:, 0]).astype("float"),
+                np.amax(self.array[:, 1]).astype("float"),
+            )
+        else:
+            return (
+                np.amax(self[:, 0]).astype("float"),
+                np.amax(self[:, 1]).astype("float"),
+            )
 
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
         """
