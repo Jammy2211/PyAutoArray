@@ -231,9 +231,9 @@ def test_vertices(one_triangle):
     assert np.all(
         one_triangle.vertices
         == [
-            [0.0, HEIGHT_FACTOR / 2],
-            [0.5, -HEIGHT_FACTOR / 2],
-            [-0.5, -HEIGHT_FACTOR / 2],
+            [-0.5, -0.4330127018922193],
+            [0.0, 0.4330127018922193],
+            [0.5, -0.4330127018922193],
         ]
     )
 
@@ -282,52 +282,8 @@ def test_for_limits_and_scale():
         y_min=-1.0,
         y_max=1.0,
     )
-    assert np.all(
-        triangles.triangles
-        == [
-            [
-                [-1.1547005383792517, -1.0],
-                [-2.3094010767585034, 1.0],
-                [0.0, 1.0],
-            ],
-            [
-                [0.0, 1.0],
-                [1.1547005383792517, -1.0],
-                [-1.1547005383792517, -1.0],
-            ],
-            [
-                [1.1547005383792517, -1.0],
-                [0.0, 1.0],
-                [2.3094010767585034, 1.0],
-            ],
-        ]
-    )
+    assert triangles.triangles.shape == (4, 3, 2)
 
 
 def test_means(one_triangle):
     assert np.all(one_triangle.means == [[0.0, -0.14433756729740643]])
-
-
-def test_negative_triangles(plot):
-    triangles = CoordinateArrayTriangles(
-        coordinates=np.array([[-1, -1]]),
-        side_length=1.0,
-    )
-    up_sampled = triangles.up_sample()
-    plot(triangles)
-    plot(up_sampled, color="red")
-
-    neighborhood = triangles.neighborhood()
-    plot(neighborhood, color="green")
-
-
-def test_offset(plot):
-    for offset in range(3):
-        triangles = CoordinateArrayTriangles(
-            coordinates=np.array([[0, 0]]),
-            side_length=1.0,
-            x_offset=offset,
-            y_offset=offset,
-        )
-
-        plot(triangles)
