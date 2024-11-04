@@ -275,28 +275,27 @@ def grid_2d_slim_via_mask_from(
 
     total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d)
 
-    grid_slim = np.zeros(shape=(total_pixels, 2))
-
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 
-    index = 0
+    if use_jax:
+        centres_scaled = np.array(centres_scaled)
+        pixel_scales = np.array(pixel_scales)
+        sign = np.array([-1.0, 1.0])
+        grid_slim = (
+            np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled
+        ) * sign * pixel_scales
+    else:
+        index = 0
+        grid_slim = np.zeros(shape=(total_pixels, 2))
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                if use_jax:
-                    grid_slim = grid_slim.at[index, 0].set(
-                        -(y - centres_scaled[0]) * pixel_scales[0]
-                    )
-                    grid_slim = grid_slim.at[index, 1].set(
-                        (x - centres_scaled[1]) * pixel_scales[1]
-                    )
-                else:
+        for y in range(mask_2d.shape[0]):
+            for x in range(mask_2d.shape[1]):
+                if not mask_2d[y, x]:
                     grid_slim[index, 0] = -(y - centres_scaled[0]) * pixel_scales[0]
                     grid_slim[index, 1] = (x - centres_scaled[1]) * pixel_scales[1]
-                index += 1
+                    index += 1
 
     return grid_slim
 
