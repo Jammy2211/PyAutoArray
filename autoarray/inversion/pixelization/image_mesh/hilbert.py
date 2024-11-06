@@ -277,7 +277,6 @@ class Hilbert(AbstractImageMeshWeighted):
         -------
 
         """
-
         if not mask.is_circular:
             raise exc.PixelizationException(
                 """
