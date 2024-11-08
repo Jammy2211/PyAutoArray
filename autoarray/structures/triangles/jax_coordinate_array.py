@@ -1,45 +1,16 @@
 from jax import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
+from autoarray.structures.triangles.abstract_coordinate_array import (
+    AbstractCoordinateArray,
+)
 from autoarray.structures.triangles.jax_array import ArrayTriangles
 from autoarray.numpy_wrapper import register_pytree_node_class
 from autoconf import cached_property
 
 
 @register_pytree_node_class
-class CoordinateArrayTriangles:
-    def __init__(
-        self,
-        coordinates: np.ndarray,
-        side_length: float,
-        x_offset: float = 0.0,
-        y_offset: float = 0.0,
-        flipped: bool = False,
-    ):
-        """
-        Represents a set of triangles by integer coordinates.
-
-        Parameters
-        ----------
-        coordinates
-            Integer x y coordinates for each triangle.
-        side_length
-            The side length of the triangles.
-        flipped
-            Whether the triangles are flipped upside down.
-        y_offset
-            An y_offset to apply to the y coordinates so that up-sampled triangles align.
-        """
-        self.coordinates = coordinates
-        self.side_length = side_length
-        self.flipped = flipped
-
-        self.scaling_factors = np.array(
-            [0.5 * side_length, HEIGHT_FACTOR * side_length]
-        )
-        self.x_offset = x_offset
-        self.y_offset = y_offset
-
+class CoordinateArrayTriangles(AbstractCoordinateArray):
     def tree_flatten(self):
         return (
             self.coordinates,
@@ -66,33 +37,6 @@ class CoordinateArrayTriangles:
         An instance of this class
         """
         return cls(*children, flipped=aux_data[0])
-
-    @cached_property
-    def triangles(self) -> np.ndarray:
-        """
-        The vertices of the triangles as an Nx3x2 array.
-        """
-        centres = self.centres
-        return np.stack(
-            (
-                centres
-                + self.flip_array
-                * np.array(
-                    [0.0, 0.5 * self.side_length * HEIGHT_FACTOR],
-                ),
-                centres
-                + self.flip_array
-                * np.array(
-                    [0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
-                ),
-                centres
-                + self.flip_array
-                * np.array(
-                    [-0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
-                ),
-            ),
-            axis=1,
-        )
 
     @property
     def centres(self) -> np.ndarray:
@@ -205,20 +149,6 @@ class CoordinateArrayTriangles:
         indices = inverse_indices.reshape(-1, 3)
         return vertices, indices
 
-    @property
-    def vertices(self) -> np.ndarray:
-        """
-        The unique vertices of the triangles.
-        """
-        return self._vertices_and_indices[0]
-
-    @property
-    def indices(self) -> np.ndarray:
-        """
-        The indices of the vertices of the triangles.
-        """
-        return self._vertices_and_indices[1]
-
     def with_vertices(self, vertices: np.ndarray) -> ArrayTriangles:
         """
         Create a new set of triangles with the vertices replaced.
@@ -262,43 +192,3 @@ class CoordinateArrayTriangles:
             x_offset=self.x_offset,
             flipped=self.flipped,
         )
-
-    @classmethod
-    def for_limits_and_scale(
-        cls,
-        x_min: float,
-        x_max: float,
-        y_min: float,
-        y_max: float,
-        scale: float = 1.0,
-        **_,
-    ):
-        coordinates = []
-        x = x_min
-        while x < x_max:
-            y = y_min
-            while y < y_max:
-                coordinates.append([x, y])
-                y += scale
-            x += scale
-
-        x_mean = (x_min + x_max) / 2
-        y_mean = (y_min + y_max) / 2
-
-        return cls(
-            coordinates=np.array(coordinates),
-            side_length=scale,
-            x_offset=x_mean,
-            y_offset=y_mean,
-        )
-
-    @property
-    def means(self):
-        return np.mean(self.triangles, axis=1)
-
-    @property
-    def area(self):
-        return (3**0.5 / 4 * self.side_length**2) * len(self.coordinates)
-
-    def __len__(self):
-        return len(self.coordinates)
