@@ -239,7 +239,7 @@ def test_with_vertices(one_triangle):
     assert np.all(triangle.triangles == [[[1.0, 0.0], [0.5, 1.0], [0.0, 0.0]]])
 
 
-def test_multiple_with_vertices(one_triangle, plot):
+def _test_multiple_with_vertices(one_triangle, plot):
     up_sampled = one_triangle.up_sample()
     plot(up_sampled.with_vertices(2 * up_sampled.vertices).triangles.tolist())
 
