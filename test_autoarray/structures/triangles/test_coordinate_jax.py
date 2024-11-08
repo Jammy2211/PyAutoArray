@@ -1,4 +1,4 @@
-import jax
+from autoarray.numpy_wrapper import jit
 import pytest
 import numpy as np
 
@@ -14,7 +14,7 @@ def one_triangle():
     )
 
 
-# @jax.jit
+@jit
 def full_routine(triangles):
     neighborhood = triangles.neighborhood()
     up_sampled = neighborhood.up_sample()
@@ -31,7 +31,7 @@ def test_full_routine(one_triangle, plot):
 
 def test_neighborhood(one_triangle):
     assert np.all(
-        np.array(jax.jit(one_triangle.neighborhood)().triangles)
+        np.array(jit(one_triangle.neighborhood)().triangles)
         == [
             [
                 [-0.5, -0.4330126941204071],
@@ -58,7 +58,7 @@ def test_neighborhood(one_triangle):
 
 
 def test_up_sample(one_triangle):
-    up_sampled = jax.jit(one_triangle.up_sample)()
+    up_sampled = jit(one_triangle.up_sample)()
     assert np.all(
         np.array(up_sampled.triangles)
         == [
