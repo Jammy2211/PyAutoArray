@@ -1,8 +1,24 @@
 from autoarray.numpy_wrapper import numpy as np
 from autoarray.structures.triangles.array import ArrayTriangles
 
+from matplotlib import pyplot as plt
+
 
 import pytest
+
+
+@pytest.fixture
+def plot():
+    plt.figure(figsize=(8, 8))
+
+    def plot(triangles, color="black"):
+        for triangle in triangles:
+            triangle = np.append(triangle, [triangle[0]], axis=0)
+            plt.plot(triangle[:, 0], triangle[:, 1], "o-", color=color)
+
+    yield plot
+    plt.gca().set_aspect("equal", adjustable="box")
+    plt.show()
 
 
 @pytest.fixture
