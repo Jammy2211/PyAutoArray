@@ -12,9 +12,9 @@ class CoordinateArrayTriangles:
         self,
         coordinates: np.ndarray,
         side_length: float,
-        flipped: bool = False,
         x_offset: float = 0.0,
         y_offset: float = 0.0,
+        flipped: bool = False,
     ):
         """
         Represents a set of triangles by integer coordinates.
@@ -44,10 +44,9 @@ class CoordinateArrayTriangles:
         return (
             self.coordinates,
             self.side_length,
-            self.flipped,
             self.x_offset,
             self.y_offset,
-        ), ()
+        ), (self.flipped,)
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
@@ -66,7 +65,7 @@ class CoordinateArrayTriangles:
         -------
         An instance of this class
         """
-        return cls(*children)
+        return cls(*children, flipped=aux_data[0])
 
     @cached_property
     def triangles(self) -> np.ndarray:

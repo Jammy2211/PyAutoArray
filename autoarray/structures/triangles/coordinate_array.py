@@ -10,9 +10,9 @@ class CoordinateArrayTriangles:
         self,
         coordinates: np.ndarray,
         side_length: float,
-        flipped: bool = False,
         x_offset: float = 0.0,
         y_offset: float = 0.0,
+        flipped: bool = False,
     ):
         """
         Represents a set of triangles by integer coordinates.
@@ -126,9 +126,9 @@ class CoordinateArrayTriangles:
         return CoordinateArrayTriangles(
             coordinates=new_coordinates,
             side_length=self.side_length / 2,
-            flipped=True,
             y_offset=self.y_offset + -0.25 * HEIGHT_FACTOR * self.side_length,
             x_offset=self.x_offset,
+            flipped=True,
         )
 
     def neighborhood(self) -> "CoordinateArrayTriangles":
@@ -159,9 +159,9 @@ class CoordinateArrayTriangles:
         return CoordinateArrayTriangles(
             coordinates=np.unique(new_coordinates, axis=0),
             side_length=self.side_length,
-            flipped=self.flipped,
             y_offset=self.y_offset,
             x_offset=self.x_offset,
+            flipped=self.flipped,
         )
 
     @cached_property
@@ -221,9 +221,9 @@ class CoordinateArrayTriangles:
         return CoordinateArrayTriangles(
             coordinates=self.coordinates[indexes],
             side_length=self.side_length,
-            flipped=self.flipped,
             y_offset=self.y_offset,
             x_offset=self.x_offset,
+            flipped=self.flipped,
         )
 
     @classmethod
