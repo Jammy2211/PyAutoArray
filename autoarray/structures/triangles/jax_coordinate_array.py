@@ -1,4 +1,4 @@
-from autoarray.numpy_wrapper import numpy as np
+from jax import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.array import ArrayTriangles
@@ -120,10 +120,8 @@ class CoordinateArrayTriangles:
         """
         An array of 1s and -1s to flip the triangles.
         """
-        array = np.ones(self.coordinates.shape[0])
-        array[self.flip_mask] = -1
-
-        return array[:, np.newaxis]
+        array = np.where(self.flip_mask, -1.0, 1.0)
+        return array[:, None]
 
     def __iter__(self):
         return iter(self.triangles)
@@ -166,29 +164,24 @@ class CoordinateArrayTriangles:
 
         Ensures that the new triangles are unique.
         """
-        coordinates = self.coordinates  # shape (N, 2)
-        flip_mask = self.flip_mask  # shape (N,)
+        coordinates = self.coordinates
+        flip_mask = self.flip_mask
 
-        # Create shifts for all coordinates
         shift0 = np.zeros((coordinates.shape[0], 2))
         shift1 = np.tile(np.array([1, 0]), (coordinates.shape[0], 1))
         shift2 = np.tile(np.array([-1, 0]), (coordinates.shape[0], 1))
 
-        # Create the fourth shift based on the flip_mask
         shift3 = np.where(
             flip_mask[:, None],
             np.tile(np.array([0, 1]), (coordinates.shape[0], 1)),
             np.tile(np.array([0, -1]), (coordinates.shape[0], 1)),
         )
 
-        # Stack all shifts together
-        shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)  # shape (N, 4, 2)
+        shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
 
-        # Expand coordinates and add shifts
-        coordinates_expanded = coordinates[:, None, :]  # shape (N, 1, 2)
-        new_coordinates = coordinates_expanded + shifts  # shape (N, 4, 2)
+        coordinates_expanded = coordinates[:, None, :]
+        new_coordinates = coordinates_expanded + shifts
 
-        # Reshape to (4N, 2)
         new_coordinates = new_coordinates.reshape(-1, 2)
 
         return CoordinateArrayTriangles(

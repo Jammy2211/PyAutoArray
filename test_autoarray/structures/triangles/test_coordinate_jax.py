@@ -17,6 +17,7 @@ def one_triangle():
 @jax.jit
 def full_routine(triangles):
     neighborhood = triangles.neighborhood()
+    return neighborhood
     up_sampled = neighborhood.up_sample()
     with_vertices = up_sampled.with_vertices(up_sampled.vertices)
     indexes = with_vertices.containing_indices(Point(0.1, 0.1))
@@ -24,9 +25,12 @@ def full_routine(triangles):
 
 
 def test_full_routine(one_triangle, plot):
-    full_routine(one_triangle)
+    # full_routine(one_triangle)
 
     neighborhood = one_triangle.neighborhood()
+    plot(np.array(neighborhood), color="red")
+    return
+
     up_sampled = neighborhood.up_sample()
     with_vertices = up_sampled.with_vertices(up_sampled.vertices)
 
@@ -37,3 +41,31 @@ def test_full_routine(one_triangle, plot):
     plot(neighborhood.triangles, color="red")
     plot(one_triangle.triangles, color="black")
     plot(selected.triangles, color="yellow")
+
+
+def test_neighborhood(one_triangle):
+    assert np.all(
+        np.array(jax.jit(one_triangle.neighborhood)().triangles)
+        == [
+            [
+                [-0.5, -0.4330126941204071],
+                [-1.0, 0.4330126941204071],
+                [0.0, 0.4330126941204071],
+            ],
+            [
+                [0.0, -1.299038052558899],
+                [-0.5, -0.4330126941204071],
+                [0.5, -0.4330126941204071],
+            ],
+            [
+                [0.0, 0.4330126941204071],
+                [0.5, -0.4330126941204071],
+                [-0.5, -0.4330126941204071],
+            ],
+            [
+                [0.5, -0.4330126941204071],
+                [0.0, 0.4330126941204071],
+                [1.0, 0.4330126941204071],
+            ],
+        ]
+    )
