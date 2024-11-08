@@ -17,8 +17,8 @@ def one_triangle():
 @jax.jit
 def full_routine(triangles):
     neighborhood = triangles.neighborhood()
-    return neighborhood
     up_sampled = neighborhood.up_sample()
+    return up_sampled
     with_vertices = up_sampled.with_vertices(up_sampled.vertices)
     indexes = with_vertices.containing_indices(Point(0.1, 0.1))
     return up_sampled.for_indexes(indexes)
