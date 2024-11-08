@@ -1,7 +1,7 @@
 from jax import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.jax_array import ArrayTriangles
 from autoarray.numpy_wrapper import register_pytree_node_class
 from autoconf import cached_property
 
@@ -197,7 +197,10 @@ class CoordinateArrayTriangles:
     def _vertices_and_indices(self):
         flat_triangles = self.triangles.reshape(-1, 2)
         vertices, inverse_indices = np.unique(
-            flat_triangles, axis=0, return_inverse=True
+            flat_triangles,
+            axis=0,
+            return_inverse=True,
+            size=3 * self.coordinates.shape[0],
         )
         indices = inverse_indices.reshape(-1, 3)
         return vertices, indices
