@@ -25,22 +25,9 @@ def full_routine(triangles):
 
 
 def test_full_routine(one_triangle, plot):
-    # full_routine(one_triangle)
+    result = full_routine(one_triangle)
 
-    neighborhood = one_triangle.neighborhood()
-    plot(np.array(neighborhood), color="red")
-    return
-
-    up_sampled = neighborhood.up_sample()
-    with_vertices = up_sampled.with_vertices(up_sampled.vertices)
-
-    selected = full_routine(one_triangle)
-
-    plot(up_sampled.triangles, color="blue")
-    plot(with_vertices.triangles, color="green")
-    plot(neighborhood.triangles, color="red")
-    plot(one_triangle.triangles, color="black")
-    plot(selected.triangles, color="yellow")
+    plot(result)
 
 
 def test_neighborhood(one_triangle):

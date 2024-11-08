@@ -13,7 +13,8 @@ def plot():
 
     def plot(triangles, color="black"):
         for triangle in triangles:
-            triangle = np.append(triangle, [triangle[0]], axis=0)
+            triangle = np.array(triangle)
+            triangle = np.append(triangle, np.array([triangle[0]]), axis=0)
             plt.plot(triangle[:, 0], triangle[:, 1], "o-", color=color)
 
     yield plot
