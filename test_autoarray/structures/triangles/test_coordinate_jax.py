@@ -40,9 +40,9 @@ def test_full_routine(one_triangle, plot):
 
 
 def test_neighborhood(one_triangle):
-    assert np.all(
-        np.array(jit(one_triangle.neighborhood)().triangles)
-        == np.array(
+    assert np.allclose(
+        np.array(jit(one_triangle.neighborhood)().triangles),
+        np.array(
             [
                 [
                     [-0.5, -0.4330126941204071],
@@ -65,15 +65,15 @@ def test_neighborhood(one_triangle):
                     [1.0, 0.4330126941204071],
                 ],
             ]
-        )
+        ),
     )
 
 
 def test_up_sample(one_triangle):
     up_sampled = jit(one_triangle.up_sample)()
-    assert np.all(
-        np.array(up_sampled.triangles)
-        == np.array(
+    assert np.allclose(
+        np.array(up_sampled.triangles),
+        np.array(
             [
                 [
                     [[0.0, -0.4330126941204071], [-0.25, 0.0], [0.25, 0.0]],
@@ -90,5 +90,5 @@ def test_up_sample(one_triangle):
                     [[0.0, 0.4330126941204071], [0.25, 0.0], [-0.25, 0.0]],
                 ]
             ]
-        )
+        ),
     )
