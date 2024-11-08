@@ -1,3 +1,4 @@
+import jax
 import pytest
 import numpy as np
 
@@ -13,6 +14,7 @@ def one_triangle():
     )
 
 
+@jax.jit
 def full_routine(triangles):
     neighborhood = triangles.neighborhood()
     up_sampled = neighborhood.up_sample()
