@@ -166,8 +166,8 @@ class CoordinateArrayTriangles:
 
         Ensures that the new triangles are unique.
         """
-        normal_indices = np.where(~self.flip_mask)[0]
-        flip_indices = np.where(self.flip_mask)[0]
+        normal_indices = np.where(~self.flip_mask, size=self.coordinates.shape[0])[0]
+        flip_indices = np.where(self.flip_mask, size=self.coordinates.shape[0])[0]
 
         normal_coordinates = np.vstack(
             (
@@ -195,7 +195,11 @@ class CoordinateArrayTriangles:
         )
 
         return CoordinateArrayTriangles(
-            coordinates=np.unique(new_coordinates, axis=0),
+            coordinates=np.unique(
+                new_coordinates,
+                axis=0,
+                size=4 * self.coordinates.shape[0],
+            ),
             side_length=self.side_length,
             flipped=self.flipped,
             y_offset=self.y_offset,
