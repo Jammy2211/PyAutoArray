@@ -166,33 +166,30 @@ class CoordinateArrayTriangles:
 
         Ensures that the new triangles are unique.
         """
-        normal_indices = np.where(~self.flip_mask, size=self.coordinates.shape[0])[0]
-        flip_indices = np.where(self.flip_mask, size=self.coordinates.shape[0])[0]
+        coordinates = self.coordinates  # shape (N, 2)
+        flip_mask = self.flip_mask  # shape (N,)
 
-        normal_coordinates = np.vstack(
-            (
-                self.coordinates[normal_indices],
-                self.coordinates[normal_indices] + np.array([1, 0]),
-                self.coordinates[normal_indices] + np.array([-1, 0]),
-                self.coordinates[normal_indices] + np.array([0, -1]),
-            )
-        )
-        flip_coordinates = np.vstack(
-            (
-                self.coordinates[flip_indices],
-                self.coordinates[flip_indices] + np.array([1, 0]),
-                self.coordinates[flip_indices] + np.array([-1, 0]),
-                self.coordinates[flip_indices] + np.array([0, 1]),
-            )
+        # Create shifts for all coordinates
+        shift0 = np.zeros((coordinates.shape[0], 2))
+        shift1 = np.tile(np.array([1, 0]), (coordinates.shape[0], 1))
+        shift2 = np.tile(np.array([-1, 0]), (coordinates.shape[0], 1))
+
+        # Create the fourth shift based on the flip_mask
+        shift3 = np.where(
+            flip_mask[:, None],
+            np.tile(np.array([0, 1]), (coordinates.shape[0], 1)),
+            np.tile(np.array([0, -1]), (coordinates.shape[0], 1)),
         )
 
-        new_coordinates = np.concatenate(
-            (
-                normal_coordinates,
-                flip_coordinates,
-            ),
-            axis=0,
-        )
+        # Stack all shifts together
+        shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)  # shape (N, 4, 2)
+
+        # Expand coordinates and add shifts
+        coordinates_expanded = coordinates[:, None, :]  # shape (N, 1, 2)
+        new_coordinates = coordinates_expanded + shifts  # shape (N, 4, 2)
+
+        # Reshape to (4N, 2)
+        new_coordinates = new_coordinates.reshape(-1, 2)
 
         return CoordinateArrayTriangles(
             coordinates=np.unique(
