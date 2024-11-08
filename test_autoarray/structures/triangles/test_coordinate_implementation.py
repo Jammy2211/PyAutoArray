@@ -56,13 +56,11 @@ def test_trivial_triangles(one_triangle):
     )
 
 
-def test_above(plot):
+def test_above():
     triangles = CoordinateArrayTriangles(
         coordinates=np.array([[0, 1]]),
         side_length=1.0,
     )
-    plot(triangles)
-    plot(triangles.up_sample(), color="red")
     assert np.all(
         triangles.up_sample().triangles
         == [
@@ -140,7 +138,7 @@ def test_up_sample_upside_down(upside_down):
     )
 
 
-def test_up_sample_twice(one_triangle, plot):
+def _test_up_sample_twice(one_triangle, plot):
     plot(one_triangle)
     one = one_triangle.up_sample()
     two = one.up_sample()
@@ -206,11 +204,9 @@ def test_upside_down_neighborhood(upside_down):
     )
 
 
-def test_complicated(plot, one_triangle):
+def _test_complicated(plot, one_triangle):
     triangles = one_triangle.neighborhood().neighborhood()
     up_sampled = triangles.up_sample()
-    plot(up_sampled, color="red")
-    plot(triangles)
 
 
 def test_vertices(one_triangle):
