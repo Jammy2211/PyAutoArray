@@ -33,10 +33,21 @@ def full_routine(triangles):
     return up_sampled.for_indexes(indexes)
 
 
-def test_full_routine(one_triangle, plot):
+def test_full_routine(one_triangle, compare_with_nans):
     result = full_routine(one_triangle)
 
-    plot(result)
+    assert compare_with_nans(
+        result.triangles,
+        np.array(
+            [
+                [
+                    [0.0, 0.4330126941204071],
+                    [0.25, 0.0],
+                    [-0.25, 0.0],
+                ]
+            ]
+        ),
+    )
 
 
 def test_neighborhood(one_triangle):
