@@ -250,12 +250,17 @@ class CoordinateArrayTriangles:
         -------
         The new CoordinateArrayTriangles instance.
         """
+        mask = indexes == -1
+        safe_indexes = np.where(mask, 0, indexes)
+        coordinates = self.coordinates[safe_indexes]
+        coordinates = np.where(mask[:, None], np.nan, coordinates)
+
         return CoordinateArrayTriangles(
-            coordinates=self.coordinates[indexes],
+            coordinates=coordinates,
             side_length=self.side_length,
-            flipped=self.flipped,
             y_offset=self.y_offset,
             x_offset=self.x_offset,
+            flipped=self.flipped,
         )
 
     @classmethod
