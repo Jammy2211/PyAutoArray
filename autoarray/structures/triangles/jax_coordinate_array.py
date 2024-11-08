@@ -166,25 +166,34 @@ class CoordinateArrayTriangles:
 
         Ensures that the new triangles are unique.
         """
-        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
-        n_normal = 4 * np.sum(~self.flip_mask)
+        normal_indices = np.where(~self.flip_mask)[0]
+        flip_indices = np.where(self.flip_mask)[0]
 
-        new_coordinates[:n_normal] = np.vstack(
+        normal_coordinates = np.vstack(
             (
-                self.coordinates[~self.flip_mask],
-                self.coordinates[~self.flip_mask] + np.array([1, 0]),
-                self.coordinates[~self.flip_mask] + np.array([-1, 0]),
-                self.coordinates[~self.flip_mask] + np.array([0, -1]),
+                self.coordinates[normal_indices],
+                self.coordinates[normal_indices] + np.array([1, 0]),
+                self.coordinates[normal_indices] + np.array([-1, 0]),
+                self.coordinates[normal_indices] + np.array([0, -1]),
             )
         )
-        new_coordinates[n_normal:] = np.vstack(
+        flip_coordinates = np.vstack(
             (
-                self.coordinates[self.flip_mask],
-                self.coordinates[self.flip_mask] + np.array([1, 0]),
-                self.coordinates[self.flip_mask] + np.array([-1, 0]),
-                self.coordinates[self.flip_mask] + np.array([0, 1]),
+                self.coordinates[flip_indices],
+                self.coordinates[flip_indices] + np.array([1, 0]),
+                self.coordinates[flip_indices] + np.array([-1, 0]),
+                self.coordinates[flip_indices] + np.array([0, 1]),
             )
         )
+
+        new_coordinates = np.concatenate(
+            (
+                normal_coordinates,
+                flip_coordinates,
+            ),
+            axis=0,
+        )
+
         return CoordinateArrayTriangles(
             coordinates=np.unique(new_coordinates, axis=0),
             side_length=self.side_length,
