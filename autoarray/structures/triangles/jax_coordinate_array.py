@@ -1,10 +1,12 @@
-import numpy as np
+from autoarray.numpy_wrapper import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.numpy_wrapper import register_pytree_node_class
 from autoconf import cached_property
 
 
+@register_pytree_node_class
 class CoordinateArrayTriangles:
     def __init__(
         self,
@@ -37,6 +39,34 @@ class CoordinateArrayTriangles:
         )
         self.x_offset = x_offset
         self.y_offset = y_offset
+
+    def tree_flatten(self):
+        return (
+            self.coordinates,
+            self.side_length,
+            self.flipped,
+            self.x_offset,
+            self.y_offset,
+        ), ()
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        """
+        Create a prior from a flattened PyTree
+
+        Parameters
+        ----------
+        aux_data
+            Auxiliary information that remains unchanged including
+            the keys of the dict
+        children
+            Child objects subject to change
+
+        Returns
+        -------
+        An instance of this class
+        """
+        return cls(*children)
 
     @cached_property
     def triangles(self) -> np.ndarray:
