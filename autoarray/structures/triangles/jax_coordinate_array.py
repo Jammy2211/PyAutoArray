@@ -130,25 +130,22 @@ class CoordinateArrayTriangles:
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
         """
-        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
-        n_normal = 4 * np.sum(~self.flip_mask)
+        coordinates = self.coordinates
+        flip_mask = self.flip_mask
 
-        new_coordinates[:n_normal] = np.vstack(
-            (
-                2 * self.coordinates[~self.flip_mask],
-                2 * self.coordinates[~self.flip_mask] + np.array([1, 0]),
-                2 * self.coordinates[~self.flip_mask] + np.array([-1, 0]),
-                2 * self.coordinates[~self.flip_mask] + np.array([0, 1]),
-            )
-        )
-        new_coordinates[n_normal:] = np.vstack(
-            (
-                2 * self.coordinates[self.flip_mask],
-                2 * self.coordinates[self.flip_mask] + np.array([1, 1]),
-                2 * self.coordinates[self.flip_mask] + np.array([-1, 1]),
-                2 * self.coordinates[self.flip_mask] + np.array([0, 1]),
-            )
-        )
+        coordinates = 2 * coordinates
+
+        n = coordinates.shape[0]
+
+        shift0 = np.zeros((n, 2))
+        shift3 = np.tile(np.array([0, 1]), (n, 1))
+        shift1 = np.stack([np.ones(n), np.where(flip_mask, 1.0, 0.0)], axis=1)
+        shift2 = np.stack([-np.ones(n), np.where(flip_mask, 1.0, 0.0)], axis=1)
+        shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
+
+        coordinates_expanded = coordinates[:, None, :]
+        new_coordinates = coordinates_expanded + shifts
+        new_coordinates = new_coordinates.reshape(-1, 2)
 
         return CoordinateArrayTriangles(
             coordinates=new_coordinates,
