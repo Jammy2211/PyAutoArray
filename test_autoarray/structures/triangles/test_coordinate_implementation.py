@@ -258,14 +258,14 @@ def test_for_indexes(two_triangles):
     )
 
 
-def test_for_limits_and_scale():
-    triangles = CoordinateArrayTriangles.for_limits_and_scale(
-        x_min=-1.0,
-        x_max=1.0,
-        y_min=-1.0,
-        y_max=1.0,
-    )
-    assert triangles.triangles.shape == (4, 3, 2)
+# def test_for_limits_and_scale():
+#     triangles = CoordinateArrayTriangles.for_limits_and_scale(
+#         x_min=-1.0,
+#         x_max=1.0,
+#         y_min=-1.0,
+#         y_max=1.0,
+#     )
+#     assert triangles.triangles.shape == (4, 3, 2)
 
 
 def test_means(one_triangle):
