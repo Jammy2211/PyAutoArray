@@ -29,6 +29,9 @@ class AbstractTriangles(ABC):
         self.indices = indices
         self.vertices = vertices
 
+    def __len__(self):
+        return len(self.triangles)
+
     @property
     def area(self) -> float:
         """

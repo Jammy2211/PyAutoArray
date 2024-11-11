@@ -122,6 +122,7 @@ class InversionPlotter(Plotter):
         reconstructed_image: bool = False,
         reconstruction: bool = False,
         errors: bool = False,
+        signal_to_noise_map: bool = False,
         regularization_weights: bool = False,
         sub_pixels_per_image_pixels: bool = False,
         mesh_pixels_per_image_pixels: bool = False,
@@ -146,6 +147,8 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
         errors
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        signal_to_noise_map
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane signal-to-noise-map.
         sub_pixels_per_image_pixels
             Whether to make a 2D plot (via `imshow`) of the number of sub pixels per image pixels in the 2D
             data's mask.
@@ -237,6 +240,23 @@ class InversionPlotter(Plotter):
                 mapper_plotter.plot_source_from(
                     pixel_values=self.inversion.errors_dict[mapper_plotter.mapper],
                     auto_labels=AutoLabels(title="Errors", filename="errors"),
+                )
+
+            except TypeError:
+                pass
+
+        if signal_to_noise_map:
+            try:
+                signal_to_noise_values = (
+                    self.inversion.reconstruction_dict[mapper_plotter.mapper]
+                    / self.inversion.errors_dict[mapper_plotter.mapper]
+                )
+
+                mapper_plotter.plot_source_from(
+                    pixel_values=signal_to_noise_values,
+                    auto_labels=AutoLabels(
+                        title="Signal To Noise Map", filename="signal_to_noise_map"
+                    ),
                 )
 
             except TypeError:

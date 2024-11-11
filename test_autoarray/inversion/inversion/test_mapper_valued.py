@@ -196,20 +196,20 @@ def test__magnification_via_interpolation_from():
     )
 
     mapper = aa.m.MockMapper(
-        parameters=3,
+        parameters=4,
         mask=mask,
         interpolated_array=magnification,
-        mapping_matrix=np.ones((4, 3)),
+        mapping_matrix=np.ones((4, 4)),
     )
 
     mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
 
     magnification = mapper_valued.magnification_via_interpolation_from()
 
-    assert magnification == pytest.approx(3.6666666666666665, 1.0e-4)
+    assert magnification == pytest.approx(4.0, 1.0e-4)
 
     magnification = mapper_valued.magnification_via_interpolation_from(
         shape_native=(3, 3), extent=(-1.0, 1.0, -1.0, 1.0)
     )
 
-    assert magnification == pytest.approx(3.6666666666666665, 1.0e-4)
+    assert magnification == pytest.approx(4.0, 1.0e-4)
