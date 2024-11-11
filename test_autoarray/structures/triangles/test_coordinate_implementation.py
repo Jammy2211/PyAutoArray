@@ -283,3 +283,16 @@ def test_means(one_triangle):
 )
 def test_containment(one_triangle, x, y):
     assert one_triangle.containing_indices(Point(x, y)) == [0]
+
+
+def test_triangles_touch():
+    triangles = CoordinateArrayTriangles(
+        np.array([[0, 0], [2, 0]]),
+    )
+
+    assert max(triangles.triangles[0][:, 0]) == min(triangles.triangles[1][:, 0])
+
+    triangles = CoordinateArrayTriangles(
+        np.array([[0, 0], [0, 1]]),
+    )
+    assert max(triangles.triangles[0][:, 1]) == min(triangles.triangles[1][:, 1])

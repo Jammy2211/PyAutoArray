@@ -10,7 +10,7 @@ class AbstractCoordinateArray(ABC):
     def __init__(
         self,
         coordinates: np.ndarray,
-        side_length: float,
+        side_length: float = 1.0,
         x_offset: float = 0.0,
         y_offset: float = 0.0,
         flipped: bool = False,
