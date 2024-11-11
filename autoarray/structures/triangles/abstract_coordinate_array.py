@@ -140,23 +140,18 @@ class AbstractCoordinateArray(ABC):
         scale: float = 1.0,
         **_,
     ):
-        coordinates = []
-        x = x_min
-        while x < x_max:
-            y = y_min
-            while y < y_max:
-                coordinates.append([x, y])
-                y += scale
-            x += scale
+        x_shift = int(2 * x_min / scale)
+        y_shift = int(y_min / (HEIGHT_FACTOR * scale))
 
-        x_mean = (x_min + x_max) / 2
-        y_mean = (y_min + y_max) / 2
+        coordinates = []
+
+        for x in range(x_shift, int(2 * x_max / scale) + 1):
+            for y in range(y_shift - 1, int(y_max / (HEIGHT_FACTOR * scale)) + 2):
+                coordinates.append([x, y])
 
         return cls(
             coordinates=np.array(coordinates),
             side_length=scale,
-            x_offset=x_mean,
-            y_offset=y_mean,
         )
 
     @property

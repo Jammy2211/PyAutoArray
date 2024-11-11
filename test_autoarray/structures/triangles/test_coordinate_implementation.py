@@ -296,3 +296,21 @@ def test_triangles_touch():
         np.array([[0, 0], [0, 1]]),
     )
     assert max(triangles.triangles[0][:, 1]) == min(triangles.triangles[1][:, 1])
+
+
+def test_from_grid_regression():
+    triangles = CoordinateArrayTriangles.for_limits_and_scale(
+        x_min=-4.75,
+        x_max=4.75,
+        y_min=-4.75,
+        y_max=4.75,
+        scale=0.5,
+    )
+
+    x = triangles.vertices[:, 0]
+    assert min(x) <= -4.75
+    assert max(x) >= 4.75
+
+    y = triangles.vertices[:, 1]
+    assert min(y) <= -4.75
+    assert max(y) >= 4.75
