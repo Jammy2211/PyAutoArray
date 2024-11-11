@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 import logging
-import numpy as np
+
+from autoarray.numpy_wrapper import np, use_jax
+if use_jax:
+    import jax
 from pathlib import Path
 from typing import Dict, Union
 
@@ -73,17 +76,23 @@ class Mask(AbstractNDArray, ABC):
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
         single value as a float.
         """
+        def exception_message():
+            raise exc.MaskException(
+                "Cannot return a pixel_scale for a grid where each dimension has a "
+                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1])"
+            )
+
         for pixel_scale in self.pixel_scales:
-            if abs(pixel_scale - self.pixel_scales[0]) > 1.0e-8:
-                logger.warning(
-                    f"""
-                The Mask has different pixel scales in each dimensions, which are {self.pixel_scales}.
-                
-                This is not expected, and will lead to unexpected behaviour in the grid and mask classes.
-                The code will continue to run, but you should check that the pixel scales are as you expect and
-                that associated data structures (e.g. grids) are behaving as you expect.
-                """
+            cond = abs(pixel_scale - self.pixel_scales[0]) > 1.0e-8
+            if use_jax:
+                jax.lax.cond(
+                    cond,
+                    lambda _: jax.debug.callback(exception_message),
+                    lambda _: None,
+                    None
                 )
+            elif cond:
+                exception_message()
 
         return self.pixel_scales[0]
 
@@ -121,7 +130,7 @@ class Mask(AbstractNDArray, ABC):
         """
         The total number of unmasked pixels (values are `False`) in the mask.
         """
-        return int(np.size(self._array) - np.sum(self._array))
+        return (np.size(self._array) - np.sum(self._array)).astype(int)
 
     @property
     def is_all_true(self) -> bool:

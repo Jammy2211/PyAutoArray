@@ -1,7 +1,5 @@
-from autoarray.numpy_wrapper import register_pytree_node_class
+from autoarray.numpy_wrapper import np, register_pytree_node_class, use_jax, jit
 
-
-import numpy as np
 from typing import List, Tuple
 
 from autoarray.mask.mask_2d import Mask2D
@@ -221,9 +219,9 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     for sub_mask_y in range(sub_mask_2d.shape[0]):
         for sub_mask_x in range(sub_mask_2d.shape[1]):
             if sub_mask_2d[sub_mask_y, sub_mask_x] == False:
-                sub_slim_index_for_sub_native_index[
-                    sub_mask_y, sub_mask_x
-                ] = sub_mask_1d_index
+                sub_slim_index_for_sub_native_index[sub_mask_y, sub_mask_x] = (
+                    sub_mask_1d_index
+                )
                 sub_mask_1d_index += 1
 
     return sub_slim_index_for_sub_native_index
@@ -324,7 +322,11 @@ def sub_size_radial_bins_from(
     for i in range(radial_grid.shape[0]):
         for j in range(len(radial_list)):
             if radial_grid[i] < radial_list[j]:
-                sub_size[i] = sub_size_list[j]
+                if use_jax:
+                    # while this makes it run, it is very, very slow
+                    sub_size = sub_size.at[i].set(sub_size_list[j])
+                else:
+                    sub_size[i] = sub_size_list[j]
                 break
 
     return sub_size
@@ -403,12 +405,35 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
-                        grid_slim[sub_index, 0] = -(
-                            y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
-                        )
-                        grid_slim[sub_index, 1] = (
-                            x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
-                        )
+                        if use_jax:
+                            # while this makes it run, it is very, very slow
+                            grid_slim = grid_slim.at[sub_index, 0].set(
+                                -(
+                                    y_scaled
+                                    - y_sub_half
+                                    + y1 * y_sub_step
+                                    + (y_sub_step / 2.0)
+                                )
+                            )
+                            grid_slim = grid_slim.at[sub_index, 1].set(
+                                x_scaled
+                                - x_sub_half
+                                + x1 * x_sub_step
+                                + (x_sub_step / 2.0)
+                            )
+                        else:
+                            grid_slim[sub_index, 0] = -(
+                                y_scaled
+                                - y_sub_half
+                                + y1 * y_sub_step
+                                + (y_sub_step / 2.0)
+                            )
+                            grid_slim[sub_index, 1] = (
+                                x_scaled
+                                - x_sub_half
+                                + x1 * x_sub_step
+                                + (x_sub_step / 2.0)
+                            )
                         sub_index += 1
 
                 index += 1
@@ -479,9 +504,14 @@ def binned_array_2d_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
-                        binned_array_2d_slim[index] += (
-                            array_2d[sub_index] * sub_fraction[index]
-                        )
+                        if use_jax:
+                            binned_array_2d_slim = binned_array_2d_slim.at[index].add(
+                                array_2d[sub_index] * sub_fraction[index]
+                            )
+                        else:
+                            binned_array_2d_slim[index] += (
+                                array_2d[sub_index] * sub_fraction[index]
+                            )
                         sub_index += 1
 
                 index += 1

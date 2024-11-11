@@ -13,6 +13,8 @@ from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray import type as ty
 from autoarray.geometry import geometry_util
 
+from autofit.jax_wrapper import use_jax
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -234,7 +236,7 @@ class Geometry2D(AbstractGeometry2D):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid_pixels_2d = geometry_util.grid_pixels_2d_slim_from(
-            grid_scaled_2d_slim=np.array(grid_scaled_2d),
+            grid_scaled_2d_slim=np.array(grid_scaled_2d.array),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,

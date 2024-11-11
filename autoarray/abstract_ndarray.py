@@ -4,9 +4,8 @@ from copy import copy
 
 from abc import ABC
 from abc import abstractmethod
-import numpy as np
 
-from autoarray.numpy_wrapper import numpy as npw, register_pytree_node, Array
+from autoarray.numpy_wrapper import np, register_pytree_node, Array
 
 from typing import TYPE_CHECKING
 
@@ -113,7 +112,7 @@ class AbstractNDArray(ABC):
         Unflatten a tuple of attributes (i.e. a pytree) into an instance of an autoarray class
         """
         instance = cls.__new__(cls)
-        for key, value in zip(aux_data, children[1:]):
+        for key, value in zip(aux_data, children):
             setattr(instance, key, value)
         return instance
 
@@ -333,7 +332,7 @@ class AbstractNDArray(ABC):
 
     def __setitem__(self, key, value):
         if isinstance(key, (np.ndarray, AbstractNDArray, Array)):
-            self._array = npw.where(key, value, self._array)
+            self._array = np.where(key, value, self._array)
         else:
             self._array[key] = value
 

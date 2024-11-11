@@ -38,13 +38,12 @@ class AbstractTriangles(ABC):
         The total area covered by the triangles.
         """
         triangles = self.triangles
-        return (
-            0.5
-            * np.abs(
+        return 0.5 * np.nansum(
+            np.abs(
                 (triangles[:, 0, 0] * (triangles[:, 1, 1] - triangles[:, 2, 1]))
                 + (triangles[:, 1, 0] * (triangles[:, 2, 1] - triangles[:, 0, 1]))
                 + (triangles[:, 2, 0] * (triangles[:, 0, 1] - triangles[:, 1, 1]))
-            ).sum()
+            )
         )
 
     @property

@@ -3,9 +3,6 @@ from typing import List, Union
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.over_sampling.abstract import AbstractOverSampling
-from autoarray.structures.arrays.irregular import ArrayIrregular
-from autoarray.structures.arrays.uniform_1d import Array1D
-from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -95,7 +92,6 @@ class AbstractMaker:
         if isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             return self.func(self.obj, grid, *self.args, **self.kwargs)
-
         return self.func(self.obj, self.grid, *self.args, **self.kwargs)
 
     @property

@@ -1,4 +1,4 @@
-from autoarray.numpy_wrapper import numpy as np
+from autoarray.numpy_wrapper import np
 from autoarray.structures.triangles.array import ArrayTriangles
 
 from matplotlib import pyplot as plt

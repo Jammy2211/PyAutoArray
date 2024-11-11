@@ -1,4 +1,4 @@
-import numpy as np
+from autoarray.numpy_wrapper import np
 from typing import List, Tuple, Union
 
 from autoconf import conf
@@ -14,7 +14,10 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
 
+from autofit.jax_wrapper import register_pytree_node_class
 
+
+@register_pytree_node_class
 class OverSamplingUniform(AbstractOverSampling):
     def __init__(self, sub_size: Union[int, Array2D]):
         """
@@ -188,7 +191,7 @@ class OverSamplingUniform(AbstractOverSampling):
         sub_size = np.zeros(grid.shape_slim)
 
         for centre in centre_list:
-            radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
+            radial_grid = grid.distances_to_coordinate_from(coordinate=centre).array
 
             sub_size_of_centre = over_sample_util.sub_size_radial_bins_from(
                 radial_grid=np.array(radial_grid),
@@ -319,6 +322,15 @@ class OverSamplingUniform(AbstractOverSampling):
             mask=mask,
             sub_size=self.sub_size,
         )
+    
+    def tree_flatten(self):
+        children = (self.sub_size,)
+        aux_data = None
+        return (children, aux_data)
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        return cls(*children)
 
 
 class OverSamplerUniform(AbstractOverSampler):
@@ -397,7 +409,7 @@ class OverSamplerUniform(AbstractOverSampler):
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size).astype("int"),
+            sub_size=np.array(self.sub_size.array).astype("int"),
             origin=self.mask.origin,
         )
 
@@ -427,9 +439,9 @@ class OverSamplerUniform(AbstractOverSampler):
             pass
 
         binned_array_2d = over_sample_util.binned_array_2d_from(
-            array_2d=np.array(array),
+            array_2d=np.array(array.array),
             mask_2d=np.array(self.mask),
-            sub_size=np.array(self.sub_size).astype("int"),
+            sub_size=np.array(self.sub_size.array).astype("int"),
         )
 
         return Array2D(

@@ -1,5 +1,5 @@
 from __future__ import annotations
-import numpy as np
+from autoarray.numpy_wrapper import np, use_jax
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
@@ -824,9 +824,14 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
-            self[:, 1] - coordinate[1]
-        )
+        if use_jax:
+            squared_distances = np.square(self.array[:, 0] - coordinate[0]) + np.square(
+                self.array[:, 1] - coordinate[1]
+            )
+        else:
+            squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+                self[:, 1] - coordinate[1]
+            )
         return Array2D(values=squared_distances, mask=self.mask)
 
     def distances_to_coordinate_from(
@@ -840,9 +845,10 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
-        distances = np.sqrt(
-            self.squared_distances_to_coordinate_from(coordinate=coordinate)
+        squared_distance = self.squared_distances_to_coordinate_from(
+            coordinate=coordinate
         )
+        distances = np.sqrt(squared_distance.array)
         return Array2D(values=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(
@@ -1003,10 +1009,16 @@ class Grid2D(Structure):
         The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        return (
-            np.amin(self[:, 0]).astype("float"),
-            np.amin(self[:, 1]).astype("float"),
-        )
+        if use_jax:
+            return (
+                np.amin(self.array[:, 0]).astype("float"),
+                np.amin(self.array[:, 1]).astype("float"),
+            )
+        else:
+            return (
+                np.amin(self[:, 0]).astype("float"),
+                np.amin(self[:, 1]).astype("float"),
+            )
 
     @property
     def scaled_maxima(self) -> Tuple:
@@ -1014,10 +1026,16 @@ class Grid2D(Structure):
         The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        return (
-            np.amax(self[:, 0]).astype("float"),
-            np.amax(self[:, 1]).astype("float"),
-        )
+        if use_jax:
+            return (
+                np.amax(self.array[:, 0]).astype("float"),
+                np.amax(self.array[:, 1]).astype("float"),
+            )
+        else:
+            return (
+                np.amax(self[:, 0]).astype("float"),
+                np.amax(self[:, 1]).astype("float"),
+            )
 
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
         """
