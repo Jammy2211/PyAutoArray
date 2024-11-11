@@ -252,7 +252,7 @@ class AbstractTriangles(ABC):
 
         Returns
         -------
-        The triangles that intersect the shape.
+        The indices of triangles that intersect the shape.
         """
 
     @abstractmethod

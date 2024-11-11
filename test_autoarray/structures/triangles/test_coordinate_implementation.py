@@ -4,6 +4,7 @@ import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
+from autoarray.structures.triangles.shape import Point
 
 
 @pytest.fixture
@@ -269,3 +270,16 @@ def test_for_limits_and_scale():
 
 def test_means(one_triangle):
     assert np.all(one_triangle.means == [[0.0, -0.14433756729740643]])
+
+
+@pytest.mark.parametrize(
+    "x, y",
+    [
+        (0.0, 0.0),
+        (-0.5, -HEIGHT_FACTOR / 2),
+        (0.5, -HEIGHT_FACTOR / 2),
+        (0.0, HEIGHT_FACTOR / 2),
+    ],
+)
+def test_containment(one_triangle, x, y):
+    assert one_triangle.containing_indices(Point(x, y)) == [0]
