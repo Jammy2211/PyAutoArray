@@ -146,6 +146,8 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             axis=0,
             return_inverse=True,
             size=3 * self.coordinates.shape[0],
+            equal_nan=True,
+            fill_value=np.nan,
         )
         indices = inverse_indices.reshape(-1, 3)
         return vertices, indices

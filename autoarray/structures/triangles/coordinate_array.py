@@ -5,6 +5,7 @@ from autoarray.structures.triangles.abstract_coordinate_array import (
     AbstractCoordinateArray,
 )
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.shape import Shape
 from autoconf import cached_property
 
 
@@ -88,7 +89,9 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
     def _vertices_and_indices(self):
         flat_triangles = self.triangles.reshape(-1, 2)
         vertices, inverse_indices = np.unique(
-            flat_triangles, axis=0, return_inverse=True
+            flat_triangles,
+            axis=0,
+            return_inverse=True,
         )
         indices = inverse_indices.reshape(-1, 3)
         return vertices, indices
@@ -131,3 +134,18 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             x_offset=self.x_offset,
             flipped=self.flipped,
         )
+
+    def containing_indices(self, shape: Shape) -> np.ndarray:
+        """
+        Find the triangles that insect with a given shape.
+
+        Parameters
+        ----------
+        shape
+            The shape
+
+        Returns
+        -------
+        The indices of triangles that intersect the shape.
+        """
+        return self.with_vertices(self.vertices).containing_indices(shape)
