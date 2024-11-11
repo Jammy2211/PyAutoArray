@@ -92,5 +92,6 @@ class Figure(AbstractMatWrap):
         """
         Wraps the Matplotlib method 'plt.close' for closing a figure.
         """
-        if plt.fignum_exists(num=1):
-            plt.close()
+        plt.close()
+        import gc
+        gc.collect()
