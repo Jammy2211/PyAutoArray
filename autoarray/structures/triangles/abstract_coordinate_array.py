@@ -165,7 +165,7 @@ class AbstractCoordinateArray(ABC):
 
     @property
     def area(self):
-        return (3**0.5 / 4 * self.side_length**2) * len(self.coordinates)
+        return (3**0.5 / 4 * self.side_length**2) * len(self)
 
     def __len__(self):
-        return len(self.coordinates)
+        return np.count_nonzero(~np.isnan(self.coordinates).any(axis=1))

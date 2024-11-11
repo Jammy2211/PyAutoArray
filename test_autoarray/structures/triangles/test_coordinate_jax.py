@@ -1,6 +1,7 @@
 from autoarray.numpy_wrapper import jit
 import pytest
 
+from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.shape import Point
 
 try:
@@ -110,4 +111,17 @@ def test_means(one_triangle):
 
     up_sampled = one_triangle.up_sample()
     neighborhood = up_sampled.neighborhood()
-    assert np.count_nonzero(~np.isnan(neighborhood.means)) == 20
+    assert np.count_nonzero(~np.isnan(neighborhood.means).any(axis=1)) == 10
+
+
+ONE_TRIANGLE_AREA = HEIGHT_FACTOR * 0.5
+
+
+def test_area(one_triangle):
+    assert one_triangle.area == ONE_TRIANGLE_AREA
+    assert one_triangle.up_sample().area == ONE_TRIANGLE_AREA
+
+    neighborhood = one_triangle.neighborhood()
+    assert neighborhood.area == 4 * ONE_TRIANGLE_AREA
+    assert neighborhood.up_sample().area == 4 * ONE_TRIANGLE_AREA
+    assert neighborhood.neighborhood().area == 10 * ONE_TRIANGLE_AREA
