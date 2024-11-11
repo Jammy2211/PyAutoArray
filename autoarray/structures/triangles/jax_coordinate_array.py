@@ -183,7 +183,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         mask = indexes == -1
         safe_indexes = np.where(mask, 0, indexes)
-        coordinates = self.coordinates[safe_indexes]
+        coordinates = np.take(self.coordinates, safe_indexes, axis=0)
         coordinates = np.where(mask[:, None], np.nan, coordinates)
 
         return CoordinateArrayTriangles(
