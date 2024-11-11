@@ -1,23 +1,9 @@
 import pytest
-from matplotlib import pyplot as plt
+
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
-
-
-@pytest.fixture
-def plot():
-    plt.figure(figsize=(8, 8))
-
-    def plot(triangles, color="black"):
-        for triangle in triangles:
-            triangle = np.append(triangle, [triangle[0]], axis=0)
-            plt.plot(triangle[:, 0], triangle[:, 1], "o-", color=color)
-
-    yield plot
-    plt.gca().set_aspect("equal", adjustable="box")
-    plt.show()
 
 
 @pytest.fixture
@@ -70,13 +56,11 @@ def test_trivial_triangles(one_triangle):
     )
 
 
-def test_above(plot):
+def test_above():
     triangles = CoordinateArrayTriangles(
         coordinates=np.array([[0, 1]]),
         side_length=1.0,
     )
-    plot(triangles)
-    plot(triangles.up_sample(), color="red")
     assert np.all(
         triangles.up_sample().triangles
         == [
@@ -154,7 +138,7 @@ def test_up_sample_upside_down(upside_down):
     )
 
 
-def test_up_sample_twice(one_triangle, plot):
+def _test_up_sample_twice(one_triangle, plot):
     plot(one_triangle)
     one = one_triangle.up_sample()
     two = one.up_sample()
@@ -220,11 +204,9 @@ def test_upside_down_neighborhood(upside_down):
     )
 
 
-def test_complicated(plot, one_triangle):
+def _test_complicated(plot, one_triangle):
     triangles = one_triangle.neighborhood().neighborhood()
     up_sampled = triangles.up_sample()
-    plot(up_sampled, color="red")
-    plot(triangles)
 
 
 def test_vertices(one_triangle):
@@ -257,7 +239,7 @@ def test_with_vertices(one_triangle):
     assert np.all(triangle.triangles == [[[1.0, 0.0], [0.5, 1.0], [0.0, 0.0]]])
 
 
-def test_multiple_with_vertices(one_triangle, plot):
+def _test_multiple_with_vertices(one_triangle, plot):
     up_sampled = one_triangle.up_sample()
     plot(up_sampled.with_vertices(2 * up_sampled.vertices).triangles.tolist())
 
