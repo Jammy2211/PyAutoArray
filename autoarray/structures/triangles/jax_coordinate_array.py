@@ -130,6 +130,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
                 new_coordinates,
                 axis=0,
                 size=4 * self.coordinates.shape[0],
+                fill_value=np.nan,
             ),
             side_length=self.side_length,
             flipped=self.flipped,

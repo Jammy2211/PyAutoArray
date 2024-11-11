@@ -103,3 +103,11 @@ def test_up_sample(one_triangle):
             ]
         ),
     )
+
+
+def test_means(one_triangle):
+    assert len(one_triangle.means) == 1
+
+    up_sampled = one_triangle.up_sample()
+    neighborhood = up_sampled.neighborhood()
+    assert np.count_nonzero(~np.isnan(neighborhood.means)) == 20
