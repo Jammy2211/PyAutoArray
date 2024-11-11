@@ -89,7 +89,9 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
     def _vertices_and_indices(self):
         flat_triangles = self.triangles.reshape(-1, 2)
         vertices, inverse_indices = np.unique(
-            flat_triangles, axis=0, return_inverse=True
+            flat_triangles,
+            axis=0,
+            return_inverse=True,
         )
         indices = inverse_indices.reshape(-1, 3)
         return vertices, indices
