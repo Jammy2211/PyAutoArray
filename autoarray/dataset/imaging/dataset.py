@@ -381,7 +381,7 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sampling=self.over_sampling,
             pad_for_convolver=False,
-            check_noise_map=False
+            check_noise_map=False,
         )
 
         logger.info(
@@ -434,7 +434,7 @@ class Imaging(AbstractDataset):
             psf=self.psf,
             over_sampling=over_sampling,
             pad_for_convolver=False,
-            check_noise_map=False
+            check_noise_map=False,
         )
 
     def output_to_fits(

@@ -325,6 +325,9 @@ class Preloads:
                 < 1e-8
             ):
                 should_preload = True
+            else:
+                should_preload = False
+                break
 
         if should_preload:
             self.linear_func_operated_mapping_matrix_dict = (

@@ -94,4 +94,5 @@ class Figure(AbstractMatWrap):
         """
         plt.close()
         import gc
+
         gc.collect()
