@@ -9,10 +9,7 @@ from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.plot.wrap import base as wb
 
 
-def facecolors_from(
-        values,
-        simplices
-):
+def facecolors_from(values, simplices):
     facecolors = np.zeros(shape=simplices.shape[0])
     for i in range(simplices.shape[0]):
         facecolors[i] = np.sum(1.0 / 3.0 * values[simplices[i, :]])
@@ -65,6 +62,11 @@ class DelaunayDrawer(AbstractMatWrap2D):
             If `True`, the colorbar is plotted using a log10 scale.
         """
 
+        if pixel_values is None:
+            raise ValueError(
+                "pixel_values input to DelaunayPlotter are None and thus cannot be plotted."
+            )
+
         if ax is None:
             ax = plt.gca()
 
@@ -72,10 +74,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         simplices = mapper.delaunay.simplices
 
-        facecolors = facecolors_from(
-            values=pixel_values,
-            simplices=simplices
-        )
+        facecolors = facecolors_from(values=pixel_values, simplices=simplices)
 
         norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)
 
@@ -89,15 +88,9 @@ class DelaunayDrawer(AbstractMatWrap2D):
         color_values = np.where(pixel_values > vmax, vmax, pixel_values)
         color_values = np.where(pixel_values < vmin, vmin, color_values)
 
-        if vmax != vmin:
-            color_array = (color_values - vmin) / (vmax - vmin)
-        else:
-            color_array = np.ones(color_values.shape[0])
-
         cmap = plt.get_cmap(cmap.cmap)
 
         if colorbar is not None:
-
             cb = colorbar.set_with_color_values(
                 units=units,
                 norm=norm,

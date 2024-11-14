@@ -48,7 +48,7 @@ class MatPlot2D(AbstractMatPlot):
         vector_yx_quiver: Optional[w2d.VectorYXQuiver] = None,
         patch_overlay: Optional[w2d.PatchOverlay] = None,
         interpolated_reconstruction: Optional[w2d.InterpolatedReconstruction] = None,
-        delaunay_drawer : Optional[w2d.DelaunayDrawer] = None,
+        delaunay_drawer: Optional[w2d.DelaunayDrawer] = None,
         voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
         origin_scatter: Optional[w2d.OriginScatter] = None,
         mask_scatter: Optional[w2d.MaskScatter] = None,
@@ -662,21 +662,21 @@ class MatPlot2D(AbstractMatPlot):
         interpolation_array = None
 
         if interpolate_to_uniform:
-
-            interpolation_array = self.interpolated_reconstruction.imshow_reconstruction(
-                mapper=mapper,
-                pixel_values=pixel_values,
-                units=self.units,
-                cmap=self.cmap,
-                colorbar=self.colorbar,
-                colorbar_tickparams=self.colorbar_tickparams,
-                aspect=aspect_inv,
-                ax=ax,
-                use_log10=self.use_log10,
+            interpolation_array = (
+                self.interpolated_reconstruction.imshow_reconstruction(
+                    mapper=mapper,
+                    pixel_values=pixel_values,
+                    units=self.units,
+                    cmap=self.cmap,
+                    colorbar=self.colorbar,
+                    colorbar_tickparams=self.colorbar_tickparams,
+                    aspect=aspect_inv,
+                    ax=ax,
+                    use_log10=self.use_log10,
+                )
             )
 
         else:
-
             self.delaunay_drawer.draw_delaunay_pixels(
                 mapper=mapper,
                 pixel_values=pixel_values,
