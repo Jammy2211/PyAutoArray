@@ -643,6 +643,8 @@ class MatPlot2D(AbstractMatPlot):
 
         self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
+        plt.gca().set_aspect(aspect_inv)
+
         self.tickparams.set()
         self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
         self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
@@ -683,6 +685,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
                 ax=ax,
+                use_log10=self.use_log10,
             )
 
         self.title.set(auto_title=auto_labels.title)

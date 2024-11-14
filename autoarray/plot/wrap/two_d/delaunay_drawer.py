@@ -42,7 +42,6 @@ class DelaunayDrawer(AbstractMatWrap2D):
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
         ax=None,
         use_log10: bool = False,
-        lw=1,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `mesh_grid` which contains the (y,x)
@@ -78,8 +77,38 @@ class DelaunayDrawer(AbstractMatWrap2D):
             simplices=simplices
         )
 
+        norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)
+
+        if use_log10:
+            pixel_values[pixel_values < 1e-4] = 1e-4
+            pixel_values = np.log10(pixel_values)
+
         vmin = cmap.vmin_from(array=pixel_values, use_log10=use_log10)
         vmax = cmap.vmax_from(array=pixel_values, use_log10=use_log10)
+
+        color_values = np.where(pixel_values > vmax, vmax, pixel_values)
+        color_values = np.where(pixel_values < vmin, vmin, color_values)
+
+        if vmax != vmin:
+            color_array = (color_values - vmin) / (vmax - vmin)
+        else:
+            color_array = np.ones(color_values.shape[0])
+
+        cmap = plt.get_cmap(cmap.cmap)
+
+        if colorbar is not None:
+
+            cb = colorbar.set_with_color_values(
+                units=units,
+                norm=norm,
+                cmap=cmap,
+                color_values=color_values,
+                ax=ax,
+                use_log10=use_log10,
+            )
+
+            if cb is not None and colorbar_tickparams is not None:
+                colorbar_tickparams.set(cb=cb)
 
         ax.tripcolor(
             source_pixelization_grid[:, 1],
@@ -87,8 +116,8 @@ class DelaunayDrawer(AbstractMatWrap2D):
             simplices,
             facecolors=facecolors,
             edgecolors="None",
-            cmap=cmap.cmap,
+            cmap=cmap,
             vmin=vmin,
             vmax=vmax,
-            linewidth=lw,
+            **self.config_dict
         )
