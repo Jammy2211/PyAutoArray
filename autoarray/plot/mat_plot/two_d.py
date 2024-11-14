@@ -48,6 +48,7 @@ class MatPlot2D(AbstractMatPlot):
         vector_yx_quiver: Optional[w2d.VectorYXQuiver] = None,
         patch_overlay: Optional[w2d.PatchOverlay] = None,
         interpolated_reconstruction: Optional[w2d.InterpolatedReconstruction] = None,
+        delaunay_drawer : Optional[w2d.DelaunayDrawer] = None,
         voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
         origin_scatter: Optional[w2d.OriginScatter] = None,
         mask_scatter: Optional[w2d.MaskScatter] = None,
@@ -128,6 +129,8 @@ class MatPlot2D(AbstractMatPlot):
             Plots a `VectorField` object using the matplotlib function `plt.quiver`.
         patch_overlay
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
+        delaunay_drawer
+            Draws a colored Delaunay mesh of pixels using `plt.tripcolor`.
         voronoi_drawer
             Draws a colored Voronoi mesh of pixels using `plt.fill`.
         interpolated_reconstruction
@@ -188,6 +191,7 @@ class MatPlot2D(AbstractMatPlot):
             interpolated_reconstruction
             or w2d.InterpolatedReconstruction(is_default=True)
         )
+        self.delaunay_drawer = delaunay_drawer or w2d.DelaunayDrawer(is_default=True)
         self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer(is_default=True)
 
         self.origin_scatter = origin_scatter or w2d.OriginScatter(is_default=True)
@@ -671,51 +675,14 @@ class MatPlot2D(AbstractMatPlot):
 
         else:
 
-            def visualize_delaunay_pixelization(
-                    mapper,
-                    values,
-                    cmap="jet",
-                    vmin=None,
-                    vmax=None,
-                    axes=None,
-                    lw=1,
-            ):
-                def facecolors_from(
-                        values,
-                        simplices
-                ):
-                    facecolors = np.zeros(shape=simplices.shape[0])
-                    for i in range(simplices.shape[0]):
-                        facecolors[i] = np.sum(1.0 / 3.0 * values[simplices[i, :]])
-
-                    return facecolors
-
-                source_pixelization_grid = mapper.mapper_grids.source_plane_mesh_grid
-
-                simplices = mapper.delaunay.simplices
-
-                facecolors = facecolors_from(
-                    values=values,
-                    simplices=simplices
-                )
-
-                axes.tripcolor(
-                    source_pixelization_grid[:, 1],
-                    source_pixelization_grid[:, 0],
-                    simplices,
-                    facecolors=facecolors,
-                    edgecolors="None",
-                    cmap=cmap,
-                    vmin=vmin,
-                    vmax=vmax,
-                    linewidth=lw,
-                )
-
-            visualize_delaunay_pixelization(
+            self.delaunay_drawer.draw_delaunay_pixels(
                 mapper=mapper,
-                values=pixel_values,
-                cmap=self.cmap.cmap,
-                axes=ax,
+                pixel_values=pixel_values,
+                units=self.units,
+                cmap=self.cmap,
+                colorbar=self.colorbar,
+                colorbar_tickparams=self.colorbar_tickparams,
+                ax=ax,
             )
 
         self.title.set(auto_title=auto_labels.title)
