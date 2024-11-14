@@ -653,17 +653,70 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [annotate.set() for annotate in self.annotate]
 
-        interpolation_array = self.interpolated_reconstruction.imshow_reconstruction(
-            mapper=mapper,
-            pixel_values=pixel_values,
-            units=self.units,
-            cmap=self.cmap,
-            colorbar=self.colorbar,
-            colorbar_tickparams=self.colorbar_tickparams,
-            aspect=aspect_inv,
-            ax=ax,
-            use_log10=self.use_log10,
-        )
+        interpolation_array = None
+
+        if interpolate_to_uniform:
+
+            interpolation_array = self.interpolated_reconstruction.imshow_reconstruction(
+                mapper=mapper,
+                pixel_values=pixel_values,
+                units=self.units,
+                cmap=self.cmap,
+                colorbar=self.colorbar,
+                colorbar_tickparams=self.colorbar_tickparams,
+                aspect=aspect_inv,
+                ax=ax,
+                use_log10=self.use_log10,
+            )
+
+        else:
+
+            def visualize_delaunay_pixelization(
+                    mapper,
+                    values,
+                    cmap="jet",
+                    vmin=None,
+                    vmax=None,
+                    axes=None,
+                    lw=1,
+            ):
+                def facecolors_from(
+                        values,
+                        simplices
+                ):
+                    facecolors = np.zeros(shape=simplices.shape[0])
+                    for i in range(simplices.shape[0]):
+                        facecolors[i] = np.sum(1.0 / 3.0 * values[simplices[i, :]])
+
+                    return facecolors
+
+                source_pixelization_grid = mapper.mapper_grids.source_plane_mesh_grid
+
+                simplices = mapper.delaunay.simplices
+
+                facecolors = facecolors_from(
+                    values=values,
+                    simplices=simplices
+                )
+
+                axes.tripcolor(
+                    source_pixelization_grid[:, 1],
+                    source_pixelization_grid[:, 0],
+                    simplices,
+                    facecolors=facecolors,
+                    edgecolors="None",
+                    cmap=cmap,
+                    vmin=vmin,
+                    vmax=vmax,
+                    linewidth=lw,
+                )
+
+            visualize_delaunay_pixelization(
+                mapper=mapper,
+                values=pixel_values,
+                cmap=self.cmap.cmap,
+                axes=ax,
+            )
 
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set()
