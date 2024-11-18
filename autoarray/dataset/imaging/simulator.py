@@ -20,7 +20,7 @@ class SimulatorImaging:
         subtract_background_sky: bool = True,
         psf: Kernel2D = None,
         normalize_psf: bool = True,
-        add_poisson_noise: bool = True,
+        add_poisson_noise_to_data: bool = True,
         noise_if_add_noise_false: float = 0.1,
         noise_seed: int = -1,
     ):
@@ -54,7 +54,7 @@ class SimulatorImaging:
             An array describing the PSF kernel of the image.
         normalize_psf
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
-        add_poisson_noise
+        add_poisson_noise_to_data
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
         noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
@@ -73,7 +73,7 @@ class SimulatorImaging:
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
         self.subtract_background_sky = subtract_background_sky
-        self.add_poisson_noise = add_poisson_noise
+        self.add_poisson_noise_to_data = add_poisson_noise_to_data
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
@@ -106,7 +106,7 @@ class SimulatorImaging:
 
         image = image + background_sky_map
 
-        if self.add_poisson_noise is True:
+        if self.add_poisson_noise_to_data is True:
             image = preprocess.data_eps_with_poisson_noise_added(
                 data_eps=image,
                 exposure_time_map=exposure_time_map,
