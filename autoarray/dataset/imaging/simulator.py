@@ -136,7 +136,6 @@ class SimulatorImaging:
             image = image_with_poisson_noise
 
         if self.include_poisson_noise_in_noise_map:
-
             noise_map = preprocess.noise_map_via_data_eps_and_exposure_time_map_from(
                 data_eps=image_with_poisson_noise, exposure_time_map=exposure_time_map
             )
