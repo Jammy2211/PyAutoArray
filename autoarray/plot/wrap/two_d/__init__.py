@@ -8,6 +8,7 @@ from .patch_overlay import PatchOverlay
 from .interpolated_reconstruction import (
     InterpolatedReconstruction,
 )
+from .delaunay_drawer import DelaunayDrawer
 from .voronoi_drawer import VoronoiDrawer
 from .origin_scatter import OriginScatter
 from .mask_scatter import MaskScatter
