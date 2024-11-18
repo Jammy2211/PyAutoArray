@@ -21,6 +21,7 @@ class SimulatorImaging:
         psf: Kernel2D = None,
         normalize_psf: bool = True,
         add_poisson_noise_to_data: bool = True,
+        include_poisson_noise_in_noise_map: bool = True,
         noise_if_add_noise_false: float = 0.1,
         noise_seed: int = -1,
     ):
@@ -35,12 +36,27 @@ class SimulatorImaging:
         3) Use input values of the background sky level in every pixel of the image to add the background sky to
            the PSF convolved image.
         4) Add Poisson noise to the image, which represents noise due to whether photons hits the CCD and are converted
-           to photo-electrons which are succcessfully detected by the CCD and converted to counts.
+           to photo-electrons which are successfully detected by the CCD and converted to counts.
         5) Subtract the background sky from the image, so that the returned simulated dataset is background sky
            subtracted.
 
         The inputs of the `SimulatorImaging` object can toggle these steps on and off, for example if `psf=None` the
         PSF convolution step is omitted.
+
+        The inputs `add_poisson_noise_to_data` and `include_poisson_noise_in_noise_map` provide flexibility in
+        handling Poisson noise during simulations:
+
+        - `add_poisson_noise_to_data` determines whether Poisson noise is added to the simulated data.
+        - `include_poisson_noise_in_noise_map` decides if Poisson noise is included in the `noise_map` of the dataset.
+
+        These options allow you to create a dataset without adding Poisson noise to the data while still using
+        a `noise_map` that represents the noise levels expected if Poisson noise had been included.
+
+        This approach is particularly useful for diagnostic purposes. By simulating noise-free data but retaining
+        realistic noise levels in the `noise_map`, you can test whether the model-fitting process accurately recovers
+        the input parameters. Unlike noisy data, where random Poisson noise introduces offsets in each simulation,
+        this method ensures the posterior peaks precisely around the input values. This is a powerful way to identify
+        potential systematic biases in a model-fitting analysis.
 
         Parameters
         ----------
@@ -56,6 +72,9 @@ class SimulatorImaging:
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
         add_poisson_noise_to_data
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
+        include_poisson_noise_in_noise_map
+            Whether Poisson noise is included in the noise-map of the dataset. If `False` the noise-map is filled with
+            the value `noise_if_add_noise_false`.
         noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
             the value of noise assigned to every pixel in the noise-map.
@@ -74,6 +93,7 @@ class SimulatorImaging:
         self.background_sky_level = background_sky_level
         self.subtract_background_sky = subtract_background_sky
         self.add_poisson_noise_to_data = add_poisson_noise_to_data
+        self.include_poisson_noise_in_noise_map = include_poisson_noise_in_noise_map
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
@@ -106,15 +126,19 @@ class SimulatorImaging:
 
         image = image + background_sky_map
 
-        if self.add_poisson_noise_to_data is True:
-            image = preprocess.data_eps_with_poisson_noise_added(
-                data_eps=image,
-                exposure_time_map=exposure_time_map,
-                seed=self.noise_seed,
-            )
+        image_with_poisson_noise = preprocess.data_eps_with_poisson_noise_added(
+            data_eps=image,
+            exposure_time_map=exposure_time_map,
+            seed=self.noise_seed,
+        )
+
+        if self.add_poisson_noise_to_data:
+            image = image_with_poisson_noise
+
+        if self.include_poisson_noise_in_noise_map:
 
             noise_map = preprocess.noise_map_via_data_eps_and_exposure_time_map_from(
-                data_eps=image, exposure_time_map=exposure_time_map
+                data_eps=image_with_poisson_noise, exposure_time_map=exposure_time_map
             )
 
         else:
