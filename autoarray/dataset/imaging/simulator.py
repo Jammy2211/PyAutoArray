@@ -26,13 +26,14 @@ class SimulatorImaging:
         noise_seed: int = -1,
     ):
         """
-        Simulations observations of imaging data, including simulation of the image, noise-map, PSF, etc. as
-        an `Imaging` object.
+        Simulates observations of `Imaging` data, including simulating the image, noise, blurring due to the telescope
+        optics via the Point Spread Function (PSF) and the background sky.
 
         The simulation of an `Imaging` dataset uses the following steps:
 
-        1) Receive as input the raw image which is simulated via the steps below.
-        2) Convolve the image with the Point Spread Function of the simulated dataset.
+        1) Receive as input a raw image of what the data looks like before any simulaiton process is applied.
+        2) Include dirrection due to the telescope optics by convolve the image with an input Point Spread
+           Function (PSF).
         3) Use input values of the background sky level in every pixel of the image to add the background sky to
            the PSF convolved image.
         4) Add Poisson noise to the image, which represents noise due to whether photons hits the CCD and are converted
