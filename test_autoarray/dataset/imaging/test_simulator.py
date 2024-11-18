@@ -28,7 +28,33 @@ def test__via_image_from__all_features_off(image_central_delta_3x3):
     assert dataset.pixel_scales == (0.1, 0.1)
 
 
-def test__via_image_from__noise_off__noise_map_is_noise_value(image_central_delta_3x3):
+def test__via_image_from__psf_off__include_poisson_noise_in_noise_map(
+    image_central_delta_3x3,
+):
+    image = image_central_delta_3x3 + 1.0
+
+    simulator = aa.SimulatorImaging(
+        exposure_time=20.0,
+        add_poisson_noise_to_data=True,
+        include_poisson_noise_in_noise_map=True,
+        noise_seed=1,
+    )
+
+    dataset = simulator.via_image_from(image=image)
+
+    assert dataset.data.native == pytest.approx(
+        np.array([[1.05, 1.3, 1.25], [1.05, 2.1, 1.2], [1.05, 1.3, 1.15]]), 1e-2
+    )
+
+    assert dataset.noise_map.native == pytest.approx(
+        np.array([[0.229, 0.255, 0.25], [0.229, 0.324, 0.245], [0.229, 0.255, 0.240]]),
+        1e-2,
+    )
+
+
+def test__via_image_from__psf_off__noise_off_value_is_noise_value(
+    image_central_delta_3x3,
+):
     simulator = aa.SimulatorImaging(
         exposure_time=1.0,
         add_poisson_noise_to_data=False,
@@ -47,7 +73,27 @@ def test__via_image_from__noise_off__noise_map_is_noise_value(image_central_delt
     assert np.allclose(dataset.noise_map.native, 0.2 * np.ones((3, 3)))
 
 
-def test__via_image_from__psf_blurs_image_with_edge_trimming(image_central_delta_3x3):
+def test__via_image_from__psf_off__background_sky_on(image_central_delta_3x3):
+    simulator = aa.SimulatorImaging(
+        exposure_time=1.0,
+        background_sky_level=16.0,
+        add_poisson_noise_to_data=True,
+        noise_seed=1,
+    )
+
+    dataset = simulator.via_image_from(image=image_central_delta_3x3)
+
+    assert (
+        dataset.data.native
+        == np.array([[1.0, 5.0, 4.0], [1.0, 2.0, 1.0], [5.0, 2.0, 7.0]])
+    ).all()
+
+    assert dataset.noise_map.native[0, 0] == pytest.approx(4.12310, 1.0e-4)
+
+
+def test__via_image_from__psf_on__psf_blurs_image_with_edge_trimming(
+    image_central_delta_3x3,
+):
     psf = aa.Kernel2D.no_mask(
         values=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
@@ -69,54 +115,20 @@ def test__via_image_from__psf_blurs_image_with_edge_trimming(image_central_delta
     ).all()
 
 
-def test__via_image_from__include_poisson_noise_in_noise_map(image_central_delta_3x3):
-    image = image_central_delta_3x3 + 1.0
+def test__via_image_from__psf_on__disable_poisson_noise_in_data(
+    image_central_delta_3x3,
+):
+    psf = aa.Kernel2D.no_mask(
+        values=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+        pixel_scales=1.0,
+    )
 
     simulator = aa.SimulatorImaging(
-        exposure_time=20.0, add_poisson_noise_to_data=True,
-
+        exposure_time=20.0,
+        psf=psf,
+        normalize_psf=False,
+        add_poisson_noise_to_data=False,
         include_poisson_noise_in_noise_map=True,
-        noise_seed=1
-    )
-
-    dataset = simulator.via_image_from(image=image)
-
-    assert dataset.data.native == pytest.approx(
-        np.array([[1.05, 1.3, 1.25], [1.05, 2.1, 1.2], [1.05, 1.3, 1.15]]), 1e-2
-    )
-
-    assert dataset.noise_map.native == pytest.approx(
-        np.array([[0.229, 0.255, 0.25], [0.229, 0.324, 0.245], [0.229, 0.255, 0.240]]),
-        1e-2,
-    )
-
-def test__via_image_from__disable_poisson_noise_in_noise_map(image_central_delta_3x3):
-    image = image_central_delta_3x3 + 1.0
-
-    simulator = aa.SimulatorImaging(
-        exposure_time=20.0, add_poisson_noise_to_data=True,
-        include_poisson_noise_in_noise_map=False,
-        noise_if_add_noise_false=3.0,
-        noise_seed=1
-    )
-
-    dataset = simulator.via_image_from(image=image)
-
-    assert dataset.data.native == pytest.approx(
-        np.array([[1.05, 1.3, 1.25], [1.05, 2.1, 1.2], [1.05, 1.3, 1.15]]), 1e-2
-    )
-
-    assert dataset.noise_map.native == pytest.approx(
-        3.0 * np.ones((3, 3)),
-        1e-2,
-    )
-
-
-def test__via_image_from__background_sky_on(image_central_delta_3x3):
-    simulator = aa.SimulatorImaging(
-        exposure_time=1.0,
-        background_sky_level=16.0,
-        add_poisson_noise_to_data=True,
         noise_seed=1,
     )
 
@@ -124,13 +136,18 @@ def test__via_image_from__background_sky_on(image_central_delta_3x3):
 
     assert (
         dataset.data.native
-        == np.array([[1.0, 5.0, 4.0], [1.0, 2.0, 1.0], [5.0, 2.0, 7.0]])
+        == np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
     ).all()
 
-    assert dataset.noise_map.native[0, 0] == pytest.approx(4.12310, 1.0e-4)
+    assert dataset.noise_map.native == pytest.approx(
+        np.array(
+            [[0.0, 0.22912, 0.0], [0.25495, 0.34278, 0.22912], [0.0, 0.229128, 0.0]]
+        ),
+        1e-2,
+    )
 
 
-def test__via_image_from__psf_and_noise_both_on(image_central_delta_3x3):
+def test__via_image_from__psf_on__psf_and_noise_both_on(image_central_delta_3x3):
     image = image_central_delta_3x3 + 1.0
 
     psf = aa.Kernel2D.no_mask(

@@ -162,4 +162,6 @@ class SimulatorImaging:
 
         image = Array2D(values=image, mask=mask)
 
-        return Imaging(data=image, psf=self.psf, noise_map=noise_map)
+        return Imaging(
+            data=image, psf=self.psf, noise_map=noise_map, check_noise_map=False
+        )
