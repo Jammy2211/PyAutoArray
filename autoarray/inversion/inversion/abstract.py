@@ -758,16 +758,16 @@ class AbstractInversion:
                 raise exc.InversionException() from e
 
     @property
-    def errors_with_covariance(self) -> np.ndarray:
-        return np.linalg.inv(self.curvature_reg_matrix)
+    def reconstruction_noise_map_with_covariance(self) -> np.ndarray:
+        return np.sqrt(np.linalg.inv(self.curvature_reg_matrix))
 
     @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)
+    def reconstruction_noise_map(self):
+        return np.diagonal(self.reconstruction_noise_map_with_covariance)
 
     @property
-    def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.source_quantity_dict_from(source_quantity=self.errors)
+    def reconstruction_noise_map_dict(self) -> Dict[LinearObj, np.ndarray]:
+        return self.source_quantity_dict_from(source_quantity=self.reconstruction_noise_map)
 
     def regularization_weights_from(self, index: int) -> np.ndarray:
         linear_obj = self.linear_obj_list[index]

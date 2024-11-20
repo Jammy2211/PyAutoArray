@@ -25,8 +25,8 @@ class MockInversion(AbstractInversion):
         reconstruction_dict: List[np.ndarray] = None,
         mapped_reconstructed_data_dict=None,
         mapped_reconstructed_image_dict=None,
-        errors: np.ndarray = None,
-        errors_dict: List[np.ndarray] = None,
+        reconstruction_noise_map: np.ndarray = None,
+        reconstruction_noise_map_dict: List[np.ndarray] = None,
         regularization_term=None,
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
@@ -59,8 +59,8 @@ class MockInversion(AbstractInversion):
         self._mapped_reconstructed_data_dict = mapped_reconstructed_data_dict
         self._mapped_reconstructed_image_dict = mapped_reconstructed_image_dict
 
-        self._errors = errors
-        self._errors_dict = errors_dict
+        self._errors = reconstruction_noise_map
+        self._errors_dict = reconstruction_noise_map_dict
 
         self._regularization_term = regularization_term
         self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
@@ -171,15 +171,15 @@ class MockInversion(AbstractInversion):
         return self._mapped_reconstructed_image_dict
 
     @property
-    def errors(self):
+    def reconstruction_noise_map(self):
         if self._errors is None:
-            return super().errors
+            return super().reconstruction_noise_map
         return self._errors
 
     @property
-    def errors_dict(self):
+    def reconstruction_noise_map_dict(self):
         if self._errors_dict is None:
-            return super().errors_dict
+            return super().reconstruction_noise_map_dict
         return self._errors_dict
 
     @property
