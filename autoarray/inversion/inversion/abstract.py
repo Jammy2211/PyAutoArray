@@ -759,10 +759,47 @@ class AbstractInversion:
 
     @property
     def reconstruction_noise_map_with_covariance(self) -> np.ndarray:
+        """
+        Returns the noise-map of the reconstruction as a two dimension matrix which accounts for the covariance
+        of the noise between pixels.
+
+        The diagonal of this matrix is the noise-map of the reconstruction, which can be used for analysing the
+        reconstruction with noise properties that are representative of the fit and therefore should be used
+        for any scientific analysis (e.g. source reconstructions of strong lenses).
+
+        This noise-map is defined as the RMS standard deviation of the noise in every pixel of the reconstruction.
+        This definition is identical to the `noise_map` attributes of dataset objects.
+
+        It is computed as the square root of the inverse of the curvature matrix with regularization, which is the
+        same matrix used to solve for the reconstruction via the linear inversion.
+
+        Returns
+        -------
+        The noise-map of the reconstruction as a two dimension matrix which accounts for the covariance of the noise
+        between pixels.
+        """
         return np.sqrt(np.linalg.inv(self.curvature_reg_matrix))
 
     @property
     def reconstruction_noise_map(self):
+        """
+        Returns the noise-map of the reconstruction as a one dimensional ndarray, which does not account for the
+        covariance of the noise between pixels.
+
+        This matrix is representative of the noise properties of the fit and should be used for any scientific
+        analysis (e.g. source reconstructions of strong lenses).
+
+        The noise-map of the reconstruction is the RMS standard deviation of the noise in every pixel of the
+        reconstruction. This definition is identical to the `noise_map` attributes of dataset objects.
+        
+        It is computed as the square root of the diagonal of the `reconstruction_noise_map_with_covariance` matrix,
+        which is the same matrix used to solve for the reconstruction via the linear inversion.
+
+        Returns
+        -------
+        The noise-map of the reconstruction as a one dimensional ndarray, which does not account for the covariance
+        of the noise between pixels.
+        """
         return np.diagonal(self.reconstruction_noise_map_with_covariance)
 
     @property
