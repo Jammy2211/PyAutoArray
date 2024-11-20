@@ -791,7 +791,7 @@ class AbstractInversion:
 
         The noise-map of the reconstruction is the RMS standard deviation of the noise in every pixel of the
         reconstruction. This definition is identical to the `noise_map` attributes of dataset objects.
-        
+
         It is computed as the square root of the diagonal of the `reconstruction_noise_map_with_covariance` matrix,
         which is the same matrix used to solve for the reconstruction via the linear inversion.
 
@@ -804,7 +804,9 @@ class AbstractInversion:
 
     @property
     def reconstruction_noise_map_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.source_quantity_dict_from(source_quantity=self.reconstruction_noise_map)
+        return self.source_quantity_dict_from(
+            source_quantity=self.reconstruction_noise_map
+        )
 
     def regularization_weights_from(self, index: int) -> np.ndarray:
         linear_obj = self.linear_obj_list[index]

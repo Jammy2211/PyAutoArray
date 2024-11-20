@@ -636,7 +636,9 @@ def test__reconstruction_noise_map():
 
     inversion = aa.m.MockInversion(curvature_reg_matrix=curvature_reg_matrix)
 
-    assert inversion.errors_with_covariance == pytest.approx(
-        np.array([[2.5, -1.0, -0.5], [-1.0, 1.0, 0.0], [-0.5, 0.0, 0.5]]), 1.0e-2
+    assert inversion.reconstruction_noise_map_with_covariance[0, 0] == pytest.approx(
+        np.sqrt(2.5), 1.0e-2
     )
-    assert inversion.reconstruction_noise_map == pytest.approx(np.array([2.5, 1.0, 0.5]), 1.0e-3)
+    assert inversion.reconstruction_noise_map == pytest.approx(
+        np.sqrt(np.array([2.5, 1.0, 0.5])), 1.0e-3
+    )

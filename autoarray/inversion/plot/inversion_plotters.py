@@ -239,8 +239,12 @@ class InversionPlotter(Plotter):
         if reconstruction_noise_map:
             try:
                 mapper_plotter.plot_source_from(
-                    pixel_values=self.inversion.reconstruction_noise_map_dict[mapper_plotter.mapper],
-                    auto_labels=AutoLabels(title="Noise Map", filename="reconstruction_noise_map"),
+                    pixel_values=self.inversion.reconstruction_noise_map_dict[
+                        mapper_plotter.mapper
+                    ],
+                    auto_labels=AutoLabels(
+                        title="Noise Map", filename="reconstruction_noise_map"
+                    ),
                 )
 
             except TypeError:
@@ -250,7 +254,9 @@ class InversionPlotter(Plotter):
             try:
                 signal_to_noise_values = (
                     self.inversion.reconstruction_dict[mapper_plotter.mapper]
-                    / self.inversion.reconstruction_noise_map_dict[mapper_plotter.mapper]
+                    / self.inversion.reconstruction_noise_map_dict[
+                        mapper_plotter.mapper
+                    ]
                 )
 
                 mapper_plotter.plot_source_from(
@@ -390,7 +396,9 @@ class InversionPlotter(Plotter):
 
         self.set_title(label="Noise-Map (Unzoomed)")
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstruction_noise_map=True, zoom_to_brightest=False
+            pixelization_index=mapper_index,
+            reconstruction_noise_map=True,
+            zoom_to_brightest=False,
         )
 
         self.set_title(label="Regularization Weights (Unzoomed)")
