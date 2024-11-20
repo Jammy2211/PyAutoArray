@@ -29,7 +29,7 @@ class MapperValued:
             The `Mapper` object which pairs with the values, for example a `MapperVoronoi` object.
         values
             The values of each pixel of the mapper, which could be the `reconstruction` values of an `Inversion`,
-            but alternatively could be other quantities such as the errors on these values.
+            but alternatively could be other quantities such as the noise-map of these values.
         mesh_pixel_mask
             The mask of pixels that are omitted from the reconstruction when computing the image, for example to
             remove pixels with low signal-to-noise so they do not impact the magnification calculation.

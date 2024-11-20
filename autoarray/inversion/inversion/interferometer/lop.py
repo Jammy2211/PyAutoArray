@@ -142,5 +142,5 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
         )
 
     @property
-    def errors(self):
+    def reconstruction_noise_map(self):
         return None
