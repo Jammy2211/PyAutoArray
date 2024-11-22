@@ -4,7 +4,7 @@ from jax.tree_util import register_pytree_node_class
 from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.structures.triangles.shape import Shape
 
-MAX_CONTAINING_SIZE = 10
+MAX_CONTAINING_SIZE = 15
 
 
 @register_pytree_node_class
