@@ -340,7 +340,12 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_noise_scaling(self, mask: Mask2D, noise_value: float = 1e8) -> "Imaging":
+    def apply_noise_scaling(
+        self,
+        mask: Mask2D,
+        noise_value: float = 1e8,
+        signal_to_noise_value: Optional[float] = None,
+    ) -> "Imaging":
         """
         Apply a mask to the imaging dataset using noise scaling, whereby the mask increases noise-map values to be
         extremely large such that they are never included in the likelihood calculation, but it does
@@ -358,16 +363,31 @@ class Imaging(AbstractDataset):
         ----------
         mask
             The 2D mask that is applied to the image and noise-map, to scale the noise-map values to large values.
+        noise_value
+            The value that the noise-map values are set to in the masked region where noise scaling is applied.
+        signal_to_noise_value
+            The noise-map values are instead set to values such that they give this signal-to-noise_maps ratio.
+            This overwrites the noise_value parameter.
         """
-        data = np.where(np.invert(mask), 0.0, self.data.native)
-        data = Array2D.no_mask(
-            values=data,
-            shape_native=self.data.shape_native,
-            pixel_scales=self.data.pixel_scales,
-        )
 
-        noise_map = self.noise_map.native
-        noise_map[mask == False] = noise_value
+        if signal_to_noise_value is None:
+            data = np.where(np.invert(mask), 0.0, self.data.native)
+            data = Array2D.no_mask(
+                values=data,
+                shape_native=self.data.shape_native,
+                pixel_scales=self.data.pixel_scales,
+            )
+            noise_map = self.noise_map.native
+            noise_map[mask == False] = noise_value
+
+        else:
+            data = self.data.native
+            noise_map = np.where(
+                mask == False,
+                np.abs(data.native) / signal_to_noise_value,
+                self.noise_map.native,
+            )
+
         noise_map = Array2D.no_mask(
             values=noise_map,
             shape_native=self.data.shape_native,
