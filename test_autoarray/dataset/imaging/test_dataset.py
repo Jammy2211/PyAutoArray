@@ -165,7 +165,7 @@ def test__apply_noise_scaling__use_signal_to_noise_value(imaging_7x7, mask_2d_7x
     imaging_7x7.data[24] = 2.0
 
     masked_imaging_7x7 = imaging_7x7.apply_noise_scaling(
-        mask=mask_2d_7x7, signal_to_noise_value=0.1
+        mask=mask_2d_7x7, signal_to_noise_value=0.1, should_zero_data=False
     )
 
     assert masked_imaging_7x7.data.native[3, 4] == 1.0
