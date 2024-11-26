@@ -383,6 +383,16 @@ class Imaging(AbstractDataset):
             If True, the data values in the masked region are set to zero.
         """
 
+        if signal_to_noise_value is None:
+            noise_map = self.noise_map.native
+            noise_map[mask == False] = noise_value
+        else:
+            noise_map = np.where(
+                mask == False,
+                np.abs(self.data.native) / signal_to_noise_value,
+                self.noise_map.native,
+            )
+
         if should_zero_data:
             data = np.where(np.invert(mask), 0.0, self.data.native)
         else:
@@ -393,16 +403,6 @@ class Imaging(AbstractDataset):
             shape_native=self.data.shape_native,
             pixel_scales=self.data.pixel_scales,
         )
-
-        if signal_to_noise_value is None:
-            noise_map = self.noise_map.native
-            noise_map[mask == False] = noise_value
-        else:
-            noise_map = np.where(
-                mask == False,
-                np.abs(data.native) / signal_to_noise_value,
-                self.noise_map.native,
-            )
 
         noise_map = Array2D.no_mask(
             values=noise_map,
