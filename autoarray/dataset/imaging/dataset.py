@@ -387,9 +387,12 @@ class Imaging(AbstractDataset):
             noise_map = self.noise_map.native
             noise_map[mask == False] = noise_value
         else:
+
+            edge_mask = mask.derive_mask.edge
+
             noise_map = np.where(
                 mask == False,
-                np.median(self.data.native[mask == False]) / signal_to_noise_value,
+                np.median(self.data.native[edge_mask == False]) / signal_to_noise_value,
                 self.noise_map.native,
             )
 
