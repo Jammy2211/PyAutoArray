@@ -3,7 +3,7 @@ from jax import numpy as np
 import jax
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.abstract_coordinate_array import (
+from autoarray.structures.triangles.coordinate_array.abstract_coordinate_array import (
     AbstractCoordinateArray,
 )
 from autoarray.structures.triangles.array.jax_array import ArrayTriangles
@@ -203,3 +203,6 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             x_offset=self.x_offset,
             flipped=self.flipped,
         )
+
+    def containing_indices(self, shape: np.ndarray) -> np.ndarray:
+        raise NotImplementedError("JAX ArrayTriangles are used for this method.")
