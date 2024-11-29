@@ -134,10 +134,14 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         n = coordinates.shape[0]
 
-        shift0 = np.zeros((n, 2))
-        shift3 = np.tile(np.array([0, 1]), (n, 1))
-        shift1 = np.stack([np.ones(n), np.where(flip_mask, 1.0, 0.0)], axis=1)
-        shift2 = np.stack([-np.ones(n), np.where(flip_mask, 1.0, 0.0)], axis=1)
+        shift0 = np.zeros((n, 2), dtype=np.int32)
+        shift3 = np.tile(np.array([0, 1], dtype=np.int32), (n, 1))
+        shift1 = np.stack(
+            [np.ones(n, dtype=np.int32), np.where(flip_mask, 1, 0)], axis=1
+        )
+        shift2 = np.stack(
+            [-np.ones(n, dtype=np.int32), np.where(flip_mask, 1, 0)], axis=1
+        )
         shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
 
         coordinates_expanded = coordinates[:, None, :]
@@ -164,14 +168,14 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         coordinates = self.coordinates
         flip_mask = self.flip_mask
 
-        shift0 = np.zeros((coordinates.shape[0], 2))
-        shift1 = np.tile(np.array([1, 0]), (coordinates.shape[0], 1))
-        shift2 = np.tile(np.array([-1, 0]), (coordinates.shape[0], 1))
+        shift0 = np.zeros((coordinates.shape[0], 2), dtype=np.int32)
+        shift1 = np.tile(np.array([1, 0], dtype=np.int32), (coordinates.shape[0], 1))
+        shift2 = np.tile(np.array([-1, 0], dtype=np.int32), (coordinates.shape[0], 1))
 
         shift3 = np.where(
             flip_mask[:, None],
-            np.tile(np.array([0, 1]), (coordinates.shape[0], 1)),
-            np.tile(np.array([0, -1]), (coordinates.shape[0], 1)),
+            np.tile(np.array([0, 1], dtype=np.int32), (coordinates.shape[0], 1)),
+            np.tile(np.array([0, -1], dtype=np.int32), (coordinates.shape[0], 1)),
         )
 
         shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
