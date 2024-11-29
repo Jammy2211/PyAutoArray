@@ -1,5 +1,7 @@
 from jax import numpy as np
 
+import jax
+
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.abstract_coordinate_array import (
     AbstractCoordinateArray,
@@ -7,6 +9,8 @@ from autoarray.structures.triangles.abstract_coordinate_array import (
 from autoarray.structures.triangles.jax_array import ArrayTriangles
 from autoarray.numpy_wrapper import register_pytree_node_class
 from autoconf import cached_property
+
+jax.config.update("jax_enable_x64", True)
 
 
 @register_pytree_node_class
