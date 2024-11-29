@@ -47,14 +47,11 @@ class AbstractCoordinateArray(AbstractTriangles, ABC):
         coordinates = self.coordinates
         return np.concatenate(
             [
-                coordinates
-                + self.flip_array
-                * np.array(
-                    [0, 1],
-                ),
-                coordinates + self.flip_array * np.array([1, -1]),
-                coordinates + self.flip_array * np.array([-1, -1]),
+                coordinates + self.flip_array * np.array([0, 1], dtype=np.int32),
+                coordinates + self.flip_array * np.array([1, -1], dtype=np.int32),
+                coordinates + self.flip_array * np.array([-1, -1], dtype=np.int32),
             ],
+            dtype=np.int32,
         )
 
     @cached_property
@@ -168,7 +165,7 @@ class AbstractCoordinateArray(AbstractTriangles, ABC):
                 coordinates.append([x, y])
 
         return cls(
-            coordinates=np.array(coordinates),
+            coordinates=np.array(coordinates, dtype=np.int32),
             side_length=scale,
         )
 

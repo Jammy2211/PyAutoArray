@@ -15,7 +15,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         An array of 1s and -1s to flip the triangles.
         """
-        array = np.ones(self.coordinates.shape[0])
+        array = np.ones(
+            self.coordinates.shape[0],
+            dtype=np.int32,
+        )
         array[self.flip_mask] = -1
 
         return array[:, np.newaxis]

@@ -68,7 +68,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         An array of 1s and -1s to flip the triangles.
         """
-        array = np.where(self.flip_mask, -1.0, 1.0)
+        array = np.where(self.flip_mask, -1, 1)
         return array[:, None]
 
     def __iter__(self):
