@@ -2,13 +2,14 @@ from jax import numpy as np
 from jax.tree_util import register_pytree_node_class
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
+from autoarray.structures.triangles.array.abstract_array import AbstractArrayTriangles
 from autoarray.structures.triangles.shape import Shape
 
 MAX_CONTAINING_SIZE = 15
 
 
 @register_pytree_node_class
-class ArrayTriangles(AbstractTriangles):
+class ArrayTriangles(AbstractArrayTriangles):
     def __init__(
         self,
         indices,
