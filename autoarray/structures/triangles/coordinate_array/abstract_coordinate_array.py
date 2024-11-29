@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABC
 
 import numpy as np
 
@@ -6,7 +6,7 @@ from autoarray.structures.triangles.abstract import HEIGHT_FACTOR, AbstractTrian
 from autoconf import cached_property
 
 
-class AbstractCoordinateArray(ABC):
+class AbstractCoordinateArray(AbstractTriangles, ABC):
     def __init__(
         self,
         coordinates: np.ndarray,

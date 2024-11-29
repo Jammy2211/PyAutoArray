@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.abstract_coordinate_array import (
+from autoarray.structures.triangles.coordinate_array.abstract_coordinate_array import (
     AbstractCoordinateArray,
 )
 from autoarray.structures.triangles.array import ArrayTriangles
