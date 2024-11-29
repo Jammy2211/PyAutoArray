@@ -40,6 +40,24 @@ class AbstractCoordinateArray(AbstractTriangles, ABC):
         self.y_offset = y_offset
 
     @cached_property
+    def vertex_coordinates(self) -> np.ndarray:
+        """
+        The vertices of the triangles as an Nx3x2 array.
+        """
+        centres = self.centres
+        return np.concatenate(
+            [
+                centres
+                + self.flip_array
+                * np.array(
+                    [0, 1],
+                ),
+                centres + self.flip_array * np.array([1, -1]),
+                centres + self.flip_array * np.array([-1, -1]),
+            ],
+        )
+
+    @cached_property
     def triangles(self) -> np.ndarray:
         """
         The vertices of the triangles as an Nx3x2 array.
