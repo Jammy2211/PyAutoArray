@@ -27,7 +27,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
         """
-        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
+        new_coordinates = np.zeros(
+            (4 * self.coordinates.shape[0], 2),
+            dtype=np.int32,
+        )
         n_normal = 4 * np.sum(~self.flip_mask)
 
         new_coordinates[:n_normal] = np.vstack(
@@ -61,7 +64,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         Ensures that the new triangles are unique.
         """
-        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
+        new_coordinates = np.zeros(
+            (4 * self.coordinates.shape[0], 2),
+            dtype=np.int32,
+        )
         n_normal = 4 * np.sum(~self.flip_mask)
 
         new_coordinates[:n_normal] = np.vstack(
