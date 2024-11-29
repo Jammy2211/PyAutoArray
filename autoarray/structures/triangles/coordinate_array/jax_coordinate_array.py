@@ -15,9 +15,57 @@ jax.config.update("jax_enable_x64", True)
 
 @register_pytree_node_class
 class CoordinateArrayTriangles(AbstractCoordinateArray):
+    def __init__(
+        self,
+        coordinates: np.ndarray,
+        mask: np.ndarray,
+        side_length: float = 1.0,
+        x_offset: float = 0.0,
+        y_offset: float = 0.0,
+        flipped: bool = False,
+    ):
+        super().__init__(
+            coordinates=coordinates,
+            side_length=side_length,
+            x_offset=x_offset,
+            y_offset=y_offset,
+            flipped=flipped,
+        )
+        self.mask = mask
+
+    @classmethod
+    def for_limits_and_scale(
+        cls,
+        x_min: float,
+        x_max: float,
+        y_min: float,
+        y_max: float,
+        scale: float = 1.0,
+        **_,
+    ):
+        x_shift = int(2 * x_min / scale)
+        y_shift = int(y_min / (HEIGHT_FACTOR * scale))
+
+        coordinates = []
+
+        for x in range(x_shift, int(2 * x_max / scale) + 1):
+            for y in range(y_shift - 1, int(y_max / (HEIGHT_FACTOR * scale)) + 2):
+                coordinates.append([x, y])
+
+        return cls(
+            coordinates=np.array(coordinates, dtype=np.int32),
+            side_length=scale,
+            mask=np.full(
+                len(coordinates),
+                False,
+                dtype=bool,
+            ),
+        )
+
     def tree_flatten(self):
         return (
             self.coordinates,
+            self.mask,
             self.side_length,
             self.x_offset,
             self.y_offset,
@@ -47,9 +95,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         The centres of the triangles.
         """
-        return self.scaling_factors * self.coordinates + np.array(
+        centres = self.scaling_factors * self.coordinates + np.array(
             [self.x_offset, self.y_offset]
         )
+        return np.where(self.mask[:, None], np.nan, centres)
 
     @cached_property
     def flip_mask(self) -> np.ndarray:
@@ -95,12 +144,15 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         new_coordinates = coordinates_expanded + shifts
         new_coordinates = new_coordinates.reshape(-1, 2)
 
+        new_mask = np.repeat(self.mask, 4)
+
         return CoordinateArrayTriangles(
             coordinates=new_coordinates,
             side_length=self.side_length / 2,
             flipped=True,
             y_offset=self.y_offset + -0.25 * HEIGHT_FACTOR * self.side_length,
             x_offset=self.x_offset,
+            mask=new_mask,
         )
 
     def neighborhood(self) -> "CoordinateArrayTriangles":
@@ -129,17 +181,17 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         new_coordinates = new_coordinates.reshape(-1, 2)
 
+        new_mask_flat = np.repeat(self.mask, 4)
+        unique_coords, indices = np.unique(new_coordinates, axis=0, return_index=True)
+        new_mask = new_mask_flat[indices]
+
         return CoordinateArrayTriangles(
-            coordinates=np.unique(
-                new_coordinates,
-                axis=0,
-                size=4 * self.coordinates.shape[0],
-                fill_value=np.nan,
-            ),
+            coordinates=unique_coords,
             side_length=self.side_length,
             flipped=self.flipped,
             y_offset=self.y_offset,
             x_offset=self.x_offset,
+            mask=new_mask,
         )
 
     @cached_property
@@ -194,7 +246,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         mask = indexes == -1
         safe_indexes = np.where(mask, 0, indexes)
         coordinates = np.take(self.coordinates, safe_indexes, axis=0)
-        coordinates = np.where(mask[:, None], np.nan, coordinates)
+        # coordinates = np.where(mask[:, None], np.nan, coordinates)
 
         return CoordinateArrayTriangles(
             coordinates=coordinates,
@@ -202,6 +254,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             y_offset=self.y_offset,
             x_offset=self.x_offset,
             flipped=self.flipped,
+            mask=mask,
         )
 
     def containing_indices(self, shape: np.ndarray) -> np.ndarray:

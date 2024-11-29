@@ -145,30 +145,6 @@ class AbstractCoordinateArray(AbstractTriangles, ABC):
         The new set of triangles with the new vertices.
         """
 
-    @classmethod
-    def for_limits_and_scale(
-        cls,
-        x_min: float,
-        x_max: float,
-        y_min: float,
-        y_max: float,
-        scale: float = 1.0,
-        **_,
-    ):
-        x_shift = int(2 * x_min / scale)
-        y_shift = int(y_min / (HEIGHT_FACTOR * scale))
-
-        coordinates = []
-
-        for x in range(x_shift, int(2 * x_max / scale) + 1):
-            for y in range(y_shift - 1, int(y_max / (HEIGHT_FACTOR * scale)) + 2):
-                coordinates.append([x, y])
-
-        return cls(
-            coordinates=np.array(coordinates, dtype=np.int32),
-            side_length=scale,
-        )
-
     @property
     def means(self):
         return np.mean(self.triangles, axis=1)

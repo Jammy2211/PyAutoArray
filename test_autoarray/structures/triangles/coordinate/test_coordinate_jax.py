@@ -22,6 +22,7 @@ def one_triangle():
     return CoordinateArrayTriangles(
         coordinates=np.array([[0, 0]]),
         side_length=1.0,
+        mask=np.array([False]),
     )
 
 
