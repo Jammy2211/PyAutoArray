@@ -44,16 +44,16 @@ class AbstractCoordinateArray(AbstractTriangles, ABC):
         """
         The vertices of the triangles as an Nx3x2 array.
         """
-        centres = self.centres
+        coordinates = self.coordinates
         return np.concatenate(
             [
-                centres
+                coordinates
                 + self.flip_array
                 * np.array(
                     [0, 1],
                 ),
-                centres + self.flip_array * np.array([1, -1]),
-                centres + self.flip_array * np.array([-1, -1]),
+                coordinates + self.flip_array * np.array([1, -1]),
+                coordinates + self.flip_array * np.array([-1, -1]),
             ],
         )
 
