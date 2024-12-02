@@ -272,3 +272,6 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
     def containing_indices(self, shape: np.ndarray) -> np.ndarray:
         raise NotImplementedError("JAX ArrayTriangles are used for this method.")
+
+    def __len__(self):
+        return self.numpy.count_nonzero(~self.mask)
