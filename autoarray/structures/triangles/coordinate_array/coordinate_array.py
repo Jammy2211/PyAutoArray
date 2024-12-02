@@ -23,6 +23,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         return array[:, np.newaxis]
 
+    @property
+    def numpy(self):
+        return np
+
     @classmethod
     def for_limits_and_scale(
         cls,

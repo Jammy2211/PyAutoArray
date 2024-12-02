@@ -33,6 +33,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         )
         self.mask = mask
 
+    @property
+    def numpy(self):
+        return jax.numpy
+
     @classmethod
     def for_limits_and_scale(
         cls,
@@ -186,7 +190,12 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         new_coordinates = new_coordinates.reshape(-1, 2)
 
         new_mask_flat = np.repeat(self.mask, 4)
-        unique_coords, indices = np.unique(new_coordinates, axis=0, return_index=True)
+        unique_coords, indices = np.unique(
+            new_coordinates,
+            axis=0,
+            return_index=True,
+            size=new_coordinates.shape[0],
+        )
         new_mask = new_mask_flat[indices]
 
         return CoordinateArrayTriangles(
