@@ -102,7 +102,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         centres = self.scaling_factors * self.coordinates + np.array(
             [self.x_offset, self.y_offset]
         )
-        return np.where(self.mask[:, None], np.nan, centres)
+        return self.numpy.where(self.mask[:, None], np.nan, centres)
 
     @cached_property
     def flip_mask(self) -> np.ndarray:
