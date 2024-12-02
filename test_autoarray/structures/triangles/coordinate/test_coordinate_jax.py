@@ -9,7 +9,7 @@ try:
     import jax
 
     jax.config.update("jax_log_compiles", True)
-    from autoarray.structures.triangles.jax_coordinate_array import (
+    from autoarray.structures.triangles.coordinate_array.jax_coordinate_array import (
         CoordinateArrayTriangles,
     )
 except ImportError:
@@ -22,6 +22,7 @@ def one_triangle():
     return CoordinateArrayTriangles(
         coordinates=np.array([[0, 0]]),
         side_length=1.0,
+        mask=np.array([False]),
     )
 
 
