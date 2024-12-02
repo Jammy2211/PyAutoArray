@@ -1,10 +1,12 @@
+from abc import ABC
+
 import numpy as np
 
-from autoarray.structures.triangles.abstract import AbstractTriangles
+from autoarray.structures.triangles.array.abstract_array import AbstractArrayTriangles
 from autoarray.structures.triangles.shape import Shape
 
 
-class ArrayTriangles(AbstractTriangles):
+class ArrayTriangles(AbstractArrayTriangles, ABC):
     @property
     def triangles(self):
         return self.vertices[self.indices]
