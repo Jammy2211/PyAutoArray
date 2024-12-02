@@ -167,15 +167,15 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
 
-        Ensures that the new triangles are unique.
+        Ensures that the new triangles are unique and adjusts the mask accordingly.
         """
-        coordinates = self.coordinates
+        coordinates = self.coordinates.astype(np.int32)
         flip_mask = self.flip_mask
+        mask = self.mask
 
         shift0 = np.zeros((coordinates.shape[0], 2), dtype=np.int32)
         shift1 = np.tile(np.array([1, 0], dtype=np.int32), (coordinates.shape[0], 1))
         shift2 = np.tile(np.array([-1, 0], dtype=np.int32), (coordinates.shape[0], 1))
-
         shift3 = np.where(
             flip_mask[:, None],
             np.tile(np.array([0, 1], dtype=np.int32), (coordinates.shape[0], 1)),
@@ -186,25 +186,30 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         coordinates_expanded = coordinates[:, None, :]
         new_coordinates = coordinates_expanded + shifts
-
         new_coordinates = new_coordinates.reshape(-1, 2)
 
-        new_mask_flat = np.repeat(self.mask, 4)
+        new_mask_flat = np.repeat(mask, 4)
+        expected_size = 4 * coordinates.shape[0]
+        fill_value = np.iinfo(np.int32).max
         unique_coords, indices = np.unique(
             new_coordinates,
             axis=0,
+            size=expected_size,
+            fill_value=fill_value,
             return_index=True,
-            size=new_coordinates.shape[0],
         )
-        new_mask = new_mask_flat[indices]
+        new_mask = np.ones(expected_size, dtype=bool)
+        valid_indices = ~(unique_coords == fill_value).all(axis=1)
+        new_mask = new_mask.at[valid_indices].set(new_mask_flat[indices[valid_indices]])
+        unique_coords = unique_coords.astype(np.int32)
 
         return CoordinateArrayTriangles(
             coordinates=unique_coords,
+            mask=new_mask,
             side_length=self.side_length,
             flipped=self.flipped,
             y_offset=self.y_offset,
             x_offset=self.x_offset,
-            mask=new_mask,
         )
 
     @cached_property
