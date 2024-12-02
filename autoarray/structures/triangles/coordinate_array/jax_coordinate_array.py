@@ -15,24 +15,6 @@ jax.config.update("jax_enable_x64", True)
 
 @register_pytree_node_class
 class CoordinateArrayTriangles(AbstractCoordinateArray):
-    def __init__(
-        self,
-        coordinates: np.ndarray,
-        mask: np.ndarray,
-        side_length: float = 1.0,
-        x_offset: float = 0.0,
-        y_offset: float = 0.0,
-        flipped: bool = False,
-    ):
-        super().__init__(
-            coordinates=coordinates,
-            side_length=side_length,
-            x_offset=x_offset,
-            y_offset=y_offset,
-            flipped=flipped,
-        )
-        self.mask = mask
-
     @property
     def numpy(self):
         return jax.numpy
@@ -57,19 +39,13 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
                 coordinates.append([x, y])
 
         return cls(
-            coordinates=np.array(coordinates, dtype=np.int32),
+            coordinates=np.array(coordinates),
             side_length=scale,
-            mask=np.full(
-                len(coordinates),
-                False,
-                dtype=bool,
-            ),
         )
 
     def tree_flatten(self):
         return (
             self.coordinates,
-            self.mask,
             self.side_length,
             self.x_offset,
             self.y_offset,
@@ -102,7 +78,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         centres = self.scaling_factors * self.coordinates + np.array(
             [self.x_offset, self.y_offset]
         )
-        return self.numpy.where(self.mask[:, None], np.nan, centres)
+        return centres
 
     @cached_property
     def flip_mask(self) -> np.ndarray:
@@ -138,21 +114,15 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         n = coordinates.shape[0]
 
-        shift0 = np.zeros((n, 2), dtype=np.int32)
-        shift3 = np.tile(np.array([0, 1], dtype=np.int32), (n, 1))
-        shift1 = np.stack(
-            [np.ones(n, dtype=np.int32), np.where(flip_mask, 1, 0)], axis=1
-        )
-        shift2 = np.stack(
-            [-np.ones(n, dtype=np.int32), np.where(flip_mask, 1, 0)], axis=1
-        )
+        shift0 = np.zeros((n, 2))
+        shift3 = np.tile(np.array([0, 1]), (n, 1))
+        shift1 = np.stack([np.ones(n), np.where(flip_mask, 1, 0)], axis=1)
+        shift2 = np.stack([-np.ones(n), np.where(flip_mask, 1, 0)], axis=1)
         shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
 
         coordinates_expanded = coordinates[:, None, :]
         new_coordinates = coordinates_expanded + shifts
         new_coordinates = new_coordinates.reshape(-1, 2)
-
-        new_mask = np.repeat(self.mask, 4)
 
         return CoordinateArrayTriangles(
             coordinates=new_coordinates,
@@ -160,7 +130,6 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             flipped=True,
             y_offset=self.y_offset + -0.25 * HEIGHT_FACTOR * self.side_length,
             x_offset=self.x_offset,
-            mask=new_mask,
         )
 
     def neighborhood(self) -> "CoordinateArrayTriangles":
@@ -169,17 +138,16 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         Ensures that the new triangles are unique and adjusts the mask accordingly.
         """
-        coordinates = self.coordinates.astype(np.int32)
+        coordinates = self.coordinates
         flip_mask = self.flip_mask
-        mask = self.mask
 
-        shift0 = np.zeros((coordinates.shape[0], 2), dtype=np.int32)
-        shift1 = np.tile(np.array([1, 0], dtype=np.int32), (coordinates.shape[0], 1))
-        shift2 = np.tile(np.array([-1, 0], dtype=np.int32), (coordinates.shape[0], 1))
+        shift0 = np.zeros((coordinates.shape[0], 2))
+        shift1 = np.tile(np.array([1, 0]), (coordinates.shape[0], 1))
+        shift2 = np.tile(np.array([-1, 0]), (coordinates.shape[0], 1))
         shift3 = np.where(
             flip_mask[:, None],
-            np.tile(np.array([0, 1], dtype=np.int32), (coordinates.shape[0], 1)),
-            np.tile(np.array([0, -1], dtype=np.int32), (coordinates.shape[0], 1)),
+            np.tile(np.array([0, 1]), (coordinates.shape[0], 1)),
+            np.tile(np.array([0, -1]), (coordinates.shape[0], 1)),
         )
 
         shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
@@ -188,24 +156,17 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         new_coordinates = coordinates_expanded + shifts
         new_coordinates = new_coordinates.reshape(-1, 2)
 
-        new_mask_flat = np.repeat(mask, 4)
         expected_size = 4 * coordinates.shape[0]
-        fill_value = np.iinfo(np.int32).max
         unique_coords, indices = np.unique(
             new_coordinates,
             axis=0,
             size=expected_size,
-            fill_value=fill_value,
+            fill_value=np.nan,
             return_index=True,
         )
-        new_mask = np.ones(expected_size, dtype=bool)
-        valid_indices = ~(unique_coords == fill_value).all(axis=1)
-        new_mask = new_mask.at[valid_indices].set(new_mask_flat[indices[valid_indices]])
-        unique_coords = unique_coords.astype(np.int32)
 
         return CoordinateArrayTriangles(
             coordinates=unique_coords,
-            mask=new_mask,
             side_length=self.side_length,
             flipped=self.flipped,
             y_offset=self.y_offset,
@@ -277,6 +238,3 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
     def containing_indices(self, shape: np.ndarray) -> np.ndarray:
         raise NotImplementedError("JAX ArrayTriangles are used for this method.")
-
-    def __len__(self):
-        return self.numpy.count_nonzero(~self.mask)
