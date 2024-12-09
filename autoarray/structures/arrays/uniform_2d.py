@@ -358,6 +358,78 @@ class AbstractArray2D(Structure):
         # binned_array = (self.native*np.invert(self.mask)).sum(axis=1)/np.invert(self.mask).sum(axis=1)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
+    def brightest_coordinate_in_region_from(
+        self, region: Optional[Tuple[float, float, float, float]]
+    ) -> Tuple[float, float]:
+        """
+        Returns the brightest pixel in the array surrounding an input region of form (y0, y1, x0, x1).
+
+        For example, if the input region is `region=(-0.15, 0.25, 0.35, 0.55)` the code finds the pixels containing
+        this region in scaled units, finds the brightest pixel of those pixels and then returns the scaled
+        coordinate location of that brightest pixel.
+
+        Parameters
+        ----------
+        region
+            The (y0, y1, x0, x1) region in scaled coordinates over which the brightest coordinate is located.
+
+        Returns
+        -------
+        The coordinates of the brightest pixel in scaled units (converted from pixels units).
+        """
+
+        y1, y0 = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=(
+                region[0] - self.pixel_scales[0] / 2.0,
+                region[2] + self.pixel_scales[0] / 2.0,
+            )
+        )
+        x0, x1 = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=(
+                region[1] - self.pixel_scales[1] / 2.0,
+                region[3] + self.pixel_scales[1] / 2.0,
+            )
+        )
+
+        extracted_region = self.native[y0:y1, x0:x1]
+
+        brightest_pixel_value = np.max(extracted_region)
+        extracted_pixels = np.argwhere(extracted_region == brightest_pixel_value)[0]
+        pixel_coordinates_2d = (y0 + extracted_pixels[0], x0 + extracted_pixels[1])
+
+        return self.geometry.scaled_coordinates_2d_from(
+            pixel_coordinates_2d=pixel_coordinates_2d
+        )
+
+        # Step 2: Extract 3x3 region around the brightest pixel
+        y, x = absolute_indices
+        region_start_y, region_end_y = max(0, y - 1), min(height, y + 2)
+        region_start_x, region_end_x = max(0, x - 1), min(width, x + 2)
+        region = data[region_start_y:region_end_y, region_start_x:region_end_x]
+
+        # Step 3: Compute sub-pixel center (weighted by pixel intensities)
+        y_indices, x_indices = np.meshgrid(
+            range(region_start_y, region_end_y),
+            range(region_start_x, region_end_x),
+            indexing="ij",
+        )
+
+        # Flatten arrays for weighted center calculation
+        weights = region.flatten()
+        y_coords = y_indices.flatten()
+        x_coords = x_indices.flatten()
+
+        # Weighted center
+        subpixel_y = np.sum(weights * y_coords) / np.sum(weights)
+        subpixel_x = np.sum(weights * x_coords) / np.sum(weights)
+
+        print(subpixel_y, subpixel_x)
+        fff
+
+        return data.mask.geometry.scaled_coordinates_2d_from(
+            pixel_coordinates_2d=(subpixel_y, subpixel_x)
+        )
+
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
         """
         Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
