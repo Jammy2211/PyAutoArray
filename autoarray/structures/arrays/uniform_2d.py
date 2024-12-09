@@ -362,11 +362,15 @@ class AbstractArray2D(Structure):
         self, region: Optional[Tuple[float, float, float, float]]
     ) -> Tuple[float, float]:
         """
-        Returns the brightest pixel in the array surrounding an input region of form (y0, y1, x0, x1).
+        Returns the brightest pixel in the array inside an input region of form (y0, y1, x0, x1) where
+        the region is in scaled coordinates.
 
-        For example, if the input region is `region=(-0.15, 0.25, 0.35, 0.55)` the code finds the pixels containing
+        For example, if the input region is `region=(-0.15, 0.25, 0.35, 0.55)` the code finds all pixels inside of
         this region in scaled units, finds the brightest pixel of those pixels and then returns the scaled
         coordinate location of that brightest pixel.
+
+        The centre of the brightest pixel is returned, the function `brightest_sub_pixel_coordinate_in_region_from`
+        performs a sub pixel calculation to return the brightest sub pixel coordinate.
 
         Parameters
         ----------
@@ -401,34 +405,47 @@ class AbstractArray2D(Structure):
             pixel_coordinates_2d=pixel_coordinates_2d
         )
 
-        # Step 2: Extract 3x3 region around the brightest pixel
-        y, x = absolute_indices
-        region_start_y, region_end_y = max(0, y - 1), min(height, y + 2)
-        region_start_x, region_end_x = max(0, x - 1), min(width, x + 2)
-        region = data[region_start_y:region_end_y, region_start_x:region_end_x]
+    def brightest_sub_pixel_coordinate_in_region_from(
+        self, region: Optional[Tuple[float, float, float, float]]
+    ) -> Tuple[float, float]:
+        """
+        Returns the brightest sub-pixel in the array inside an input region of form (y0, y1, x0, x1) where
+        the region is in scaled coordinates.
 
-        # Step 3: Compute sub-pixel center (weighted by pixel intensities)
+        For example, if the input region is `region=(-0.15, 0.25, 0.35, 0.55)` the code finds all pixels inside of
+        this region in scaled units, finds the brightest pixel of those pixels, and then on a 3x3 grid surrounding
+        this pixel determines the locaiton of the brightest sub pixel using a weighted centre calculation.
+
+        The centre of the brightest pixel is returned, the function `brightest_sub_pixel_coordinate_in_region_from`
+        performs a sub pixel calculation to return the brightest sub pixel coordinate.
+
+        Parameters
+        ----------
+        region
+            The (y0, y1, x0, x1) region in scaled coordinates over which the brightest coordinate is located.
+
+        Returns
+        -------
+        The coordinates of the brightest pixel in scaled units (converted from pixels units).
+        """
+        brightest_pixel = self.brightest_coordinate_in_region_from(region=region)
+
+        y, x = self.geometry.pixel_coordinates_2d_from(scaled_coordinates_2d=brightest_pixel)
+        region_start_y, region_end_y = max(0, y - 1), min(self.shape_native[0], y + 2)
+        region_start_x, region_end_x = max(0, x - 1), min(self.shape_native[1], x + 2)
+        region = self.native[region_start_y:region_end_y, region_start_x:region_end_x]
+
         y_indices, x_indices = np.meshgrid(
             range(region_start_y, region_end_y),
             range(region_start_x, region_end_x),
             indexing="ij",
         )
 
-        # Flatten arrays for weighted center calculation
         weights = region.flatten()
-        y_coords = y_indices.flatten()
-        x_coords = x_indices.flatten()
+        subpixel_y = np.sum(weights * y_indices.flatten()) / np.sum(weights)
+        subpixel_x = np.sum(weights * x_indices.flatten()) / np.sum(weights)
 
-        # Weighted center
-        subpixel_y = np.sum(weights * y_coords) / np.sum(weights)
-        subpixel_x = np.sum(weights * x_coords) / np.sum(weights)
-
-        print(subpixel_y, subpixel_x)
-        fff
-
-        return data.mask.geometry.scaled_coordinates_2d_from(
-            pixel_coordinates_2d=(subpixel_y, subpixel_x)
-        )
+        return self.geometry.scaled_coordinates_2d_from(pixel_coordinates_2d=(subpixel_y, subpixel_x))
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
         """
