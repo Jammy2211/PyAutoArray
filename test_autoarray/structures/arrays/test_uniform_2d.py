@@ -620,7 +620,6 @@ def test__brightest_pixel_in_region_from():
     assert brightest_coordinate == pytest.approx((-0.1, 0.2), 1.0e-4)
 
 
-
 def test__brightest_sub_pixel_in_region_from():
     mask = aa.Mask2D.all_false(shape_native=(4, 4), pixel_scales=0.1)
     array_2d = aa.Array2D(
