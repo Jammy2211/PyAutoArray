@@ -565,6 +565,98 @@ def test__binned_across_columns():
     assert (array.binned_across_columns == np.array([1.5, 6.0, 9.0])).all()
 
 
+def test__brightest_pixel_in_region_from():
+    mask = aa.Mask2D.all_false(shape_native=(4, 4), pixel_scales=0.1)
+    array_2d = aa.Array2D(
+        values=[
+            [1.0, 2.0, 3.0, 4.0],
+            [6.0, 7.0, 8.0, 9.0],
+            [11.0, 12.0, 13.0, 15.0],
+            [16.0, 17.0, 18.0, 20.0],
+        ],
+        mask=mask,
+    )
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.26, 0.06, -0.06, 0.06)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.15, 0.05), 1.0e-4)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.051, 0.151, -0.151, 0.149)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.05, 0.05), 1.0e-4)
+
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.1)
+    array_2d = aa.Array2D(
+        values=[
+            [1.0, 2.0, 3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0, 9.0, 10.0],
+            [11.0, 12.0, 13.0, 14.0, 15.0],
+            [16.0, 17.0, 18.0, 19.0, 20.0],
+            [21.0, 22.0, 23.0, 24.0, 25.0],
+        ],
+        mask=mask,
+    )
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.15, 0.15, -0.15, 0.15)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.1, 0.1), 1.0e-4)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.25, 0.15, -0.15, 0.15)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.2, 0.1), 1.0e-4)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.15, 0.15, -0.15, 0.25)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.1, 0.2), 1.0e-4)
+
+
+def test__brightest_sub_pixel_in_region_from():
+    mask = aa.Mask2D.all_false(shape_native=(4, 4), pixel_scales=0.1)
+    array_2d = aa.Array2D(
+        values=[
+            [1.0, 2.0, 3.0, 4.0],
+            [6.0, 7.0, 8.0, 9.0],
+            [11.0, 12.0, 13.0, 15.0],
+            [16.0, 17.0, 18.0, 20.0],
+        ],
+        mask=mask,
+    )
+
+    brightest_coordinate = array_2d.brightest_sub_pixel_coordinate_in_region_from(
+        region=(-0.26, 0.06, -0.06, 0.06)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.1078947, 0.056315), 1.0e-4)
+
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.1)
+    array_2d = aa.Array2D(
+        values=[
+            [1.0, 2.0, 3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0, 9.0, 10.0],
+            [11.0, 12.0, 13.0, 14.0, 15.0],
+            [16.0, 17.0, 18.0, 19.0, 20.0],
+            [21.0, 22.0, 23.0, 24.0, 25.0],
+        ],
+        mask=mask,
+    )
+
+    brightest_coordinate = array_2d.brightest_sub_pixel_coordinate_in_region_from(
+        region=(-0.15, 0.15, -0.15, 0.15)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.11754, 0.103508), 1.0e-4)
+
+
 def test__header__modified_julian_date():
     header_sci_obj = {"DATE-OBS": "2000-01-01", "TIME-OBS": "00:00:00"}
 

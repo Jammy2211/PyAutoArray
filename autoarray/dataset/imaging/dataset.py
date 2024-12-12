@@ -345,7 +345,7 @@ class Imaging(AbstractDataset):
         mask: Mask2D,
         noise_value: float = 1e8,
         signal_to_noise_value: Optional[float] = None,
-        should_zero_data : bool = True
+        should_zero_data: bool = True,
     ) -> "Imaging":
         """
         Apply a mask to the imaging dataset using noise scaling, whereby the maskmay zero the data and increase
@@ -387,12 +387,10 @@ class Imaging(AbstractDataset):
             noise_map = self.noise_map.native
             noise_map[mask == False] = noise_value
         else:
-
-            edge_mask = mask.derive_mask.edge
-
             noise_map = np.where(
                 mask == False,
-                np.median(self.data.native[edge_mask == False]) / signal_to_noise_value,
+                np.median(self.data.native[mask.derive_mask.edge == False])
+                / signal_to_noise_value,
                 self.noise_map.native,
             )
 
