@@ -406,7 +406,7 @@ class AbstractArray2D(Structure):
         )
 
     def brightest_sub_pixel_coordinate_in_region_from(
-        self, region: Optional[Tuple[float, float, float, float]]
+        self, region: Optional[Tuple[float, float, float, float]], box_size : int = 1
     ) -> Tuple[float, float]:
         """
         Returns the brightest sub-pixel in the array inside an input region of form (y0, y1, x0, x1) where
@@ -431,8 +431,8 @@ class AbstractArray2D(Structure):
         brightest_pixel = self.brightest_coordinate_in_region_from(region=region)
 
         y, x = self.geometry.pixel_coordinates_2d_from(scaled_coordinates_2d=brightest_pixel)
-        region_start_y, region_end_y = max(0, y - 1), min(self.shape_native[0], y + 2)
-        region_start_x, region_end_x = max(0, x - 1), min(self.shape_native[1], x + 2)
+        region_start_y, region_end_y = max(0, y - box_size), min(self.shape_native[0], y + box_size + 1)
+        region_start_x, region_end_x = max(0, x - box_size), min(self.shape_native[1], x + box_size + 1)
         region = self.native[region_start_y:region_end_y, region_start_x:region_end_x]
 
         y_indices, x_indices = np.meshgrid(
