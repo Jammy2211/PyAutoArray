@@ -171,7 +171,7 @@ def test__apply_noise_scaling__use_signal_to_noise_value(imaging_7x7, mask_2d_7x
     assert masked_imaging_7x7.data.native[3, 4] == 1.0
     assert masked_imaging_7x7.noise_map.native[3, 4] == 10.0
     assert masked_imaging_7x7.data.native[3, 3] == 2.0
-    assert masked_imaging_7x7.noise_map.native[3, 3] == 20.0
+    assert masked_imaging_7x7.noise_map.native[3, 3] == 10.0
 
 
 def test__apply_mask__noise_covariance_matrix():

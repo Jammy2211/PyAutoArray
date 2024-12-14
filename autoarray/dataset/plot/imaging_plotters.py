@@ -126,47 +126,27 @@ class ImagingPlotterMeta(Plotter):
             )
 
         if over_sampling:
-            if self.dataset.over_sampling.uniform is None:
-                from autoarray.operators.over_sampling.uniform import (
-                    OverSamplingUniform,
-                )
-
-                over_sampling = OverSamplingUniform.from_adaptive_scheme(
-                    grid=self.dataset.grids.uniform,
-                    name="PlotExample",
-                    centre=(0.0, 0.0),
-                )
-                title = title_str or f"Over Sampling (Adaptive)"
-
-            else:
-                over_sampling = self.dataset.over_sampling.uniform
-                title = title_str or f"Over Sampling"
-
-            over_sampler = over_sampling.over_sampler_from(
-                mask=self.dataset.mask,
-            )
 
             self.mat_plot_2d.plot_array(
-                array=over_sampler.sub_size,
+                array=self.dataset.grids.over_sampler_uniform.sub_size,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
-                    title=title,
+                    title=title_str or f"Over Sampling (Uniform)",
                     filename="over_sampling",
                     cb_unit="",
                 ),
             )
 
         if over_sampling_non_uniform:
-            if self.dataset.over_sampling.non_uniform is not None:
-                self.mat_plot_2d.plot_array(
-                    array=self.dataset.grids.over_sampler_non_uniform.sub_size,
-                    visuals_2d=self.get_visuals_2d(),
-                    auto_labels=AutoLabels(
-                        title=title_str or f"Over Sampling (Non Uniform)",
-                        filename="over_sampling_non_uniform",
-                        cb_unit="",
-                    ),
-                )
+            self.mat_plot_2d.plot_array(
+                array=self.dataset.grids.over_sampler_non_uniform.sub_size,
+                visuals_2d=self.get_visuals_2d(),
+                auto_labels=AutoLabels(
+                    title=title_str or f"Over Sampling (Non Uniform)",
+                    filename="over_sampling_non_uniform",
+                    cb_unit="",
+                ),
+            )
 
         if over_sampling_pixelization:
             self.mat_plot_2d.plot_array(

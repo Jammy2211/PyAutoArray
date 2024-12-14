@@ -70,7 +70,6 @@ class GridsDataset:
         -------
         The (y,x) coordinates of every pixel in the data.
         """
-
         return Grid2D.from_mask(
             mask=self.mask,
             over_sampling=self.over_sampling.uniform,
@@ -95,10 +94,6 @@ class GridsDataset:
         -------
         The (y,x) coordinates of every pixel in the data.
         """
-
-        if self.over_sampling.non_uniform is None:
-            return None
-
         return Grid2D.from_mask(
             mask=self.mask,
             over_sampling=self.over_sampling.non_uniform,
@@ -120,15 +115,9 @@ class GridsDataset:
         -------
         The (y,x) coordinates of every pixel in the data, used for pixelization / inversion calculations.
         """
-
-        over_sampling = self.over_sampling.pixelization
-
-        if over_sampling is None:
-            over_sampling = OverSamplingUniform(sub_size=4)
-
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=over_sampling,
+            over_sampling=self.over_sampling.pixelization,
         )
 
     @cached_property
@@ -154,6 +143,10 @@ class GridsDataset:
         return self.uniform.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native,
         )
+
+    @cached_property
+    def over_sampler_uniform(self):
+        return self.uniform.over_sampling.over_sampler_from(mask=self.mask)
 
     @cached_property
     def over_sampler_non_uniform(self):

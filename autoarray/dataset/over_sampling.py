@@ -2,6 +2,9 @@ import logging
 from typing import Optional
 
 from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.uniform import (
+    OverSamplingUniform,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +60,6 @@ class OverSamplingDataset:
             by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
             over sampling schemes are not appropriate.
         """
-        self.uniform = uniform
-        self.pixelization = pixelization
-        self.non_uniform = non_uniform
+        self.uniform = uniform or OverSamplingUniform(sub_size=4)
+        self.pixelization = pixelization or OverSamplingUniform(sub_size=4)
+        self.non_uniform = non_uniform or OverSamplingUniform(sub_size=4)
