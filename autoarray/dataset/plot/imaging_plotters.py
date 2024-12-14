@@ -126,7 +126,6 @@ class ImagingPlotterMeta(Plotter):
             )
 
         if over_sampling:
-
             self.mat_plot_2d.plot_array(
                 array=self.dataset.grids.over_sampler_uniform.sub_size,
                 visuals_2d=self.get_visuals_2d(),

@@ -235,9 +235,6 @@ def make_interferometer_7():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sampling=aa.OverSamplingDataset(
-            pixelization=aa.OverSamplingUniform(sub_size=1)
-        ),
     )
 
 
@@ -248,9 +245,6 @@ def make_interferometer_7_no_fft():
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sampling=aa.OverSamplingDataset(
-            pixelization=aa.OverSamplingUniform(sub_size=1)
-        ),
     )
 
 
@@ -261,9 +255,6 @@ def make_interferometer_7_grid():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sampling=aa.OverSamplingDataset(
-            pixelization=aa.OverSamplingUniform(sub_size=1)
-        ),
     )
 
 

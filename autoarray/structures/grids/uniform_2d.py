@@ -127,10 +127,6 @@ class Grid2D(Structure):
             - grid[3,4,0] = 1.5
             - grid[3,4,1] = -0.5
 
-
-
-
-
         **Grid2D Mapping:**
 
         Every set of (y,x) coordinates in a pixel of the grid maps to an unmasked pixel in the mask. For a uniform
@@ -172,8 +168,17 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        self.over_sampling = over_sampling
-        self.over_sampling_non_uniform = over_sampling_non_uniform
+        # self.over_sampling = over_sampling
+        # self.over_sampling_non_uniform = over_sampling_non_uniform
+
+        from autoarray.operators.over_sampling.uniform import (
+            OverSamplingUniform,
+        )
+
+        self.over_sampling = over_sampling or OverSamplingUniform(sub_size=4)
+        self.over_sampling_non_uniform = (
+            over_sampling_non_uniform or OverSamplingUniform(sub_size=4)
+        )
 
     @classmethod
     def no_mask(

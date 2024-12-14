@@ -437,16 +437,6 @@ class OverSamplerUniform(AbstractOverSampler):
             mask=self.mask,
         )
 
-    def array_via_func_from(self, func, obj, *args, **kwargs):
-        over_sampled_grid = self.over_sampled_grid
-
-        if obj is not None:
-            values = func(obj, over_sampled_grid, *args, **kwargs)
-        else:
-            values = func(over_sampled_grid, *args, **kwargs)
-
-        return self.binned_array_2d_from(array=values)
-
     @cached_property
     def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
         """

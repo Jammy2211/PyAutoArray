@@ -74,17 +74,6 @@ def test__grid__uses_mask_and_settings(
     assert (masked_imaging_7x7.grids.uniform == grid_2d_7x7).all()
     assert (masked_imaging_7x7.grids.uniform.slim == grid_2d_7x7).all()
 
-    masked_imaging_7x7 = ds.AbstractDataset(
-        data=masked_image_7x7,
-        noise_map=masked_noise_map_7x7,
-        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSamplingIterate()),
-    )
-
-    assert isinstance(
-        masked_imaging_7x7.grids.uniform.over_sampling, aa.OverSamplingIterate
-    )
-    assert (masked_imaging_7x7.grids.uniform == grid_2d_7x7).all()
-
 
 def test__grids_pixelization__uses_mask_and_settings(
     image_7x7,
@@ -99,12 +88,8 @@ def test__grids_pixelization__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sampling=aa.OverSamplingDataset(
-            pixelization=aa.OverSamplingIterate(sub_steps=[2, 4])
-        ),
     )
 
-    assert masked_imaging_7x7.grids.pixelization.over_sampling.sub_steps == [2, 4]
     assert (masked_imaging_7x7.grids.pixelization == grid_2d_7x7).all()
     assert (masked_imaging_7x7.grids.pixelization.slim == grid_2d_7x7).all()
 

@@ -1,8 +1,3 @@
-interpolate:
-  ndarray_1d_from_grid:
-    MockGridLikeIteratorObj: true
-  ndarray_2d_from_grid:
-    MockGridLikeIteratorObj: true
 # Certain light and mass profile calculations become ill defined at (0.0, 0.0) or close to this value. This can lead
 # to numerical issues in the calculation of the profile, for example a np.nan may arise, crashing the code. 
   
@@ -45,10 +40,8 @@ over_sampling:
   radial_factor_list:
     MockGrid1DLikeObj: [1.0]
     MockGrid2DLikeObj: [1.0]
-    MockGridLikeIteratorObj: [1.0]
     MockGridRadialMinimum: [1.0]
   sub_size_list:
     MockGrid1DLikeObj: [1, 1]
     MockGrid2DLikeObj: [1, 1]
-    MockGridLikeIteratorObj: [1, 1]
     MockGridRadialMinimum: [1, 1]
