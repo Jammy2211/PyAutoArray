@@ -106,8 +106,10 @@ class MapperRectangular(AbstractMapper):
             origin=self.source_plane_mesh_grid.origin,
         ).astype("int")
 
+        mappings = mappings.reshape((len(mappings), 1))
+
         return PixSubWeights(
-            mappings=mappings.reshape((len(mappings), 1)),
+            mappings=mappings,
             sizes=np.ones(len(mappings), dtype="int"),
             weights=np.ones(
                 (len(self.source_plane_data_grid.grid_over_sampled), 1), dtype="int"
