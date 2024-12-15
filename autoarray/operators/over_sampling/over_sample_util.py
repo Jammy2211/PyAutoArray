@@ -553,62 +553,6 @@ def over_sample_size_via_radial_bins_from(
     return Array2D(values=sub_size, mask=grid.mask)
 
 
-def over_sample_size_via_adaptive_scheme_from(
-    grid: Grid2D, name: str, centre: Tuple[float, float]
-) -> Array2D:
-    """
-    Returns a 2D grid whose over sampling is adaptive, placing a high number of sub-pixels in the regions of the
-    grid closest to the centre input (y,x) coordinates.
-
-    This adaptive over sampling is primarily used in PyAutoGalaxy, to evaluate the image of a light profile
-    (e.g. a Sersic function) with high levels of sub gridding in its centre and lower levels of sub gridding
-    further away from the centre (saving computational time).
-
-    The `autogalaxy_workspace` and `autolens_workspace` packages have guides called `over_sampling.ipynb`
-    which describe over sampling in more detail.
-
-    The inputs `name` and `centre` typically correspond to the name of the light profile (e.g. `Sersic`) and
-    its `centre`, so that the adaptive over sampling parameters for that light profile are loaded from config
-    files and used to setup the grid.
-
-    Parameters
-    ----------
-    name
-        The name of the light profile, which is used to load the adaptive over sampling parameters from config files.
-    centre
-        The (y,x) centre of the adaptive over sampled grid, around which the highest sub-pixel resolution is placed.
-
-    Returns
-    -------
-    A new Grid2D with adaptive over sampling.
-
-    """
-
-    if not grid.is_uniform:
-        raise exc.GridException(
-            "You cannot make an adaptive over-sampled grid from a non-uniform grid."
-        )
-
-    sub_size_list = conf.instance["grids"]["over_sampling"]["sub_size_list"][name]
-    radial_factor_list = conf.instance["grids"]["over_sampling"]["radial_factor_list"][
-        name
-    ]
-
-    centre = grid.geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
-        scaled_coordinate_2d=centre
-    )
-
-    return over_sample_size_via_radial_bins_from(
-        grid=grid,
-        sub_size_list=sub_size_list,
-        radial_list=[
-            min(grid.pixel_scales) * radial_factor
-            for radial_factor in radial_factor_list
-        ],
-        centre_list=[centre],
-    )
-
-
 def over_sample_size_via_adapt_from(
     data: Array2D,
     noise_map: Array2D,
