@@ -71,7 +71,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling.over_sampler,
+            over_sampling_size=self.over_sampling.uniform,
         )
 
     @cached_property
@@ -95,7 +95,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling.non_uniform,
+            over_sampling_size=self.over_sampling.non_uniform,
         )
 
     @cached_property
@@ -116,7 +116,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling.pixelization,
+            over_sampling_size=self.over_sampling.pixelization,
         )
 
     @cached_property
@@ -142,18 +142,6 @@ class GridsDataset:
         return self.uniform.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native,
         )
-
-    @cached_property
-    def over_sampler_uniform(self):
-        return self.uniform.over_sampling.over_sampler_from(mask=self.mask)
-
-    @cached_property
-    def over_sampler_non_uniform(self):
-        return self.non_uniform.over_sampling.over_sampler_from(mask=self.mask)
-
-    @cached_property
-    def over_sampler_pixelization(self):
-        return self.pixelization.over_sampling.over_sampler_from(mask=self.mask)
 
     @cached_property
     def border_relocator(self) -> BorderRelocator:

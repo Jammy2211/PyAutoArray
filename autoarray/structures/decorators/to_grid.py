@@ -25,13 +25,13 @@ class GridMaker(AbstractMaker):
             return Grid2D(
                 values=result,
                 mask=self.mask,
-                over_sampling=self.over_sampling,
+                over_sampling_size=self.over_sampling_size,
             )
         return [
             Grid2D(
                 values=res,
                 mask=self.mask,
-                over_sampling=self.over_sampling,
+                over_sampling_size=self.over_sampling_size,
             )
             for res in result
         ]

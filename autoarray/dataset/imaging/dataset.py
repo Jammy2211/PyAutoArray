@@ -455,7 +455,7 @@ class Imaging(AbstractDataset):
             This class controls over sampling for all the different grids (e.g. `grid`, `grids.pixelization).
         """
 
-        uniform = over_sampling.over_sampler or self.over_sampling.over_sampler
+        uniform = over_sampling.uniform or self.over_sampling.uniform
         non_uniform = over_sampling.non_uniform or self.over_sampling.non_uniform
         pixelization = over_sampling.pixelization or self.over_sampling.pixelization
 
