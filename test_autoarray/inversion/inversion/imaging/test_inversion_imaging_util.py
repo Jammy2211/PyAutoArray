@@ -188,7 +188,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
     # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
-        over_sampler = aa.OverSamplerUniform(
+        over_sampler = aa.OverSampler(
             mask=mask,
             sub_size=sub_size,
         )
@@ -272,7 +272,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         source_plane_data_grid=mask.derive_grid.unmasked,
     )
 
-    over_sampler = aa.OverSamplerUniform(
+    over_sampler = aa.OverSampler(
         mask=mask,
         sub_size=1,
     )
@@ -319,7 +319,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
-        over_sampler = aa.OverSamplerUniform(
+        over_sampler = aa.OverSampler(
             mask=mask,
             sub_size=sub_size,
         )

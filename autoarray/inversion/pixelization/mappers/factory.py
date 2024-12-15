@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.operators.over_sampling.abstract import AbstractOverSampler
+from autoarray.operators.over_sampling.over_sampler import OverSampler
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
@@ -12,7 +12,7 @@ from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
-    over_sampler: AbstractOverSampler,
+    over_sampler: OverSampler,
     border_relocator: Optional[BorderRelocator] = None,
     run_time_dict: Optional[Dict] = None,
 ):

@@ -6,7 +6,6 @@ from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
@@ -72,7 +71,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling.uniform,
+            over_sampling=self.over_sampling.over_sampler,
         )
 
     @cached_property

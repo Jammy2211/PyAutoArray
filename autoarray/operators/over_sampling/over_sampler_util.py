@@ -1,14 +1,18 @@
-from autoarray.numpy_wrapper import register_pytree_node_class
-
-
+from __future__ import annotations
 import numpy as np
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Tuple
+from autoconf import conf
 
-from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays.uniform_2d import Array2D
+
+if TYPE_CHECKING:
+    from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.geometry import geometry_util
 from autoarray import numba_util
 from autoarray.mask import mask_2d_util
+
+from autoarray import exc
 from autoarray import type as ty
 
 
@@ -340,7 +344,7 @@ def grid_2d_slim_over_sampled_via_mask_from(
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
     a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
-    scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+    scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
 
     The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
     stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
@@ -487,3 +491,170 @@ def binned_array_2d_from(
                 index += 1
 
     return binned_array_2d_slim
+
+
+def from_radial_bins(
+    grid: Grid2D,
+    sub_size_list: List[int],
+    radial_list: List[float],
+    centre_list: List[Tuple] = None,
+) -> Array2D:
+    """
+    Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
+
+    The adaptive sub-grid size is computed as follows:
+
+    1) Compute the radial distance of every pixel in the mask from the centre of the mask (or input centres).
+    2) For every pixel, determine the sub-grid size based on the radial distance of that pixel. For example, if
+    the first entry in `radial_list` is 0.5 and the first entry in `sub_size_list` 8, all pixels with a radial
+    distance less than 0.5 will have a sub-grid size of 8x8.
+
+    This scheme can produce high sub-size values towards the centre of the mask, where the galaxy is brightest and
+    has the most rapidly changing light profile which requires a high sub-grid size to resolve accurately.
+
+    If the data has multiple galaxies, the `centre_list` can be used to define the centre of each galaxy
+    and therefore increase the sub-grid size based on the light profile of each individual galaxy.
+
+    Parameters
+    ----------
+    mask
+        The mask defining the 2D region where the over-sampled grid is computed.
+    sub_size_list
+        The sub-grid size for every radial bin.
+    radial_list
+        The radial distance defining each bin, which are refeneced based on the previous entry. For example, if
+        the first entry is 0.5, the second 1.0 and the third 1.5, the adaptive sub-grid size will be between 0.5
+        and 1.0 for the first sub-grid size, between 1.0 and 1.5 for the second sub-grid size, etc.
+    centre_list
+        A list of centres for each galaxy whose centres require higher sub-grid sizes.
+
+    Returns
+    -------
+    A uniform over-sampling object with an adaptive sub-grid size based on the radial distance of every pixel from
+    the centre of the mask.
+    """
+
+    if centre_list is None:
+        centre_list = [grid.mask.mask_centre]
+
+    sub_size = np.zeros(grid.shape_slim)
+
+    for centre in centre_list:
+        radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
+
+        sub_size_of_centre = sub_size_radial_bins_from(
+            radial_grid=np.array(radial_grid),
+            sub_size_list=np.array(sub_size_list),
+            radial_list=np.array(radial_list),
+        )
+
+        sub_size = np.where(sub_size_of_centre > sub_size, sub_size_of_centre, sub_size)
+
+    return Array2D(values=sub_size, mask=grid.mask)
+
+
+def from_adaptive_scheme(
+    grid: Grid2D, name: str, centre: Tuple[float, float]
+) -> Array2D:
+    """
+    Returns a 2D grid whose over sampling is adaptive, placing a high number of sub-pixels in the regions of the
+    grid closest to the centre input (y,x) coordinates.
+
+    This adaptive over sampling is primarily used in PyAutoGalaxy, to evaluate the image of a light profile
+    (e.g. a Sersic function) with high levels of sub gridding in its centre and lower levels of sub gridding
+    further away from the centre (saving computational time).
+
+    The `autogalaxy_workspace` and `autolens_workspace` packages have guides called `over_sampling.ipynb`
+    which describe over sampling in more detail.
+
+    The inputs `name` and `centre` typically correspond to the name of the light profile (e.g. `Sersic`) and
+    its `centre`, so that the adaptive over sampling parameters for that light profile are loaded from config
+    files and used to setup the grid.
+
+    Parameters
+    ----------
+    name
+        The name of the light profile, which is used to load the adaptive over sampling parameters from config files.
+    centre
+        The (y,x) centre of the adaptive over sampled grid, around which the highest sub-pixel resolution is placed.
+
+    Returns
+    -------
+    A new Grid2D with adaptive over sampling.
+
+    """
+
+    if not grid.is_uniform:
+        raise exc.GridException(
+            "You cannot make an adaptive over-sampled grid from a non-uniform grid."
+        )
+
+    sub_size_list = conf.instance["grids"]["over_sampling"]["sub_size_list"][name]
+    radial_factor_list = conf.instance["grids"]["over_sampling"]["radial_factor_list"][
+        name
+    ]
+
+    centre = grid.geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+        scaled_coordinate_2d=centre
+    )
+
+    return from_radial_bins(
+        grid=grid,
+        sub_size_list=sub_size_list,
+        radial_list=[
+            min(grid.pixel_scales) * radial_factor
+            for radial_factor in radial_factor_list
+        ],
+        centre_list=[centre],
+    )
+
+
+def from_adapt(
+    data: Array2D,
+    noise_map: Array2D,
+    signal_to_noise_cut: float = 5.0,
+    sub_size_lower: int = 2,
+    sub_size_upper: int = 4,
+) -> Array2D:
+    """
+    Returns an adaptive sub-grid size based on the signal-to-noise of the data.
+
+    The adaptive sub-grid size is computed as follows:
+
+    1) The signal-to-noise of every pixel is computed as the data divided by the noise-map.
+    2) For all pixels with signal-to-noise above the signal-to-noise cut, the sub-grid size is set to the upper
+      value. For all other pixels, the sub-grid size is set to the lower value.
+
+    This scheme can produce low sub-size values over entire datasets if the data has a low signal-to-noise. However,
+    just because the data has a low signal-to-noise does not mean that the sub-grid size should be low.
+
+    To mitigate this, the signal-to-noise cut is set to the maximum signal-to-noise of the data divided by 2.0 if
+    it this value is below the signal-to-noise cut.
+
+    Parameters
+    ----------
+    data
+        The data which is to be fitted via a calculation using this over-sampling sub-grid.
+    noise_map
+        The noise-map of the data.
+    signal_to_noise_cut
+        The signal-to-noise cut which defines whether the sub-grid size is the upper or lower value.
+    sub_size_lower
+        The sub-grid size for pixels with signal-to-noise below the signal-to-noise cut.
+    sub_size_upper
+        The sub-grid size for pixels with signal-to-noise above the signal-to-noise cut.
+
+    Returns
+    -------
+    The adaptive sub-grid sizes.
+    """
+    signal_to_noise = data / noise_map
+
+    if np.max(signal_to_noise) < (2.0 * signal_to_noise_cut):
+        signal_to_noise_cut = np.max(signal_to_noise) / 2.0
+
+    sub_size = np.where(
+        signal_to_noise > signal_to_noise_cut, sub_size_upper, sub_size_lower
+    )
+
+    return Array2D(values=sub_size, mask=data.mask)

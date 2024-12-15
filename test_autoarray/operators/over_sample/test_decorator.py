@@ -20,15 +20,13 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
         pixel_scales=(1.0, 1.0),
     )
 
-    over_sampling = aa.OverSamplingUniform(sub_size=2)
-
-    grid_2d = aa.Grid2D.from_mask(mask=mask, over_sampling=over_sampling)
+    grid_2d = aa.Grid2D.from_mask(mask=mask, over_sampling_size=2)
 
     obj = aa.m.MockGrid2DLikeObj()
 
     ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 
-    over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    over_sample_uniform = aa.OverSampler(mask=mask, sub_size=2)
 
     mask_sub_2 = aa.util.over_sample.oversample_mask_2d_from(
         mask=np.array(mask), sub_size=2
@@ -36,7 +34,7 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     mask_sub_2 = aa.Mask2D(mask=mask_sub_2, pixel_scales=(0.5, 0.5))
 
-    grid = aa.Grid2D(values=over_sample_uniform.over_sampled_grid, mask=mask_sub_2)
+    grid = aa.Grid2D(values=grid_2d.grid_over_sampled, mask=mask_sub_2)
 
     ndarray_1d_via_grid = obj.ndarray_1d_from(grid=grid)
 

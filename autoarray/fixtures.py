@@ -152,9 +152,7 @@ def make_imaging_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingDataset(
-            uniform=aa.OverSamplingUniform(sub_size=1)
-        ),
+        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSampling(sub_size=1)),
     )
 
 
@@ -163,9 +161,7 @@ def make_imaging_7x7_sub_2():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingDataset(
-            uniform=aa.OverSamplingUniform(sub_size=2)
-        ),
+        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSampling(sub_size=2)),
     )
 
 
@@ -174,9 +170,7 @@ def make_imaging_covariance_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
-        over_sampling=aa.OverSamplingDataset(
-            uniform=aa.OverSamplingUniform(sub_size=1)
-        ),
+        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSampling(sub_size=1)),
     )
 
 
@@ -185,9 +179,7 @@ def make_imaging_7x7_no_blur():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingDataset(
-            uniform=aa.OverSamplingUniform(sub_size=1)
-        ),
+        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSampling(sub_size=1)),
     )
 
 
@@ -196,9 +188,7 @@ def make_imaging_7x7_no_blur_sub_2():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingDataset(
-            uniform=aa.OverSamplingUniform(sub_size=2)
-        ),
+        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSampling(sub_size=2)),
     )
 
 
@@ -408,7 +398,7 @@ def make_voronoi_mesh_grid_9():
 
 
 def make_over_sampler_2d_7x7():
-    return aa.OverSamplerUniform(mask=make_mask_2d_7x7(), sub_size=2)
+    return aa.OverSampler(mask=make_mask_2d_7x7(), sub_size=2)
 
 
 def make_border_relocator_2d_7x7():

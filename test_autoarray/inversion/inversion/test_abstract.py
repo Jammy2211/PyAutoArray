@@ -135,7 +135,7 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=1)
+    over_sampler = aa.OverSampler(mask=mask, sub_size=1)
 
     mapper_0 = aa.Mapper(
         mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
@@ -216,7 +216,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=1)
+    over_sampler = aa.OverSampler(mask=mask, sub_size=1)
 
     mapper_0 = aa.Mapper(
         mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg

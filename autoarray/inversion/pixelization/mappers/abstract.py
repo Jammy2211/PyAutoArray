@@ -11,7 +11,7 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.operators.over_sampling.abstract import AbstractOverSampler
+from autoarray.operators.over_sampling.over_sampler import OverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
@@ -26,7 +26,7 @@ class AbstractMapper(LinearObj):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
-        over_sampler: AbstractOverSampler,
+        over_sampler: OverSampler,
         border_relocator: BorderRelocator,
         run_time_dict: Optional[Dict] = None,
     ):

@@ -11,7 +11,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.mask import mask_2d_util
 
-from autoarray.operators.over_sampling import over_sample_util
+from autoarray.operators.over_sampling import over_sampler_util
 from autoarray.structures.grids import grid_2d_util
 
 
@@ -53,7 +53,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     sub_slim_indexes_for_slim_index = [[] for _ in range(total_pixels)]
 
     slim_index_for_sub_slim_indexes = (
-        over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+        over_sampler_util.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=mask_2d, sub_size=np.array(sub_size)
         ).astype("int")
     )
@@ -104,7 +104,7 @@ def sub_border_pixel_slim_indexes_from(
         mask_2d=mask_2d, sub_size=sub_size
     )
 
-    sub_grid_2d_slim = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+    sub_grid_2d_slim = over_sampler_util.grid_2d_slim_over_sampled_via_mask_from(
         mask_2d=mask_2d,
         pixel_scales=(1.0, 1.0),
         sub_size=np.array(sub_size),
@@ -181,7 +181,7 @@ class BorderRelocator:
 
     @property
     def sub_grid(self):
-        return over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+        return over_sampler_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
             sub_size=np.array(self.sub_size),

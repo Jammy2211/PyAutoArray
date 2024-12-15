@@ -1,10 +1,7 @@
 import logging
-from typing import Optional
+from typing import Union
 
-from autoarray.operators.over_sampling.abstract import AbstractOverSampling
-from autoarray.operators.over_sampling.uniform import (
-    OverSamplingUniform,
-)
+from autoarray.structures.arrays.uniform_2d import Array2D
 
 logger = logging.getLogger(__name__)
 
@@ -12,9 +9,9 @@ logger = logging.getLogger(__name__)
 class OverSamplingDataset:
     def __init__(
         self,
-        uniform: Optional[AbstractOverSampling] = None,
-        non_uniform: Optional[AbstractOverSampling] = None,
-        pixelization: Optional[AbstractOverSampling] = None,
+        uniform: Union[int, Array2D] = 4,
+        non_uniform: Union[int, Array2D] = 4,
+        pixelization: Union[int, Array2D] = 4,
     ):
         """
         Customizes how over sampling calculations are performed using the grids of the data.
@@ -60,6 +57,6 @@ class OverSamplingDataset:
             by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
             over sampling schemes are not appropriate.
         """
-        self.uniform = uniform or OverSamplingUniform(sub_size=4)
-        self.pixelization = pixelization or OverSamplingUniform(sub_size=4)
-        self.non_uniform = non_uniform or OverSamplingUniform(sub_size=4)
+        self.uniform = uniform
+        self.pixelization = pixelization
+        self.non_uniform = non_uniform

@@ -26,7 +26,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         mask=grid.mask, source_plane_data_grid=grid, source_plane_mesh_grid=mesh_grid
     )
 
-    over_sampler = aa.OverSamplerUniform(mask=grid.mask, sub_size=1)
+    over_sampler = aa.OverSampler(mask=grid.mask, sub_size=1)
 
     mapper = aa.Mapper(
         mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
@@ -51,7 +51,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
     mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid_2d_7x7)
 
-    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
+    over_sampler = aa.OverSampler(mask=grid_2d_7x7.mask, sub_size=1)
 
     mapper_grids = aa.MapperGrids(
         mask=grid_2d_7x7.mask,

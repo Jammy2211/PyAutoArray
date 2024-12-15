@@ -9,9 +9,6 @@ from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
 from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.operators.over_sampling.uniform import (
-    OverSamplingUniform,
-)
 
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
@@ -78,9 +75,9 @@ class Interferometer(AbstractDataset):
         self.real_space_mask = real_space_mask
 
         over_sampling = OverSamplingDataset(
-            uniform=OverSamplingUniform(sub_size=1),
-            pixelization=OverSamplingUniform(sub_size=1),
-            non_uniform=OverSamplingUniform(sub_size=1),
+            uniform=1,
+            pixelization=1,
+            non_uniform=1,
         )
 
         super().__init__(

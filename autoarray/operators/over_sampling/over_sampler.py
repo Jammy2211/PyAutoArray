@@ -1,24 +1,21 @@
 import numpy as np
-from typing import List, Tuple, Union
+from typing import Union
 
 from autoconf import conf
 from autoconf import cached_property
 
+from autoarray.numpy_wrapper import register_pytree_node_class
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.operators.over_sampling.abstract import AbstractOverSampling
-from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray import exc
-from autoarray.operators.over_sampling import over_sample_util
+from autoarray.operators.over_sampling import over_sampler_util
 
 
-class OverSamplingUniform(AbstractOverSampling):
-    def __init__(self, sub_size: Union[int, Array2D]):
+@register_pytree_node_class
+class OverSampler:
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         """
-        Over samples grid calculations using a uniform sub-grid.
+         Over samples grid calculations using a uniform sub-grid.
 
         When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
         on the grid. When the grid is paired to a 2D image (e.g. an `Array2D`) the solution needs to approximate
@@ -131,205 +128,8 @@ class OverSamplingUniform(AbstractOverSampling):
         The over sampling class has functions dedicated to mapping between the sub-grid and pixel-grid, for example
         `sub_mask_native_for_sub_mask_slim` and `slim_for_sub_slim`.
 
-        Parameters
-        ----------
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        """
-
-        self.sub_size = sub_size
-
-    @classmethod
-    def from_radial_bins(
-        cls,
-        grid: Grid2D,
-        sub_size_list: List[int],
-        radial_list: List[float],
-        centre_list: List[Tuple] = None,
-    ) -> "OverSamplingUniform":
-        """
-        Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
-
-        The adaptive sub-grid size is computed as follows:
-
-        1) Compute the radial distance of every pixel in the mask from the centre of the mask (or input centres).
-        2) For every pixel, determine the sub-grid size based on the radial distance of that pixel. For example, if
-        the first entry in `radial_list` is 0.5 and the first entry in `sub_size_list` 8, all pixels with a radial
-        distance less than 0.5 will have a sub-grid size of 8x8.
-
-        This scheme can produce high sub-size values towards the centre of the mask, where the galaxy is brightest and
-        has the most rapidly changing light profile which requires a high sub-grid size to resolve accurately.
-
-        If the data has multiple galaxies, the `centre_list` can be used to define the centre of each galaxy
-        and therefore increase the sub-grid size based on the light profile of each individual galaxy.
-
-        Parameters
-        ----------
-        mask
-            The mask defining the 2D region where the over-sampled grid is computed.
-        sub_size_list
-            The sub-grid size for every radial bin.
-        radial_list
-            The radial distance defining each bin, which are refeneced based on the previous entry. For example, if
-            the first entry is 0.5, the second 1.0 and the third 1.5, the adaptive sub-grid size will be between 0.5
-            and 1.0 for the first sub-grid size, between 1.0 and 1.5 for the second sub-grid size, etc.
-        centre_list
-            A list of centres for each galaxy whose centres require higher sub-grid sizes.
-
-        Returns
-        -------
-        A uniform over-sampling object with an adaptive sub-grid size based on the radial distance of every pixel from
-        the centre of the mask.
-        """
-
-        if centre_list is None:
-            centre_list = [grid.mask.mask_centre]
-
-        sub_size = np.zeros(grid.shape_slim)
-
-        for centre in centre_list:
-            radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
-
-            sub_size_of_centre = over_sample_util.sub_size_radial_bins_from(
-                radial_grid=np.array(radial_grid),
-                sub_size_list=np.array(sub_size_list),
-                radial_list=np.array(radial_list),
-            )
-
-            sub_size = np.where(
-                sub_size_of_centre > sub_size, sub_size_of_centre, sub_size
-            )
-
-        sub_size = Array2D(values=sub_size, mask=grid.mask)
-
-        return cls(sub_size=sub_size)
-
-    @classmethod
-    def from_adaptive_scheme(
-        cls, grid: Grid2D, name: str, centre: Tuple[float, float]
-    ) -> "OverSamplingUniform":
-        """
-        Returns a 2D grid whose over sampling is adaptive, placing a high number of sub-pixels in the regions of the
-        grid closest to the centre input (y,x) coordinates.
-
-        This adaptive over sampling is primarily used in PyAutoGalaxy, to evaluate the image of a light profile
-        (e.g. a Sersic function) with high levels of sub gridding in its centre and lower levels of sub gridding
-        further away from the centre (saving computational time).
-
-        The `autogalaxy_workspace` and `autolens_workspace` packages have guides called `over_sampling.ipynb`
-        which describe over sampling in more detail.
-
-        The inputs `name` and `centre` typically correspond to the name of the light profile (e.g. `Sersic`) and
-        its `centre`, so that the adaptive over sampling parameters for that light profile are loaded from config
-        files and used to setup the grid.
-
-        Parameters
-        ----------
-        name
-            The name of the light profile, which is used to load the adaptive over sampling parameters from config files.
-        centre
-            The (y,x) centre of the adaptive over sampled grid, around which the highest sub-pixel resolution is placed.
-
-        Returns
-        -------
-        A new Grid2D with adaptive over sampling.
-
-        """
-
-        if not grid.is_uniform:
-            raise exc.GridException(
-                "You cannot make an adaptive over-sampled grid from a non-uniform grid."
-            )
-
-        sub_size_list = conf.instance["grids"]["over_sampling"]["sub_size_list"][name]
-        radial_factor_list = conf.instance["grids"]["over_sampling"][
-            "radial_factor_list"
-        ][name]
-
-        centre = grid.geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
-            scaled_coordinate_2d=centre
-        )
-
-        return OverSamplingUniform.from_radial_bins(
-            grid=grid,
-            sub_size_list=sub_size_list,
-            radial_list=[
-                min(grid.pixel_scales) * radial_factor
-                for radial_factor in radial_factor_list
-            ],
-            centre_list=[centre],
-        )
-
-    @classmethod
-    def from_adapt(
-        cls,
-        data: Array2D,
-        noise_map: Array2D,
-        signal_to_noise_cut: float = 5.0,
-        sub_size_lower: int = 2,
-        sub_size_upper: int = 4,
-    ):
-        """
-        Returns an adaptive sub-grid size based on the signal-to-noise of the data.
-
-        The adaptive sub-grid size is computed as follows:
-
-        1) The signal-to-noise of every pixel is computed as the data divided by the noise-map.
-        2) For all pixels with signal-to-noise above the signal-to-noise cut, the sub-grid size is set to the upper
-          value. For all other pixels, the sub-grid size is set to the lower value.
-
-        This scheme can produce low sub-size values over entire datasets if the data has a low signal-to-noise. However,
-        just because the data has a low signal-to-noise does not mean that the sub-grid size should be low.
-
-        To mitigate this, the signal-to-noise cut is set to the maximum signal-to-noise of the data divided by 2.0 if
-        it this value is below the signal-to-noise cut.
-
-        Parameters
-        ----------
-        data
-            The data which is to be fitted via a calculation using this over-sampling sub-grid.
-        noise_map
-            The noise-map of the data.
-        signal_to_noise_cut
-            The signal-to-noise cut which defines whether the sub-grid size is the upper or lower value.
-        sub_size_lower
-            The sub-grid size for pixels with signal-to-noise below the signal-to-noise cut.
-        sub_size_upper
-            The sub-grid size for pixels with signal-to-noise above the signal-to-noise cut.
-
-        Returns
-        -------
-        The adaptive sub-grid sizes.
-        """
-        signal_to_noise = data / noise_map
-
-        if np.max(signal_to_noise) < (2.0 * signal_to_noise_cut):
-            signal_to_noise_cut = np.max(signal_to_noise) / 2.0
-
-        sub_size = np.where(
-            signal_to_noise > signal_to_noise_cut, sub_size_upper, sub_size_lower
-        )
-
-        sub_size = Array2D(values=sub_size, mask=data.mask)
-
-        return cls(sub_size=sub_size)
-
-    def over_sampler_from(self, mask: Mask2D) -> "OverSamplerUniform":
-        return OverSamplerUniform(
-            mask=mask,
-            sub_size=self.sub_size,
-        )
-
-
-class OverSamplerUniform(AbstractOverSampler):
-    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
-        """
-         Over samples grid calculations using a uniform sub-grid.
-
-         See the class `OverSamplingUniform` for a description of how the over-sampling works in full.
-
-         The class `OverSamplingUniform` is used for the high level API, whereby this is where users input their
-         preferred over-sampling configuration. This class, `OverSamplerUniform`, contains the functionality
+         The class `OverSampling` is used for the high level API, whereby this is where users input their
+         preferred over-sampling configuration. This class, `OverSampler`, contains the functionality
          which actually performs the over-sampling calculations, but is hidden from the user.
 
         Parameters
@@ -347,6 +147,13 @@ class OverSamplerUniform(AbstractOverSampler):
             )
 
         self.sub_size = sub_size
+
+    def tree_flatten(self):
+        return (self.mask,), ()
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        return cls(mask=children[0])
 
     @property
     def sub_total(self):
@@ -392,17 +199,6 @@ class OverSamplerUniform(AbstractOverSampler):
 
         return sub_pixel_areas
 
-    @cached_property
-    def over_sampled_grid(self) -> Grid2DIrregular:
-        grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-            mask_2d=np.array(self.mask),
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size).astype("int"),
-            origin=self.mask.origin,
-        )
-
-        return Grid2DIrregular(values=grid)
-
     def binned_array_2d_from(self, array: Array2D) -> "Array2D":
         """
         Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
@@ -426,7 +222,7 @@ class OverSamplerUniform(AbstractOverSampler):
         except AttributeError:
             pass
 
-        binned_array_2d = over_sample_util.binned_array_2d_from(
+        binned_array_2d = over_sampler_util.binned_array_2d_from(
             array_2d=np.array(array),
             mask_2d=np.array(self.mask),
             sub_size=np.array(self.sub_size).astype("int"),
@@ -491,7 +287,7 @@ class OverSamplerUniform(AbstractOverSampler):
 
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
-        return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
+        return over_sampler_util.native_sub_index_for_slim_sub_index_2d_from(
             mask_2d=self.mask.array, sub_size=np.array(self.sub_size)
         ).astype("int")
 
@@ -544,6 +340,6 @@ class OverSamplerUniform(AbstractOverSampler):
 
             print(derive_indexes_2d.slim_for_sub_slim)
         """
-        return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+        return over_sampler_util.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size)
         ).astype("int")
