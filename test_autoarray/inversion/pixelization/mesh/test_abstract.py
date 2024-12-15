@@ -29,9 +29,7 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
         source_plane_mesh_grid=image_mesh,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=None, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert grid[8, 0] != mapper.source_plane_data_grid[8, 0]
     assert mapper.source_plane_data_grid[8, 0] < 5.0
@@ -48,9 +46,7 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
         source_plane_mesh_grid=image_mesh,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=None, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert image_mesh[0, 0] != mapper.source_plane_mesh_grid[0, 0]
@@ -67,9 +63,7 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
         source_plane_mesh_grid=image_mesh,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=None, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert image_mesh[0, 0] != mapper.source_plane_mesh_grid[0, 0]

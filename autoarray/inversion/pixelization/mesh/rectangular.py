@@ -104,11 +104,19 @@ class Rectangular(AbstractMesh):
 
         self.run_time_dict = run_time_dict
 
-        relocated_grid = self.relocated_grid_from(
+        relocated_grid_over_sampled = self.relocated_grid_from(
             border_relocator=border_relocator,
-            source_plane_data_grid=source_plane_data_grid,
+            source_plane_data_grid=source_plane_data_grid.grid_over_sampled,
             preloads=preloads,
         )
+
+        relocated_grid = Grid2D(
+            values=source_plane_data_grid,
+            mask=source_plane_data_grid.mask,
+            over_sampling_size=source_plane_data_grid.over_sampling_size,
+            grid_over_sampled=relocated_grid_over_sampled,
+        )
+
         mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
 
         return MapperGrids(
@@ -141,7 +149,7 @@ class Rectangular(AbstractMesh):
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         """
         return Mesh2DRectangular.overlay_grid(
-            shape_native=self.shape, grid=source_plane_data_grid
+            shape_native=self.shape, grid=source_plane_data_grid.grid_over_sampled
         )
 
     @property

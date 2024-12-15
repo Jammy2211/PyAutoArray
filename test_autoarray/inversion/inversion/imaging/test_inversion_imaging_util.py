@@ -193,12 +193,11 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
         mapper_grids = pixelization.mapper_grids_from(
             mask=mask,
             border_relocator=None,
-            source_plane_data_grid=grid.grid_over_sampled,
+            source_plane_data_grid=grid,
         )
 
         mapper = aa.Mapper(
             mapper_grids=mapper_grids,
-            over_sampler=grid.over_sampler,
             regularization=None,
         )
 
@@ -269,14 +268,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         source_plane_data_grid=mask.derive_grid.unmasked,
     )
 
-    over_sampler = aa.OverSampler(
-        mask=mask,
-        sub_size=1,
-    )
-
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     mapping_matrix = mapper.mapping_matrix
 
@@ -321,12 +313,11 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
         mapper_grids = pixelization.mapper_grids_from(
             mask=mask,
             border_relocator=None,
-            source_plane_data_grid=grid.grid_over_sampled,
+            source_plane_data_grid=grid,
         )
 
         mapper = aa.Mapper(
             mapper_grids=mapper_grids,
-            over_sampler=grid.over_sampler,
             regularization=None,
         )
 

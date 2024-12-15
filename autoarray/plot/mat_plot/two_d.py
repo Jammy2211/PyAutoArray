@@ -610,7 +610,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(
             plotter=self,
-            grid_indexes=mapper.source_plane_data_grid,
+            grid_indexes=mapper.source_plane_data_grid.grid_over_sampled,
             mapper=mapper,
             geometry=mapper.mapper_grids.mask.geometry,
         )
@@ -694,7 +694,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(
             plotter=self,
-            grid_indexes=mapper.source_plane_data_grid,
+            grid_indexes=mapper.source_plane_data_grid.grid_over_sampled,
             mapper=mapper,
             geometry=mapper.mapper_grids.mask.geometry,
         )
@@ -777,7 +777,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(
             plotter=self,
-            grid_indexes=mapper.source_plane_data_grid,
+            grid_indexes=mapper.source_plane_data_grid.grid_over_sampled,
             mapper=mapper,
             geometry=mapper.mapper_grids.mask.geometry,
         )

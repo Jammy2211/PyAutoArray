@@ -114,7 +114,7 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
         pixel_scales=2.0,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=1)
 
     mesh_0 = aa.mesh.Rectangular(shape=(3, 3))
     mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
@@ -135,14 +135,8 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    over_sampler = aa.OverSampler(mask=mask, sub_size=1)
-
-    mapper_0 = aa.Mapper(
-        mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
-    )
-    mapper_1 = aa.Mapper(
-        mapper_grids=mapper_grids_1, over_sampler=over_sampler, regularization=reg
-    )
+    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
+    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -184,7 +178,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
         pixel_scales=2.0,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=1)
 
     mesh_0 = aa.mesh.Delaunay()
     mesh_1 = aa.mesh.Delaunay()
@@ -216,14 +210,8 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    over_sampler = aa.OverSampler(mask=mask, sub_size=1)
-
-    mapper_0 = aa.Mapper(
-        mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
-    )
-    mapper_1 = aa.Mapper(
-        mapper_grids=mapper_grids_1, over_sampler=over_sampler, regularization=reg
-    )
+    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
+    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
