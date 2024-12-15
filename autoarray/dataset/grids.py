@@ -27,11 +27,6 @@ class GridsDataset:
         which is used for most normal calculations (e.g. evaluating the amount of light that falls in an pixel
         from a light profile).
 
-        - `non_uniform`: A grid of (y,x) coordinates which aligns with the centre of every image pixel of the image
-        data, but where their values are going to be deflected to become non-uniform such that the adaptive over
-        sampling scheme used for the main grid does not apply. This is used to compute over sampled light profiles of
-        lensed sources in PyAutoLens.
-
         - `pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
         the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
         can benefit from using different oversampling schemes than the normal grid.
@@ -57,7 +52,7 @@ class GridsDataset:
         self.psf = psf
 
     @cached_property
-    def uniform(self) -> Union[Grid1D, Grid2D]:
+    def lp(self) -> Union[Grid1D, Grid2D]:
         """
         Returns the grid of (y,x) Cartesian coordinates at the centre of every pixel in the masked data, which is used
         to perform most normal calculations (e.g. evaluating the amount of light that falls in an pixel from a light
@@ -71,31 +66,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling_size=self.over_sampling.uniform,
-        )
-
-    @cached_property
-    def non_uniform(self) -> Optional[Union[Grid1D, Grid2D]]:
-        """
-        Returns the grid of (y,x) Cartesian coordinates at the centre of every pixel in the masked data, but
-        with a different over sampling scheme designed for
-
-        where
-        their values are going to be deflected to become non-uniform such that the adaptive over sampling scheme used
-        for the main grid does not apply.
-
-        This is used to compute over sampled light profiles of lensed sources in PyAutoLens.
-
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data.
-        """
-        return Grid2D.from_mask(
-            mask=self.mask,
-            over_sampling_size=self.over_sampling.non_uniform,
+            over_sampling_size=self.over_sampling.lp,
         )
 
     @cached_property
@@ -139,7 +110,7 @@ class GridsDataset:
         if self.psf is None:
             return None
 
-        return self.uniform.blurring_grid_via_kernel_shape_from(
+        return self.lp.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native,
         )
 
@@ -153,14 +124,12 @@ class GridsDataset:
 class GridsInterface:
     def __init__(
         self,
-        uniform=None,
-        non_uniform=None,
+        lp=None,
         pixelization=None,
         blurring=None,
         border_relocator=None,
     ):
-        self.uniform = uniform
-        self.non_uniform = non_uniform
+        self.lp = lp
         self.pixelization = pixelization
         self.blurring = blurring
         self.border_relocator = border_relocator

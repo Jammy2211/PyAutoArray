@@ -97,7 +97,7 @@ class AbstractDataset:
 
     @property
     def grid(self):
-        return self.grids.uniform
+        return self.grids.lp
 
     @cached_property
     def grids(self):

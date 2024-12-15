@@ -19,10 +19,6 @@ def test__individual_attributes_are_output(
 ):
     visuals = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
 
-    imaging_7x7 = imaging_7x7.apply_over_sampling(
-        over_sampling=aa.OverSamplingDataset(non_uniform=1)
-    )
-
     dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
         visuals_2d=visuals,

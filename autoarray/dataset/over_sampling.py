@@ -9,8 +9,7 @@ logger = logging.getLogger(__name__)
 class OverSamplingDataset:
     def __init__(
         self,
-        uniform: Union[int, Array2D] = 4,
-        non_uniform: Union[int, Array2D] = 4,
+        lp: Union[int, Array2D] = 4,
         pixelization: Union[int, Array2D] = 4,
     ):
         """
@@ -41,18 +40,13 @@ class OverSamplingDataset:
 
         Parameters
         ----------
-        uniform
+        lp
             The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
             (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
             into each pixel.
         pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
-        non_uniform
-            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
-            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
-            over sampling schemes are not appropriate.
         """
-        self.uniform = uniform
+        self.lp = lp
         self.pixelization = pixelization
-        self.non_uniform = non_uniform

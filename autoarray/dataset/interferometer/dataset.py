@@ -75,9 +75,8 @@ class Interferometer(AbstractDataset):
         self.real_space_mask = real_space_mask
 
         over_sampling = OverSamplingDataset(
-            uniform=1,
+            lp=1,
             pixelization=1,
-            non_uniform=1,
         )
 
         super().__init__(
