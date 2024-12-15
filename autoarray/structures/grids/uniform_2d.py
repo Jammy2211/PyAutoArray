@@ -16,6 +16,7 @@ from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.operators.over_sampling import over_sample_util
 
+from autoarray import exc
 from autoarray import type as ty
 
 
@@ -26,7 +27,6 @@ class Grid2D(Structure):
         mask: Mask2D,
         store_native: bool = False,
         over_sampling_size: Union[int, Array2D] = 4,
-        over_sampling_non_uniform: Union[int, Array2D] = 4,
         grid_over_sampled: Optional[Grid2D] = None,
         *args,
         **kwargs,
@@ -165,10 +165,6 @@ class Grid2D(Structure):
         self.mask = mask
 
         grid_2d_util.check_grid_2d(grid_2d=values)
-
-        # self.over_sampling_non_uniform = (
-        #     over_sampling_non_uniform or OverSampling(sub_size=4)
-        # )
 
         if isinstance(over_sampling_size, int):
             over_sampling_size = np.full(
@@ -1064,6 +1060,8 @@ class Grid2D(Structure):
         kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
+        if kernel_shape_native[0] % 2 == 0 or kernel_shape_native[1] % 2 == 0:
+            raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
         shape = self.mask.shape
 
@@ -1077,10 +1075,21 @@ class Grid2D(Structure):
             pixel_scales=self.mask.pixel_scales,
         )
 
-        return Grid2D.from_mask(
-            mask=padded_mask,
-            over_sampling_size=4,
+        pad_width = (
+            (padded_shape[0] - shape[0]) // 2,
+            (padded_shape[1] - shape[1]) // 2,
         )
+
+        over_sampling_size = np.pad(
+            self.over_sampling_size.native,
+            pad_width,
+            mode="constant",
+            constant_values=1,
+        )
+
+        over_sampling_size[over_sampling_size == 0] = 1
+
+        return Grid2D.from_mask(mask=padded_mask, over_sampling_size=over_sampling_size)
 
     @cached_property
     def is_uniform(self) -> bool:

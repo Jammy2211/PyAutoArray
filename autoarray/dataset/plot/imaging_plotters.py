@@ -62,7 +62,6 @@ class ImagingPlotterMeta(Plotter):
         psf: bool = False,
         signal_to_noise_map: bool = False,
         over_sampling: bool = False,
-        over_sampling_non_uniform: bool = False,
         over_sampling_pixelization: bool = False,
         title_str: Optional[str] = None,
     ):
@@ -132,17 +131,6 @@ class ImagingPlotterMeta(Plotter):
                 auto_labels=AutoLabels(
                     title=title_str or f"Over Sampling (Uniform)",
                     filename="over_sampling",
-                    cb_unit="",
-                ),
-            )
-
-        if over_sampling_non_uniform:
-            self.mat_plot_2d.plot_array(
-                array=self.dataset.grids.non_uniform.over_sampling_size,
-                visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(
-                    title=title_str or f"Over Sampling (Non Uniform)",
-                    filename="over_sampling_non_uniform",
                     cb_unit="",
                 ),
             )
@@ -231,7 +219,6 @@ class ImagingPlotterMeta(Plotter):
         self.figures_2d(signal_to_noise_map=True)
 
         self.figures_2d(over_sampling=True)
-        self.figures_2d(over_sampling_non_uniform=True)
         self.figures_2d(over_sampling_pixelization=True)
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_dataset")

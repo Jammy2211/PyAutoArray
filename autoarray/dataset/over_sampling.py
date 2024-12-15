@@ -36,10 +36,6 @@ class OverSamplingDataset:
         the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
         can benefit from using different oversampling schemes than the normal grid.
 
-        - `grid_non_uniform`: A grid of (y,x) coordinates which are mapped from the image pixel centres but have had
-        their values deflected to become non-uniform. This is used to compute over sampled light profiles of lensed
-        sources in PyAutoLens.
-
         Different calculations typically benefit from different over sampling, which this class enables
         the customization of.
 
