@@ -493,7 +493,7 @@ def binned_array_2d_from(
     return binned_array_2d_slim
 
 
-def from_radial_bins(
+def over_sample_size_via_radial_bins_from(
     grid: Grid2D,
     sub_size_list: List[int],
     radial_list: List[float],
@@ -553,7 +553,7 @@ def from_radial_bins(
     return Array2D(values=sub_size, mask=grid.mask)
 
 
-def from_adaptive_scheme(
+def over_sample_size_via_adaptive_scheme_from(
     grid: Grid2D, name: str, centre: Tuple[float, float]
 ) -> Array2D:
     """
@@ -598,7 +598,7 @@ def from_adaptive_scheme(
         scaled_coordinate_2d=centre
     )
 
-    return from_radial_bins(
+    return over_sample_size_via_radial_bins_from(
         grid=grid,
         sub_size_list=sub_size_list,
         radial_list=[
@@ -609,7 +609,7 @@ def from_adaptive_scheme(
     )
 
 
-def from_adapt(
+def over_sample_size_via_adapt_from(
     data: Array2D,
     noise_map: Array2D,
     signal_to_noise_cut: float = 5.0,

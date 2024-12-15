@@ -14,7 +14,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.operators.over_sampling import over_sampler_util
+from autoarray.operators.over_sampling import over_sample_util
 
 from autoarray import type as ty
 
@@ -181,7 +181,7 @@ class Grid2D(Structure):
 
         if grid_over_sampled is None:
             self.grid_over_sampled = (
-                over_sampler_util.grid_2d_slim_over_sampled_via_mask_from(
+                over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
                     mask_2d=np.array(self.mask),
                     pixel_scales=self.mask.pixel_scales,
                     sub_size=np.array(self.over_sampler.sub_size).astype("int"),

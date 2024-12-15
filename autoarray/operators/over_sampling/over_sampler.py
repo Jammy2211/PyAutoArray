@@ -8,7 +8,7 @@ from autoarray.numpy_wrapper import register_pytree_node_class
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray.operators.over_sampling import over_sampler_util
+from autoarray.operators.over_sampling import over_sample_util
 
 
 @register_pytree_node_class
@@ -222,7 +222,7 @@ class OverSampler:
         except AttributeError:
             pass
 
-        binned_array_2d = over_sampler_util.binned_array_2d_from(
+        binned_array_2d = over_sample_util.binned_array_2d_from(
             array_2d=np.array(array),
             mask_2d=np.array(self.mask),
             sub_size=np.array(self.sub_size).astype("int"),
@@ -287,7 +287,7 @@ class OverSampler:
 
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
-        return over_sampler_util.native_sub_index_for_slim_sub_index_2d_from(
+        return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
             mask_2d=self.mask.array, sub_size=np.array(self.sub_size)
         ).astype("int")
 
@@ -340,6 +340,6 @@ class OverSampler:
 
             print(derive_indexes_2d.slim_for_sub_slim)
         """
-        return over_sampler_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+        return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size)
         ).astype("int")
