@@ -171,13 +171,15 @@ class Grid2D(Structure):
         # )
 
         if isinstance(over_sampling_size, int):
-            sub_size = np.full(
+            over_sampling_size = np.full(
                 fill_value=over_sampling_size, shape=mask.shape_slim
             ).astype("int")
 
+        over_sampling_size = Array2D(values=over_sampling_size, mask=mask)
+
         from autoarray.operators.over_sampling.over_sampler import OverSampler
 
-        self.over_sampler = OverSampler(sub_size=sub_size, mask=mask)
+        self.over_sampler = OverSampler(sub_size=over_sampling_size, mask=mask)
 
         if grid_over_sampled is None:
             self.grid_over_sampled = (
@@ -825,7 +827,7 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(
             mask=mask,
-            over_sampling_size=self.over_sampling_size,
+            over_sampling_size=self.over_sampling_size.apply_mask(mask=mask),
         )
 
     def squared_distances_to_coordinate_from(
@@ -1077,7 +1079,7 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(
             mask=padded_mask,
-            over_sampling_size=self.over_sampling_size,
+            over_sampling_size=4,
         )
 
     @cached_property
