@@ -343,3 +343,16 @@ class OverSampler:
         return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size)
         ).astype("int")
+
+    @property
+    def uniform_over_sampled(self):
+        from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+
+        grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+            mask_2d=np.array(self.mask),
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=np.array(self.sub_size).astype("int"),
+            origin=self.mask.origin,
+        )
+
+        return Grid2DIrregular(values=grid)

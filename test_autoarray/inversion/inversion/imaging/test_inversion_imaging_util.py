@@ -188,20 +188,17 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
     # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
-        over_sampler = aa.OverSampler(
-            mask=mask,
-            sub_size=sub_size,
-        )
-
-        grid = over_sampler.over_sampled_grid
+        grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=sub_size)
 
         mapper_grids = pixelization.mapper_grids_from(
-            mask=mask, border_relocator=None, source_plane_data_grid=grid
+            mask=mask,
+            border_relocator=None,
+            source_plane_data_grid=grid.grid_over_sampled,
         )
 
         mapper = aa.Mapper(
             mapper_grids=mapper_grids,
-            over_sampler=over_sampler,
+            over_sampler=grid.over_sampler,
             regularization=None,
         )
 
@@ -236,7 +233,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=mapper.params,
-            sub_size=np.array(over_sampler.sub_size),
+            sub_size=np.array(grid.over_sampling_size),
         )
 
         data_vector_via_w_tilde = (
@@ -319,20 +316,17 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
-        over_sampler = aa.OverSampler(
-            mask=mask,
-            sub_size=sub_size,
-        )
-
-        grid = over_sampler.over_sampled_grid
+        grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=sub_size)
 
         mapper_grids = pixelization.mapper_grids_from(
-            mask=mask, border_relocator=None, source_plane_data_grid=grid
+            mask=mask,
+            border_relocator=None,
+            source_plane_data_grid=grid.grid_over_sampled,
         )
 
         mapper = aa.Mapper(
             mapper_grids=mapper_grids,
-            over_sampler=over_sampler,
+            over_sampler=grid.over_sampler,
             regularization=None,
         )
 
@@ -358,7 +352,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=mapper.params,
-            sub_size=np.array(over_sampler.sub_size),
+            sub_size=np.array(grid.over_sampling_size),
         )
 
         curvature_matrix_via_w_tilde = aa.util.inversion_imaging.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(

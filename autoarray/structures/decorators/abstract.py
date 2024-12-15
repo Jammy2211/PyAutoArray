@@ -60,7 +60,7 @@ class AbstractMaker:
         return self.grid.mask
 
     @property
-    def over_sampling(self) -> np.ndarray:
+    def over_sampling_size(self) -> np.ndarray:
         return self.grid.over_sampling_size
 
     def via_grid_2d(self, result):

@@ -146,7 +146,7 @@ class GridsDataset:
     @cached_property
     def border_relocator(self) -> BorderRelocator:
         return BorderRelocator(
-            mask=self.mask, sub_size=self.pixelization.over_sampling.sub_size
+            mask=self.mask, sub_size=self.pixelization.over_sampling_size
         )
 
 

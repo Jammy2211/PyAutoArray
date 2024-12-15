@@ -325,17 +325,16 @@ def test__relocated_grid_from__inside_border_no_relocations():
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1)
     )
 
-    over_sampling = aa.OverSampler(
-        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    grid = aa.Grid2D.from_mask(
+        mask=mask, over_sampling_size=np.array(mask.pixels_in_mask * [2])
     )
-    grid = over_sampling.over_sampled_grid
-    grid[1, :] = [0.1, 0.1]
+    grid.grid_over_sampled[1, :] = [0.1, 0.1]
 
     border_relocator = aa.BorderRelocator(
         mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
     )
 
-    relocated_grid = border_relocator.relocated_grid_from(grid=grid)
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid.grid_over_sampled)
 
     assert (relocated_grid[1] == np.array([0.1, 0.1])).all()
 
@@ -345,22 +344,21 @@ def test__relocated_grid_from__outside_border_includes_relocations():
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1)
     )
 
-    over_sampling = aa.OverSampler(
-        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    grid = aa.Grid2D.from_mask(
+        mask=mask, over_sampling_size=np.array(mask.pixels_in_mask * [2])
     )
-    grid = over_sampling.over_sampled_grid
-    grid[1, :] = [10.1, 0.1]
+    grid.grid_over_sampled[1, :] = [10.1, 0.1]
 
     border_relocator = aa.BorderRelocator(
         mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
     )
 
-    relocated_grid = border_relocator.relocated_grid_from(grid=grid)
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid.grid_over_sampled)
 
     assert relocated_grid[1] == pytest.approx([0.97783243, 0.00968151], 1e-4)
 
 
-def test__relocated_grid_from__positive_origin_included_in_relocate():
+def test__relocated_grid_from__positive_origin_includeddfdsd_in_relocate():
     mask = aa.Mask2D.circular(
         shape_native=(60, 60),
         radius=1.0,
@@ -371,7 +369,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
     over_sampling = aa.OverSampler(
         mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
     )
-    grid = over_sampling.over_sampled_grid
+    grid = over_sampling.grid_over_sampled
     grid[1, :] = [11.1, 1.0]
 
     border_relocator = aa.BorderRelocator(
@@ -379,5 +377,25 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
     )
 
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
+
+    assert relocated_grid[1] == pytest.approx([1.97783243, 1.0], 1e-4)
+
+
+def test__relocated_grid_from__positive_origin_included_in_relocate():
+    mask = aa.Mask2D.circular(
+        shape_native=(60, 60),
+        radius=1.0,
+        pixel_scales=(0.1, 0.1),
+        centre=(1.0, 1.0),
+    )
+
+    grid = aa.Grid2D.from_mask(
+        mask=mask, over_sampling_size=np.array(mask.pixels_in_mask * [2])
+    )
+    grid.grid_over_sampled[1, :] = [11.1, 0.1]
+
+    border_relocator = aa.BorderRelocator(mask=mask, sub_size=grid.over_sampling_size)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid.grid_over_sampled)
 
     assert relocated_grid[1] == pytest.approx([1.97783243, 1.0], 1e-4)

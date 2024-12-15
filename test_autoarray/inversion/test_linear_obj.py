@@ -44,10 +44,8 @@ def test__data_to_pix_unique_from():
 
     mask = aa.Mask2D.all_false(shape_native=(1, 2), pixel_scales=0.1)
 
-    over_sampling = aa.OverSampler(mask=mask, sub_size=2)
-
     grid = aa.Grid2D.uniform(
-        shape_native=(1, 2), pixel_scales=0.1, over_sampling=over_sampling
+        shape_native=(1, 2), pixel_scales=0.1, over_sampling_size=2
     )
 
     linear_obj = aa.AbstractLinearObjFuncList(grid=grid, regularization=None)
