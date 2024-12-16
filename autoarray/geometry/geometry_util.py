@@ -1,5 +1,5 @@
 from typing import Tuple, Union
-import numpy as np
+from autoarray.numpy_wrapper import np, use_jax
 
 from autoarray import numba_util
 from autoarray import type as ty
@@ -382,14 +382,19 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    shifted_grid_2d = grid_2d - np.array(centre)
-    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, 1))
+    if use_jax:
+        shifted_grid_2d = grid_2d.array - np.array(centre)
+    else:
+        shifted_grid_2d = grid_2d - np.array(centre)
+    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, axis=1))
     theta_coordinate_to_profile = np.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - np.radians(angle)
     return np.vstack(
-        radius
-        * (np.sin(theta_coordinate_to_profile), np.cos(theta_coordinate_to_profile))
+        [
+            radius * np.sin(theta_coordinate_to_profile),
+            radius * np.cos(theta_coordinate_to_profile),
+        ]
     ).T
 
 
@@ -472,23 +477,28 @@ def grid_pixels_2d_slim_from(
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
 
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
-
-    for slim_index in range(grid_scaled_2d_slim.shape[0]):
-        grid_pixels_2d_slim[slim_index, 0] = (
-            (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
-            + centres_scaled[0]
-            + 0.5
-        )
-        grid_pixels_2d_slim[slim_index, 1] = (
-            (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
-            + centres_scaled[1]
-            + 0.5
-        )
+    if use_jax:
+        centres_scaled = np.array(centres_scaled)
+        pixel_scales = np.array(pixel_scales)
+        sign = np.array([-1, 1])
+        return (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
+    else:
+        grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
+        for slim_index in range(grid_scaled_2d_slim.shape[0]):
+            grid_pixels_2d_slim[slim_index, 0] = (
+                (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
+                + centres_scaled[0]
+                + 0.5
+            )
+            grid_pixels_2d_slim[slim_index, 1] = (
+                (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
+                + centres_scaled[1]
+                + 0.5
+            )
 
     return grid_pixels_2d_slim
 
@@ -534,23 +544,32 @@ def grid_pixel_centres_2d_slim_from(
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
 
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
 
-    for slim_index in range(grid_scaled_2d_slim.shape[0]):
-        grid_pixels_2d_slim[slim_index, 0] = int(
-            (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
-            + centres_scaled[0]
-            + 0.5
-        )
-        grid_pixels_2d_slim[slim_index, 1] = int(
-            (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
-            + centres_scaled[1]
-            + 0.5
-        )
+    if use_jax:
+        centres_scaled = np.array(centres_scaled)
+        pixel_scales = np.array(pixel_scales)
+        sign = np.array([-1.0, 1.0])
+        grid_pixels_2d_slim = (
+            (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
+        ).astype(int)
+    else:
+        grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
+
+        for slim_index in range(grid_scaled_2d_slim.shape[0]):
+            grid_pixels_2d_slim[slim_index, 0] = int(
+                (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
+                + centres_scaled[0]
+                + 0.5
+            )
+            grid_pixels_2d_slim[slim_index, 1] = int(
+                (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
+                + centres_scaled[1]
+                + 0.5
+            )
 
     return grid_pixels_2d_slim
 
@@ -608,13 +627,18 @@ def grid_pixel_indexes_2d_slim_from(
         origin=origin,
     )
 
-    grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
+    if use_jax:
+        grid_pixel_indexes_2d_slim = (
+            grid_pixels_2d_slim * np.array([shape_native[1], 1])
+        ).sum(axis=1).astype(int)
+    else:
+        grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
 
-    for slim_index in range(grid_pixels_2d_slim.shape[0]):
-        grid_pixel_indexes_2d_slim[slim_index] = int(
-            grid_pixels_2d_slim[slim_index, 0] * shape_native[1]
-            + grid_pixels_2d_slim[slim_index, 1]
-        )
+        for slim_index in range(grid_pixels_2d_slim.shape[0]):
+            grid_pixel_indexes_2d_slim[slim_index] = int(
+                grid_pixels_2d_slim[slim_index, 0] * shape_native[1]
+                + grid_pixels_2d_slim[slim_index, 1]
+            )
 
     return grid_pixel_indexes_2d_slim
 
@@ -659,20 +683,25 @@ def grid_scaled_2d_slim_from(
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_scaled_2d_slim = np.zeros((grid_pixels_2d_slim.shape[0], 2))
-
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
+    if use_jax:
+        centres_scaled = np.array(centres_scaled)
+        pixel_scales = np.array(pixel_scales)
+        sign = np.array([-1, 1])
+        grid_scaled_2d_slim = (grid_pixels_2d_slim - centres_scaled - 0.5) * pixel_scales * sign
+    else:
+        grid_scaled_2d_slim = np.zeros((grid_pixels_2d_slim.shape[0], 2))
 
-    for slim_index in range(grid_scaled_2d_slim.shape[0]):
-        grid_scaled_2d_slim[slim_index, 0] = (
-            -(grid_pixels_2d_slim[slim_index, 0] - centres_scaled[0] - 0.5)
-            * pixel_scales[0]
-        )
-        grid_scaled_2d_slim[slim_index, 1] = (
-            grid_pixels_2d_slim[slim_index, 1] - centres_scaled[1] - 0.5
-        ) * pixel_scales[1]
+        for slim_index in range(grid_scaled_2d_slim.shape[0]):
+            grid_scaled_2d_slim[slim_index, 0] = (
+                -(grid_pixels_2d_slim[slim_index, 0] - centres_scaled[0] - 0.5)
+                * pixel_scales[0]
+            )
+            grid_scaled_2d_slim[slim_index, 1] = (
+                grid_pixels_2d_slim[slim_index, 1] - centres_scaled[1] - 0.5
+            ) * pixel_scales[1]
 
     return grid_scaled_2d_slim
 
@@ -718,20 +747,28 @@ def grid_pixel_centres_2d_from(
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_pixels_2d = np.zeros((grid_scaled_2d.shape[0], grid_scaled_2d.shape[1], 2))
-
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
 
-    for y in range(grid_scaled_2d.shape[0]):
-        for x in range(grid_scaled_2d.shape[1]):
-            grid_pixels_2d[y, x, 0] = int(
-                (-grid_scaled_2d[y, x, 0] / pixel_scales[0]) + centres_scaled[0] + 0.5
-            )
-            grid_pixels_2d[y, x, 1] = int(
-                (grid_scaled_2d[y, x, 1] / pixel_scales[1]) + centres_scaled[1] + 0.5
-            )
+    if use_jax:
+        centres_scaled = np.array(centres_scaled)
+        pixel_scales = np.array(pixel_scales)
+        sign = np.array([-1.0, 1.0])
+        grid_pixels_2d =  (
+            (sign * grid_scaled_2d / pixel_scales) + centres_scaled + 0.5
+        ).astype(int)
+    else:
+        grid_pixels_2d = np.zeros((grid_scaled_2d.shape[0], grid_scaled_2d.shape[1], 2))
+
+        for y in range(grid_scaled_2d.shape[0]):
+            for x in range(grid_scaled_2d.shape[1]):
+                grid_pixels_2d[y, x, 0] = int(
+                    (-grid_scaled_2d[y, x, 0] / pixel_scales[0]) + centres_scaled[0] + 0.5
+                )
+                grid_pixels_2d[y, x, 1] = int(
+                    (grid_scaled_2d[y, x, 1] / pixel_scales[1]) + centres_scaled[1] + 0.5
+                )
 
     return grid_pixels_2d
 
