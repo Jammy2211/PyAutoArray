@@ -100,7 +100,7 @@ class MapperRectangular(AbstractMapper):
         are equal to 1.0.
         """
         mappings = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=np.array(self.source_plane_data_grid.grid_over_sampled),
+            grid_scaled_2d_slim=np.array(self.source_plane_data_grid.over_sampled),
             shape_native=self.source_plane_mesh_grid.shape_native,
             pixel_scales=self.source_plane_mesh_grid.pixel_scales,
             origin=self.source_plane_mesh_grid.origin,
@@ -112,6 +112,6 @@ class MapperRectangular(AbstractMapper):
             mappings=mappings,
             sizes=np.ones(len(mappings), dtype="int"),
             weights=np.ones(
-                (len(self.source_plane_data_grid.grid_over_sampled), 1), dtype="int"
+                (len(self.source_plane_data_grid.over_sampled), 1), dtype="int"
             ),
         )

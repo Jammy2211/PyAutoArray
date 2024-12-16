@@ -276,16 +276,16 @@ class BorderRelocator:
             border_grid=np.array(grid[self.border_slim]),
         )
 
-        grid_over_sampled = grid_2d_util.relocated_grid_via_jit_from(
-            grid=np.array(grid.grid_over_sampled),
-            border_grid=np.array(grid.grid_over_sampled[self.sub_border_slim]),
+        over_sampled = grid_2d_util.relocated_grid_via_jit_from(
+            grid=np.array(grid.over_sampled),
+            border_grid=np.array(grid.over_sampled[self.sub_border_slim]),
         )
 
         return Grid2D(
             values=values,
             mask=grid.mask,
             over_sampling_size=self.sub_size,
-            grid_over_sampled=grid_over_sampled,
+            over_sampled=over_sampled,
         )
 
     def relocated_mesh_grid_from(

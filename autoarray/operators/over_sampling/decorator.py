@@ -52,9 +52,9 @@ def over_sample(func):
             return func(obj=obj, grid=grid, *args, **kwargs)
 
         if obj is not None:
-            values = func(obj, grid.grid_over_sampled, *args, **kwargs)
+            values = func(obj, grid.over_sampled, *args, **kwargs)
         else:
-            values = func(grid.grid_over_sampled, *args, **kwargs)
+            values = func(grid.over_sampled, *args, **kwargs)
 
         return grid.over_sampler.binned_array_2d_from(array=values)
 

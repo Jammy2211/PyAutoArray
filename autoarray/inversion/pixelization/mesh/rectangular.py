@@ -142,7 +142,7 @@ class Rectangular(AbstractMesh):
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         """
         return Mesh2DRectangular.overlay_grid(
-            shape_native=self.shape, grid=source_plane_data_grid.grid_over_sampled
+            shape_native=self.shape, grid=source_plane_data_grid.over_sampled
         )
 
     @property

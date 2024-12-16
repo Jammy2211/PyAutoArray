@@ -23,19 +23,19 @@ class GridMaker(AbstractMaker):
         """
         if not isinstance(result, list):
             try:
-                grid_over_sampled = result.grid_over_sampled
+                over_sampled = result.over_sampled
             except AttributeError:
-                grid_over_sampled = None
+                over_sampled = None
 
             return Grid2D(
                 values=result,
                 mask=self.mask,
                 over_sampling_size=self.over_sampling_size,
-                grid_over_sampled=grid_over_sampled,
+                over_sampled=over_sampled,
             )
 
         try:
-            grid_over_sampled_list = [res.grid_over_sampled for res in result]
+            grid_over_sampled_list = [res.over_sampled for res in result]
         except AttributeError:
             grid_over_sampled_list = [None] * len(result)
 
@@ -44,9 +44,9 @@ class GridMaker(AbstractMaker):
                 values=res,
                 mask=self.mask,
                 over_sampling_size=self.over_sampling_size,
-                grid_over_sampled=grid_over_sampled,
+                over_sampled=over_sampled,
             )
-            for res, grid_over_sampled in zip(result, grid_over_sampled_list)
+            for res, over_sampled in zip(result, grid_over_sampled_list)
         ]
 
     def via_grid_2d_irr(self, result) -> Union[Grid2DIrregular, List[Grid2DIrregular]]:

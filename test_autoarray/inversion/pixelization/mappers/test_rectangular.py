@@ -22,7 +22,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     )
 
     mesh_grid = aa.Mesh2DRectangular.overlay_grid(
-        shape_native=(3, 3), grid=grid.grid_over_sampled
+        shape_native=(3, 3), grid=grid.over_sampled
     )
 
     mapper_grids = aa.MapperGrids(
@@ -34,7 +34,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.geometry.grid_pixel_indexes_2d_slim_from(
-                grid_scaled_2d_slim=np.array(grid.grid_over_sampled),
+                grid_scaled_2d_slim=np.array(grid.over_sampled),
                 shape_native=mesh_grid.shape_native,
                 pixel_scales=mesh_grid.pixel_scales,
                 origin=mesh_grid.origin,
@@ -49,7 +49,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
 def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
     mesh_grid = aa.Mesh2DRectangular.overlay_grid(
-        shape_native=(3, 3), grid=grid_2d_sub_1_7x7.grid_over_sampled
+        shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled
     )
 
     mapper_grids = aa.MapperGrids(

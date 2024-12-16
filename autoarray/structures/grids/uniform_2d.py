@@ -27,7 +27,7 @@ class Grid2D(Structure):
         mask: Mask2D,
         store_native: bool = False,
         over_sampling_size: Union[int, Array2D] = 4,
-        grid_over_sampled: Optional[Grid2D] = None,
+        over_sampled: Optional[Grid2D] = None,
         *args,
         **kwargs,
     ):
@@ -177,8 +177,8 @@ class Grid2D(Structure):
 
         self.over_sampler = OverSampler(sub_size=over_sampling_size, mask=mask)
 
-        if grid_over_sampled is None:
-            self.grid_over_sampled = (
+        if over_sampled is None:
+            self.over_sampled = (
                 over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
                     mask_2d=np.array(self.mask),
                     pixel_scales=self.mask.pixel_scales,
@@ -188,7 +188,7 @@ class Grid2D(Structure):
             )
 
         else:
-            self.grid_over_sampled = grid_over_sampled
+            self.over_sampled = over_sampled
 
     @classmethod
     def no_mask(

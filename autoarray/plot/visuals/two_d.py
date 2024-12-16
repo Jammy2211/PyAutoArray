@@ -100,6 +100,6 @@ class Visuals2D(AbstractVisuals):
 
             else:
                 plotter.index_scatter.scatter_grid_indexes(
-                    grid=mapper.source_plane_data_grid.grid_over_sampled,
+                    grid=mapper.source_plane_data_grid.over_sampled,
                     indexes=indexes,
                 )

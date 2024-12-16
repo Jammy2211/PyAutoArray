@@ -34,7 +34,7 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     mask_sub_2 = aa.Mask2D(mask=mask_sub_2, pixel_scales=(0.5, 0.5))
 
-    grid = aa.Grid2D(values=grid_2d.grid_over_sampled, mask=mask_sub_2)
+    grid = aa.Grid2D(values=grid_2d.over_sampled, mask=mask_sub_2)
 
     ndarray_1d_via_grid = obj.ndarray_1d_from(grid=grid)
 
