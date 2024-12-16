@@ -52,7 +52,7 @@ class Kernel2D(AbstractArray2D):
         )
 
         if normalize:
-            self._array[:] = np.divide(self._array, np.sum(self._array))
+            self._array = np.divide(self._array, np.sum(self._array))
 
     @classmethod
     def no_mask(
@@ -84,7 +84,7 @@ class Kernel2D(AbstractArray2D):
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         values = Array2D.no_mask(
-            values=values,
+            values=values.array,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
