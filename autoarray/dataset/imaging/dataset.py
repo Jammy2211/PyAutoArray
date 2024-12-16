@@ -400,7 +400,7 @@ class Imaging(AbstractDataset):
             data = np.where(np.invert(mask), 0.0, self.data.native)
         elif data_noise_sigma is not None:
             random_noise = np.random.normal(
-                loc=data_noise_mean, scale=data_noise_sigma, size=data.shape_native
+                loc=data_noise_mean, scale=data_noise_sigma, size=self.data.shape_native
             )
             data = np.where(mask_2d, random_noise, data.native)
 
