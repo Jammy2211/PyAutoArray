@@ -18,7 +18,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         ],
         pixel_scales=1.0,
         shape_native=(3, 3),
-        over_sampling_size=1,
+        over_sample_size=1,
     )
 
     mesh_grid = aa.Mesh2DRectangular.overlay_grid(

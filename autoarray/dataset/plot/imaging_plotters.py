@@ -126,7 +126,7 @@ class ImagingPlotterMeta(Plotter):
 
         if over_sampling:
             self.mat_plot_2d.plot_array(
-                array=self.dataset.grids.lp.over_sampling_size,
+                array=self.dataset.grids.lp.over_sample_size,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title=title_str or f"Over Sampling (Uniform)",
@@ -137,7 +137,7 @@ class ImagingPlotterMeta(Plotter):
 
         if over_sampling_pixelization:
             self.mat_plot_2d.plot_array(
-                array=self.dataset.grids.pixelization.over_sampling_size,
+                array=self.dataset.grids.pixelization.over_sample_size,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title=title_str or f"Over Sampling (Pixelization)",

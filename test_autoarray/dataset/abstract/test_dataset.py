@@ -101,7 +101,7 @@ def test__grids_pixelization__uses_mask_and_settings(
     )
 
     assert isinstance(masked_imaging_7x7.grids.pixelization, aa.Grid2D)
-    assert masked_imaging_7x7.grids.pixelization.over_sampling_size[0] == 4
+    assert masked_imaging_7x7.grids.pixelization.over_sample_size[0] == 4
 
 
 def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
@@ -114,8 +114,8 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
         ),
     )
 
-    assert dataset_7x7.grids.lp.over_sampling_size[0] == 2
-    assert dataset_7x7.grids.pixelization.over_sampling_size[0] == 4
+    assert dataset_7x7.grids.lp.over_sample_size[0] == 2
+    assert dataset_7x7.grids.pixelization.over_sample_size[0] == 4
 
 
 def test__new_imaging_with_arrays_trimmed_via_kernel_shape():

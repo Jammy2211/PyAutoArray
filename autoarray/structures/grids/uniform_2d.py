@@ -26,7 +26,7 @@ class Grid2D(Structure):
         values: Union[np.ndarray, List],
         mask: Mask2D,
         store_native: bool = False,
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
         over_sampled: Optional[Grid2D] = None,
         *args,
         **kwargs,
@@ -149,7 +149,7 @@ class Grid2D(Structure):
         store_native
             If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
-        over_sampling_size
+        over_sample_size
             The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
             (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
             into each pixel.
@@ -166,16 +166,16 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        if isinstance(over_sampling_size, int):
-            over_sampling_size = np.full(
-                fill_value=over_sampling_size, shape=mask.shape_slim
+        if isinstance(over_sample_size, int):
+            over_sample_size = np.full(
+                fill_value=over_sample_size, shape=mask.shape_slim
             ).astype("int")
 
-        over_sampling_size = Array2D(values=over_sampling_size, mask=mask)
+        over_sample_size = Array2D(values=over_sample_size, mask=mask)
 
         from autoarray.operators.over_sampling.over_sampler import OverSampler
 
-        self.over_sampler = OverSampler(sub_size=over_sampling_size, mask=mask)
+        self.over_sampler = OverSampler(sub_size=over_sample_size, mask=mask)
 
         if over_sampled is None:
             self.over_sampled = (
@@ -197,7 +197,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
@@ -244,7 +244,7 @@ class Grid2D(Structure):
         return Grid2D(
             values=values,
             mask=mask,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -255,7 +255,7 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values.
@@ -319,7 +319,7 @@ class Grid2D(Structure):
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -329,7 +329,7 @@ class Grid2D(Structure):
         x: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values.
@@ -374,7 +374,7 @@ class Grid2D(Structure):
             values=np.stack((y, x), axis=-1),
             pixel_scales=pixel_scales,
             origin=origin,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -382,7 +382,7 @@ class Grid2D(Structure):
         cls,
         extent: Tuple[float, float, float, float],
         shape_native: Tuple[int, int],
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the extent of the (y,x) grid coordinates as an input
@@ -431,7 +431,7 @@ class Grid2D(Structure):
         return Grid2D.no_mask(
             values=grid_2d,
             pixel_scales=pixel_scales,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -440,7 +440,7 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a `Grid2D` (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input `shape_native` and
@@ -469,7 +469,7 @@ class Grid2D(Structure):
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -478,7 +478,7 @@ class Grid2D(Structure):
         bounding_box: np.ndarray,
         shape_native: Tuple[int, int],
         buffer_around_corners: bool = False,
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
@@ -521,14 +521,14 @@ class Grid2D(Structure):
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
     def from_mask(
         cls,
         mask: Mask2D,
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -551,7 +551,7 @@ class Grid2D(Structure):
         return Grid2D(
             values=grid_1d,
             mask=mask,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -560,7 +560,7 @@ class Grid2D(Structure):
         file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -580,7 +580,7 @@ class Grid2D(Structure):
             values=grid_2d,
             pixel_scales=pixel_scales,
             origin=origin,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     @classmethod
@@ -588,7 +588,7 @@ class Grid2D(Structure):
         cls,
         mask: Mask2D,
         kernel_shape_native: Tuple[int, int],
-        over_sampling_size: Union[int, Array2D] = 4,
+        over_sample_size: Union[int, Array2D] = 4,
     ) -> "Grid2D":
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
@@ -676,7 +676,7 @@ class Grid2D(Structure):
 
         return cls.from_mask(
             mask=blurring_mask,
-            over_sampling_size=over_sampling_size,
+            over_sample_size=over_sample_size,
         )
 
     def subtracted_from(self, offset: Tuple[(float, float), np.ndarray]) -> "Grid2D":
@@ -692,11 +692,11 @@ class Grid2D(Structure):
         return Grid2D(
             values=self - np.array(offset),
             mask=mask,
-            over_sampling_size=self.over_sampling_size,
+            over_sample_size=self.over_sample_size,
         )
 
     @property
-    def over_sampling_size(self):
+    def over_sample_size(self):
         return self.over_sampler.sub_size
 
     @property
@@ -711,7 +711,7 @@ class Grid2D(Structure):
         return Grid2D(
             values=self,
             mask=self.mask,
-            over_sampling_size=self.over_sampling_size,
+            over_sample_size=self.over_sample_size,
         )
 
     @property
@@ -728,7 +728,7 @@ class Grid2D(Structure):
         return Grid2D(
             values=self,
             mask=self.mask,
-            over_sampling_size=self.over_sampling_size,
+            over_sample_size=self.over_sample_size,
             store_native=True,
         )
 
@@ -766,7 +766,7 @@ class Grid2D(Structure):
         return Grid2D(
             values=self - deflection_grid,
             mask=self.mask,
-            over_sampling_size=self.over_sampling_size,
+            over_sample_size=self.over_sample_size,
         )
 
     def blurring_grid_via_kernel_shape_from(
@@ -786,7 +786,7 @@ class Grid2D(Structure):
         return Grid2D.blurring_grid_from(
             mask=self.mask,
             kernel_shape_native=kernel_shape_native,
-            over_sampling_size=1,
+            over_sample_size=1,
         )
 
     def grid_with_coordinates_within_distance_removed_from(
@@ -823,7 +823,7 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(
             mask=mask,
-            over_sampling_size=self.over_sampling_size.apply_mask(mask=mask),
+            over_sample_size=self.over_sample_size.apply_mask(mask=mask),
         )
 
     def squared_distances_to_coordinate_from(
@@ -1080,16 +1080,16 @@ class Grid2D(Structure):
             (padded_shape[1] - shape[1]) // 2,
         )
 
-        over_sampling_size = np.pad(
-            self.over_sampling_size.native,
+        over_sample_size = np.pad(
+            self.over_sample_size.native,
             pad_width,
             mode="constant",
             constant_values=1,
         )
 
-        over_sampling_size[over_sampling_size == 0] = 1
+        over_sample_size[over_sample_size == 0] = 1
 
-        return Grid2D.from_mask(mask=padded_mask, over_sampling_size=over_sampling_size)
+        return Grid2D.from_mask(mask=padded_mask, over_sample_size=over_sample_size)
 
     @cached_property
     def is_uniform(self) -> bool:

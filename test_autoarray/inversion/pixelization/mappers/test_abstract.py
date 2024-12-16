@@ -202,7 +202,7 @@ def test__mapped_to_source_from(grid_2d_7x7):
         values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
-        over_sampling_size=1,
+        over_sample_size=1,
     )
 
     mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid)

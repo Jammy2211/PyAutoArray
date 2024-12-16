@@ -20,7 +20,7 @@ def test__rectangular_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=2)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
     grid.over_sampled[0, 0] = -2.0
     grid.over_sampled[0, 1] = 2.0
 
@@ -70,7 +70,7 @@ def test__delaunay_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=2)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
 
     grid.over_sampled[0, 0] = -2.0
     grid.over_sampled[0, 1] = 2.0
@@ -126,7 +126,7 @@ def test__voronoi_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=2)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
 
     grid.over_sampled[0, 0] = -2.0
     grid.over_sampled[0, 1] = 2.0

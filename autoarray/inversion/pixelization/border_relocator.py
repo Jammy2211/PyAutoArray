@@ -284,7 +284,7 @@ class BorderRelocator:
         return Grid2D(
             values=values,
             mask=grid.mask,
-            over_sampling_size=self.sub_size,
+            over_sample_size=self.sub_size,
             over_sampled=over_sampled,
         )
 

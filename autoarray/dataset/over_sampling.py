@@ -29,7 +29,7 @@ class OverSamplingDataset:
 
         This class controls how over sampling is performed for 3 different types of grids:
 
-        `grid`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data.
+        - `grid`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data.
 
         - `grids.pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
         the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which

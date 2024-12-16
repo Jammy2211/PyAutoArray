@@ -90,11 +90,11 @@ def make_grid_2d_7x7():
 
 
 def make_grid_2d_sub_1_7x7():
-    return aa.Grid2D.from_mask(mask=make_mask_2d_7x7(), over_sampling_size=1)
+    return aa.Grid2D.from_mask(mask=make_mask_2d_7x7(), over_sample_size=1)
 
 
 def make_grid_2d_sub_2_7x7():
-    return aa.Grid2D.from_mask(mask=make_mask_2d_7x7(), over_sampling_size=2)
+    return aa.Grid2D.from_mask(mask=make_mask_2d_7x7(), over_sample_size=2)
 
 
 def make_grid_2d_7x7_simple():

@@ -326,7 +326,7 @@ def test__relocated_grid_from__inside_border_no_relocations():
     )
 
     grid = aa.Grid2D.from_mask(
-        mask=mask, over_sampling_size=np.array(mask.pixels_in_mask * [2])
+        mask=mask, over_sample_size=np.array(mask.pixels_in_mask * [2])
     )
     grid.over_sampled[1, :] = [0.1, 0.1]
 
@@ -345,7 +345,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     )
 
     grid = aa.Grid2D.from_mask(
-        mask=mask, over_sampling_size=np.array(mask.pixels_in_mask * [2])
+        mask=mask, over_sample_size=np.array(mask.pixels_in_mask * [2])
     )
     grid.over_sampled[1, :] = [10.1, 0.1]
 
@@ -368,10 +368,10 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         centre=(1.0, 1.0),
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=2)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
     grid.over_sampled[1, :] = [11.1, 1.0]
 
-    border_relocator = aa.BorderRelocator(mask=mask, sub_size=grid.over_sampling_size)
+    border_relocator = aa.BorderRelocator(mask=mask, sub_size=grid.over_sample_size)
 
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 

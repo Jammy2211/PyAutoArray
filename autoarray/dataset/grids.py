@@ -66,7 +66,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling_size=self.over_sampling.lp,
+            over_sample_size=self.over_sampling.lp,
         )
 
     @cached_property
@@ -87,7 +87,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling_size=self.over_sampling.pixelization,
+            over_sample_size=self.over_sampling.pixelization,
         )
 
     @cached_property
@@ -117,7 +117,7 @@ class GridsDataset:
     @cached_property
     def border_relocator(self) -> BorderRelocator:
         return BorderRelocator(
-            mask=self.mask, sub_size=self.pixelization.over_sampling_size
+            mask=self.mask, sub_size=self.pixelization.over_sample_size
         )
 
 

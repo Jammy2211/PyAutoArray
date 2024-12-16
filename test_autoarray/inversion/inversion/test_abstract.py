@@ -114,7 +114,7 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
         pixel_scales=2.0,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=1)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=1)
 
     mesh_0 = aa.mesh.Rectangular(shape=(3, 3))
     mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
@@ -178,7 +178,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
         pixel_scales=2.0,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask, over_sampling_size=1)
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=1)
 
     mesh_0 = aa.mesh.Delaunay()
     mesh_1 = aa.mesh.Delaunay()

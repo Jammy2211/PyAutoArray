@@ -20,7 +20,7 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
         pixel_scales=(1.0, 1.0),
     )
 
-    grid_2d = aa.Grid2D.from_mask(mask=mask, over_sampling_size=2)
+    grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
 
     obj = aa.m.MockGrid2DLikeObj()
 

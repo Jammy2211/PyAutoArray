@@ -30,7 +30,7 @@ class GridMaker(AbstractMaker):
             return Grid2D(
                 values=result,
                 mask=self.mask,
-                over_sampling_size=self.over_sampling_size,
+                over_sample_size=self.over_sample_size,
                 over_sampled=over_sampled,
             )
 
@@ -43,7 +43,7 @@ class GridMaker(AbstractMaker):
             Grid2D(
                 values=res,
                 mask=self.mask,
-                over_sampling_size=self.over_sampling_size,
+                over_sample_size=self.over_sample_size,
                 over_sampled=over_sampled,
             )
             for res, over_sampled in zip(result, grid_over_sampled_list)
