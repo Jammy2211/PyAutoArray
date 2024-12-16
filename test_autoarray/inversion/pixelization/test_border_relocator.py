@@ -334,9 +334,9 @@ def test__relocated_grid_from__inside_border_no_relocations():
         mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
     )
 
-    relocated_grid = border_relocator.relocated_grid_from(grid=grid.grid_over_sampled)
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
-    assert (relocated_grid[1] == np.array([0.1, 0.1])).all()
+    assert (relocated_grid.grid_over_sampled[1] == np.array([0.1, 0.1])).all()
 
 
 def test__relocated_grid_from__outside_border_includes_relocations():
@@ -353,9 +353,11 @@ def test__relocated_grid_from__outside_border_includes_relocations():
         mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
     )
 
-    relocated_grid = border_relocator.relocated_grid_from(grid=grid.grid_over_sampled)
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
-    assert relocated_grid[1] == pytest.approx([0.97783243, 0.00968151], 1e-4)
+    assert relocated_grid.grid_over_sampled[1] == pytest.approx(
+        [0.97783243, 0.00968151], 1e-4
+    )
 
 
 def test__relocated_grid_from__positive_origin_included_in_relocate():
@@ -371,6 +373,6 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     border_relocator = aa.BorderRelocator(mask=mask, sub_size=grid.over_sampling_size)
 
-    relocated_grid = border_relocator.relocated_grid_from(grid=grid.grid_over_sampled)
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
-    assert relocated_grid[1] == pytest.approx([1.97783243, 1.0], 1e-4)
+    assert relocated_grid.grid_over_sampled[1] == pytest.approx([1.97783243, 1.0], 1e-4)
