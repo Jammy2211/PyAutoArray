@@ -51,6 +51,10 @@ class Numpy:
             return Callable(attribute)
         return attribute
 
+    @property
+    def ndarray(self):
+        return np.ndarray
+
 
 use_jax = environ.get("USE_JAX", "0") == "1"
 
