@@ -1,4 +1,5 @@
 from enum import Enum
+import gc
 import matplotlib.pyplot as plt
 from typing import Union, Tuple
 
@@ -92,5 +93,5 @@ class Figure(AbstractMatWrap):
         """
         Wraps the Matplotlib method 'plt.close' for closing a figure.
         """
-        if plt.fignum_exists(num=1):
-            plt.close()
+        plt.close()
+        gc.collect()

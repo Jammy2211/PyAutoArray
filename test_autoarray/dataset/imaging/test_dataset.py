@@ -1,3 +1,4 @@
+import copy
 import os
 from os import path
 
@@ -156,6 +157,21 @@ def test__apply_noise_scaling(imaging_7x7, mask_2d_7x7):
 
     assert masked_imaging_7x7.data.native[4, 4] == 0.0
     assert masked_imaging_7x7.noise_map.native[4, 4] == 1e5
+
+
+def test__apply_noise_scaling__use_signal_to_noise_value(imaging_7x7, mask_2d_7x7):
+    imaging_7x7 = copy.copy(imaging_7x7)
+
+    imaging_7x7.data[24] = 2.0
+
+    masked_imaging_7x7 = imaging_7x7.apply_noise_scaling(
+        mask=mask_2d_7x7, signal_to_noise_value=0.1, should_zero_data=False
+    )
+
+    assert masked_imaging_7x7.data.native[3, 4] == 1.0
+    assert masked_imaging_7x7.noise_map.native[3, 4] == 10.0
+    assert masked_imaging_7x7.data.native[3, 3] == 2.0
+    assert masked_imaging_7x7.noise_map.native[3, 3] == 20.0
 
 
 def test__apply_mask__noise_covariance_matrix():

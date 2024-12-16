@@ -37,13 +37,13 @@ def test__individual_attributes_are_output_for_all_mappers(
         pixelization_index=0,
         reconstructed_image=True,
         reconstruction=True,
-        errors=True,
+        reconstruction_noise_map=True,
         regularization_weights=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
-    assert path.join(plot_path, "errors.png") in plot_patch.paths
+    assert path.join(plot_path, "reconstruction_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     pytest.importorskip(
@@ -66,7 +66,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         sub_pixels_per_image_pixels=True,
         mesh_pixels_per_image_pixels=True,
         image_pixels_per_mesh_pixel=True,
-        errors=True,
+        reconstruction_noise_map=True,
         signal_to_noise_map=True,
         regularization_weights=True,
     )
@@ -76,7 +76,7 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "sub_pixels_per_image_pixels.png") in plot_patch.paths
     assert path.join(plot_path, "mesh_pixels_per_image_pixels.png") in plot_patch.paths
     assert path.join(plot_path, "image_pixels_per_mesh_pixel.png") in plot_patch.paths
-    assert path.join(plot_path, "errors.png") in plot_patch.paths
+    assert path.join(plot_path, "reconstruction_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
@@ -85,12 +85,12 @@ def test__individual_attributes_are_output_for_all_mappers(
     inversion_plotter.figures_2d_of_pixelization(
         pixelization_index=0,
         reconstructed_image=True,
-        errors=True,
+        reconstruction_noise_map=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") not in plot_patch.paths
-    assert path.join(plot_path, "errors.png") in plot_patch.paths
+    assert path.join(plot_path, "reconstruction_noise_map.png") in plot_patch.paths
 
 
 def test__inversion_subplot_of_mapper__is_output_for_all_inversions(

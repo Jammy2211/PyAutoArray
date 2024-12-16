@@ -394,12 +394,16 @@ class AbstractMapper(LinearObj):
         )
 
     def extent_from(
-        self, values: np.ndarray = None, zoom_to_brightest: bool = True
+        self,
+        values: np.ndarray = None,
+        zoom_to_brightest: bool = True,
+        zoom_percent: Optional[float] = None,
     ) -> Tuple[float, float, float, float]:
         if zoom_to_brightest and values is not None:
-            zoom_percent = conf.instance["visualize"]["general"]["zoom"][
-                "inversion_percent"
-            ]
+            if zoom_percent is None:
+                zoom_percent = conf.instance["visualize"]["general"]["zoom"][
+                    "inversion_percent"
+                ]
 
             fractional_value = np.max(values) * zoom_percent
             fractional_bool = values > fractional_value
