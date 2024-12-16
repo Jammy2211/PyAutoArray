@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.abstract_coordinate_array import (
+from autoarray.structures.triangles.coordinate_array.abstract_coordinate_array import (
     AbstractCoordinateArray,
 )
 from autoarray.structures.triangles.array import ArrayTriangles
@@ -15,16 +15,50 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         An array of 1s and -1s to flip the triangles.
         """
-        array = np.ones(self.coordinates.shape[0])
+        array = np.ones(
+            self.coordinates.shape[0],
+            dtype=np.int32,
+        )
         array[self.flip_mask] = -1
 
         return array[:, np.newaxis]
+
+    @property
+    def numpy(self):
+        return np
+
+    @classmethod
+    def for_limits_and_scale(
+        cls,
+        x_min: float,
+        x_max: float,
+        y_min: float,
+        y_max: float,
+        scale: float = 1.0,
+        **_,
+    ):
+        x_shift = int(2 * x_min / scale)
+        y_shift = int(y_min / (HEIGHT_FACTOR * scale))
+
+        coordinates = []
+
+        for x in range(x_shift, int(2 * x_max / scale) + 1):
+            for y in range(y_shift - 1, int(y_max / (HEIGHT_FACTOR * scale)) + 2):
+                coordinates.append([x, y])
+
+        return cls(
+            coordinates=np.array(coordinates, dtype=np.int32),
+            side_length=scale,
+        )
 
     def up_sample(self) -> "CoordinateArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
         """
-        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
+        new_coordinates = np.zeros(
+            (4 * self.coordinates.shape[0], 2),
+            dtype=np.int32,
+        )
         n_normal = 4 * np.sum(~self.flip_mask)
 
         new_coordinates[:n_normal] = np.vstack(
@@ -58,7 +92,10 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         Ensures that the new triangles are unique.
         """
-        new_coordinates = np.zeros((4 * self.coordinates.shape[0], 2))
+        new_coordinates = np.zeros(
+            (4 * self.coordinates.shape[0], 2),
+            dtype=np.int32,
+        )
         n_normal = 4 * np.sum(~self.flip_mask)
 
         new_coordinates[:n_normal] = np.vstack(

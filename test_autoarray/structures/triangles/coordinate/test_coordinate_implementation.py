@@ -7,14 +7,6 @@ from autoarray.structures.triangles.coordinate_array import CoordinateArrayTrian
 from autoarray.structures.triangles.shape import Point
 
 
-@pytest.fixture
-def two_triangles():
-    return CoordinateArrayTriangles(
-        coordinates=np.array([[0, 0], [1, 0]]),
-        side_length=1.0,
-    )
-
-
 def test_two(two_triangles):
     assert np.all(two_triangles.centres == np.array([[0, 0], [0.5, 0]]))
     assert np.all(
@@ -31,14 +23,6 @@ def test_two(two_triangles):
                 [1.0, HEIGHT_FACTOR / 2],
             ],
         ]
-    )
-
-
-@pytest.fixture
-def one_triangle():
-    return CoordinateArrayTriangles(
-        coordinates=np.array([[0, 0]]),
-        side_length=1.0,
     )
 
 
@@ -256,16 +240,6 @@ def test_for_indexes(two_triangles):
             ]
         ]
     )
-
-
-# def test_for_limits_and_scale():
-#     triangles = CoordinateArrayTriangles.for_limits_and_scale(
-#         x_min=-1.0,
-#         x_max=1.0,
-#         y_min=-1.0,
-#         y_max=1.0,
-#     )
-#     assert triangles.triangles.shape == (4, 3, 2)
 
 
 def test_means(one_triangle):

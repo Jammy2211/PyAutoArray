@@ -1,13 +1,12 @@
 import logging
 from typing import List, Optional, Tuple, Union
 
-from autoarray.numpy_wrapper import np
+from autoarray.numpy_wrapper import numpy as np
 from autoarray.abstract_ndarray import AbstractNDArray
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.irregular import ArrayIrregular
 
-from autoarray import exc
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 

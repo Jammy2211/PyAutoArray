@@ -5,7 +5,7 @@ try:
     import jax
 
     jax.config.update("jax_log_compiles", True)
-    from autoarray.structures.triangles.jax_array import ArrayTriangles
+    from autoarray.structures.triangles.array.jax_array import ArrayTriangles
 except ImportError:
     import numpy as np
     from autoarray.structures.triangles.array import ArrayTriangles
