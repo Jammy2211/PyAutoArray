@@ -71,7 +71,6 @@ from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
 from .operators.over_sampling.over_sampler import OverSampler
 from .structures.grids.irregular_2d import Grid2DIrregular
-from .structures.grids.irregular_2d import Grid2DIrregularUniform
 from .structures.mesh.rectangular_2d import Mesh2DRectangular
 from .structures.mesh.voronoi_2d import Mesh2DVoronoi
 from .structures.mesh.delaunay_2d import Mesh2DDelaunay

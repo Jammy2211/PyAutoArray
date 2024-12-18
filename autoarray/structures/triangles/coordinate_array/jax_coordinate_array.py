@@ -1,5 +1,4 @@
 from jax import numpy as np
-
 import jax
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
