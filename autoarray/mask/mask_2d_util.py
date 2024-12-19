@@ -115,7 +115,7 @@ def mask_2d_circular_from(
         shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
     """
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
-    ys, xs = np.mgrid[:shape_native[0], :shape_native[1]]
+    ys, xs = np.indices(shape_native)
     return (radius * radius) < (
             np.square((ys - centres_scaled[0]) * pixel_scales[0]) +
             np.square((xs - centres_scaled[1]) * pixel_scales[1])
