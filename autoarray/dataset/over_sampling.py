@@ -41,8 +41,8 @@ class OverSamplingDataset:
         Parameters
         ----------
         lp
-            The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
-            (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
             into each pixel.
         pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore

@@ -421,7 +421,7 @@ class MatPlot2D(AbstractMatPlot):
             ax = self.setup_subplot()
 
         if plot_over_sampled_grid:
-            grid_plot = grid.over_sampler.uniform_over_sampled
+            grid_plot = grid.over_sampled
         else:
             grid_plot = grid
 

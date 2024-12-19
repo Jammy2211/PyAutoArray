@@ -150,9 +150,13 @@ class Grid2D(Structure):
             If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         over_sample_size
-            The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
-            (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
             into each pixel.
+        over_sampled
+            The over sampled grid of (y,x) coordinates, which can be passed in manually because if the grid is
+            not uniform (e.g. due to gravitational lensing) is cannot be computed internally in this function. If the
+            over sampled grid is not passed in it is computed assuming uniformity.
         """
         values = grid_2d_util.convert_grid_2d(
             grid_2d=values,
