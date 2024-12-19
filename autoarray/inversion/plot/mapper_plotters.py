@@ -80,7 +80,7 @@ class MapperPlotter(Plotter):
             interpolate_to_uniform=interpolate_to_uniform,
             pixel_values=solution_vector,
             auto_labels=AutoLabels(
-                title="Pixelization Mesh (Image-Plane)", filename="mapper"
+                title="Pixelization Mesh (Source-Plane)", filename="mapper"
             ),
         )
 

@@ -1117,3 +1117,32 @@ class Grid2D(Structure):
             return False
 
         return True
+
+    def apply_over_sampling(
+        self,
+        over_sample_size : Union[int, np.ndarray]
+    ) -> "AbstractDataset":
+        """
+        Apply new over sampling to the grid.
+
+        This method is used to change the over sampling of the grid, for example when the user wishes to perform
+        over sampling with a higher sub grid size.
+
+        Parameters
+        ----------
+        over_sample_size
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        """
+        if not self.is_uniform:
+            raise exc.GridException(
+                """
+                Cannot apply over sampling to a Grid2D which is not uniform.
+                """)
+
+        return Grid2D(
+            values=self,
+            mask=self.mask,
+            over_sample_size=over_sample_size,
+        )

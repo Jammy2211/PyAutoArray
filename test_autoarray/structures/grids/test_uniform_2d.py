@@ -840,3 +840,16 @@ def test__is_uniform():
     )
 
     assert grid_2d.is_uniform == False
+
+
+def test__apply_over_sampling():
+
+    grid = aa.Grid2D.uniform(
+        shape_native=(2, 2),
+        pixel_scales=1.0,
+        over_sample_size=1
+    )
+
+    grid = grid.apply_over_sampling(over_sample_size=2)
+
+    assert grid.over_sampled.shape[0] == 16
