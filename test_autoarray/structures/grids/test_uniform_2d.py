@@ -843,12 +843,7 @@ def test__is_uniform():
 
 
 def test__apply_over_sampling():
-
-    grid = aa.Grid2D.uniform(
-        shape_native=(2, 2),
-        pixel_scales=1.0,
-        over_sample_size=1
-    )
+    grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=1.0, over_sample_size=1)
 
     grid = grid.apply_over_sampling(over_sample_size=2)
 

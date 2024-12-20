@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
-from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -14,7 +14,8 @@ class GridsDataset:
     def __init__(
         self,
         mask: Mask2D,
-        over_sampling: OverSamplingDataset,
+        over_sample_size_lp: Union[int, Array2D],
+        over_sample_size_pixelization: Union[int, Array2D],
         psf: Optional[Kernel2D] = None,
     ):
         """
@@ -43,12 +44,20 @@ class GridsDataset:
 
         Parameters
         ----------
-        mask
-        over_sampling
+        over_sample_size_lp
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sample_size_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         psf
+            The Point Spread Function kernel of the image which accounts for diffraction due to the telescope optics
+            via 2D convolution.
         """
         self.mask = mask
-        self.over_sampling = over_sampling
+        self.over_sample_size_lp = over_sample_size_lp
+        self.over_sample_size_pixelization = over_sample_size_pixelization
         self.psf = psf
 
     @cached_property
@@ -66,7 +75,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sample_size=self.over_sampling.lp,
+            over_sample_size=self.over_sample_size_lp,
         )
 
     @cached_property
@@ -87,7 +96,7 @@ class GridsDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sample_size=self.over_sampling.pixelization,
+            over_sample_size=self.over_sample_size_pixelization,
         )
 
     @cached_property
@@ -117,7 +126,7 @@ class GridsDataset:
     @cached_property
     def border_relocator(self) -> BorderRelocator:
         return BorderRelocator(
-            mask=self.mask, sub_size=self.pixelization.over_sample_size
+            mask=self.mask, sub_size=self.over_sample_size_pixelization
         )
 
 

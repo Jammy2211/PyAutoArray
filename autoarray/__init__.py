@@ -15,7 +15,6 @@ from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
-from .dataset.over_sampling import OverSamplingDataset
 from .dataset.dataset_model import DatasetModel
 from .fit.fit_dataset import AbstractFit
 from .fit.fit_dataset import FitDataset

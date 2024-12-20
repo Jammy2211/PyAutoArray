@@ -132,12 +132,9 @@ class BorderRelocator:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         self.mask = mask
 
-        if isinstance(sub_size, int):
-            sub_size = Array2D(
-                values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask
-            )
-
-        self.sub_size = sub_size
+        self.sub_size = over_sample_util.over_sample_size_convert_to_array_2d_from(
+            over_sample_size=sub_size, mask=mask
+        )
 
     @cached_property
     def border_slim(self):

@@ -110,9 +110,11 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
         visuals_2d_via.grid
         == rectangular_mapper_7x7_3x3.source_plane_data_grid.over_sampled
     ).all()
-    border_grid = rectangular_mapper_7x7_3x3.mapper_grids.source_plane_data_grid.over_sampled[
-        rectangular_mapper_7x7_3x3.border_relocator.sub_border_slim
-    ]
+    border_grid = (
+        rectangular_mapper_7x7_3x3.mapper_grids.source_plane_data_grid.over_sampled[
+            rectangular_mapper_7x7_3x3.border_relocator.sub_border_slim
+        ]
+    )
     assert (visuals_2d_via.border == border_grid).all()
     assert (
         visuals_2d_via.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid

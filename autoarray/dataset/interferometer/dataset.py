@@ -7,7 +7,6 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
-from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.operators.transformer import TransformerNUFFT
 
 from autoarray.structures.visibilities import Visibilities
@@ -74,15 +73,11 @@ class Interferometer(AbstractDataset):
         """
         self.real_space_mask = real_space_mask
 
-        over_sampling = OverSamplingDataset(
-            lp=1,
-            pixelization=1,
-        )
-
         super().__init__(
             data=data,
             noise_map=noise_map,
-            over_sampling=over_sampling,
+            over_sample_size_lp=1,
+            over_sample_size_pixelization=1,
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -93,7 +88,11 @@ class Interferometer(AbstractDataset):
 
     @cached_property
     def grids(self):
-        return GridsDataset(mask=self.real_space_mask, over_sampling=self.over_sampling)
+        return GridsDataset(
+            mask=self.real_space_mask,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
+        )
 
     @classmethod
     def from_fits(

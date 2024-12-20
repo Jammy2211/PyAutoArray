@@ -1,7 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from typing import TYPE_CHECKING, List, Tuple
-from autoconf import conf
+from typing import TYPE_CHECKING, Union, List, Tuple
 
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -9,11 +8,45 @@ if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.geometry import geometry_util
+from autoarray.mask.mask_2d import Mask2D
+
 from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
-from autoarray import exc
 from autoarray import type as ty
+
+
+def over_sample_size_convert_to_array_2d_from(
+    over_sample_size: Union[int, np.ndarray], mask: Union[np.ndarray, Mask2D]
+):
+    """
+    Returns the over sample size as an `Array2D` object, for example converting it from a single integer.
+
+    The interface allows a user to specify the `over_sample_size` as either:
+
+    - A single integer, whereby over sampling is performed to this degree for every pixel.
+    - An ndarray with the same number of entries as the mask, to enable adaptive over sampling.
+
+    This function converts these input structures to an `Array2D` which is used internally in the source code
+    to perform computations.
+
+    Parameters
+    ----------
+    over_sample_size
+        The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+        values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+        into each pixel.
+
+    Returns
+    -------
+
+    """
+    if isinstance(over_sample_size, int):
+        over_sample_size = np.full(
+            fill_value=over_sample_size, shape=mask.pixels_in_mask
+        ).astype("int")
+
+    return Array2D(values=over_sample_size, mask=mask)
 
 
 @numba_util.jit()

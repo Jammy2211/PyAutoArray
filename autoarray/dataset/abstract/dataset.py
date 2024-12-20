@@ -4,7 +4,8 @@ import numpy as np
 import warnings
 from typing import Optional, Union
 
-from autoarray.dataset.over_sampling import OverSamplingDataset
+from autoconf import cached_property
+
 from autoarray.dataset.grids import GridsDataset
 
 from autoarray import exc
@@ -12,7 +13,8 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoconf import cached_property
+
+from autoarray.operators.over_sampling import over_sample_util
 
 
 logger = logging.getLogger(__name__)
@@ -24,7 +26,8 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
+        over_sample_size_lp: Union[int, Array2D] = 4,
+        over_sample_size_pixelization: Union[int, Array2D] = 4,
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -45,6 +48,32 @@ class AbstractDataset:
         over sampling calculations built in which approximate the 2D line integral of these calculations within a
         pixel. This is explained in more detail in the `GridsDataset` class.
 
+        **Over Sampling**
+
+        If a grid is uniform and the centre of each point on the grid is the centre of a 2D pixel, evaluating
+        the value of a function on the grid requires a 2D line integral to compute it precisely. This can be
+        computationally expensive and difficult to implement.
+
+        Over sampling is a numerical technique where the function is evaluated on a sub-grid within each grid pixel
+        which is higher resolution than the grid itself. This approximates more closely the value of the function
+        within a 2D line intergral of the values in the square pixel that the grid is centred.
+
+        For example, in PyAutoGalaxy and PyAutoLens the light profiles and galaxies are evaluated in order to determine
+        how much light falls in each pixel. This uses over sampling and therefore a higher resolution grid than the
+        image data to ensure the calculation is accurate.
+
+        This class controls how over sampling is performed for 2 different types of grids:
+
+        - `lp`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data
+        and is used to evaluate light profiles for model-fititng.
+
+        - `pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
+        the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
+        can benefit from using different oversampling schemes than the normal grid.
+
+        Different calculations typically benefit from different over sampling, which this class enables
+        the customization of.
+
         Parameters
         ----------
         data
@@ -56,10 +85,13 @@ class AbstractDataset:
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        over_sampling
-            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
-            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
-            This class controls over sampling for all the different grids (e.g. `grid`, `grids.pixelization).
+        over_sample_size_lp
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sample_size_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         """
 
         self.data = data
@@ -93,7 +125,16 @@ class AbstractDataset:
 
         self.noise_map = noise_map
 
-        self.over_sampling = over_sampling
+        self.over_sample_size_lp = (
+            over_sample_util.over_sample_size_convert_to_array_2d_from(
+                over_sample_size=over_sample_size_lp, mask=self.mask
+            )
+        )
+        self.over_sample_size_pixelization = (
+            over_sample_util.over_sample_size_convert_to_array_2d_from(
+                over_sample_size=over_sample_size_pixelization, mask=self.mask
+            )
+        )
 
     @property
     def grid(self):
@@ -101,7 +142,11 @@ class AbstractDataset:
 
     @cached_property
     def grids(self):
-        return GridsDataset(mask=self.data.mask, over_sampling=self.over_sampling)
+        return GridsDataset(
+            mask=self.data.mask,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
+        )
 
     @property
     def shape_native(self):

@@ -151,7 +151,7 @@ class Grid2D(Structure):
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         over_sample_size
             The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
-            values (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
             into each pixel.
         over_sampled
             The over sampled grid of (y,x) coordinates, which can be passed in manually because if the grid is
@@ -170,12 +170,9 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        if isinstance(over_sample_size, int):
-            over_sample_size = np.full(
-                fill_value=over_sample_size, shape=mask.shape_slim
-            ).astype("int")
-
-        over_sample_size = Array2D(values=over_sample_size, mask=mask)
+        over_sample_size = over_sample_util.over_sample_size_convert_to_array_2d_from(
+            over_sample_size=over_sample_size, mask=mask
+        )
 
         from autoarray.operators.over_sampling.over_sampler import OverSampler
 
@@ -1119,8 +1116,7 @@ class Grid2D(Structure):
         return True
 
     def apply_over_sampling(
-        self,
-        over_sample_size : Union[int, np.ndarray]
+        self, over_sample_size: Union[int, np.ndarray]
     ) -> "AbstractDataset":
         """
         Apply new over sampling to the grid.
@@ -1132,14 +1128,15 @@ class Grid2D(Structure):
         ----------
         over_sample_size
             The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
-            values (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
             into each pixel.
         """
         if not self.is_uniform:
             raise exc.GridException(
                 """
                 Cannot apply over sampling to a Grid2D which is not uniform.
-                """)
+                """
+            )
 
         return Grid2D(
             values=self,

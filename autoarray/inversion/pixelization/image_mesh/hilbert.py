@@ -86,6 +86,7 @@ def generate2d(x, y, ax, ay, bx, by):
             -(ay - ay2),
         )
 
+
 def grid_hilbert_order_from(length, mask_radius):
     """
     This function will create a grid in the Hilbert space-filling curve order.

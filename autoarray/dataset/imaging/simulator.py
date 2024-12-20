@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from typing import Optional, Union
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -98,7 +99,9 @@ class SimulatorImaging:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def via_image_from(self, image: Array2D) -> Imaging:
+    def via_image_from(
+        self, image: Array2D, over_sample_size: Optional[Union[int, np.ndarray]] = None
+    ) -> Imaging:
         """
         Simulate an `Imaging` dataset from an input image.
 
@@ -163,6 +166,11 @@ class SimulatorImaging:
 
         image = Array2D(values=image, mask=mask)
 
-        return Imaging(
+        dataset = Imaging(
             data=image, psf=self.psf, noise_map=noise_map, check_noise_map=False
         )
+
+        if over_sample_size is not None:
+            dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+        return dataset
