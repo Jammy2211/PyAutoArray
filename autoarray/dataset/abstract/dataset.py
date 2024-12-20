@@ -206,4 +206,16 @@ class AbstractDataset:
             kernel_shape=kernel_shape
         )
 
+        dataset.over_sample_size_lp = (
+            dataset.over_sample_size_lp.trimmed_after_convolution_from(
+                kernel_shape=kernel_shape
+            )
+        )
+
+        dataset.over_sample_size_pixelization = (
+            dataset.over_sample_size_pixelization.trimmed_after_convolution_from(
+                kernel_shape=kernel_shape
+            )
+        )
+
         return dataset

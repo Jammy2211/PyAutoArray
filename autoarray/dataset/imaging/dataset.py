@@ -15,6 +15,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
 
 from autoarray import exc
+from autoarray.operators.over_sampling import over_sample_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
@@ -97,6 +98,28 @@ class Imaging(AbstractDataset):
                     kernel_shape_native=psf.shape_native
                 )
             except exc.MaskException:
+                over_sample_size_lp = (
+                    over_sample_util.over_sample_size_convert_to_array_2d_from(
+                        over_sample_size=over_sample_size_lp, mask=data.mask
+                    )
+                )
+                over_sample_size_lp = (
+                    over_sample_size_lp.padded_before_convolution_from(
+                        kernel_shape=psf.shape_native, mask_pad_value=1
+                    )
+                )
+                print(over_sample_size_lp.shape_native)
+                over_sample_size_pixelization = (
+                    over_sample_util.over_sample_size_convert_to_array_2d_from(
+                        over_sample_size=over_sample_size_pixelization, mask=data.mask
+                    )
+                )
+                over_sample_size_pixelization = (
+                    over_sample_size_pixelization.padded_before_convolution_from(
+                        kernel_shape=psf.shape_native, mask_pad_value=1
+                    )
+                )
+
                 data = data.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
                 )

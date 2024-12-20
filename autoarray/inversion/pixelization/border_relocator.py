@@ -211,7 +211,7 @@ class BorderRelocator:
             print(derive_indexes_2d.sub_border_slim)
         """
         return sub_border_pixel_slim_indexes_from(
-            mask_2d=np.array(self.mask), sub_size=self.sub_size
+            mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size).astype("int")
         ).astype("int")
 
     @cached_property
@@ -235,7 +235,7 @@ class BorderRelocator:
         sub_grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size),
+            sub_size=np.array(self.sub_size).astype("int"),
             origin=self.mask.origin,
         )
 

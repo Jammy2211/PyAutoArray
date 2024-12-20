@@ -260,7 +260,7 @@ class AbstractMapper(LinearObj):
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pix_pixels=self.params,
-            sub_size=np.array(self.over_sampler.sub_size),
+            sub_size=np.array(self.over_sampler.sub_size).astype("int"),
         )
 
         return UniqueMappings(
