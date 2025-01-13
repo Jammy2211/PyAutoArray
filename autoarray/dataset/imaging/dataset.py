@@ -440,16 +440,26 @@ class Imaging(AbstractDataset):
         else:
             data = self.data.native
 
-        data = Array2D.no_mask(
+        data_unmasked = Array2D.no_mask(
             values=data,
             shape_native=self.data.shape_native,
-            pixel_scales=self.data.pixel_scales,
+            pixel_scales=self.data.pixel_scales
         )
 
-        noise_map = Array2D.no_mask(
+        noise_map_unmasked = Array2D.no_mask(
             values=noise_map,
-            shape_native=self.data.shape_native,
-            pixel_scales=self.data.pixel_scales,
+            shape_native=self.noise_map.shape_native,
+            pixel_scales=self.noise_map.pixel_scales
+        )
+
+        data = Array2D(
+            values=data,
+            mask=self.data.mask
+        )
+
+        noise_map = Array2D(
+            values=noise_map,
+            mask=self.data.mask
         )
 
         dataset = Imaging(
@@ -462,6 +472,11 @@ class Imaging(AbstractDataset):
             pad_for_convolver=False,
             check_noise_map=False,
         )
+
+        if self.unmasked is not None:
+            dataset.unmasked = self.unmasked
+            dataset.unmasked.data = data_unmasked
+            dataset.unmasked.noise_map = noise_map_unmasked
 
         logger.info(
             f"IMAGING - Data noise scaling applied, a total of {mask.pixels_in_mask} pixels were scaled to large noise values."
