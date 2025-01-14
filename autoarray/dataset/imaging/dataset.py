@@ -499,12 +499,6 @@ class Imaging(AbstractDataset):
         This function resets the cached properties so that the new over sampling is used in the grid and grid
         pixelization.
 
-        The `default_galaxy_mode` parameter is used to set up default over sampling for galaxy light profiles in
-        the project PyAutoGalaxy. This sets up the over sampling such that there is high over sampling in the centre
-        of the mask, where the galaxy is located, and lower over sampling in the outer regions of the mask. It
-        does this based on the pixel scale, which gives a good estimate of how large the central region
-        requiring over sampling is.
-
         Parameters
         ----------
         over_sample_size_lp
