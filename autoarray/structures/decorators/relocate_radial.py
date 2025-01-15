@@ -57,7 +57,6 @@ def relocate_to_radial_minimum(func):
         -------
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
-
         try:
             grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
                 "radial_minimum"

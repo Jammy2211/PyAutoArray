@@ -84,6 +84,11 @@ def make_grid_2d_7x7():
     return fixtures.make_grid_2d_7x7()
 
 
+@pytest.fixture(name="grid_2d_sub_1_7x7")
+def make_grid_2d_sub_1_7x7():
+    return fixtures.make_grid_2d_sub_1_7x7()
+
+
 @pytest.fixture(name="grid_2d_irregular_7x7")
 def make_grid_2d_irregular_7x7():
     return fixtures.make_grid_2d_irregular_7x7()
