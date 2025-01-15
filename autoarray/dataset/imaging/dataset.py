@@ -443,24 +443,18 @@ class Imaging(AbstractDataset):
         data_unmasked = Array2D.no_mask(
             values=data,
             shape_native=self.data.shape_native,
-            pixel_scales=self.data.pixel_scales
+            pixel_scales=self.data.pixel_scales,
         )
 
         noise_map_unmasked = Array2D.no_mask(
             values=noise_map,
             shape_native=self.noise_map.shape_native,
-            pixel_scales=self.noise_map.pixel_scales
+            pixel_scales=self.noise_map.pixel_scales,
         )
 
-        data = Array2D(
-            values=data,
-            mask=self.data.mask
-        )
+        data = Array2D(values=data, mask=self.data.mask)
 
-        noise_map = Array2D(
-            values=noise_map,
-            mask=self.data.mask
-        )
+        noise_map = Array2D(values=noise_map, mask=self.data.mask)
 
         dataset = Imaging(
             data=data,
