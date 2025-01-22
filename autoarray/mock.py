@@ -21,4 +21,3 @@ from autoarray.structures.mock.mock_grid import MockMeshGrid
 from autoarray.structures.mock.mock_decorators import MockGridRadialMinimum
 from autoarray.structures.mock.mock_decorators import MockGrid1DLikeObj
 from autoarray.structures.mock.mock_decorators import MockGrid2DLikeObj
-from autoarray.structures.mock.mock_decorators import MockGridLikeIteratorObj

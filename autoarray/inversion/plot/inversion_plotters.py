@@ -184,7 +184,7 @@ class InversionPlotter(Plotter):
                 self.mat_plot_2d.plot_array(
                     array=array,
                     visuals_2d=self.get_visuals_2d_for_data(),
-                    grid_indexes=mapper_plotter.mapper.over_sampler.over_sampled_grid,
+                    grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                     auto_labels=AutoLabels(
                         title="Data Subtracted", filename="data_subtracted"
                     ),
@@ -200,7 +200,7 @@ class InversionPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=array,
                 visuals_2d=self.get_visuals_2d_for_data(),
-                grid_indexes=mapper_plotter.mapper.over_sampler.over_sampled_grid,
+                grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),

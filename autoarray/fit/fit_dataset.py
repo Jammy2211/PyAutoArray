@@ -161,8 +161,7 @@ class FitDataset(AbstractFit):
 
         if offset[0] == 0.0 and offset[1] == 0.0:
             return GridsInterface(
-                uniform=self.dataset.grids.uniform,
-                non_uniform=self.dataset.grids.non_uniform,
+                lp=self.dataset.grids.lp,
                 pixelization=self.dataset.grids.pixelization,
                 blurring=self.dataset.grids.blurring,
                 border_relocator=self.dataset.grids.border_relocator,
@@ -174,11 +173,8 @@ class FitDataset(AbstractFit):
 
             return grid.subtracted_from(offset=offset)
 
-        uniform = subtracted_from(
-            grid=self.dataset.grids.uniform, offset=self.dataset_model.grid_offset
-        )
-        non_uniform = subtracted_from(
-            grid=self.dataset.grids.non_uniform, offset=self.dataset_model.grid_offset
+        lp = subtracted_from(
+            grid=self.dataset.grids.lp, offset=self.dataset_model.grid_offset
         )
         pixelization = subtracted_from(
             grid=self.dataset.grids.pixelization, offset=self.dataset_model.grid_offset
@@ -188,8 +184,7 @@ class FitDataset(AbstractFit):
         )
 
         return GridsInterface(
-            uniform=uniform,
-            non_uniform=non_uniform,
+            lp=lp,
             pixelization=pixelization,
             blurring=blurring,
             border_relocator=self.dataset.grids.border_relocator,

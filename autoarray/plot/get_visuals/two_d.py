@@ -183,11 +183,13 @@ class GetVisuals2D(AbstractGetVisuals):
         )
 
         grid = self.get(
-            "grid", mapper.source_plane_data_grid, "mapper_source_plane_data_grid"
+            "grid",
+            mapper.source_plane_data_grid.over_sampled,
+            "mapper_source_plane_data_grid",
         )
 
         try:
-            border_grid = mapper.mapper_grids.source_plane_data_grid[
+            border_grid = mapper.mapper_grids.source_plane_data_grid.over_sampled[
                 mapper.border_relocator.sub_border_slim
             ]
             border = self.get("border", border_grid)

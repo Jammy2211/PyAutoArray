@@ -11,7 +11,6 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
@@ -26,7 +25,6 @@ class AbstractMapper(LinearObj):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
-        over_sampler: AbstractOverSampler,
         border_relocator: BorderRelocator,
         run_time_dict: Optional[Dict] = None,
     ):
@@ -82,9 +80,6 @@ class AbstractMapper(LinearObj):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
-        over_sampler
-            Performs over-sampling whereby the masked image pixels are split into sub-pixels, which are all
-            mapped via the mapper with sub-fractional values of flux.
         border_relocator
            The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
            edge.
@@ -94,7 +89,6 @@ class AbstractMapper(LinearObj):
 
         super().__init__(regularization=regularization, run_time_dict=run_time_dict)
 
-        self.over_sampler = over_sampler
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
 
@@ -117,6 +111,10 @@ class AbstractMapper(LinearObj):
     @property
     def image_plane_mesh_grid(self) -> Grid2D:
         return self.mapper_grids.image_plane_mesh_grid
+
+    @property
+    def over_sampler(self):
+        return self.mapper_grids.source_plane_data_grid.over_sampler
 
     @property
     def edge_pixel_list(self) -> List[int]:
@@ -262,7 +260,7 @@ class AbstractMapper(LinearObj):
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pix_pixels=self.params,
-            sub_size=np.array(self.over_sampler.sub_size),
+            sub_size=np.array(self.over_sampler.sub_size).astype("int"),
         )
 
         return UniqueMappings(

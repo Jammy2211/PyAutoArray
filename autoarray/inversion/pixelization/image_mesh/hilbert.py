@@ -9,7 +9,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
-from autoarray.operators.over_sampling.uniform import OverSamplerUniform
+from autoarray.operators.over_sampling.over_sampler import OverSampler
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -85,42 +85,6 @@ def generate2d(x, y, ax, ay, bx, by):
             -(ax - ax2),
             -(ay - ay2),
         )
-
-
-def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scale=11):
-    """
-    This function will create a higher resolution grid for the img_2d. The new grid and its
-    interpolated values will be used to generate a sparse image grid.
-
-    img_2d: the hyper image in 2d (e.g. hyper_source_model_image.native)
-    mask: the mask used for the fitting.
-    mask_radius: the circular mask radius. Currently, the code only works with a circular mask.
-    sub_scale: oversampling scale for each image pixel.
-    """
-
-    shape_nnn = np.shape(mask)[0]
-
-    grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn),
-        pixel_scales=pixel_scales,
-    )
-
-    new_mask = Mask2D.circular(
-        shape_native=(shape_nnn, shape_nnn),
-        pixel_scales=pixel_scales,
-        centre=mask.origin,
-        radius=mask_radius,
-    )
-
-    over_sampler = OverSamplerUniform(mask=new_mask, sub_size=sub_scale)
-
-    new_grid = over_sampler.over_sampled_grid
-
-    new_img = griddata(
-        points=grid, values=img_2d.ravel(), xi=new_grid, fill_value=0.0, method="linear"
-    )
-
-    return new_img, new_grid
 
 
 def grid_hilbert_order_from(length, mask_radius):

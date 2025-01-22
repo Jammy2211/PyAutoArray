@@ -66,4 +66,4 @@ class DatasetInterface:
 
     @property
     def mask(self):
-        return self.grids.uniform.mask
+        return self.grids.lp.mask

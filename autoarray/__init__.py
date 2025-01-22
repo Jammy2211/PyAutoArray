@@ -14,7 +14,6 @@ from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
-from .dataset.over_sampling import OverSamplingDataset
 from .dataset.dataset_model import DatasetModel
 from .fit.fit_dataset import AbstractFit
 from .fit.fit_dataset import FitDataset
@@ -68,14 +67,8 @@ from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
-from .operators.over_sampling.decorator import perform_over_sampling_from
-from .operators.over_sampling.grid_oversampled import Grid2DOverSampled
-from .operators.over_sampling.uniform import OverSamplingUniform
-from .operators.over_sampling.iterate import OverSamplingIterate
-from .operators.over_sampling.uniform import OverSamplerUniform
-from .operators.over_sampling.iterate import OverSamplerIterate
+from .operators.over_sampling.over_sampler import OverSampler
 from .structures.grids.irregular_2d import Grid2DIrregular
-from .structures.grids.irregular_2d import Grid2DIrregularUniform
 from .structures.mesh.rectangular_2d import Mesh2DRectangular
 from .structures.mesh.voronoi_2d import Mesh2DVoronoi
 from .structures.mesh.delaunay_2d import Mesh2DDelaunay
@@ -98,4 +91,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "2024.11.13.2"
+__version__ = "2025.1.18.7"

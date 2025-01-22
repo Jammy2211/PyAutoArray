@@ -1,2 +1,6 @@
 from .array import ArrayTriangles
-from .jax_array import ArrayTriangles as JAXArrayTriangles
+
+try:
+    from .jax_array import ArrayTriangles as JAXArrayTriangles
+except ImportError:
+    pass
