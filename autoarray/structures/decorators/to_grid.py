@@ -22,18 +22,31 @@ class GridMaker(AbstractMaker):
             The input result (e.g. of a decorated function) that is converted to a Grid2D or list of Grid2D objects.
         """
         if not isinstance(result, list):
+            try:
+                over_sampled = result.over_sampled
+            except AttributeError:
+                over_sampled = None
+
             return Grid2D(
                 values=result,
                 mask=self.mask,
-                over_sampling=self.over_sampling,
+                over_sample_size=self.over_sample_size,
+                over_sampled=over_sampled,
             )
+
+        try:
+            grid_over_sampled_list = [res.over_sampled for res in result]
+        except AttributeError:
+            grid_over_sampled_list = [None] * len(result)
+
         return [
             Grid2D(
                 values=res,
                 mask=self.mask,
-                over_sampling=self.over_sampling,
+                over_sample_size=self.over_sample_size,
+                over_sampled=over_sampled,
             )
-            for res in result
+            for res, over_sampled in zip(result, grid_over_sampled_list)
         ]
 
     def via_grid_2d_irr(self, result) -> Union[Grid2DIrregular, List[Grid2DIrregular]]:

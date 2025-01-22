@@ -20,23 +20,20 @@ def test__rectangular_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    over_sampled_grid = over_sampler.over_sampled_grid
-    over_sampled_grid[0, 0] = -2.0
-    over_sampled_grid[0, 1] = 2.0
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
+    grid.over_sampled[0, 0] = -2.0
+    grid.over_sampled[0, 1] = 2.0
 
     mesh = aa.mesh.Rectangular(shape=(3, 3))
 
     mapper_grids = mesh.mapper_grids_from(
         mask=mask,
         border_relocator=None,
-        source_plane_data_grid=over_sampled_grid,
+        source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperRectangular)
     assert mapper.image_plane_mesh_grid == None
@@ -73,10 +70,10 @@ def test__delaunay_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    over_sampled_grid = over_sampler.over_sampled_grid
-    over_sampled_grid[0, 0] = -2.0
-    over_sampled_grid[0, 1] = 2.0
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
+
+    grid.over_sampled[0, 0] = -2.0
+    grid.over_sampled[0, 1] = 2.0
 
     mesh = aa.mesh.Delaunay()
     image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
@@ -87,13 +84,11 @@ def test__delaunay_mapper():
     mapper_grids = mesh.mapper_grids_from(
         mask=mask,
         border_relocator=None,
-        source_plane_data_grid=over_sampled_grid,
+        source_plane_data_grid=grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
@@ -131,10 +126,10 @@ def test__voronoi_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    over_sampled_grid = over_sampler.over_sampled_grid
-    over_sampled_grid[0, 0] = -2.0
-    over_sampled_grid[0, 1] = 2.0
+    grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=2)
+
+    grid.over_sampled[0, 0] = -2.0
+    grid.over_sampled[0, 1] = 2.0
 
     mesh = aa.mesh.Voronoi()
     image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
@@ -145,13 +140,11 @@ def test__voronoi_mapper():
     mapper_grids = mesh.mapper_grids_from(
         mask=mask,
         border_relocator=None,
-        source_plane_data_grid=over_sampled_grid,
+        source_plane_data_grid=grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)

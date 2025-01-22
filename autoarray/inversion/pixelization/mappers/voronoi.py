@@ -130,7 +130,8 @@ class MapperVoronoi(AbstractMapper):
         """
 
         mappings, sizes, weights = mapper_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_plane_data_grid, mesh_grid=self.source_plane_mesh_grid
+            grid=self.source_plane_data_grid.over_sampled,
+            mesh_grid=self.source_plane_mesh_grid,
         )
 
         mappings = mappings.astype("int")

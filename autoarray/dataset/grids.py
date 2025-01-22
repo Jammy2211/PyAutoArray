@@ -1,12 +1,11 @@
 from typing import Optional, Union
 
-from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
@@ -15,7 +14,8 @@ class GridsDataset:
     def __init__(
         self,
         mask: Mask2D,
-        over_sampling: OverSamplingDataset,
+        over_sample_size_lp: Union[int, Array2D],
+        over_sample_size_pixelization: Union[int, Array2D],
         psf: Optional[Kernel2D] = None,
     ):
         """
@@ -27,11 +27,6 @@ class GridsDataset:
         - `uniform`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data,
         which is used for most normal calculations (e.g. evaluating the amount of light that falls in an pixel
         from a light profile).
-
-        - `non_uniform`: A grid of (y,x) coordinates which aligns with the centre of every image pixel of the image
-        data, but where their values are going to be deflected to become non-uniform such that the adaptive over
-        sampling scheme used for the main grid does not apply. This is used to compute over sampled light profiles of
-        lensed sources in PyAutoLens.
 
         - `pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
         the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
@@ -49,16 +44,24 @@ class GridsDataset:
 
         Parameters
         ----------
-        mask
-        over_sampling
+        over_sample_size_lp
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sample_size_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         psf
+            The Point Spread Function kernel of the image which accounts for diffraction due to the telescope optics
+            via 2D convolution.
         """
         self.mask = mask
-        self.over_sampling = over_sampling
+        self.over_sample_size_lp = over_sample_size_lp
+        self.over_sample_size_pixelization = over_sample_size_pixelization
         self.psf = psf
 
     @cached_property
-    def uniform(self) -> Union[Grid1D, Grid2D]:
+    def lp(self) -> Union[Grid1D, Grid2D]:
         """
         Returns the grid of (y,x) Cartesian coordinates at the centre of every pixel in the masked data, which is used
         to perform most normal calculations (e.g. evaluating the amount of light that falls in an pixel from a light
@@ -70,38 +73,9 @@ class GridsDataset:
         -------
         The (y,x) coordinates of every pixel in the data.
         """
-
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling.uniform,
-        )
-
-    @cached_property
-    def non_uniform(self) -> Optional[Union[Grid1D, Grid2D]]:
-        """
-        Returns the grid of (y,x) Cartesian coordinates at the centre of every pixel in the masked data, but
-        with a different over sampling scheme designed for
-
-        where
-        their values are going to be deflected to become non-uniform such that the adaptive over sampling scheme used
-        for the main grid does not apply.
-
-        This is used to compute over sampled light profiles of lensed sources in PyAutoLens.
-
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data.
-        """
-
-        if self.over_sampling.non_uniform is None:
-            return None
-
-        return Grid2D.from_mask(
-            mask=self.mask,
-            over_sampling=self.over_sampling.non_uniform,
+            over_sample_size=self.over_sample_size_lp,
         )
 
     @cached_property
@@ -120,15 +94,9 @@ class GridsDataset:
         -------
         The (y,x) coordinates of every pixel in the data, used for pixelization / inversion calculations.
         """
-
-        over_sampling = self.over_sampling.pixelization
-
-        if over_sampling is None:
-            over_sampling = OverSamplingUniform(sub_size=4)
-
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=over_sampling,
+            over_sample_size=self.over_sample_size_pixelization,
         )
 
     @cached_property
@@ -151,36 +119,26 @@ class GridsDataset:
         if self.psf is None:
             return None
 
-        return self.uniform.blurring_grid_via_kernel_shape_from(
+        return self.lp.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native,
         )
 
     @cached_property
-    def over_sampler_non_uniform(self):
-        return self.non_uniform.over_sampling.over_sampler_from(mask=self.mask)
-
-    @cached_property
-    def over_sampler_pixelization(self):
-        return self.pixelization.over_sampling.over_sampler_from(mask=self.mask)
-
-    @cached_property
     def border_relocator(self) -> BorderRelocator:
         return BorderRelocator(
-            mask=self.mask, sub_size=self.pixelization.over_sampling.sub_size
+            mask=self.mask, sub_size=self.over_sample_size_pixelization
         )
 
 
 class GridsInterface:
     def __init__(
         self,
-        uniform=None,
-        non_uniform=None,
+        lp=None,
         pixelization=None,
         blurring=None,
         border_relocator=None,
     ):
-        self.uniform = uniform
-        self.non_uniform = non_uniform
+        self.lp = lp
         self.pixelization = pixelization
         self.blurring = blurring
         self.border_relocator = border_relocator

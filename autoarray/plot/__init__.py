@@ -30,6 +30,7 @@ from autoarray.plot.wrap.two_d.patch_overlay import PatchOverlay
 from autoarray.plot.wrap.two_d.interpolated_reconstruction import (
     InterpolatedReconstruction,
 )
+from autoarray.plot.wrap.two_d.delaunay_drawer import DelaunayDrawer
 from autoarray.plot.wrap.two_d.voronoi_drawer import VoronoiDrawer
 from autoarray.plot.wrap.two_d.origin_scatter import OriginScatter
 from autoarray.plot.wrap.two_d.mask_scatter import MaskScatter

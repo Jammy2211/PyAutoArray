@@ -47,11 +47,15 @@ class GridPlot(AbstractMatWrap2D):
         ys = np.linspace(extent[2], extent[3], shape_native[1] + 1)
         xs = np.linspace(extent[0], extent[1], shape_native[0] + 1)
 
+        config_dict = self.config_dict
+        config_dict.pop("c")
+        config_dict["c"] = "k"
+
         # grid lines
         for x in xs:
-            plt.plot([x, x], [ys[0], ys[-1]], **self.config_dict)
+            plt.plot([x, x], [ys[0], ys[-1]], **config_dict)
         for y in ys:
-            plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
+            plt.plot([xs[0], xs[-1]], [y, y], **config_dict)
 
     def plot_grid(self, grid: Union[np.ndarray, Grid2D]):
         """

@@ -80,7 +80,7 @@ class MapperPlotter(Plotter):
             interpolate_to_uniform=interpolate_to_uniform,
             pixel_values=solution_vector,
             auto_labels=AutoLabels(
-                title="Pixelization Mesh (Image-Plane)", filename="mapper"
+                title="Pixelization Mesh (Source-Plane)", filename="mapper"
             ),
         )
 
@@ -117,7 +117,7 @@ class MapperPlotter(Plotter):
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.over_sampler.over_sampled_grid,
+                grid=self.mapper.over_sampler.uniform_over_sampled,
                 indexes=indexes,
             )
 

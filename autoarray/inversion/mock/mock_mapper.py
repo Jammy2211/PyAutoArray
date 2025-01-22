@@ -32,11 +32,11 @@ class MockMapper(AbstractMapper):
 
         super().__init__(
             mapper_grids=mapper_grids,
-            over_sampler=over_sampler,
             border_relocator=border_relocator,
             regularization=regularization,
         )
 
+        self._over_sampler = over_sampler
         self._edge_pixel_list = edge_pixel_list
         self._pix_sub_weights = pix_sub_weights
         self._pix_sub_weights_split_cross = pix_sub_weights_split_cross
@@ -55,6 +55,12 @@ class MockMapper(AbstractMapper):
         if self._parameters is None:
             return super().params
         return self._parameters
+
+    @property
+    def over_sampler(self):
+        if self._over_sampler is None:
+            return super().over_sampler
+        return self._over_sampler
 
     @property
     def edge_pixel_list(self):

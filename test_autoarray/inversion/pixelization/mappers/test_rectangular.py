@@ -18,24 +18,23 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         ],
         pixel_scales=1.0,
         shape_native=(3, 3),
+        over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+    mesh_grid = aa.Mesh2DRectangular.overlay_grid(
+        shape_native=(3, 3), grid=grid.over_sampled
+    )
 
     mapper_grids = aa.MapperGrids(
         mask=grid.mask, source_plane_data_grid=grid, source_plane_mesh_grid=mesh_grid
     )
 
-    over_sampler = aa.OverSamplerUniform(mask=grid.mask, sub_size=1)
-
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.geometry.grid_pixel_indexes_2d_slim_from(
-                grid_scaled_2d_slim=np.array(grid),
+                grid_scaled_2d_slim=np.array(grid.over_sampled),
                 shape_native=mesh_grid.shape_native,
                 pixel_scales=mesh_grid.pixel_scales,
                 origin=mesh_grid.origin,
@@ -48,21 +47,19 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     ).all()
 
 
-def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
-    mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid_2d_7x7)
-
-    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
+def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
+    mesh_grid = aa.Mesh2DRectangular.overlay_grid(
+        shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled
+    )
 
     mapper_grids = aa.MapperGrids(
-        mask=grid_2d_7x7.mask,
-        source_plane_data_grid=grid_2d_7x7,
+        mask=grid_2d_sub_1_7x7.mask,
+        source_plane_data_grid=grid_2d_sub_1_7x7,
         source_plane_mesh_grid=mesh_grid,
         adapt_data=image_7x7,
     )
 
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     pixel_signals = mapper.pixel_signals_from(signal_scale=2.0)
 
@@ -72,7 +69,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
         pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
         pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
-        slim_index_for_sub_slim_index=over_sampler.slim_for_sub_slim,
+        slim_index_for_sub_slim_index=grid_2d_sub_1_7x7.over_sampler.slim_for_sub_slim,
         adapt_data=np.array(image_7x7),
     )
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from autoarray.dataset.mock.mock_dataset import MockDataset
 from autoarray.fit.fit_interferometer import FitInterferometer
 
@@ -5,13 +7,15 @@ from autoarray.fit.fit_interferometer import FitInterferometer
 class MockFitInterferometer(FitInterferometer):
     def __init__(
         self,
-        dataset=MockDataset(),
+        dataset: Optional[MockDataset] = None,
         use_mask_in_fit: bool = False,
         model_data=None,
         inversion=None,
         noise_map=None,
     ):
-        super().__init__(dataset=dataset, use_mask_in_fit=use_mask_in_fit)
+        super().__init__(
+            dataset=dataset or MockDataset(), use_mask_in_fit=use_mask_in_fit
+        )
 
         self._model_data = model_data
         self._inversion = inversion

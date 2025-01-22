@@ -76,24 +76,6 @@ class Mask(AbstractNDArray, ABC):
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
         single value as a float.
         """
-        def exception_message():
-            raise exc.MaskException(
-                "Cannot return a pixel_scale for a grid where each dimension has a "
-                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1])"
-            )
-
-        for pixel_scale in self.pixel_scales:
-            cond = abs(pixel_scale - self.pixel_scales[0]) > 1.0e-8
-            if use_jax:
-                jax.lax.cond(
-                    cond,
-                    lambda _: jax.debug.callback(exception_message),
-                    lambda _: None,
-                    None
-                )
-            elif cond:
-                exception_message()
-
         return self.pixel_scales[0]
 
     @property

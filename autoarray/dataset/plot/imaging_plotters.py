@@ -61,9 +61,8 @@ class ImagingPlotterMeta(Plotter):
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
-        over_sampling: bool = False,
-        over_sampling_non_uniform: bool = False,
-        over_sampling_pixelization: bool = False,
+        over_sample_size_lp: bool = False,
+        over_sample_size_pixelization: bool = False,
         title_str: Optional[str] = None,
     ):
         """
@@ -82,10 +81,10 @@ class ImagingPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
             Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
-        over_sampling
+        over_sample_size_lp
             Whether to make a 2D plot (via `imshow`) of the Over Sampling for input light profiles. If
             adaptive sub size is used, the sub size grid for a centre of (0.0, 0.0) is used.
-        over_sampling_pixelization
+        over_sample_size_pixelization
             Whether to make a 2D plot (via `imshow`) of the Over Sampling for pixelizations.
         """
 
@@ -125,56 +124,24 @@ class ImagingPlotterMeta(Plotter):
                 ),
             )
 
-        if over_sampling:
-            if self.dataset.over_sampling.uniform is None:
-                from autoarray.operators.over_sampling.uniform import (
-                    OverSamplingUniform,
-                )
-
-                over_sampling = OverSamplingUniform.from_adaptive_scheme(
-                    grid=self.dataset.grids.uniform,
-                    name="PlotExample",
-                    centre=(0.0, 0.0),
-                )
-                title = title_str or f"Over Sampling (Adaptive)"
-
-            else:
-                over_sampling = self.dataset.over_sampling.uniform
-                title = title_str or f"Over Sampling"
-
-            over_sampler = over_sampling.over_sampler_from(
-                mask=self.dataset.mask,
-            )
-
+        if over_sample_size_lp:
             self.mat_plot_2d.plot_array(
-                array=over_sampler.sub_size,
+                array=self.dataset.grids.over_sample_size_lp,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
-                    title=title,
-                    filename="over_sampling",
+                    title=title_str or f"Over Sample Size (Light Profiles)",
+                    filename="over_sample_size_lp",
                     cb_unit="",
                 ),
             )
 
-        if over_sampling_non_uniform:
-            if self.dataset.over_sampling.non_uniform is not None:
-                self.mat_plot_2d.plot_array(
-                    array=self.dataset.grids.over_sampler_non_uniform.sub_size,
-                    visuals_2d=self.get_visuals_2d(),
-                    auto_labels=AutoLabels(
-                        title=title_str or f"Over Sampling (Non Uniform)",
-                        filename="over_sampling_non_uniform",
-                        cb_unit="",
-                    ),
-                )
-
-        if over_sampling_pixelization:
+        if over_sample_size_pixelization:
             self.mat_plot_2d.plot_array(
-                array=self.dataset.grids.over_sampler_pixelization.sub_size,
+                array=self.dataset.grids.over_sample_size_pixelization,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
-                    title=title_str or f"Over Sampling (Pixelization)",
-                    filename="over_sampling_pixelization",
+                    title=title_str or f"Over Sample Size (Pixelization)",
+                    filename="over_sample_size_pixelization",
                     cb_unit="",
                 ),
             )
@@ -251,9 +218,8 @@ class ImagingPlotterMeta(Plotter):
 
         self.figures_2d(signal_to_noise_map=True)
 
-        self.figures_2d(over_sampling=True)
-        self.figures_2d(over_sampling_non_uniform=True)
-        self.figures_2d(over_sampling_pixelization=True)
+        self.figures_2d(over_sample_size_lp=True)
+        self.figures_2d(over_sample_size_pixelization=True)
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_dataset")
         self.close_subplot_figure()

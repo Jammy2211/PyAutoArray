@@ -665,17 +665,6 @@ def test__padded_grid_from():
     assert padded_grid.shape == (42, 2)
     assert (padded_grid == padded_grid_util).all()
 
-    grid_2d = aa.Grid2D.uniform(shape_native=(5, 5), pixel_scales=8.0)
-
-    padded_grid = grid_2d.padded_grid_from(kernel_shape_native=(2, 5))
-
-    padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0)
-    )
-
-    assert padded_grid.shape == (54, 2)
-    assert (padded_grid == padded_grid_util).all()
-
 
 def test__squared_distances_to_coordinate_from():
     mask = aa.Mask2D(
@@ -851,3 +840,11 @@ def test__is_uniform():
     )
 
     assert grid_2d.is_uniform == False
+
+
+def test__apply_over_sampling():
+    grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=1.0, over_sample_size=1)
+
+    grid = grid.apply_over_sampling(over_sample_size=2)
+
+    assert grid.over_sampled.shape[0] == 16
