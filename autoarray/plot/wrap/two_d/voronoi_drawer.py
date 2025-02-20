@@ -81,7 +81,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
             cmap = plt.get_cmap(cmap.cmap)
 
-            if colorbar is not None:
+            if colorbar is not None and colorbar is not False:
                 cb = colorbar.set_with_color_values(
                     units=units,
                     norm=norm,

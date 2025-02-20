@@ -1,4 +1,9 @@
+from astropy.io import fits
+import numpy as np
+import os
 from typing import List, Optional, Tuple
+
+from autoconf import conf
 
 from autoarray.plot.wrap.base.ticks import YTicks
 from autoarray.plot.wrap.base.ticks import XTicks
@@ -103,29 +108,6 @@ class MultiFigurePlotter:
             func(**{**{}, **kwargs})
         else:
             func(**{**{figure_name: True}, **kwargs})
-
-    def output_subplot(self, filename_suffix: str = ""):
-        """
-        Outplot the subplot to a file after all figures have been plotted on the subplot.
-
-        The multi-plotter requires its own output function to ensure that the subplot is output to a file, which
-        this provides.
-
-        Parameters
-        ----------
-        filename_suffix
-            The suffix of the filename that the subplot is output to.
-        """
-
-        if self.plotter_list[0].mat_plot_1d is not None:
-            self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
-                auto_filename=f"subplot_{filename_suffix}"
-            )
-        if self.plotter_list[0].mat_plot_2d is not None:
-            self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
-                auto_filename=f"subplot_{filename_suffix}"
-            )
-        self.plotter_list[0].close_subplot_figure()
 
     def subplot_of_figure(
         self, func_name: str, figure_name: str, filename_suffix: str = "", **kwargs
@@ -266,6 +248,83 @@ class MultiFigurePlotter:
         )
         self.plotter_list[0].plotter_list[0].close_subplot_figure()
 
+    def output_subplot(self, filename_suffix: str = ""):
+        """
+        Outplot the subplot to a file after all figures have been plotted on the subplot.
+
+        The multi-plotter requires its own output function to ensure that the subplot is output to a file, which
+        this provides.
+
+        Parameters
+        ----------
+        filename_suffix
+            The suffix of the filename that the subplot is output to.
+        """
+
+        if self.plotter_list[0].mat_plot_1d is not None:
+            self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
+                auto_filename=f"subplot_{filename_suffix}"
+            )
+        if self.plotter_list[0].mat_plot_2d is not None:
+            self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
+                auto_filename=f"subplot_{filename_suffix}"
+            )
+        self.plotter_list[0].close_subplot_figure()
+
+    def output_to_fits(
+        self,
+        func_name_list: List[str],
+        figure_name_list: List[str],
+        filename: str,
+        tag_list: Optional[List[str]] = None,
+        remove_fits_first : bool = False,
+        **kwargs,
+    ):
+        """
+        Outputs a subplot of figures of the plotter objects in the `plotter_list`, where multiple function names and
+        figure names are input.
+
+        For example, if you have multiple `ImagingPlotter` objects and you want to plot the `data` and `noise_map` of
+        each on the same subplot, you would input `func_name_list=['figures_2d', 'figures_2d']` and
+        `figure_name_list=['data', 'noise_map']`.
+
+        Parameters
+        ----------
+        func_name_list
+            The list of function names that are called to plot the figures on the subplot.
+        figure_name_list
+            The list of figure names that are plotted on the subplot.
+        filename_suffix
+            The suffix of the filename that the subplot is output to.
+        kwargs
+            Any additional keyword arguments that are passed to the function that plots the figure on the subplot.
+        """
+
+        output_path = self.plotter_list[0].mat_plot_2d.output.output_path_from(format="fits_multi")
+        output_fits_file = os.path.join(output_path, f"{filename}.fits")
+
+        if remove_fits_first and os.path.exists(output_fits_file):
+            os.remove(output_fits_file)
+
+        for i, plotter in enumerate(self.plotter_list):
+
+            plotter.mat_plot_2d.output._format = "fits_multi"
+
+            plotter.set_filename(filename=f"{filename}")
+
+            for j, (func_name, figure_name) in enumerate(
+                zip(func_name_list, figure_name_list)
+            ):
+
+                if tag_list is not None:
+                    plotter.mat_plot_2d.output._tag_fits_multi = tag_list[j]
+
+                self.plot_via_func(
+                    plotter=plotter,
+                    figure_name=figure_name,
+                    func_name=func_name,
+                    kwargs=kwargs,
+                )
 
 class MultiYX1DPlotter:
     def __init__(

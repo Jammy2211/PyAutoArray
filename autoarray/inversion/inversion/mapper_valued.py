@@ -259,7 +259,7 @@ class MapperValued:
 
     def magnification_via_interpolation_from(
         self,
-        shape_native: Tuple[int, int] = (401, 401),
+        shape_native: Tuple[int, int] = (201, 201),
         extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> float:
         """

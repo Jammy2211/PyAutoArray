@@ -862,3 +862,35 @@ def header_obj_from(file_path: Union[Path, str], hdu: int) -> Dict:
     hdu_list = fits.open(file_path)
 
     return hdu_list[hdu].header
+
+
+def update_fits_file(arr, file_path, tag=None, header=None):
+
+    if header is None:
+        header = fits.Header()
+
+    try:
+        header["HELLO"] = "GII"
+        header["PIXSCAY"] = str(arr.pixel_scales[0])
+        header["PIXSCAX"] = str(arr.pixel_scales[1])
+    except AttributeError:
+        pass
+
+    if conf.instance["general"]["fits"]["flip_for_ds9"]:
+        arr = np.flipud(arr)
+
+    if os.path.exists(file_path):
+
+        with fits.open(file_path, mode='update') as hdul:
+            hdul.append(fits.ImageHDU(arr, header))
+            if tag is not None:
+                hdul[-1].header['EXTNAME'] = tag.upper()
+            hdul.flush()
+
+    else:
+
+        hdu = fits.PrimaryHDU(arr, header)
+        if tag is not None:
+            hdu.header['EXTNAME'] = tag.upper()
+        hdul = fits.HDUList([hdu])
+        hdul.writeto(file_path, overwrite=True)
