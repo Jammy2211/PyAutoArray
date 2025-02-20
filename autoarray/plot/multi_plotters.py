@@ -277,7 +277,7 @@ class MultiFigurePlotter:
         figure_name_list: List[str],
         filename: str,
         tag_list: Optional[List[str]] = None,
-        remove_fits_first : bool = False,
+        remove_fits_first: bool = False,
         **kwargs,
     ):
         """
@@ -300,14 +300,15 @@ class MultiFigurePlotter:
             Any additional keyword arguments that are passed to the function that plots the figure on the subplot.
         """
 
-        output_path = self.plotter_list[0].mat_plot_2d.output.output_path_from(format="fits_multi")
+        output_path = self.plotter_list[0].mat_plot_2d.output.output_path_from(
+            format="fits_multi"
+        )
         output_fits_file = os.path.join(output_path, f"{filename}.fits")
 
         if remove_fits_first and os.path.exists(output_fits_file):
             os.remove(output_fits_file)
 
         for i, plotter in enumerate(self.plotter_list):
-
             plotter.mat_plot_2d.output._format = "fits_multi"
 
             plotter.set_filename(filename=f"{filename}")
@@ -315,7 +316,6 @@ class MultiFigurePlotter:
             for j, (func_name, figure_name) in enumerate(
                 zip(func_name_list, figure_name_list)
             ):
-
                 if tag_list is not None:
                     plotter.mat_plot_2d.output._tag_fits_multi = tag_list[j]
 
@@ -325,6 +325,7 @@ class MultiFigurePlotter:
                     func_name=func_name,
                     kwargs=kwargs,
                 )
+
 
 class MultiYX1DPlotter:
     def __init__(

@@ -865,7 +865,6 @@ def header_obj_from(file_path: Union[Path, str], hdu: int) -> Dict:
 
 
 def update_fits_file(arr, file_path, tag=None, header=None):
-
     if header is None:
         header = fits.Header()
 
@@ -880,17 +879,15 @@ def update_fits_file(arr, file_path, tag=None, header=None):
         arr = np.flipud(arr)
 
     if os.path.exists(file_path):
-
-        with fits.open(file_path, mode='update') as hdul:
+        with fits.open(file_path, mode="update") as hdul:
             hdul.append(fits.ImageHDU(arr, header))
             if tag is not None:
-                hdul[-1].header['EXTNAME'] = tag.upper()
+                hdul[-1].header["EXTNAME"] = tag.upper()
             hdul.flush()
 
     else:
-
         hdu = fits.PrimaryHDU(arr, header)
         if tag is not None:
-            hdu.header['EXTNAME'] = tag.upper()
+            hdu.header["EXTNAME"] = tag.upper()
         hdul = fits.HDUList([hdu])
         hdul.writeto(file_path, overwrite=True)
