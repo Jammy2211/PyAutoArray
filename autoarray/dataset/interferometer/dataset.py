@@ -1,5 +1,7 @@
+from astropy.io import fits
 import logging
 import numpy as np
+from pathlib import Path
 from typing import Optional
 
 from autoconf import cached_property
@@ -27,6 +29,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         transformer_class=TransformerNUFFT,
+        preprocessing_directory=None,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -88,6 +91,8 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
+        self.preprocessing_directory = Path(preprocessing_directory) if preprocessing_directory is not None else None
+
     @cached_property
     def grids(self):
         return GridsDataset(
@@ -133,6 +138,27 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
         )
+
+    def w_tilde_preprocessing(self):
+
+        if self.preprocessing_directory.is_dir():
+
+            filename = "{}/curvature_preload.fits".format(self.preprocessing_directory)
+
+            if not self.preprocessing_directory.isfile(filename):
+                print(
+                    "The file {} does not exist".format(filename)
+                )
+                logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+
+                curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
+                    noise_map_real=self.noise_map.real,
+                    uv_wavelengths=self.uv_wavelengths,
+                    shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
+                    grid_radians_2d=self.transformer.grid.mask.unmasked_grid_sub_1.in_radians.native,
+                )
+
+                fits.writeto(filename, data=curvature_preload)
 
     @cached_property
     def w_tilde(self):
