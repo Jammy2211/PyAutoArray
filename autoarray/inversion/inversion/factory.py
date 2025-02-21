@@ -207,11 +207,6 @@ def inversion_interferometer_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
-    try:
-        from autoarray.inversion.inversion import inversion_util_secret
-    except ImportError:
-        settings.use_w_tilde = False
-
     if any(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
