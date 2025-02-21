@@ -1,9 +1,6 @@
-from astropy.io import fits
-import numpy as np
 import os
+from pathlib import Path
 from typing import List, Optional, Tuple
-
-from autoconf import conf
 
 from autoarray.plot.wrap.base.ticks import YTicks
 from autoarray.plot.wrap.base.ticks import XTicks
@@ -261,15 +258,17 @@ class MultiFigurePlotter:
             The suffix of the filename that the subplot is output to.
         """
 
-        if self.plotter_list[0].mat_plot_1d is not None:
-            self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
+        plotter = self.plotter_list[0]
+
+        if plotter.mat_plot_1d is not None:
+            plotter.mat_plot_1d.output.subplot_to_figure(
                 auto_filename=f"subplot_{filename_suffix}"
             )
-        if self.plotter_list[0].mat_plot_2d is not None:
-            self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
+        if plotter.mat_plot_2d is not None:
+            plotter.mat_plot_2d.output.subplot_to_figure(
                 auto_filename=f"subplot_{filename_suffix}"
             )
-        self.plotter_list[0].close_subplot_figure()
+        plotter.close_subplot_figure()
 
     def output_to_fits(
         self,
@@ -316,10 +315,10 @@ class MultiFigurePlotter:
         output_path = self.plotter_list[0].mat_plot_2d.output.output_path_from(
             format="fits_multi"
         )
-        output_fits_file = os.path.join(output_path, f"{filename}.fits")
+        output_fits_file = Path(output_path)/ f"{filename}.fits"
 
-        if remove_fits_first and os.path.exists(output_fits_file):
-            os.remove(output_fits_file)
+        if remove_fits_first:
+            output_fits_file.unlink(missing_ok=True)
 
         for i, plotter in enumerate(self.plotter_list):
             plotter.mat_plot_2d.output._format = "fits_multi"

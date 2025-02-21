@@ -898,8 +898,9 @@ def update_fits_file(
         header = fits.Header()
 
     try:
-        header["PIXSCAY"] = str(arr.pixel_scales[0])
-        header["PIXSCAX"] = str(arr.pixel_scales[1])
+        y, x = map(str, arr.pixel_scales)
+        header["PIXSCAY"] = y
+        header["PIXSCAX"] = x
     except AttributeError:
         pass
 
