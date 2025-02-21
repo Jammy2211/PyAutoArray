@@ -862,3 +862,61 @@ def header_obj_from(file_path: Union[Path, str], hdu: int) -> Dict:
     hdu_list = fits.open(file_path)
 
     return hdu_list[hdu].header
+
+
+def update_fits_file(
+    arr: np.ndarray,
+    file_path: str,
+    tag: Optional[str] = None,
+    header: Optional[fits.Header] = None,
+):
+    """
+    Update a .fits file with a new array.
+
+    This function is used by the `fits_multi` output interface so that a single .fits file with groups of data
+    in hdu's can be created.
+
+    It may receive a `tag` which is used to set the `EXTNAME` of the HDU in the .fits file and therefore is the name
+    of the hdu seen by the user when they open it with DS9 or other .fits software.
+
+    A header may also be provided, which by default has the pixel scales of the array added to it.
+
+    Parameters
+    ----------
+    arr
+        The array that is written to the .fits file.
+    file_path
+        The full path of the file that is output, including the file name and ``.fits`` extension.
+    tag
+        The `EXTNAME` of the HDU in the .fits file.
+    header
+        The header of the .fits file that the array is written to, which if blank will still contain the pixel scales
+        of the array.
+    """
+
+    if header is None:
+        header = fits.Header()
+
+    try:
+        y, x = map(str, arr.pixel_scales)
+        header["PIXSCAY"] = y
+        header["PIXSCAX"] = x
+    except AttributeError:
+        pass
+
+    if conf.instance["general"]["fits"]["flip_for_ds9"]:
+        arr = np.flipud(arr)
+
+    if os.path.exists(file_path):
+        with fits.open(file_path, mode="update") as hdul:
+            hdul.append(fits.ImageHDU(arr, header))
+            if tag is not None:
+                hdul[-1].header["EXTNAME"] = tag.upper()
+            hdul.flush()
+
+    else:
+        hdu = fits.PrimaryHDU(arr, header)
+        if tag is not None:
+            hdu.header["EXTNAME"] = tag.upper()
+        hdul = fits.HDUList([hdu])
+        hdul.writeto(file_path, overwrite=True)
