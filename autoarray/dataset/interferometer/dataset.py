@@ -13,6 +13,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.structures.arrays import array_2d_util
+from autoarray.inversion.inversion import inversion_util
 
 logger = logging.getLogger(__name__)
 
@@ -152,10 +153,8 @@ class Interferometer(AbstractDataset):
 
         logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
-        from autoarray.inversion.inversion import inversion_util_secret
-
         curvature_preload = (
-            inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
+            inversion_util.w_tilde_curvature_preload_interferometer_from(
                 noise_map_real=np.array(self.noise_map.real),
                 uv_wavelengths=np.array(self.uv_wavelengths),
                 shape_masked_pixels_2d=np.array(
@@ -167,7 +166,7 @@ class Interferometer(AbstractDataset):
             )
         )
 
-        w_matrix = inversion_util_secret.w_tilde_via_preload_from(
+        w_matrix = inversion_util.w_tilde_via_preload_from(
             w_tilde_preload=curvature_preload,
             native_index_for_slim_index=self.real_space_mask.derive_indexes.native_for_slim,
         )
