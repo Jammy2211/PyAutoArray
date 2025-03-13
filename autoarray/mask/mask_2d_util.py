@@ -81,7 +81,7 @@ def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
         return total_regular_pixels
 
 
-@numba_util.jit(static_argnums=0)
+@numba_util.jit()
 def mask_2d_circular_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
