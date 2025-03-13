@@ -121,7 +121,7 @@ class InversionPlotter(Plotter):
         data_subtracted: bool = False,
         reconstructed_image: bool = False,
         reconstruction: bool = False,
-        errors: bool = False,
+        reconstruction_noise_map: bool = False,
         signal_to_noise_map: bool = False,
         regularization_weights: bool = False,
         sub_pixels_per_image_pixels: bool = False,
@@ -145,8 +145,8 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
         reconstruction
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
-        errors
-            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        reconstruction_noise_map
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane noise-map.
         signal_to_noise_map
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane signal-to-noise-map.
         sub_pixels_per_image_pixels
@@ -184,7 +184,7 @@ class InversionPlotter(Plotter):
                 self.mat_plot_2d.plot_array(
                     array=array,
                     visuals_2d=self.get_visuals_2d_for_data(),
-                    grid_indexes=mapper_plotter.mapper.over_sampler.over_sampled_grid,
+                    grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                     auto_labels=AutoLabels(
                         title="Data Subtracted", filename="data_subtracted"
                     ),
@@ -200,7 +200,7 @@ class InversionPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=array,
                 visuals_2d=self.get_visuals_2d_for_data(),
-                grid_indexes=mapper_plotter.mapper.over_sampler.over_sampled_grid,
+                grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -235,11 +235,15 @@ class InversionPlotter(Plotter):
             if vmax_custom:
                 self.mat_plot_2d.cmap.kwargs["vmax"] = None
 
-        if errors:
+        if reconstruction_noise_map:
             try:
                 mapper_plotter.plot_source_from(
-                    pixel_values=self.inversion.errors_dict[mapper_plotter.mapper],
-                    auto_labels=AutoLabels(title="Errors", filename="errors"),
+                    pixel_values=self.inversion.reconstruction_noise_map_dict[
+                        mapper_plotter.mapper
+                    ],
+                    auto_labels=AutoLabels(
+                        title="Noise Map", filename="reconstruction_noise_map"
+                    ),
                 )
 
             except TypeError:
@@ -249,7 +253,9 @@ class InversionPlotter(Plotter):
             try:
                 signal_to_noise_values = (
                     self.inversion.reconstruction_dict[mapper_plotter.mapper]
-                    / self.inversion.errors_dict[mapper_plotter.mapper]
+                    / self.inversion.reconstruction_noise_map_dict[
+                        mapper_plotter.mapper
+                    ]
                 )
 
                 mapper_plotter.plot_source_from(
@@ -387,9 +393,11 @@ class InversionPlotter(Plotter):
         )
         self.set_title(label=None)
 
-        self.set_title(label="Errors (Unzoomed)")
+        self.set_title(label="Noise-Map (Unzoomed)")
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
+            pixelization_index=mapper_index,
+            reconstruction_noise_map=True,
+            zoom_to_brightest=False,
         )
 
         self.set_title(label="Regularization Weights (Unzoomed)")

@@ -65,28 +65,28 @@ class Triangulation(AbstractMesh):
 
         self.run_time_dict = run_time_dict
 
-        source_plane_data_grid = self.relocated_grid_from(
+        relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
         )
 
-        relocated_source_plane_mesh_grid = self.relocated_mesh_grid_from(
+        relocated_mesh_grid = self.relocated_mesh_grid_from(
             border_relocator=border_relocator,
-            source_plane_data_grid=source_plane_data_grid,
+            source_plane_data_grid=relocated_grid.over_sampled,
             source_plane_mesh_grid=source_plane_mesh_grid,
         )
 
         try:
             source_plane_mesh_grid = self.mesh_grid_from(
-                source_plane_data_grid=source_plane_data_grid,
-                source_plane_mesh_grid=relocated_source_plane_mesh_grid,
+                source_plane_data_grid=relocated_grid.over_sampled,
+                source_plane_mesh_grid=relocated_mesh_grid,
             )
         except ValueError as e:
             raise e
 
         return MapperGrids(
             mask=mask,
-            source_plane_data_grid=source_plane_data_grid,
+            source_plane_data_grid=relocated_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,

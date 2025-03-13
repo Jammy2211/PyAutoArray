@@ -4,14 +4,7 @@ import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
-
-
-@pytest.fixture
-def two_triangles():
-    return CoordinateArrayTriangles(
-        coordinates=np.array([[0, 0], [1, 0]]),
-        side_length=1.0,
-    )
+from autoarray.structures.triangles.shape import Point
 
 
 def test_two(two_triangles):
@@ -30,14 +23,6 @@ def test_two(two_triangles):
                 [1.0, HEIGHT_FACTOR / 2],
             ],
         ]
-    )
-
-
-@pytest.fixture
-def one_triangle():
-    return CoordinateArrayTriangles(
-        coordinates=np.array([[0, 0]]),
-        side_length=1.0,
     )
 
 
@@ -257,15 +242,49 @@ def test_for_indexes(two_triangles):
     )
 
 
-def test_for_limits_and_scale():
-    triangles = CoordinateArrayTriangles.for_limits_and_scale(
-        x_min=-1.0,
-        x_max=1.0,
-        y_min=-1.0,
-        y_max=1.0,
-    )
-    assert triangles.triangles.shape == (4, 3, 2)
-
-
 def test_means(one_triangle):
     assert np.all(one_triangle.means == [[0.0, -0.14433756729740643]])
+
+
+@pytest.mark.parametrize(
+    "x, y",
+    [
+        (0.0, 0.0),
+        (-0.5, -HEIGHT_FACTOR / 2),
+        (0.5, -HEIGHT_FACTOR / 2),
+        (0.0, HEIGHT_FACTOR / 2),
+    ],
+)
+def test_containment(one_triangle, x, y):
+    assert one_triangle.containing_indices(Point(x, y)) == [0]
+
+
+def test_triangles_touch():
+    triangles = CoordinateArrayTriangles(
+        np.array([[0, 0], [2, 0]]),
+    )
+
+    assert max(triangles.triangles[0][:, 0]) == min(triangles.triangles[1][:, 0])
+
+    triangles = CoordinateArrayTriangles(
+        np.array([[0, 0], [0, 1]]),
+    )
+    assert max(triangles.triangles[0][:, 1]) == min(triangles.triangles[1][:, 1])
+
+
+def test_from_grid_regression():
+    triangles = CoordinateArrayTriangles.for_limits_and_scale(
+        x_min=-4.75,
+        x_max=4.75,
+        y_min=-4.75,
+        y_max=4.75,
+        scale=0.5,
+    )
+
+    x = triangles.vertices[:, 0]
+    assert min(x) <= -4.75
+    assert max(x) >= 4.75
+
+    y = triangles.vertices[:, 1]
+    assert min(y) <= -4.75
+    assert max(y) >= 4.75

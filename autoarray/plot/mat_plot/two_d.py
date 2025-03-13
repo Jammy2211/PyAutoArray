@@ -48,6 +48,7 @@ class MatPlot2D(AbstractMatPlot):
         vector_yx_quiver: Optional[w2d.VectorYXQuiver] = None,
         patch_overlay: Optional[w2d.PatchOverlay] = None,
         interpolated_reconstruction: Optional[w2d.InterpolatedReconstruction] = None,
+        delaunay_drawer: Optional[w2d.DelaunayDrawer] = None,
         voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
         origin_scatter: Optional[w2d.OriginScatter] = None,
         mask_scatter: Optional[w2d.MaskScatter] = None,
@@ -128,6 +129,8 @@ class MatPlot2D(AbstractMatPlot):
             Plots a `VectorField` object using the matplotlib function `plt.quiver`.
         patch_overlay
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
+        delaunay_drawer
+            Draws a colored Delaunay mesh of pixels using `plt.tripcolor`.
         voronoi_drawer
             Draws a colored Voronoi mesh of pixels using `plt.fill`.
         interpolated_reconstruction
@@ -188,6 +191,7 @@ class MatPlot2D(AbstractMatPlot):
             interpolated_reconstruction
             or w2d.InterpolatedReconstruction(is_default=True)
         )
+        self.delaunay_drawer = delaunay_drawer or w2d.DelaunayDrawer(is_default=True)
         self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer(is_default=True)
 
         self.origin_scatter = origin_scatter or w2d.OriginScatter(is_default=True)
@@ -417,7 +421,7 @@ class MatPlot2D(AbstractMatPlot):
             ax = self.setup_subplot()
 
         if plot_over_sampled_grid:
-            grid_plot = grid.over_sampler.over_sampled_grid
+            grid_plot = grid.over_sampled
         else:
             grid_plot = grid
 
@@ -606,7 +610,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(
             plotter=self,
-            grid_indexes=mapper.source_plane_data_grid,
+            grid_indexes=mapper.source_plane_data_grid.over_sampled,
             mapper=mapper,
             geometry=mapper.mapper_grids.mask.geometry,
         )
@@ -639,6 +643,8 @@ class MatPlot2D(AbstractMatPlot):
 
         self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
+        plt.gca().set_aspect(aspect_inv)
+
         self.tickparams.set()
         self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
         self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
@@ -653,17 +659,34 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [annotate.set() for annotate in self.annotate]
 
-        interpolation_array = self.interpolated_reconstruction.imshow_reconstruction(
-            mapper=mapper,
-            pixel_values=pixel_values,
-            units=self.units,
-            cmap=self.cmap,
-            colorbar=self.colorbar,
-            colorbar_tickparams=self.colorbar_tickparams,
-            aspect=aspect_inv,
-            ax=ax,
-            use_log10=self.use_log10,
-        )
+        interpolation_array = None
+
+        if interpolate_to_uniform:
+            interpolation_array = (
+                self.interpolated_reconstruction.imshow_reconstruction(
+                    mapper=mapper,
+                    pixel_values=pixel_values,
+                    units=self.units,
+                    cmap=self.cmap,
+                    colorbar=self.colorbar,
+                    colorbar_tickparams=self.colorbar_tickparams,
+                    aspect=aspect_inv,
+                    ax=ax,
+                    use_log10=self.use_log10,
+                )
+            )
+
+        else:
+            self.delaunay_drawer.draw_delaunay_pixels(
+                mapper=mapper,
+                pixel_values=pixel_values,
+                units=self.units,
+                cmap=self.cmap,
+                colorbar=self.colorbar,
+                colorbar_tickparams=self.colorbar_tickparams,
+                ax=ax,
+                use_log10=self.use_log10,
+            )
 
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set()
@@ -671,7 +694,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(
             plotter=self,
-            grid_indexes=mapper.source_plane_data_grid,
+            grid_indexes=mapper.source_plane_data_grid.over_sampled,
             mapper=mapper,
             geometry=mapper.mapper_grids.mask.geometry,
         )
@@ -754,7 +777,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(
             plotter=self,
-            grid_indexes=mapper.source_plane_data_grid,
+            grid_indexes=mapper.source_plane_data_grid.over_sampled,
             mapper=mapper,
             geometry=mapper.mapper_grids.mask.geometry,
         )

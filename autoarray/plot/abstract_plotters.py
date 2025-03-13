@@ -37,7 +37,6 @@ class AbstractPlotter:
 
         self.subplot_figsize = None
 
-
     def set_title(self, label):
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.title.manual_label = label

@@ -8,7 +8,6 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
-from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.arrays.kernel_2d import Kernel2D
@@ -16,6 +15,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
 
 from autoarray import exc
+from autoarray.operators.over_sampling import over_sample_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,8 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
+        over_sample_size_lp: Union[int, Array2D] = 4,
+        over_sample_size_pixelization: Union[int, Array2D] = 4,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
@@ -69,10 +70,13 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        over_sampling
-            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
-            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
-            This class controls over sampling for all the different grids (e.g. `grid`, `grids.pixelization).
+        over_sample_size_lp
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sample_size_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         pad_for_convolver
             The PSF convolution may extend beyond the edges of the image mask, which can lead to edge effects in the
             convolved image. If `True`, the image and noise-map are padded to ensure the PSF convolution does not
@@ -94,6 +98,28 @@ class Imaging(AbstractDataset):
                     kernel_shape_native=psf.shape_native
                 )
             except exc.MaskException:
+                over_sample_size_lp = (
+                    over_sample_util.over_sample_size_convert_to_array_2d_from(
+                        over_sample_size=over_sample_size_lp, mask=data.mask
+                    )
+                )
+                over_sample_size_lp = (
+                    over_sample_size_lp.padded_before_convolution_from(
+                        kernel_shape=psf.shape_native, mask_pad_value=1
+                    )
+                )
+                print(over_sample_size_lp.shape_native)
+                over_sample_size_pixelization = (
+                    over_sample_util.over_sample_size_convert_to_array_2d_from(
+                        over_sample_size=over_sample_size_pixelization, mask=data.mask
+                    )
+                )
+                over_sample_size_pixelization = (
+                    over_sample_size_pixelization.padded_before_convolution_from(
+                        kernel_shape=psf.shape_native, mask_pad_value=1
+                    )
+                )
+
                 data = data.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
                 )
@@ -114,7 +140,8 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
-            over_sampling=over_sampling,
+            over_sample_size_lp=over_sample_size_lp,
+            over_sample_size_pixelization=over_sample_size_pixelization,
         )
 
         self.use_normalized_psf = use_normalized_psf
@@ -143,7 +170,10 @@ class Imaging(AbstractDataset):
     @cached_property
     def grids(self):
         return GridsDataset(
-            mask=self.data.mask, over_sampling=self.over_sampling, psf=self.psf
+            mask=self.data.mask,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
+            psf=self.psf,
         )
 
     @cached_property
@@ -214,7 +244,8 @@ class Imaging(AbstractDataset):
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         check_noise_map: bool = True,
-        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
+        over_sample_size_lp: Union[int, Array2D] = 4,
+        over_sample_size_pixelization: Union[int, Array2D] = 4,
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.
@@ -253,10 +284,13 @@ class Imaging(AbstractDataset):
             A noise-map covariance matrix representing the covariance between noise in every `data` value.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
-        over_sampling
-            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
-            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
-            This class controls over sampling for all the different grids (e.g. `grid`, `grids.pixelization).
+        over_sample_size_lp
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sample_size_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         """
 
         data = Array2D.from_fits(
@@ -284,7 +318,8 @@ class Imaging(AbstractDataset):
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
             check_noise_map=check_noise_map,
-            over_sampling=over_sampling,
+            over_sample_size_lp=over_sample_size_lp,
+            over_sample_size_pixelization=over_sample_size_pixelization,
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
@@ -323,12 +358,18 @@ class Imaging(AbstractDataset):
         else:
             noise_covariance_matrix = None
 
+        over_sample_size_lp = Array2D(values=self.over_sample_size_lp.native, mask=mask)
+        over_sample_size_pixelization = Array2D(
+            values=self.over_sample_size_pixelization.native, mask=mask
+        )
+
         dataset = Imaging(
             data=data,
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            over_sampling=self.over_sampling,
+            over_sample_size_lp=over_sample_size_lp,
+            over_sample_size_pixelization=over_sample_size_pixelization,
             pad_for_convolver=True,
         )
 
@@ -340,11 +381,27 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_noise_scaling(self, mask: Mask2D, noise_value: float = 1e8) -> "Imaging":
+    def apply_noise_scaling(
+        self,
+        mask: Mask2D,
+        noise_value: float = 1e8,
+        signal_to_noise_value: Optional[float] = None,
+        should_zero_data: bool = True,
+    ) -> "Imaging":
         """
-        Apply a mask to the imaging dataset using noise scaling, whereby the mask increases noise-map values to be
-        extremely large such that they are never included in the likelihood calculation, but it does
-        not remove the image data values, which are set to zero.
+        Apply a mask to the imaging dataset using noise scaling, whereby the maskmay zero the data and increase
+        noise-map values to change how they enter the likelihood calculation.
+
+        Given this data region is masked, it is likely thr data itself should not be included and therefore
+        the masked data values are set to zero. This can be disabled by setting `should_zero_data=False`.
+
+        Two forms of scaling are supported depending on whether the `signal_to_noise_value` is input:
+
+        - `noise_value`: The noise-map values in the masked region are set to this value, typically a very large value,
+        such that they are never included in the likelihood calculation.
+
+        - `signal_to_noise_value`: The noise-map values in the masked region are set to values such that they give
+        this signal-to-noise ratio. This overwrites the `noise_value` parameter.
 
         For certain modeling tasks, the mask defines regions of the data that are used to calculate the likelihood.
         For example, all data points in a mask may be used to create a pixel-grid, which is used in the likelihood.
@@ -358,31 +415,62 @@ class Imaging(AbstractDataset):
         ----------
         mask
             The 2D mask that is applied to the image and noise-map, to scale the noise-map values to large values.
+        noise_value
+            The value that the noise-map values are set to in the masked region where noise scaling is applied.
+        signal_to_noise_value
+            The noise-map values are instead set to values such that they give this signal-to-noise_maps ratio.
+            This overwrites the noise_value parameter.
+        should_zero_data
+            If True, the data values in the masked region are set to zero.
         """
-        data = np.where(np.invert(mask), 0.0, self.data.native)
-        data = Array2D.no_mask(
+
+        if signal_to_noise_value is None:
+            noise_map = self.noise_map.native
+            noise_map[mask == False] = noise_value
+        else:
+            noise_map = np.where(
+                mask == False,
+                np.median(self.data.native[mask.derive_mask.edge == False])
+                / signal_to_noise_value,
+                self.noise_map.native,
+            )
+
+        if should_zero_data:
+            data = np.where(np.invert(mask), 0.0, self.data.native)
+        else:
+            data = self.data.native
+
+        data_unmasked = Array2D.no_mask(
             values=data,
             shape_native=self.data.shape_native,
             pixel_scales=self.data.pixel_scales,
         )
 
-        noise_map = self.noise_map.native
-        noise_map[mask == False] = noise_value
-        noise_map = Array2D.no_mask(
+        noise_map_unmasked = Array2D.no_mask(
             values=noise_map,
-            shape_native=self.data.shape_native,
-            pixel_scales=self.data.pixel_scales,
+            shape_native=self.noise_map.shape_native,
+            pixel_scales=self.noise_map.pixel_scales,
         )
+
+        data = Array2D(values=data, mask=self.data.mask)
+
+        noise_map = Array2D(values=noise_map, mask=self.data.mask)
 
         dataset = Imaging(
             data=data,
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=self.noise_covariance_matrix,
-            over_sampling=self.over_sampling,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
             pad_for_convolver=False,
-            check_noise_map=False
+            check_noise_map=False,
         )
+
+        if self.unmasked is not None:
+            dataset.unmasked = self.unmasked
+            dataset.unmasked.data = data_unmasked
+            dataset.unmasked.noise_map = noise_map_unmasked
 
         logger.info(
             f"IMAGING - Data noise scaling applied, a total of {mask.pixels_in_mask} pixels were scaled to large noise values."
@@ -392,7 +480,8 @@ class Imaging(AbstractDataset):
 
     def apply_over_sampling(
         self,
-        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
+        over_sample_size_lp: Union[int, Array2D] = None,
+        over_sample_size_pixelization: Union[int, Array2D] = None,
     ) -> "AbstractDataset":
         """
         Apply new over sampling objects to the grid and grid pixelization of the dataset.
@@ -404,37 +493,26 @@ class Imaging(AbstractDataset):
         This function resets the cached properties so that the new over sampling is used in the grid and grid
         pixelization.
 
-        The `default_galaxy_mode` parameter is used to set up default over sampling for galaxy light profiles in
-        the project PyAutoGalaxy. This sets up the over sampling such that there is high over sampling in the centre
-        of the mask, where the galaxy is located, and lower over sampling in the outer regions of the mask. It
-        does this based on the pixel scale, which gives a good estimate of how large the central region
-        requiring over sampling is.
-
         Parameters
         ----------
-        over_sampling
-            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
-            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
-            This class controls over sampling for all the different grids (e.g. `grid`, `grids.pixelization).
+        over_sample_size_lp
+            The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
+            values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sample_size_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         """
-
-        uniform = over_sampling.uniform or self.over_sampling.uniform
-        non_uniform = over_sampling.non_uniform or self.over_sampling.non_uniform
-        pixelization = over_sampling.pixelization or self.over_sampling.pixelization
-
-        over_sampling = OverSamplingDataset(
-            uniform=uniform,
-            non_uniform=non_uniform,
-            pixelization=pixelization,
-        )
 
         return Imaging(
             data=self.data,
             noise_map=self.noise_map,
             psf=self.psf,
-            over_sampling=over_sampling,
+            over_sample_size_lp=over_sample_size_lp or self.over_sample_size_lp,
+            over_sample_size_pixelization=over_sample_size_pixelization
+            or self.over_sample_size_pixelization,
             pad_for_convolver=False,
-            check_noise_map=False
+            check_noise_map=False,
         )
 
     def output_to_fits(

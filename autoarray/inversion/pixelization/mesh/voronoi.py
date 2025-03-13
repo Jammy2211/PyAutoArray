@@ -55,7 +55,6 @@ class Voronoi(Triangulation):
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-
         return Mesh2DVoronoi(
             values=source_plane_mesh_grid,
         )

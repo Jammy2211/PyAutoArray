@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABC
 
 import numpy as np
 
@@ -6,11 +6,11 @@ from autoarray.structures.triangles.abstract import HEIGHT_FACTOR, AbstractTrian
 from autoconf import cached_property
 
 
-class AbstractCoordinateArray(ABC):
+class AbstractCoordinateArray(AbstractTriangles, ABC):
     def __init__(
         self,
         coordinates: np.ndarray,
-        side_length: float,
+        side_length: float = 1.0,
         x_offset: float = 0.0,
         y_offset: float = 0.0,
         flipped: bool = False,
@@ -33,11 +33,31 @@ class AbstractCoordinateArray(ABC):
         self.side_length = side_length
         self.flipped = flipped
 
-        self.scaling_factors = np.array(
+        self.scaling_factors = self.numpy.array(
             [0.5 * side_length, HEIGHT_FACTOR * side_length]
         )
         self.x_offset = x_offset
         self.y_offset = y_offset
+
+    @property
+    @abstractmethod
+    def numpy(self):
+        pass
+
+    @cached_property
+    def vertex_coordinates(self) -> np.ndarray:
+        """
+        The vertices of the triangles as an Nx3x2 array.
+        """
+        coordinates = self.coordinates
+        return self.numpy.concatenate(
+            [
+                coordinates + self.flip_array * np.array([0, 1], dtype=np.int32),
+                coordinates + self.flip_array * np.array([1, -1], dtype=np.int32),
+                coordinates + self.flip_array * np.array([-1, -1], dtype=np.int32),
+            ],
+            dtype=np.int32,
+        )
 
     @cached_property
     def triangles(self) -> np.ndarray:
@@ -45,21 +65,21 @@ class AbstractCoordinateArray(ABC):
         The vertices of the triangles as an Nx3x2 array.
         """
         centres = self.centres
-        return np.stack(
+        return self.numpy.stack(
             (
                 centres
                 + self.flip_array
-                * np.array(
+                * self.numpy.array(
                     [0.0, 0.5 * self.side_length * HEIGHT_FACTOR],
                 ),
                 centres
                 + self.flip_array
-                * np.array(
+                * self.numpy.array(
                     [0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
                 centres
                 + self.flip_array
-                * np.array(
+                * self.numpy.array(
                     [-0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
                 ),
             ),
@@ -71,7 +91,7 @@ class AbstractCoordinateArray(ABC):
         """
         The centres of the triangles.
         """
-        return self.scaling_factors * self.coordinates + np.array(
+        return self.scaling_factors * self.coordinates + self.numpy.array(
             [self.x_offset, self.y_offset]
         )
 
@@ -130,42 +150,13 @@ class AbstractCoordinateArray(ABC):
         The new set of triangles with the new vertices.
         """
 
-    @classmethod
-    def for_limits_and_scale(
-        cls,
-        x_min: float,
-        x_max: float,
-        y_min: float,
-        y_max: float,
-        scale: float = 1.0,
-        **_,
-    ):
-        coordinates = []
-        x = x_min
-        while x < x_max:
-            y = y_min
-            while y < y_max:
-                coordinates.append([x, y])
-                y += scale
-            x += scale
-
-        x_mean = (x_min + x_max) / 2
-        y_mean = (y_min + y_max) / 2
-
-        return cls(
-            coordinates=np.array(coordinates),
-            side_length=scale,
-            x_offset=x_mean,
-            y_offset=y_mean,
-        )
-
     @property
     def means(self):
-        return np.mean(self.triangles, axis=1)
+        return self.numpy.mean(self.triangles, axis=1)
 
     @property
     def area(self):
         return (3**0.5 / 4 * self.side_length**2) * len(self)
 
     def __len__(self):
-        return np.count_nonzero(~np.isnan(self.coordinates).any(axis=1))
+        return self.numpy.count_nonzero(~self.numpy.isnan(self.coordinates).any(axis=1))
