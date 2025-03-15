@@ -525,20 +525,6 @@ def test__blurring_mask_2d_from():
     mask = np.array(
         [
             [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, False, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-        ]
-    )
-
-    blurring_mask = util.mask_2d.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
-
-    mask = np.array(
-        [
-            [True, True, True, True, True, True, True],
             [True, False, True, True, True, False, True],
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],

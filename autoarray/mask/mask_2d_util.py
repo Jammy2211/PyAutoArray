@@ -312,7 +312,9 @@ def mask_2d_via_pixel_coordinates_from(
         return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
 
 
-@numba_util.jit()
+from scipy.ndimage import convolve
+
+
 def blurring_mask_2d_from(
     mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
 ) -> np.ndarray:
@@ -348,32 +350,20 @@ def blurring_mask_2d_from(
 
     """
 
-    blurring_mask_2d = np.full(mask_2d.shape, True)
+    # Create a (3, 3) kernel of ones
+    kernel = np.ones(kernel_shape_native, dtype=np.uint8)
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                for y1 in range(
-                    (-kernel_shape_native[0] + 1) // 2,
-                    (kernel_shape_native[0] + 1) // 2,
-                ):
-                    for x1 in range(
-                        (-kernel_shape_native[1] + 1) // 2,
-                        (kernel_shape_native[1] + 1) // 2,
-                    ):
-                        if (
-                            0 <= x + x1 <= mask_2d.shape[1] - 1
-                            and 0 <= y + y1 <= mask_2d.shape[0] - 1
-                        ):
-                            if mask_2d[y + y1, x + x1]:
-                                blurring_mask_2d[y + y1, x + x1] = False
-                        else:
-                            raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the edge "
-                                "of the mask - pad the datas array before masking"
-                            )
+    # Convolve the mask with the kernel, applying logical AND to maintain 'True' regions
+    convolved_mask = convolve(mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0)
 
-    return blurring_mask_2d
+    # We want to return the mask where the convolved value is the full kernel size (i.e., 9 for a 3x3 kernel)
+    result_mask = convolved_mask == np.prod(kernel_shape_native)
+
+    blurring_mask = ~mask_2d + result_mask
+
+    print(blurring_mask * convolved_mask)
+
+    return blurring_mask
 
 
 @numba_util.jit()
