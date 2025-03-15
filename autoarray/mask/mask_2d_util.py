@@ -82,60 +82,50 @@ def mask_2d_circular_from(
     return distances_squared >= radius**2
 
 
-@numba_util.jit()
 def mask_2d_circular_annular_from(
-    shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    shape_native: tuple[int, int],
+    pixel_scales: tuple[float, float],
     inner_radius: float,
     outer_radius: float,
-    centre: Tuple[float, float] = (0.0, 0.0),
+    centre: tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns an circular annular mask from an input inner and outer mask radius and shape.
+    Create a circular annular mask within a 2D array.
 
-    This creates a 2D array where all values within the inner and outer radii are unmasked and therefore `False`.
+    This generates a 2D array where all values within the specified inner and outer radii are unmasked (set to `False`).
 
     Parameters
     ----------
     shape_native
-        The (y,x) shape of the mask in units of pixels.
+        The shape of the mask array in pixels.
     pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
+        The conversion factors from pixels to scaled units.
     inner_radius
-        The radius (in scaled units) of the inner circle outside of which pixels are unmasked.
+        The inner radius of the annular mask in scaled units.
     outer_radius
-        The radius (in scaled units) of the outer circle within which pixels are unmasked.
+        The outer radius of the annular mask in scaled units.
     centre
-            The centre of the annulus used to mask pixels.
+        The central coordinate of the annulus in scaled units.
 
     Returns
     -------
-    ndarray
-        The 2D mask array whose central pixels are masked as a annulus.
+    The 2D mask array with the region between the inner and outer radii unmasked (False).
 
     Examples
     --------
-    mask = mask_annnular_from(
-        shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
-    """
-
-    mask_2d = np.full(shape_native, True)
-
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+    mask = mask_2d_circular_annular_from(
+        shape_native=(10, 10), pixel_scales=(0.1, 0.1), inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0)
     )
+    """
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+    y, x = np.ogrid[:shape_native[0], :shape_native[1]]
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
+    distances_squared = x_scaled**2 + y_scaled**2
 
-            if outer_radius >= r_scaled >= inner_radius:
-                mask_2d[y, x] = False
-
-    return mask_2d
+    return ~((distances_squared >= inner_radius**2) & (distances_squared <= outer_radius**2))
 
 
 @numba_util.jit()
