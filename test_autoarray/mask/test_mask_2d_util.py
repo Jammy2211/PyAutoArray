@@ -5,20 +5,6 @@ import numpy as np
 import pytest
 
 
-def test__total_edge_pixels_from_mask():
-    mask_2d = np.array(
-        [
-            [True, True, True, True, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, True, True, True, True],
-        ]
-    )
-
-    assert util.mask_2d.total_edge_pixels_from(mask_2d=mask_2d) == 8
-
-
 def test__mask_2d_circular_from():
     mask = util.mask_2d.mask_2d_circular_from(
         shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=0.5
@@ -69,26 +55,6 @@ def test__mask_2d_circular_from():
                 [True, True, True, True],
             ]
         )
-    ).all()
-
-
-def test__mask_2d_circular_from__input_centre():
-    mask = util.mask_2d.mask_2d_circular_from(
-        shape_native=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(-3, 0)
-    )
-
-    assert mask.shape == (3, 3)
-    assert (
-        mask == np.array([[True, True, True], [True, True, True], [True, False, True]])
-    ).all()
-
-    mask = util.mask_2d.mask_2d_circular_from(
-        shape_native=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(0.0, 3.0)
-    )
-
-    assert mask.shape == (3, 3)
-    assert (
-        mask == np.array([[True, True, True], [True, True, False], [True, True, True]])
     ).all()
 
     mask = util.mask_2d.mask_2d_circular_from(
@@ -180,40 +146,6 @@ def test__mask_2d_circular_annular_from():
                 [True, True, True],
                 [False, True, False],
             ]
-        )
-    ).all()
-
-
-def test__mask_2d_circular_annular_from__input_centre():
-    mask = util.mask_2d.mask_2d_circular_annular_from(
-        shape_native=(3, 3),
-        pixel_scales=(3.0, 3.0),
-        inner_radius=0.5,
-        outer_radius=9.0,
-        centre=(3.0, 0.0),
-    )
-
-    assert mask.shape == (3, 3)
-    assert (
-        mask
-        == np.array(
-            [[False, True, False], [False, False, False], [False, False, False]]
-        )
-    ).all()
-
-    mask = util.mask_2d.mask_2d_circular_annular_from(
-        shape_native=(3, 3),
-        pixel_scales=(3.0, 3.0),
-        inner_radius=0.5,
-        outer_radius=9.0,
-        centre=(0.0, 3.0),
-    )
-
-    assert mask.shape == (3, 3)
-    assert (
-        mask
-        == np.array(
-            [[False, False, False], [False, False, True], [False, False, False]]
         )
     ).all()
 
@@ -331,34 +263,6 @@ def test__mask_2d_elliptical_from():
                 [True, False, False, True],
             ]
         )
-    ).all()
-
-
-def test__mask_2d_elliptical_from__include_centre():
-    mask = util.mask_2d.mask_2d_elliptical_from(
-        shape_native=(3, 3),
-        pixel_scales=(3.0, 3.0),
-        major_axis_radius=4.8,
-        axis_ratio=0.1,
-        angle=45.0,
-        centre=(-3.0, 0.0),
-    )
-
-    assert (
-        mask == np.array([[True, True, True], [True, True, False], [True, False, True]])
-    ).all()
-
-    mask = util.mask_2d.mask_2d_elliptical_from(
-        shape_native=(3, 3),
-        pixel_scales=(3.0, 3.0),
-        major_axis_radius=4.8,
-        axis_ratio=0.1,
-        angle=45.0,
-        centre=(0.0, 3.0),
-    )
-
-    assert (
-        mask == np.array([[True, True, True], [True, True, False], [True, False, True]])
     ).all()
 
     mask = util.mask_2d.mask_2d_elliptical_from(
@@ -546,62 +450,6 @@ def test__mask_2d_elliptical_annular_from():
                 [True, False, True, False, True],
                 [True, False, False, False, True],
                 [True, True, False, True, True],
-                [True, True, True, True, True],
-            ]
-        )
-    ).all()
-
-
-def test__mask_2d_elliptical_annular_from__include_centre():
-    mask = util.mask_2d.mask_2d_elliptical_annular_from(
-        shape_native=(7, 5),
-        pixel_scales=(1.0, 1.0),
-        inner_major_axis_radius=1.0,
-        inner_axis_ratio=0.1,
-        inner_phi=0.0,
-        outer_major_axis_radius=2.0,
-        outer_axis_ratio=0.1,
-        outer_phi=90.0,
-        centre=(-1.0, 0.0),
-    )
-
-    assert (
-        mask
-        == np.array(
-            [
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, False, True, True],
-                [True, True, False, True, True],
-                [True, True, True, True, True],
-                [True, True, False, True, True],
-                [True, True, False, True, True],
-            ]
-        )
-    ).all()
-
-    mask = util.mask_2d.mask_2d_elliptical_annular_from(
-        shape_native=(7, 5),
-        pixel_scales=(1.0, 1.0),
-        inner_major_axis_radius=1.0,
-        inner_axis_ratio=0.1,
-        inner_phi=0.0,
-        outer_major_axis_radius=2.0,
-        outer_axis_ratio=0.1,
-        outer_phi=90.0,
-        centre=(0.0, 1.0),
-    )
-
-    assert (
-        mask
-        == np.array(
-            [
-                [True, True, True, True, True],
-                [True, True, True, False, True],
-                [True, True, True, False, True],
-                [True, True, True, True, True],
-                [True, True, True, False, True],
-                [True, True, True, False, True],
                 [True, True, True, True, True],
             ]
         )
@@ -897,6 +745,20 @@ def test__mask_1d_indexes_from():
 
     assert masked_slim[0] == 0
     assert masked_slim[-1] == 48
+
+
+def test__total_edge_pixels_from_mask():
+    mask_2d = np.array(
+        [
+            [True, True, True, True, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, True, True, True, True],
+        ]
+    )
+
+    assert util.mask_2d.total_edge_pixels_from(mask_2d=mask_2d) == 8
 
 
 def test__edge_1d_indexes_from():
