@@ -141,6 +141,7 @@ def test__circular_annular():
     assert mask.origin == (0.0, 0.0)
     assert mask.mask_centre == (0.0, 0.0)
 
+
 def test__elliptical():
     mask_via_util = aa.util.mask_2d.mask_2d_elliptical_from(
         shape_native=(8, 5),

@@ -119,44 +119,15 @@ def mask_2d_circular_annular_from(
     """
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    y, x = np.ogrid[:shape_native[0], :shape_native[1]]
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
     y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
     x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
     distances_squared = x_scaled**2 + y_scaled**2
 
-    return ~((distances_squared >= inner_radius**2) & (distances_squared <= outer_radius**2))
-
-
-def mask_2d_via_pixel_coordinates_from(
-    shape_native: Tuple[int, int], pixel_coordinates: [list], buffer: int = 0
-) -> np.ndarray:
-    """
-    Returns a mask where all unmasked `False` entries are defined from an input list of list of pixel coordinates.
-
-    These may be buffed via an input ``buffer``, whereby all entries in all 8 neighboring directions by this
-    amount.
-
-    Parameters
-    ----------
-    shape_native (int, int)
-        The (y,x) shape of the mask in units of pixels.
-    pixel_coordinates : [[int, int]]
-        The input lists of 2D pixel coordinates where `False` entries are created.
-    buffer
-        All input ``pixel_coordinates`` are buffed with `False` entries in all 8 neighboring directions by this
-        amount.
-    """
-
-    mask_2d = np.full(shape=shape_native, fill_value=True)
-
-    for y, x in pixel_coordinates:
-        mask_2d[y, x] = False
-
-    if buffer == 0:
-        return mask_2d
-    else:
-        return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
+    return ~(
+        (distances_squared >= inner_radius**2) & (distances_squared <= outer_radius**2)
+    )
 
 
 @numba_util.jit()
@@ -340,6 +311,37 @@ def mask_2d_elliptical_annular_from(
                 mask_2d[y, x] = False
 
     return mask_2d
+
+
+def mask_2d_via_pixel_coordinates_from(
+    shape_native: Tuple[int, int], pixel_coordinates: [list], buffer: int = 0
+) -> np.ndarray:
+    """
+    Returns a mask where all unmasked `False` entries are defined from an input list of list of pixel coordinates.
+
+    These may be buffed via an input ``buffer``, whereby all entries in all 8 neighboring directions by this
+    amount.
+
+    Parameters
+    ----------
+    shape_native (int, int)
+        The (y,x) shape of the mask in units of pixels.
+    pixel_coordinates : [[int, int]]
+        The input lists of 2D pixel coordinates where `False` entries are created.
+    buffer
+        All input ``pixel_coordinates`` are buffed with `False` entries in all 8 neighboring directions by this
+        amount.
+    """
+
+    mask_2d = np.full(shape=shape_native, fill_value=True)
+
+    for y, x in pixel_coordinates:
+        mask_2d[y, x] = False
+
+    if buffer == 0:
+        return mask_2d
+    else:
+        return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
 
 
 @numba_util.jit()
