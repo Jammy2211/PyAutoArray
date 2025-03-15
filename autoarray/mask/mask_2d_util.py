@@ -9,10 +9,10 @@ from autoarray.numpy_wrapper import use_jax, np as jnp
 
 
 def mask_2d_centres_from(
-    shape_native: tuple[int, int],
-    pixel_scales: tuple[float, float],
-    centre: tuple[float, float],
-) -> tuple[float, float]:
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    centre: Tuple[float, float],
+) -> Tuple[float, float]:
     """
     Compute the (y, x) scaled central coordinates of a mask given its shape, pixel-scales, and centre.
 
@@ -42,10 +42,10 @@ def mask_2d_centres_from(
 
 
 def mask_2d_circular_from(
-    shape_native: tuple[int, int],
-    pixel_scales: tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     radius: float,
-    centre: tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Create a circular mask within a 2D array.
@@ -83,11 +83,11 @@ def mask_2d_circular_from(
 
 
 def mask_2d_circular_annular_from(
-    shape_native: tuple[int, int],
-    pixel_scales: tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
-    centre: tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Create a circular annular mask within a 2D array.
