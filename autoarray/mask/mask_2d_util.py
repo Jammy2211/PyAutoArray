@@ -130,44 +130,6 @@ def mask_2d_circular_annular_from(
     )
 
 
-@numba_util.jit()
-def elliptical_radius_from(
-    y_scaled: float, x_scaled: float, angle: float, axis_ratio: float
-) -> float:
-    """
-    Returns the elliptical radius of an ellipse from its (y,x) scaled centre, rotation angle `angle` defined in degrees
-    counter-clockwise from the positive x-axis and its axis-ratio.
-
-    This is used by the function `mask_elliptical_from` to determine the radius of every (y,x) coordinate in elliptical
-    units when deciding if it is within the mask.
-
-    Parameters
-    ----------
-    y_scaled
-        The scaled y coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    x_scaled
-        The scaled x coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    angle
-            The rotation angle in degrees counter-clockwise from the positive x-axis
-    axis_ratio
-            The axis-ratio of the ellipse (minor axis / major axis).
-
-    Returns
-    -------
-    float
-        The radius of the input scaled (y,x) coordinate on the ellipse's ellipitcal coordinate system.
-    """
-    r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
-
-    theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
-
-    y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
-    x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
-
-    return np.sqrt(x_scaled_elliptical**2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0)
-
-
-
 def mask_2d_elliptical_from(
     shape_native: Tuple[int, int],
     pixel_scales: Tuple[float, float],
@@ -209,7 +171,7 @@ def mask_2d_elliptical_from(
     """
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    y, x = np.ogrid[:shape_native[0], :shape_native[1]]
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
     y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
     x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
@@ -223,15 +185,16 @@ def mask_2d_elliptical_from(
     x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
 
     # Compute the elliptical radius
-    r_scaled_elliptical = np.sqrt(x_scaled_elliptical**2 + (y_scaled_elliptical / axis_ratio)**2)
+    r_scaled_elliptical = np.sqrt(
+        x_scaled_elliptical**2 + (y_scaled_elliptical / axis_ratio) ** 2
+    )
 
     return ~(r_scaled_elliptical <= major_axis_radius)
 
 
-@numba_util.jit()
 def mask_2d_elliptical_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    pixel_scales: Tuple[float, float],
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
     inner_phi: float,
@@ -277,38 +240,45 @@ def mask_2d_elliptical_annular_from(
     Examples
     --------
     mask = mask_elliptical_annuli_from(
-        shape=(10, 10), pixel_scales=0.1,
-         inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
-         outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
-         centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=(0.1, 0.1),
+        inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
+        outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
+        centre=(0.0, 0.0))
     """
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    mask_2d = np.full(shape_native, True)
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+    # Rotate the coordinates for the inner annulus
+    r_scaled_inner = np.sqrt(x_scaled**2 + y_scaled**2)
+    theta_rotated_inner = np.arctan2(y_scaled, x_scaled) + np.radians(inner_phi)
+    y_scaled_elliptical_inner = r_scaled_inner * np.sin(theta_rotated_inner)
+    x_scaled_elliptical_inner = r_scaled_inner * np.cos(theta_rotated_inner)
+
+    # Compute the elliptical radius for the inner annulus
+    r_scaled_elliptical_inner = np.sqrt(
+        x_scaled_elliptical_inner**2
+        + (y_scaled_elliptical_inner / inner_axis_ratio) ** 2
     )
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+    # Rotate the coordinates for the outer annulus
+    r_scaled_outer = np.sqrt(x_scaled**2 + y_scaled**2)
+    theta_rotated_outer = np.arctan2(y_scaled, x_scaled) + np.radians(outer_phi)
+    y_scaled_elliptical_outer = r_scaled_outer * np.sin(theta_rotated_outer)
+    x_scaled_elliptical_outer = r_scaled_outer * np.cos(theta_rotated_outer)
 
-            inner_r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, inner_phi, inner_axis_ratio
-            )
+    # Compute the elliptical radius for the outer annulus
+    r_scaled_elliptical_outer = np.sqrt(
+        x_scaled_elliptical_outer**2
+        + (y_scaled_elliptical_outer / outer_axis_ratio) ** 2
+    )
 
-            outer_r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, outer_phi, outer_axis_ratio
-            )
-
-            if (
-                inner_r_scaled_elliptical >= inner_major_axis_radius
-                and outer_r_scaled_elliptical <= outer_major_axis_radius
-            ):
-                mask_2d[y, x] = False
-
-    return mask_2d
+    return ~(
+        (r_scaled_elliptical_inner >= inner_major_axis_radius)
+        & (r_scaled_elliptical_outer <= outer_major_axis_radius)
+    )
 
 
 def mask_2d_via_pixel_coordinates_from(
