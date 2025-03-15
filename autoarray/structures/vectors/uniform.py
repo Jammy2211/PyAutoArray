@@ -1,4 +1,5 @@
 import logging
+
 # import numpy as np
 from autofit.jax_wrapper import numpy as np, use_jax
 from typing import List, Optional, Tuple, Union
@@ -399,9 +400,7 @@ class VectorYX2D(AbstractVectorYX2D):
             s = self.array
         else:
             s = self
-        return Array2D(
-            values=np.sqrt(s[:, 0] ** 2.0 + s[:, 1] ** 2.0), mask=self.mask
-        )
+        return Array2D(values=np.sqrt(s[:, 0] ** 2.0 + s[:, 1] ** 2.0), mask=self.mask)
 
     @property
     def y(self) -> Array2D:

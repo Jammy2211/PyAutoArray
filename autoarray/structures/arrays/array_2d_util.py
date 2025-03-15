@@ -1,5 +1,6 @@
 from __future__ import annotations
 from astropy.io import fits
+
 # import numpy as np
 import os
 from pathlib import Path
@@ -15,6 +16,7 @@ from autoarray.mask import mask_2d_util
 from autoarray import exc
 from autoarray.numpy_wrapper import use_jax, np, jit
 from functools import partial
+
 if use_jax:
     import jax
 
@@ -30,10 +32,7 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     """
     if use_jax:
         array = jax.lax.cond(
-            type(array) is list,
-            lambda _: np.asarray(array),
-            lambda _: array,
-            None
+            type(array) is list, lambda _: np.asarray(array), lambda _: array, None
         )
     elif type(array) is list:
         array = np.asarray(array)
@@ -46,13 +45,11 @@ def check_array_2d(array_2d: np.ndarray):
         raise exc.ArrayException(
             "An array input into the Array2D.__new__ method is not of shape 1."
         )
+
     cond = len(array_2d.shape) != 1
     if use_jax:
         jax.lax.cond(
-            cond,
-            lambda _: jax.debug.callback(exception_message),
-            lambda _: None,
-            None
+            cond, lambda _: jax.debug.callback(exception_message), lambda _: None, None
         )
     elif cond:
         exception_message()
@@ -74,6 +71,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
     mask_2d
         The mask of the output Array2D.
     """
+
     def exception_message_1():
         raise exc.ArrayException(
             f"""
@@ -90,14 +88,17 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
             Input mask_2d.shape_native = {mask_2d.shape_native}
             """
         )
-    cond_1 = (len(array_2d.shape) == 1) and (array_2d.shape[0] != mask_2d.pixels_in_mask)
+
+    cond_1 = (len(array_2d.shape) == 1) and (
+        array_2d.shape[0] != mask_2d.pixels_in_mask
+    )
 
     if use_jax:
         jax.lax.cond(
             cond_1,
             lambda _: jax.debug.callback(exception_message_1),
             lambda _: None,
-            None
+            None,
         )
     elif cond_1:
         exception_message_1()
@@ -115,6 +116,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
             Input mask_2d shape_native = {mask_2d.shape_native}
             """
         )
+
     cond_2 = (len(array_2d.shape) == 2) and (array_2d.shape != mask_2d.shape_native)
 
     if use_jax:
@@ -122,7 +124,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
             cond_2,
             lambda _: jax.debug.callback(exception_message_2),
             lambda _: None,
-            None
+            None,
         )
     elif cond_2:
         exception_message_2()
@@ -578,9 +580,7 @@ def array_2d_slim_from(
     if use_jax:
         array_2d_slim = array_2d_native[~mask_2d.astype(bool)]
     else:
-        total_pixels = mask_2d_util.total_pixels_2d_from(
-            mask_2d=mask_2d,
-        )
+        total_pixels = np.sum(~mask_2d)
 
         array_2d_slim = np.zeros(shape=total_pixels)
         index = 0
@@ -681,9 +681,11 @@ def array_2d_via_indexes_from(
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
     if use_jax:
-        array_native_2d = np.zeros(shape).at[
-            tuple(native_index_for_slim_index_2d.T)
-        ].set(array_2d_slim)
+        array_native_2d = (
+            np.zeros(shape)
+            .at[tuple(native_index_for_slim_index_2d.T)]
+            .set(array_2d_slim)
+        )
     else:
         array_native_2d = np.zeros(shape)
 
@@ -728,9 +730,7 @@ def array_2d_slim_complex_from(
         A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
     """
 
-    total_pixels = mask_2d_util.total_pixels_2d_from(
-        mask_2d=mask,
-    )
+    total_pixels = np.sum(~mask_2d)
 
     array_1d = 0 + 0j * np.zeros(shape=total_pixels)
     index = 0

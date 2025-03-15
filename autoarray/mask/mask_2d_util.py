@@ -8,118 +8,78 @@ from autoarray import type as ty
 from autoarray.numpy_wrapper import use_jax, np as jnp
 
 
-@numba_util.jit()
 def mask_2d_centres_from(
-    shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
-    centre: Tuple[float, float],
-) -> Tuple[float, float]:
+    shape_native: tuple[int, int],
+    pixel_scales: tuple[float, float],
+    centre: tuple[float, float],
+) -> tuple[float, float]:
     """
-    Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
+    Compute the (y, x) scaled central coordinates of a mask given its shape, pixel-scales, and centre.
 
-    The coordinate system is defined such that the positive y axis is up and positive x axis is right.
+    The coordinate system is defined such that the positive y-axis is up and the positive x-axis is right.
 
     Parameters
     ----------
     shape_native
-        The (y,x) shape of the 2D array the scaled centre is computed for.
+        The shape of the 2D array in pixels.
     pixel_scales
-        The (y,x) scaled units to pixel units conversion factor of the 2D array.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D mask.
+        The conversion factors from pixels to scaled units.
+    centre
+        The central coordinate of the mask in scaled units.
 
     Returns
     -------
-    tuple (float, float)
-        The (y,x) scaled central coordinates of the input array.
+    The (y, x) scaled central coordinates of the input array.
 
     Examples
     --------
-    centres_scaled = centres_from(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
+    centres_scaled = mask_2d_centres_from(shape_native=(5, 5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
     """
-    y_centre_scaled = (float(shape_native[0] - 1) / 2) - (centre[0] / pixel_scales[0])
-    x_centre_scaled = (float(shape_native[1] - 1) / 2) + (centre[1] / pixel_scales[1])
-
-    return (y_centre_scaled, x_centre_scaled)
-
-
-@numba_util.jit()
-def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
-    """
-    Returns the total number of unmasked pixels in a mask.
-
-    Parameters
-    ----------
-    mask_2d
-        A 2D array of bools, where `False` values are unmasked and included when counting pixels.
-
-    Returns
-    -------
-    int
-        The total number of pixels that are unmasked.
-
-    Examples
-    --------
-
-    mask = np.array([[True, False, True],
-                 [False, False, False]
-                 [True, False, True]])
-
-    total_regular_pixels = total_regular_pixels_from(mask=mask)
-    """
-    if use_jax:
-        return (~mask_2d.astype(bool)).sum()
-
-    else:
-        total_regular_pixels = 0
-
-        for y in range(mask_2d.shape[0]):
-            for x in range(mask_2d.shape[1]):
-                if not mask_2d[y, x]:
-                    total_regular_pixels += 1
-
-        return total_regular_pixels
+    return (
+        0.5 * (shape_native[0] - 1) - (centre[0] / pixel_scales[0]),
+        0.5 * (shape_native[1] - 1) + (centre[1] / pixel_scales[1]),
+    )
 
 
-@numba_util.jit()
 def mask_2d_circular_from(
-    shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    shape_native: tuple[int, int],
+    pixel_scales: tuple[float, float],
     radius: float,
-    centre: Tuple[float, float] = (0.0, 0.0),
+    centre: tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns a circular mask from the 2D mask array shape and radius of the circle.
+    Create a circular mask within a 2D array.
 
-    This creates a 2D array where all values within the mask radius are unmasked and therefore `False`.
+    This generates a 2D array where all values within the specified radius are unmasked (set to `False`).
 
     Parameters
     ----------
-    shape_native: Tuple[int, int]
-        The (y,x) shape of the mask in units of pixels.
+    shape_native
+        The shape of the mask array in pixels.
     pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
+        The conversion factors from pixels to scaled units.
     radius
-        The radius (in scaled units) of the circle within which pixels unmasked.
+        The radius of the circular mask in scaled units.
     centre
-            The centre of the circle used to mask pixels.
+        The central coordinate of the circle in scaled units.
 
     Returns
     -------
-    ndarray
-        The 2D mask array whose central pixels are masked as a circle.
+    The 2D mask array with the central region defined by the radius unmasked (False).
 
     Examples
     --------
-    mask = mask_circular_from(
-        shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
+    mask = mask_2d_circular_from(shape_native=(10, 10), pixel_scales=(0.1, 0.1), radius=0.5, centre=(0.0, 0.0))
     """
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
-    ys, xs = np.indices(shape_native)
-    return (radius * radius) < (
-            np.square((ys - centres_scaled[0]) * pixel_scales[0]) +
-            np.square((xs - centres_scaled[1]) * pixel_scales[1])
-        )
+
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+
+    distances_squared = x_scaled**2 + y_scaled**2
+
+    return distances_squared >= radius**2
 
 
 @numba_util.jit()
@@ -1047,7 +1007,7 @@ def native_index_for_slim_index_2d_from(
     if use_jax:
         return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
     else:
-        total_pixels = total_pixels_2d_from(mask_2d=mask_2d)
+        total_pixels = np.sum(~mask_2d)
         native_index_for_slim_index_2d = np.zeros(shape=(total_pixels, 2))
         slim_index = 0
 

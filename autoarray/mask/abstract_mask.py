@@ -4,6 +4,7 @@ from abc import ABC
 import logging
 
 from autoarray.numpy_wrapper import np, use_jax
+
 if use_jax:
     import jax
 from pathlib import Path

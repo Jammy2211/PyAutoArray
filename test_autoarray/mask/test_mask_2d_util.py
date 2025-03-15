@@ -5,14 +5,6 @@ import numpy as np
 import pytest
 
 
-def test__total_pixels_2d_from():
-    mask_2d = np.array(
-        [[True, False, True], [False, False, False], [True, False, True]]
-    )
-
-    assert util.mask_2d.total_pixels_2d_from(mask_2d=mask_2d) == 5
-
-
 def test__total_edge_pixels_from_mask():
     mask_2d = np.array(
         [

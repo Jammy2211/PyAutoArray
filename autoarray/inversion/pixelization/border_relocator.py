@@ -48,7 +48,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     sub_mask_1d_indexes_for_mask_1d_index = sub_mask_1d_indexes_for_mask_1d_index_from(mask=mask, sub_size=2)
     """
 
-    total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d=mask_2d)
+    total_pixels = np.sum(~mask_2d)
 
     sub_slim_indexes_for_slim_index = [[] for _ in range(total_pixels)]
 
