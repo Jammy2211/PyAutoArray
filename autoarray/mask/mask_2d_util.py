@@ -167,67 +167,65 @@ def elliptical_radius_from(
     return np.sqrt(x_scaled_elliptical**2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0)
 
 
-@numba_util.jit()
+
 def mask_2d_elliptical_from(
     shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    pixel_scales: Tuple[float, float],
     major_axis_radius: float,
     axis_ratio: float,
     angle: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle, shape and
-    centre.
+    Create an elliptical mask within a 2D array.
 
-    This creates a 2D array where all values within the ellipse are unmasked and therefore `False`.
+    This generates a 2D array where all values within the specified ellipse are unmasked (set to `False`).
 
     Parameters
     ----------
-    shape_native: Tuple[int, int]
-        The (y,x) shape of the mask in units of pixels.
+    shape_native
+        The shape of the mask array in pixels.
     pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
+        The conversion factors from pixels to scaled units.
     major_axis_radius
-        The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
+        The major axis radius of the elliptical mask in scaled units.
     axis_ratio
-            The axis-ratio of the ellipse within which pixels are unmasked.
+        The axis ratio of the ellipse (minor axis / major axis).
     angle
-            The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
-         x-axis).
+        The rotation angle of the ellipse in degrees, counter-clockwise from the positive x-axis.
     centre
-            The centre of the ellipse used to mask pixels.
+        The central coordinate of the ellipse in scaled units.
 
     Returns
     -------
-    ndarray
-        The 2D mask array whose central pixels are masked as an ellipse.
+    np.ndarray
+        The 2D mask array with the elliptical region defined by the major axis radius unmasked (False).
 
     Examples
     --------
-    mask = mask_elliptical_from(
-        shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, ell_comps=(0.333333, 0.0), centre=(0.0, 0.0))
-    """
-
-    mask_2d = np.full(shape_native, True)
-
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+    mask = mask_2d_elliptical_from(
+        shape_native=(10, 10), pixel_scales=(0.1, 0.1), major_axis_radius=0.5, axis_ratio=0.5, angle=45.0, centre=(0.0, 0.0)
     )
+    """
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+    y, x = np.ogrid[:shape_native[0], :shape_native[1]]
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, angle, axis_ratio
-            )
+    # Rotate the coordinates by the angle (counterclockwise)
 
-            if r_scaled_elliptical <= major_axis_radius:
-                mask_2d[y, x] = False
+    r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
 
-    return mask_2d
+    theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
+
+    y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
+    x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
+
+    # Compute the elliptical radius
+    r_scaled_elliptical = np.sqrt(x_scaled_elliptical**2 + (y_scaled_elliptical / axis_ratio)**2)
+
+    return ~(r_scaled_elliptical <= major_axis_radius)
 
 
 @numba_util.jit()
