@@ -381,65 +381,6 @@ class Mask2D(Mask):
         )
 
     @classmethod
-    def circular_anti_annular(
-        cls,
-        shape_native: Tuple[int, int],
-        inner_radius: float,
-        outer_radius: float,
-        outer_radius_2: float,
-        pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        centre: Tuple[float, float] = (0.0, 0.0),
-        invert: bool = False,
-    ) -> "Mask2D":
-        """
-        Returns a Mask2D (see *Mask2D.__new__*) where all `False` entries are within an inner circle and second
-        outer circle, forming an inverse annulus.
-
-        The `inner_radius`, `outer_radius`, `outer_radius_2` and `centre` are all input in scaled units.
-
-        Parameters
-        ----------
-        shape_native
-            The (y,x) shape of the mask in units of pixels.
-        inner_radius
-            The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
-        outer_radius
-            The first outer radius in scaled units of the annulus within which pixels are `True` and masked.
-        outer_radius_2
-            The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
-            outside of which all entries are `True` and masked.
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
-            it is converted to a (float, float) structure.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        centre
-            The (y,x) scaled units centre of the anti-annulus used to mask pixels.
-        invert
-            If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
-            and visa versa.
-        """
-
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
-
-        mask = mask_2d_util.mask_2d_circular_anti_annular_from(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            inner_radius=inner_radius,
-            outer_radius=outer_radius,
-            outer_radius_2_scaled=outer_radius_2,
-            centre=centre,
-        )
-
-        return cls(
-            mask=mask,
-            pixel_scales=pixel_scales,
-            origin=origin,
-            invert=invert,
-        )
-
-    @classmethod
     def elliptical(
         cls,
         shape_native: Tuple[int, int],
