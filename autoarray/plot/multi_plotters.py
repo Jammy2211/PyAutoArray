@@ -315,7 +315,7 @@ class MultiFigurePlotter:
         output_path = self.plotter_list[0].mat_plot_2d.output.output_path_from(
             format="fits_multi"
         )
-        output_fits_file = Path(output_path)/ f"{filename}.fits"
+        output_fits_file = Path(output_path) / f"{filename}.fits"
 
         if remove_fits_first:
             output_fits_file.unlink(missing_ok=True)
