@@ -1,10 +1,9 @@
+from astropy.io import fits
 import logging
-from functools import reduce
 import numpy as np
-import sys, time
-import numba
-from numba import prange, config
+import time
 import multiprocessing as mp
+import os
 from typing import Tuple
 
 from autoarray import numba_util
@@ -1425,32 +1424,40 @@ def jit_loop_preload_4(
                 )
 
 
+try:
+
+    import numba
+    from numba import prange
 
 
-@numba.jit("void(f8[:,:], i8)", nopython=True, parallel=True, cache = True)
-def jit_loop2(
-    curvature_matrix: np.ndarray,
-    pix_pixels: int):
-    '''
-    Performs second stage of curvature matrix calculation using Numba parallelisation and JIT.
+    @numba.jit("void(f8[:,:], i8)", nopython=True, parallel=True, cache = True)
+    def jit_loop2(
+        curvature_matrix: np.ndarray,
+        pix_pixels: int):
+        '''
+        Performs second stage of curvature matrix calculation using Numba parallelisation and JIT.
 
-    Parameters
-    ----------
-    curvature_matrix
-        Curvature matrix this function operates on. Still requires third stage of calculation.
-    pix_pixels
-        Size of one dimension of the curvature matrix.
+        Parameters
+        ----------
+        curvature_matrix
+            Curvature matrix this function operates on. Still requires third stage of calculation.
+        pix_pixels
+            Size of one dimension of the curvature matrix.
 
-    Returns
-    -------
-    none
-        Updates shared object.
-    '''
+        Returns
+        -------
+        none
+            Updates shared object.
+        '''
 
-    curvature_matrix_temp = curvature_matrix.copy()
-    for i in prange(pix_pixels):
-        for j in range(pix_pixels):
-            curvature_matrix[i, j] = curvature_matrix_temp[i, j] + curvature_matrix_temp[j, i]
+        curvature_matrix_temp = curvature_matrix.copy()
+        for i in prange(pix_pixels):
+            for j in range(pix_pixels):
+                curvature_matrix[i, j] = curvature_matrix_temp[i, j] + curvature_matrix_temp[j, i]
+
+except ModuleNotFoundError:
+
+    pass
 
 
 @numba_util.jit(cache = True)
