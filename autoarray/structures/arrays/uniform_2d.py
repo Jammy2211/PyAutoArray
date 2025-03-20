@@ -613,8 +613,7 @@ class AbstractArray2D(Structure):
             store_native=self.store_native,
         )
 
-    @property
-    def hdu_for_output(self) -> fits.PrimaryHDU:
+    def hdu_for_output_from(self, ext_name : Optional[str] = None, return_as_primary : bool = False) -> Union[fits.PrimaryHDU, fits.ImageHDU]:
         """
         The array as an HDU object, which can be output to a .fits file.
 
@@ -628,7 +627,10 @@ class AbstractArray2D(Structure):
         The HDU containing the data and its header which can then be written to .fits.
         """
         return array_2d_util.hdu_for_output_from(
-            array_2d=np.array(self.native), header_dict=self.pixel_scale_header
+            array_2d=np.array(self.native),
+            header_dict=self.pixel_scale_header,
+            ext_name=ext_name,
+            return_as_primary=return_as_primary,
         )
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
