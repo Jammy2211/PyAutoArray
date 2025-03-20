@@ -613,7 +613,9 @@ class AbstractArray2D(Structure):
             store_native=self.store_native,
         )
 
-    def hdu_for_output_from(self, ext_name : Optional[str] = None, return_as_primary : bool = False) -> Union[fits.PrimaryHDU, fits.ImageHDU]:
+    def hdu_for_output_from(
+        self, ext_name: Optional[str] = None, return_as_primary: bool = False
+    ) -> Union[fits.PrimaryHDU, fits.ImageHDU]:
         """
         The array as an HDU object, which can be output to a .fits file.
 

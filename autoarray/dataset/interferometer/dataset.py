@@ -91,7 +91,11 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        self.preprocessing_directory = Path(preprocessing_directory) if preprocessing_directory is not None else None
+        self.preprocessing_directory = (
+            Path(preprocessing_directory)
+            if preprocessing_directory is not None
+            else None
+        )
 
     @cached_property
     def grids(self):
@@ -140,15 +144,11 @@ class Interferometer(AbstractDataset):
         )
 
     def w_tilde_preprocessing(self):
-
         if self.preprocessing_directory.is_dir():
-
             filename = "{}/curvature_preload.fits".format(self.preprocessing_directory)
 
             if not self.preprocessing_directory.isfile(filename):
-                print(
-                    "The file {} does not exist".format(filename)
-                )
+                print("The file {} does not exist".format(filename))
                 logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
                 curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(

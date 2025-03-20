@@ -328,6 +328,3 @@ def preconditioner_matrix_via_mapping_matrix_from(
     return (
         preconditioner_noise_normalization * curvature_matrix
     ) + regularization_matrix
-
-
-

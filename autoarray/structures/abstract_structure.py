@@ -88,7 +88,3 @@ class Structure(AbstractNDArray, ABC):
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
         raise NotImplementedError
-
-    @property
-    def hdu_for_output(self):
-        raise NotImplementedError
