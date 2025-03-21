@@ -268,21 +268,3 @@ class Array1D(Structure):
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
         )
-
-    @property
-    def hdu_for_output(self) -> fits.PrimaryHDU:
-        """
-        The array as an HDU object, which can be output to a .fits file.
-
-        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array1D.from_hdu`.
-
-        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
-        files.
-
-        Returns
-        -------
-        The HDU containing the data and its header which can then be written to .fits.
-        """
-        return array_2d_util.hdu_for_output_from(
-            array_2d=self.native, header_dict=self.pixel_scale_header
-        )

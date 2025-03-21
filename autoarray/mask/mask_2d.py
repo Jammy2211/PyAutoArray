@@ -1,5 +1,4 @@
 from __future__ import annotations
-from astropy.io import fits
 import logging
 import numpy as np
 from pathlib import Path
@@ -11,7 +10,7 @@ if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoconf import cached_property
-from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
+from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.abstract_mask import Mask
 
@@ -721,57 +720,6 @@ class Mask2D(Mask):
             "PIXSCAY": self.pixel_scales[0],
             "PIXSCAX": self.pixel_scales[1],
         }
-
-    @property
-    def hdu_for_output(self) -> fits.PrimaryHDU:
-        """
-        The mask as a HDU object, which can be output to a .fits file.
-
-        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array2D.from_hdu`.
-
-        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
-        files.
-
-        Returns
-        -------
-        The HDU containing the data and its header which can then be written to .fits.
-        """
-        return array_2d_util.hdu_for_output_from(
-            array_2d=self.astype("float"), header_dict=self.pixel_scale_header
-        )
-
-    def output_to_fits(self, file_path, overwrite=False):
-        """
-        Write the 2D Mask to a .fits file.
-
-        Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
-        config files. This is for Astronomy projects so that structures appear the same orientation as `.fits` files
-        loaded in DS9.
-
-        Parameters
-        ----------
-        file_path
-            The full path of the file that is output, including the file name and `.fits` extension.
-        overwrite
-            If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
-            error is raised.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        mask = Mask2D(mask=np.full(shape=(5,5), fill_value=False))
-        mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
-        """
-        output_to_fits(
-            values=self.astype("float"),
-            file_path=file_path,
-            overwrite=overwrite,
-            header_dict=self.pixel_scale_header,
-            ext_name="mask"
-        )
 
     @property
     def mask_centre(self) -> Tuple[float, float]:

@@ -610,28 +610,6 @@ class AbstractArray2D(Structure):
             store_native=self.store_native,
         )
 
-    def hdu_for_output_from(
-        self, ext_name: Optional[str] = None, return_as_primary: bool = False
-    ) -> Union[fits.PrimaryHDU, fits.ImageHDU]:
-        """
-        The array as an HDU object, which can be output to a .fits file.
-
-        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array2D.from_hdu`.
-
-        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
-        files.
-
-        Returns
-        -------
-        The HDU containing the data and its header which can then be written to .fits.
-        """
-        return array_2d_util.hdu_for_output_from(
-            array_2d=np.array(self.native),
-            header_dict=self.pixel_scale_header,
-            ext_name=ext_name,
-            return_as_primary=return_as_primary,
-        )
-
 
 class Array2D(AbstractArray2D):
     @classmethod
