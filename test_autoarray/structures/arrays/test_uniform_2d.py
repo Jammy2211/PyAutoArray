@@ -175,30 +175,6 @@ def test__from_fits__loads_and_stores_header_info():
     assert array_2d.header.header_sci_obj["BITPIX"] == -64
     assert array_2d.header.header_hdu_obj["BITPIX"] == -64
 
-
-def test__from_primary_hdu():
-    file_path = os.path.join(test_data_path, "array_out.fits")
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
-
-    aa.util.array_2d.numpy_array_2d_to_fits(
-        arr, file_path=file_path, header_dict={"PIXSCALE": 0.1}
-    )
-
-    primary_hdu = fits.open(file_path)
-
-    array_2d = aa.Array2D.from_primary_hdu(
-        primary_hdu=primary_hdu[0],
-    )
-
-    assert type(array_2d) == aa.Array2D
-    assert (array_2d.native == arr).all()
-    assert array_2d.pixel_scales == (0.1, 0.1)
-
-
 def test__from_yx_and_values():
     array_2d = aa.Array2D.from_yx_and_values(
         y=[0.5, 0.5, -0.5, -0.5],

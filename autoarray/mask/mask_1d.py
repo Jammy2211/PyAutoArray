@@ -154,50 +154,6 @@ class Mask1D(Mask):
             origin=origin,
         )
 
-    @classmethod
-    def from_primary_hdu(
-        cls,
-        primary_hdu: fits.PrimaryHDU,
-        origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "Mask1D":
-        """
-        Returns an ``Mask1D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
-
-        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
-        pixel-scale of the array.
-
-        For a full description of ``Mask1D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Mask1D class API documentation <autoarray.structures.arrays.uniform_1d.AbstractMask1D.__new__>`.
-
-        Parameters
-        ----------
-        primary_hdu
-            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
-            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        origin
-            The (y,x) scaled units origin of the coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            from astropy.io import fits
-            import autoarray as aa
-
-            primary_hdu = fits.open("path/to/file.fits")
-
-            array_1d = aa.Mask1D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-            )
-        """
-        return cls(
-            mask=primary_hdu.data.astype("bool"),
-            pixel_scales=primary_hdu.header["PIXSCALE"],
-            origin=origin,
-        )
-
     @property
     def shape_native(self) -> Tuple[int]:
         return self.shape

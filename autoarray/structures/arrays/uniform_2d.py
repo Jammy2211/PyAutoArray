@@ -639,8 +639,8 @@ class AbstractArray2D(Structure):
         """
         Output the array to a .fits file.
 
-        The `pixel_scale` is stored in the header as `PIXSCALE`, which is used by the `Array2D.from_primary_hdu`
-        method.
+        The `pixel_scales` are stored in the header as `PIXSCAY` and `PIXSCAX`, which are often used when loading
+        from fits.
 
         Parameters
         ----------
@@ -949,52 +949,6 @@ class Array2D(AbstractArray2D):
             pixel_scales=pixel_scales,
             origin=origin,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
-        )
-
-    @classmethod
-    def from_primary_hdu(
-        cls,
-        primary_hdu: fits.PrimaryHDU,
-        origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "Array2D":
-        """
-        Returns an ``Array2D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
-
-        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
-        pixel-scale of the array.
-
-        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        Parameters
-        ----------
-        primary_hdu
-            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
-            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        origin
-            The (y,x) scaled units origin of the coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            from astropy.io import fits
-            import autoarray as aa
-
-            primary_hdu = fits.open("path/to/file.fits")
-
-            array_2d = aa.Array2D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-            )
-        """
-
-        return cls.no_mask(
-            values=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
-            pixel_scales=primary_hdu.header["PIXSCALE"],
-            origin=origin,
-            header=Header(header_sci_obj=primary_hdu.header),
         )
 
     @classmethod
