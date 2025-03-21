@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import List, Tuple, Union
 
 from autoconf import cached_property
+from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -133,7 +134,7 @@ class AbstractVisibilities(Structure, ABC):
         overwrite
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
-        array_2d_util.numpy_array_2d_to_fits(
+        output_to_fits(
             array_2d=self.in_array, file_path=file_path, overwrite=overwrite
         )
 
@@ -223,7 +224,7 @@ class Visibilities(AbstractVisibilities):
         hdu
             The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
         """
-        visibilities_1d = array_2d_util.numpy_array_2d_via_fits_from(
+        visibilities_1d = ndarray_via_fits_from(
             file_path=file_path, hdu=hdu
         )
         return cls(visibilities=visibilities_1d)

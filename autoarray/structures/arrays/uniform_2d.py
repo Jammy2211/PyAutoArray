@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
+from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
@@ -227,10 +228,6 @@ class AbstractArray2D(Structure):
 
             print(array_2d.slim) # masked 1D data representation.
             print(array_2d.native) # masked 2D data representation.
-
-            # Output array to .fits file.
-
-            array_2d.output_to_fits(file_path="/path/for/output")
         """
 
         try:
@@ -635,27 +632,6 @@ class AbstractArray2D(Structure):
             return_as_primary=return_as_primary,
         )
 
-    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
-        """
-        Output the array to a .fits file.
-
-        The `pixel_scales` are stored in the header as `PIXSCAY` and `PIXSCAX`, which are often used when loading
-        from fits.
-
-        Parameters
-        ----------
-        file_path
-            The output path of the file, including the filename and the `.fits` extension e.g. '/path/to/filename.fits'
-        overwrite
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
-        """
-        array_2d_util.numpy_array_2d_to_fits(
-            array_2d=np.array(self.native),
-            file_path=file_path,
-            overwrite=overwrite,
-            header_dict=self.pixel_scale_header,
-        )
-
 
 class Array2D(AbstractArray2D):
     @classmethod
@@ -937,7 +913,7 @@ class Array2D(AbstractArray2D):
                 pixel_scales=1.0,
             )
         """
-        array_2d = array_2d_util.numpy_array_2d_via_fits_from(
+        array_2d = ndarray_via_fits_from(
             file_path=file_path, hdu=hdu
         )
 

@@ -6,6 +6,7 @@ import numpy as np
 from pathlib import Path
 from typing import List, Tuple, Union
 
+from autoconf.fitsable import output_to_fits
 
 from autoarray.mask.abstract_mask import Mask
 
@@ -17,6 +18,7 @@ from autoarray.structures.arrays import array_1d_util
 
 from autoarray import exc
 from autoarray import type as ty
+from autoconf.fitsable import output_to_fits
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -201,8 +203,8 @@ class Mask1D(Mask):
         mask = Mask1D(mask=np.full(shape=(5,), fill_value=False))
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
-        array_1d_util.numpy_array_1d_to_fits(
-            array_1d=self.astype("float"),
+        output_to_fits(
+            values=self.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
             header_dict=self.pixel_scale_header,

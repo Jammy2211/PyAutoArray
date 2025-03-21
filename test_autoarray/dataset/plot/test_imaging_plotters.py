@@ -77,7 +77,7 @@ def test__output_as_fits__correct_output_format(
 
     dataset_plotter.figures_2d(data=True, psf=True)
 
-    image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
+    image_from_plot = aa.util.array_2d.ndarray_via_fits_from(
         file_path=path.join(plot_path, "data.fits"), hdu=0
     )
 

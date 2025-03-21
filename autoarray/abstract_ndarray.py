@@ -6,6 +6,8 @@ from abc import ABC
 from abc import abstractmethod
 import numpy as np
 
+from autoconf.fitsable import output_to_fits
+
 from autoarray.numpy_wrapper import numpy as npw, register_pytree_node, Array
 
 from typing import TYPE_CHECKING
@@ -280,8 +282,11 @@ class AbstractNDArray(ABC):
         overwrite
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
-        array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native.array, file_path=file_path, overwrite=overwrite
+        output_to_fits(
+            values=self.native.array,
+            file_path=file_path,
+            overwrite=overwrite,
+            header_dict=self.mask.pixel_scale_header
         )
 
     @property

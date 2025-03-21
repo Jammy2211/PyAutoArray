@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoconf import cached_property
+from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.mask.abstract_mask import Mask
 
@@ -640,7 +641,7 @@ class Mask2D(Mask):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=hdu)
+        mask = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
 
         if invert:
             mask = np.invert(mask.astype("bool"))
@@ -748,11 +749,12 @@ class Mask2D(Mask):
         mask = Mask2D(mask=np.full(shape=(5,5), fill_value=False))
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
-        array_2d_util.numpy_array_2d_to_fits(
+        output_to_fits(
             array_2d=self.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
             header_dict=self.pixel_scale_header,
+            ext_name="mask"
         )
 
     @property
