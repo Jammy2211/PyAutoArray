@@ -87,10 +87,6 @@ class Mask(AbstractNDArray, ABC):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
-        return {
-            "PIXSCAY": self.pixel_scales[0],
-            "PIXSCAX": self.pixel_scales[1],
-        }
 
     @property
     def dimensions(self) -> int:

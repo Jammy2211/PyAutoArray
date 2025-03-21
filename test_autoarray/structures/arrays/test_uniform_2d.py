@@ -224,7 +224,7 @@ def test__output_to_fits():
     )
 
     assert (array_from_fits.native == np.ones((3, 3))).all()
-    assert array_from_fits.header.header_sci_obj["PIXSCALE"] == 1.0
+    assert array_from_fits.header.header_sci_obj["PIXSCAY"] == 1.0
 
 
 def test__manual_native__exception_raised_if_input_array_is_2d_and_not_shape_of_mask():

@@ -363,7 +363,7 @@ def test__from_fits__output_to_fits():
         file_path=path.join(test_data_path, "mask.fits"), hdu=0
     )
 
-    assert header["PIXSCALE"] == 1.0
+    assert header["PIXSCAY"] == 1.0
 
 
 def test__from_fits__with_resized_mask_shape():

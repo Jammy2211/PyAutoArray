@@ -286,6 +286,7 @@ def test__resized_array_2d_from__padding_with_new_origin():
         )
     ).all()
 
+
 def test__replace_noise_map_2d_values_where_image_2d_values_are_negative():
     image_2d = np.ones(shape=(2, 2))
 

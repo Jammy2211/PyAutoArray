@@ -1,10 +1,9 @@
 from __future__ import annotations
 from astropy.io import fits
-import copy
 import logging
 import numpy as np
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 from autoarray.structures.abstract_structure import Structure
 
@@ -705,6 +704,23 @@ class Mask2D(Mask):
         return self.trimmed_array_from(
             padded_array=blurred_image, image_shape=image_shape
         )
+
+    @property
+    def pixel_scale_header(self) -> Dict:
+        """
+        Returns the pixel scales of the mask as a header dictionary, which can be written to a .fits file.
+
+        A 2D mask has different pixel scale variables for each dimension, the header therefore contain both pixel
+        scales as separate y and x entries.
+
+        Returns
+        -------
+        A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
+        """
+        return {
+            "PIXSCAY": self.pixel_scales[0],
+            "PIXSCAX": self.pixel_scales[1],
+        }
 
     @property
     def hdu_for_output(self) -> fits.PrimaryHDU:

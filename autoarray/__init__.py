@@ -89,7 +89,11 @@ from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 
 from autoconf import conf
-from autoconf.fitsable import ndarray_via_hdu_from, ndarray_via_fits_from, header_obj_from
+from autoconf.fitsable import ndarray_via_hdu_from
+from autoconf.fitsable import ndarray_via_fits_from
+from autoconf.fitsable import header_obj_from
+from autoconf.fitsable import output_to_fits
+from autoconf.fitsable import hdu_list_for_output_from
 
 conf.instance.register(__file__)
 

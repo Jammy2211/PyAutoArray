@@ -4,7 +4,7 @@ from astropy.io import fits
 import logging
 import numpy as np
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from autoconf.fitsable import output_to_fits
 
@@ -162,6 +162,22 @@ class Mask1D(Mask):
     @property
     def shape_slim(self) -> Tuple[int]:
         return self.shape
+
+    @property
+    def pixel_scale_header(self) -> Dict:
+        """
+        Returns the pixel scales of the mask as a header dictionary, which can be written to a .fits file.
+
+        A 2D mask has different pixel scale variables for each dimension, the header therefore contain both pixel
+        scales as separate y and x entries.
+
+        Returns
+        -------
+        A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
+        """
+        return {
+            "PIXSCA": self.pixel_scales[0],
+        }
 
     @property
     def hdu_for_output(self) -> fits.PrimaryHDU:

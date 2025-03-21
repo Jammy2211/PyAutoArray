@@ -165,7 +165,7 @@ def test__output_to_fits():
         file_path=path.join(test_data_path, "array.fits"), hdu=0
     )
 
-    assert header_load["PIXSCALE"] == 1.0
+    assert header_load["PIXSCA"] == 1.0
 
 
 def test__recursive_shape_storage():
