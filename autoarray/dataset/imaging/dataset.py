@@ -108,7 +108,7 @@ class Imaging(AbstractDataset):
                         kernel_shape=psf.shape_native, mask_pad_value=1
                     )
                 )
-                print(over_sample_size_lp.shape_native)
+
                 over_sample_size_pixelization = (
                     over_sample_util.over_sample_size_convert_to_array_2d_from(
                         over_sample_size=over_sample_size_pixelization, mask=data.mask

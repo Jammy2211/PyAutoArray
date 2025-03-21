@@ -1,9 +1,6 @@
 from __future__ import annotations
-import os
 import numpy as np
-from astropy.io import fits
-from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_1d import Mask1D
@@ -190,71 +187,3 @@ def array_1d_via_indexes_1d_from(
     return array_1d_native
 
 
-def numpy_array_1d_to_fits(
-    array_1d: np.ndarray,
-    file_path: Union[Path, str],
-    overwrite: bool = False,
-    header_dict: Optional[dict] = None,
-):
-    """
-    Write a 1D NumPy array to a .fits file.
-
-    Parameters
-    ----------
-    array_1d
-        The 1D array that is written to fits.
-    file_path
-        The full path of the file that is output, including the file name and ``.fits`` extension.
-    overwrite
-        If `True` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
-        will be raised.
-    header_dict
-        A dictionary of values that are written to the header of the .fits file.
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    array_1d = np.ones((5,))
-    numpy_array_to_fits(array_1d=array_1d, file_path='/path/to/file/filename.fits', overwrite=True)
-    """
-
-    file_dir = os.path.split(file_path)[0]
-
-    if not os.path.exists(file_dir):
-        os.makedirs(file_dir)
-
-    if overwrite and os.path.exists(file_path):
-        os.remove(file_path)
-
-    hdu = hdu_for_output_from(array_1d=array_1d, header_dict=header_dict)
-    hdu.writeto(file_path)
-
-
-def numpy_array_1d_via_fits_from(file_path: Union[Path, str], hdu: int):
-    """
-    Read a 1D NumPy array from a .fits file.
-
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures
-    appear the same orientation as .fits files loaded in DS9.
-
-    Parameters
-    ----------
-    file_path
-        The full path of the file that is loaded, including the file name and ``.fits`` extension.
-    hdu
-        The HDU extension of the array that is loaded from the .fits file.
-
-    Returns
-    -------
-    ndarray
-        The NumPy array that is loaded from the .fits file.
-
-    Examples
-    --------
-    array_2d = numpy_array_via_fits(file_path='/path/to/file/filename.fits', hdu=0)
-    """
-    hdu_list = fits.open(file_path)
-    return np.array(hdu_list[hdu].data)

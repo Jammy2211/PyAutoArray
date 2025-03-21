@@ -73,18 +73,6 @@ class Mask(AbstractNDArray, ABC):
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
         single value as a float.
         """
-        # for pixel_scale in self.pixel_scales:
-        #     if abs(pixel_scale - self.pixel_scales[0]) > 1.0e-8:
-        #         logger.warning(
-        #             f"""
-        #         The Mask has different pixel scales in each dimensions, which are {self.pixel_scales}.
-        #
-        #         This is not expected, and will lead to unexpected behaviour in the grid and mask classes.
-        #         The code will continue to run, but you should check that the pixel scales are as you expect and
-        #         that associated data structures (e.g. grids) are behaving as you expect.
-        #         """
-        #         )
-
         return self.pixel_scales[0]
 
     @property
@@ -99,13 +87,10 @@ class Mask(AbstractNDArray, ABC):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
-        try:
-            return {"PIXSCALE": self.pixel_scale}
-        except exc.MaskException:
-            return {
-                "PIXSCALEY": self.pixel_scales[0],
-                "PIXSCALEX": self.pixel_scales[1],
-            }
+        return {
+            "PIXSCAY": self.pixel_scales[0],
+            "PIXSCAX": self.pixel_scales[1],
+        }
 
     @property
     def dimensions(self) -> int:
