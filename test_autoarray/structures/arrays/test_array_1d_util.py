@@ -85,6 +85,6 @@ def test__numpy_array_1d_to_fits__output_and_load():
 
     assert (arr == array_load).all()
 
-    header_load = aa.util.array_2d.header_obj_from(file_path=file_path, hdu=0)
+    header_load = aa.header_obj_from(file_path=file_path, hdu=0)
 
     assert header_load["A"] == 1

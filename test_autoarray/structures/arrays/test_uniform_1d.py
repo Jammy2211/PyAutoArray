@@ -161,7 +161,7 @@ def test__output_to_fits():
 
     assert (array_from_out.native == np.ones((3,))).all()
 
-    header_load = aa.util.array_2d.header_obj_from(
+    header_load = aa.header_obj_from(
         file_path=path.join(test_data_path, "array.fits"), hdu=0
     )
 

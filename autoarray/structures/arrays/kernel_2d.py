@@ -5,6 +5,8 @@ import scipy.signal
 from pathlib import Path
 from typing import List, Tuple, Union
 
+from autoconf.fitsable import header_obj_from
+
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import AbstractArray2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -345,8 +347,8 @@ class Kernel2D(AbstractArray2D):
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
+        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
 
         return Kernel2D(
             values=array[:],

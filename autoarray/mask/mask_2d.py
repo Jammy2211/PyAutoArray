@@ -750,7 +750,7 @@ class Mask2D(Mask):
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
         output_to_fits(
-            array_2d=self.astype("float"),
+            values=self.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
             header_dict=self.pixel_scale_header,

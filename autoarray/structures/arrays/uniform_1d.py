@@ -3,6 +3,8 @@ import numpy as np
 from pathlib import Path
 from typing import Optional, Union, Tuple, List
 
+from autoconf.fitsable import ndarray_via_fits_from, header_obj_from
+
 from autoarray.structures.header import Header
 
 from autoarray.structures.abstract_structure import Structure
@@ -215,12 +217,12 @@ class Array1D(Structure):
         origin
             The (x,) scaled units origin of the coordinate system.
         """
-        array_1d = array_1d_util.numpy_array_1d_via_fits_from(
+        array_1d = ndarray_via_fits_from(
             file_path=file_path, hdu=hdu
         )
 
-        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
+        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls.no_mask(
             values=array_1d.astype(

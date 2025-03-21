@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
-from autoconf.fitsable import ndarray_via_fits_from
+from autoconf.fitsable import ndarray_via_fits_from, header_obj_from
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
@@ -917,8 +917,8 @@ class Array2D(AbstractArray2D):
             file_path=file_path, hdu=hdu
         )
 
-        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
+        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls.no_mask(
             values=array_2d,

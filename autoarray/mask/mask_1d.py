@@ -18,7 +18,6 @@ from autoarray.structures.arrays import array_1d_util
 
 from autoarray import exc
 from autoarray import type as ty
-from autoconf.fitsable import output_to_fits
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

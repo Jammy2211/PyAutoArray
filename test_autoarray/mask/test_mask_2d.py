@@ -359,7 +359,7 @@ def test__from_fits__output_to_fits():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (2.0, 2.0)
 
-    header = aa.util.array_2d.header_obj_from(
+    header = aa.header_obj_from(
         file_path=path.join(test_data_path, "mask.fits"), hdu=0
     )
 

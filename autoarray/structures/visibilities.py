@@ -135,7 +135,7 @@ class AbstractVisibilities(Structure, ABC):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         output_to_fits(
-            array_2d=self.in_array, file_path=file_path, overwrite=overwrite
+            values=self.in_array, file_path=file_path, overwrite=overwrite
         )
 
     @property

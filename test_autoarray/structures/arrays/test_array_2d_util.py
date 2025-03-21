@@ -6,6 +6,8 @@ import pytest
 
 from astropy.io import fits
 
+import autoarray as aa
+
 test_data_path = os.path.join(
     "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
 )
@@ -328,13 +330,13 @@ def test__numpy_array_2d_to_fits__header_dict():
 
     util.array_2d.numpy_array_2d_to_fits(arr, file_path=file_path, header_dict={"A": 1})
 
-    header = util.array_2d.header_obj_from(file_path=file_path, hdu=0)
+    header = aa.header_obj_from(file_path=file_path, hdu=0)
 
     assert header["A"] == 1
 
 
 def test__header_obj_from():
-    header_obj = util.array_2d.header_obj_from(
+    header_obj = aa.header_obj_from(
         file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
     )
 

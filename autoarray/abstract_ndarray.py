@@ -15,7 +15,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.structures.abstract_structure import Structure
 
-from autoarray.structures.arrays import array_2d_util
 from autoconf import conf
 
 

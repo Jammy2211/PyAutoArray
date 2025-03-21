@@ -270,7 +270,7 @@ class Interferometer(AbstractDataset):
 
         if self.uv_wavelengths is not None and uv_wavelengths_path is not None:
             output_to_fits(
-                array_2d=self.uv_wavelengths,
+                values=self.uv_wavelengths,
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,
             )
