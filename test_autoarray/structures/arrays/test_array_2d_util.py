@@ -2,11 +2,7 @@ from autoarray import util
 
 import os
 import numpy as np
-import pytest
 
-from astropy.io import fits
-
-import autoarray as aa
 
 test_data_path = os.path.join(
     "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
@@ -289,60 +285,6 @@ def test__resized_array_2d_from__padding_with_new_origin():
             ]
         )
     ).all()
-
-
-def test__ndarray_via_fits_from():
-    arr = util.array_2d.ndarray_via_fits_from(
-        file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
-    )
-
-    assert (arr == np.ones((3, 3))).all()
-
-    arr = util.array_2d.ndarray_via_fits_from(
-        file_path=os.path.join(test_data_path, "4x3_ones.fits"), hdu=0
-    )
-
-    assert (arr == np.ones((4, 3))).all()
-
-
-def test__numpy_array_2d_to_fits():
-    file_path = os.path.join(test_data_path, "array_out.fits")
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
-
-    util.array_2d.numpy_array_2d_to_fits(arr, file_path=file_path)
-
-    array_load = util.array_2d.ndarray_via_fits_from(file_path=file_path, hdu=0)
-
-    assert (arr == array_load).all()
-
-
-def test__numpy_array_2d_to_fits__header_dict():
-    file_path = os.path.join(test_data_path, "array_out.fits")
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
-
-    util.array_2d.numpy_array_2d_to_fits(arr, file_path=file_path, header_dict={"A": 1})
-
-    header = aa.header_obj_from(file_path=file_path, hdu=0)
-
-    assert header["A"] == 1
-
-
-def test__header_obj_from():
-    header_obj = aa.header_obj_from(
-        file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
-    )
-
-    assert isinstance(header_obj, fits.header.Header)
-    assert header_obj["BITPIX"] == -64
-
 
 def test__replace_noise_map_2d_values_where_image_2d_values_are_negative():
     image_2d = np.ones(shape=(2, 2))
