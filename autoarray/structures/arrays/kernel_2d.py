@@ -1,4 +1,3 @@
-from astropy.io import fits
 from astropy import units
 import numpy as np
 import scipy.signal

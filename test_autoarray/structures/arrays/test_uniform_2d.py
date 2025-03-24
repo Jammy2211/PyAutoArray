@@ -175,6 +175,7 @@ def test__from_fits__loads_and_stores_header_info():
     assert array_2d.header.header_sci_obj["BITPIX"] == -64
     assert array_2d.header.header_hdu_obj["BITPIX"] == -64
 
+
 def test__from_yx_and_values():
     array_2d = aa.Array2D.from_yx_and_values(
         y=[0.5, 0.5, -0.5, -0.5],

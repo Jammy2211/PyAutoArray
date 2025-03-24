@@ -166,6 +166,7 @@ def test__output_to_fits():
     )
 
     assert header_load["PIXSCA"] == 1.0
+    assert header_load["ORIGIN"] == 0.0
 
 
 def test__recursive_shape_storage():

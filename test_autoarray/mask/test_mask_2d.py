@@ -359,11 +359,12 @@ def test__from_fits__output_to_fits():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (2.0, 2.0)
 
-    header = aa.header_obj_from(
-        file_path=path.join(test_data_path, "mask.fits"), hdu=0
-    )
+    header = aa.header_obj_from(file_path=path.join(test_data_path, "mask.fits"), hdu=0)
 
     assert header["PIXSCAY"] == 1.0
+    assert header["PIXSCAX"] == 1.0
+    assert header["ORIGINY"] == 0.0
+    assert header["ORIGINX"] == 0.0
 
 
 def test__from_fits__with_resized_mask_shape():

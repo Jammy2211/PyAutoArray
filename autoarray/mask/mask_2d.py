@@ -705,7 +705,7 @@ class Mask2D(Mask):
         )
 
     @property
-    def pixel_scale_header(self) -> Dict:
+    def header_dict(self) -> Dict:
         """
         Returns the pixel scales of the mask as a header dictionary, which can be written to a .fits file.
 
@@ -719,6 +719,8 @@ class Mask2D(Mask):
         return {
             "PIXSCAY": self.pixel_scales[0],
             "PIXSCAX": self.pixel_scales[1],
+            "ORIGINY": self.origin[0],
+            "ORIGINX": self.origin[1],
         }
 
     @property

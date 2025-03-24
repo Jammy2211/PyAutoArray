@@ -1,4 +1,3 @@
-from astropy.io import fits
 import numpy as np
 from pathlib import Path
 from typing import Optional, Union, Tuple, List
@@ -217,9 +216,7 @@ class Array1D(Structure):
         origin
             The (x,) scaled units origin of the coordinate system.
         """
-        array_1d = ndarray_via_fits_from(
-            file_path=file_path, hdu=hdu
-        )
+        array_1d = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
 
         header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)

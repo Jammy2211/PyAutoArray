@@ -114,9 +114,7 @@ class AbstractVisibilities(Structure, ABC):
         overwrite
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
-        output_to_fits(
-            values=self.in_array, file_path=file_path, overwrite=overwrite
-        )
+        output_to_fits(values=self.in_array, file_path=file_path, overwrite=overwrite)
 
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
@@ -204,9 +202,7 @@ class Visibilities(AbstractVisibilities):
         hdu
             The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
         """
-        visibilities_1d = ndarray_via_fits_from(
-            file_path=file_path, hdu=hdu
-        )
+        visibilities_1d = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
         return cls(visibilities=visibilities_1d)
 
 

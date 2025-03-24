@@ -1,4 +1,3 @@
-from astropy.io import fits
 import logging
 import numpy as np
 from pathlib import Path
@@ -891,9 +890,7 @@ class Array2D(AbstractArray2D):
                 pixel_scales=1.0,
             )
         """
-        array_2d = ndarray_via_fits_from(
-            file_path=file_path, hdu=hdu
-        )
+        array_2d = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
 
         header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)

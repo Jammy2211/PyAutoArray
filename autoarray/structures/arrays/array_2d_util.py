@@ -704,6 +704,3 @@ def array_2d_native_complex_via_indexes_from(
         ] = array_2d_slim[slim_index]
 
     return array_2d
-
-
-

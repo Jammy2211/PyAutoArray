@@ -77,7 +77,7 @@ class Mask(AbstractNDArray, ABC):
         return self.pixel_scales[0]
 
     @property
-    def pixel_scale_header(self) -> Dict:
+    def header_dict(self) -> Dict:
         """
         Returns the pixel scale of the mask as a header dictionary, which can be written to a .fits file.
 
@@ -122,8 +122,8 @@ class Mask(AbstractNDArray, ABC):
             values=self.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
-            header_dict=self.pixel_scale_header,
-            ext_name="mask"
+            header_dict=self.header_dict,
+            ext_name="mask",
         )
 
     @property

@@ -185,5 +185,3 @@ def array_1d_via_indexes_1d_from(
         ]
 
     return array_1d_native
-
-

@@ -285,7 +285,7 @@ class AbstractNDArray(ABC):
             values=self.native.array,
             file_path=file_path,
             overwrite=overwrite,
-            header_dict=self.mask.pixel_scale_header
+            header_dict=self.mask.header_dict,
         )
 
     @property
