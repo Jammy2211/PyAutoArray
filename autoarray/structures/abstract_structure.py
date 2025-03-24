@@ -60,8 +60,8 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.pixel_scale
 
     @property
-    def pixel_scale_header(self) -> Dict:
-        return self.mask.pixel_scale_header
+    def header_dict(self) -> Dict:
+        return self.mask.header_dict
 
     @property
     def pixel_area(self):
@@ -87,8 +87,4 @@ class Structure(AbstractNDArray, ABC):
         return self.shape[0]
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
-        raise NotImplementedError
-
-    @property
-    def hdu_for_output(self):
         raise NotImplementedError

@@ -1,18 +1,15 @@
 from abc import ABC
 
-from astropy.io import fits
-
 import logging
 import numpy as np
 from pathlib import Path
 from typing import List, Tuple, Union
 
 from autoconf import cached_property
+from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-
-from autoarray.structures.arrays import array_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -102,22 +99,6 @@ class AbstractVisibilities(Structure, ABC):
     def phases(self) -> np.ndarray:
         return np.arctan2(self.imag, self.real)
 
-    @property
-    def hdu_for_output(self) -> fits.PrimaryHDU:
-        """
-        The visibilities as an HDU object, which can be output to a .fits file.
-
-        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
-        files.
-
-        Returns
-        -------
-        The HDU containing the data which can then be written to .fits.
-        """
-        return array_2d_util.hdu_for_output_from(
-            array_2d=self.in_array,
-        )
-
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the visibilities to a .fits file.
@@ -133,9 +114,7 @@ class AbstractVisibilities(Structure, ABC):
         overwrite
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
-        array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.in_array, file_path=file_path, overwrite=overwrite
-        )
+        output_to_fits(values=self.in_array, file_path=file_path, overwrite=overwrite)
 
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
@@ -223,9 +202,7 @@ class Visibilities(AbstractVisibilities):
         hdu
             The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
         """
-        visibilities_1d = array_2d_util.numpy_array_2d_via_fits_from(
-            file_path=file_path, hdu=hdu
-        )
+        visibilities_1d = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
         return cls(visibilities=visibilities_1d)
 
 

@@ -1,7 +1,8 @@
-from astropy.io import fits
 import numpy as np
 from pathlib import Path
 from typing import Optional, Union, Tuple, List
+
+from autoconf.fitsable import ndarray_via_fits_from, header_obj_from
 
 from autoarray.structures.header import Header
 
@@ -215,12 +216,10 @@ class Array1D(Structure):
         origin
             The (x,) scaled units origin of the coordinate system.
         """
-        array_1d = array_1d_util.numpy_array_1d_via_fits_from(
-            file_path=file_path, hdu=hdu
-        )
+        array_1d = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
 
-        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
+        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls.no_mask(
             values=array_1d.astype(
@@ -229,51 +228,6 @@ class Array1D(Structure):
             pixel_scales=pixel_scales,
             origin=origin,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
-        )
-
-    @classmethod
-    def from_primary_hdu(
-        cls,
-        primary_hdu: fits.PrimaryHDU,
-        origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "Array1D":
-        """
-        Returns an ``Array1D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
-
-        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
-        pixel-scale of the array.
-
-        For a full description of ``Array1D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array1D class API documentation <autoarray.structures.arrays.uniform_1d.AbstractArray1D.__new__>`.
-
-        Parameters
-        ----------
-        primary_hdu
-            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
-            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        origin
-            The (y,x) scaled units origin of the coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            from astropy.io import fits
-            import autoarray as aa
-
-            primary_hdu = fits.open("path/to/file.fits")
-
-            array_1d = aa.Array1D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-            )
-        """
-        return cls.no_mask(
-            values=primary_hdu.data.astype("float"),
-            pixel_scales=primary_hdu.header["PIXSCALE"],
-            origin=origin,
-            header=Header(header_sci_obj=primary_hdu.header),
         )
 
     @property
@@ -310,40 +264,4 @@ class Array1D(Structure):
         return Grid1D.uniform_from_zero(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
-        )
-
-    @property
-    def hdu_for_output(self) -> fits.PrimaryHDU:
-        """
-        The array as an HDU object, which can be output to a .fits file.
-
-        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array1D.from_hdu`.
-
-        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
-        files.
-
-        Returns
-        -------
-        The HDU containing the data and its header which can then be written to .fits.
-        """
-        return array_2d_util.hdu_for_output_from(
-            array_2d=self.native, header_dict=self.pixel_scale_header
-        )
-
-    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
-        """
-        Output the array to a .fits file.
-
-        Parameters
-        ----------
-        file_path
-            The output path of the file, including the filename and the `.fits` extension e.g. '/path/to/filename.fits'
-        overwrite
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
-        """
-        array_1d_util.numpy_array_1d_to_fits(
-            array_1d=self.native,
-            file_path=file_path,
-            overwrite=overwrite,
-            header_dict=self.pixel_scale_header,
         )

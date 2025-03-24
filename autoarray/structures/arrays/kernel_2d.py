@@ -1,9 +1,10 @@
-from astropy.io import fits
 from astropy import units
 import numpy as np
 import scipy.signal
 from pathlib import Path
 from typing import List, Tuple, Union
+
+from autoconf.fitsable import header_obj_from
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import AbstractArray2D
@@ -345,58 +346,14 @@ class Kernel2D(AbstractArray2D):
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
+        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
 
         return Kernel2D(
             values=array[:],
             mask=array.mask,
             normalize=normalize,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
-        )
-
-    @classmethod
-    def from_primary_hdu(
-        cls,
-        primary_hdu: fits.PrimaryHDU,
-        origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "Kernel2D":
-        """
-        Returns an ``Kernel2D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
-
-        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
-        pixel-scale of the array.
-
-        For a full description of ``Kernel2D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Kernel2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractKernel2D.__new__>`.
-
-        Parameters
-        ----------
-        primary_hdu
-            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
-            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        origin
-            The (y,x) scaled units origin of the coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            from astropy.io import fits
-            import autoarray as aa
-
-            primary_hdu = fits.open("path/to/file.fits")
-
-            array_2d = aa.Kernel2D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-            )
-        """
-        return cls.no_mask(
-            values=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
-            pixel_scales=primary_hdu.header["PIXSCALE"],
-            origin=origin,
         )
 
     def rescaled_with_odd_dimensions_from(

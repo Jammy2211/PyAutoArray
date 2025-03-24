@@ -359,11 +359,12 @@ def test__from_fits__output_to_fits():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (2.0, 2.0)
 
-    header = aa.util.array_2d.header_obj_from(
-        file_path=path.join(test_data_path, "mask.fits"), hdu=0
-    )
+    header = aa.header_obj_from(file_path=path.join(test_data_path, "mask.fits"), hdu=0)
 
-    assert header["PIXSCALE"] == 1.0
+    assert header["PIXSCAY"] == 1.0
+    assert header["PIXSCAX"] == 1.0
+    assert header["ORIGINY"] == 0.0
+    assert header["ORIGINX"] == 0.0
 
 
 def test__from_fits__with_resized_mask_shape():
@@ -384,29 +385,6 @@ def test__from_fits__with_resized_mask_shape():
     )
 
     assert mask.shape_native == (5, 5)
-
-
-def test__from_primary_hdu():
-    file_path = os.path.join(test_data_path, "array_out.fits")
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-    mask = np.array([[True, False, True], [False, False, True]]).astype("int")
-
-    aa.util.array_2d.numpy_array_2d_to_fits(
-        mask, file_path=file_path, header_dict={"PIXSCALE": 0.1}
-    )
-
-    primary_hdu = fits.open(file_path)
-
-    mask_via_hdu = aa.Mask2D.from_primary_hdu(
-        primary_hdu=primary_hdu[0],
-    )
-
-    assert type(mask_via_hdu) == aa.Mask2D
-    assert (mask_via_hdu == mask).all()
-    assert mask_via_hdu.pixel_scales == (0.1, 0.1)
 
 
 def test__mask__input_is_1d_mask__no_shape_native__raises_exception():
