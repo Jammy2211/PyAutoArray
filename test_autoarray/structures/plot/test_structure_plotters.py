@@ -105,9 +105,7 @@ def test__array__fits_files_output_correctly(array_2d_7x7, plot_path):
 
     array_plotter.figure_2d()
 
-    arr = aa.util.array_2d.numpy_array_2d_via_fits_from(
-        file_path=path.join(plot_path, "array.fits"), hdu=0
-    )
+    arr = aa.ndarray_via_fits_from(file_path=path.join(plot_path, "array.fits"), hdu=0)
 
     assert (arr == array_2d_7x7.native).all()
 

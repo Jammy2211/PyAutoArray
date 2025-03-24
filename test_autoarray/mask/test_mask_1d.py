@@ -84,26 +84,3 @@ def test__is_all_false():
     mask = aa.Mask1D(mask=[True, True, False, False], pixel_scales=1.0)
 
     assert mask.is_all_false is False
-
-
-def test__from_primary_hdu():
-    file_path = os.path.join(test_data_path, "mask_out.fits")
-
-    if os.path.exists(file_path):
-        os.remove(file_path)
-
-    mask = np.array([True, False, True, False, False, True]).astype("int")
-
-    aa.util.array_1d.numpy_array_1d_to_fits(
-        mask, file_path=file_path, header_dict={"PIXSCALE": 0.1}
-    )
-
-    primary_hdu = fits.open(file_path)
-
-    mask_via_hdu = aa.Mask1D.from_primary_hdu(
-        primary_hdu=primary_hdu[0],
-    )
-
-    assert type(mask_via_hdu) == aa.Mask1D
-    assert (mask_via_hdu == mask).all()
-    assert mask_via_hdu.pixel_scales == (0.1,)

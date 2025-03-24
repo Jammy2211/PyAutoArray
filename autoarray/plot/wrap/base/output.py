@@ -153,17 +153,6 @@ class Output:
                             file_path=path.join(output_path, f"{filename}.fits"),
                             overwrite=True,
                         )
-                elif format == "fits_multi":
-                    if structure is not None:
-                        from autoarray.structures.arrays.array_2d_util import (
-                            update_fits_file,
-                        )
-
-                        update_fits_file(
-                            arr=structure.native,
-                            file_path=path.join(output_path, f"{filename}.fits"),
-                            tag=self._tag_fits_multi,
-                        )
 
     def subplot_to_figure(self, auto_filename: Optional[str] = None):
         """

@@ -1,10 +1,8 @@
 from __future__ import annotations
-from astropy.io import fits
-import copy
 import logging
 import numpy as np
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 from autoarray.structures.abstract_structure import Structure
 
@@ -12,6 +10,7 @@ if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoconf import cached_property
+from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.abstract_mask import Mask
 
@@ -581,7 +580,7 @@ class Mask2D(Mask):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=hdu)
+        mask = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
 
         if invert:
             mask = np.invert(mask.astype("bool"))
@@ -596,50 +595,6 @@ class Mask2D(Mask):
             mask = mask.resized_from(new_shape=resized_mask_shape)
 
         return mask
-
-    @classmethod
-    def from_primary_hdu(
-        cls,
-        primary_hdu: fits.PrimaryHDU,
-        origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "Mask2D":
-        """
-        Returns an ``Mask2D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
-
-        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
-        pixel-scale of the array.
-
-        For a full description of ``Mask2D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Mask2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractMask2D.__new__>`.
-
-        Parameters
-        ----------
-        primary_hdu
-            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
-            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        origin
-            The (y,x) scaled units origin of the coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            from astropy.io import fits
-            import autoarray as aa
-
-            primary_hdu = fits.open("path/to/file.fits")
-
-            array_2d = aa.Mask2D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-            )
-        """
-        return cls(
-            mask=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
-            pixel_scales=primary_hdu.header["PIXSCALE"],
-            origin=origin,
-        )
 
     @property
     def shape_native(self) -> Tuple[int, ...]:
@@ -691,54 +646,23 @@ class Mask2D(Mask):
         )
 
     @property
-    def hdu_for_output(self) -> fits.PrimaryHDU:
+    def header_dict(self) -> Dict:
         """
-        The mask as a HDU object, which can be output to a .fits file.
+        Returns the pixel scales of the mask as a header dictionary, which can be written to a .fits file.
 
-        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array2D.from_hdu`.
-
-        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
-        files.
+        A 2D mask has different pixel scale variables for each dimension, the header therefore contain both pixel
+        scales as separate y and x entries.
 
         Returns
         -------
-        The HDU containing the data and its header which can then be written to .fits.
+        A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
-        return array_2d_util.hdu_for_output_from(
-            array_2d=self.astype("float"), header_dict=self.pixel_scale_header
-        )
-
-    def output_to_fits(self, file_path, overwrite=False):
-        """
-        Write the 2D Mask to a .fits file.
-
-        Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
-        config files. This is for Astronomy projects so that structures appear the same orientation as `.fits` files
-        loaded in DS9.
-
-        Parameters
-        ----------
-        file_path
-            The full path of the file that is output, including the file name and `.fits` extension.
-        overwrite
-            If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
-            error is raised.
-
-        Returns
-        -------
-        None
-
-        Examples
-        --------
-        mask = Mask2D(mask=np.full(shape=(5,5), fill_value=False))
-        mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
-        """
-        array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.astype("float"),
-            file_path=file_path,
-            overwrite=overwrite,
-            header_dict=self.pixel_scale_header,
-        )
+        return {
+            "PIXSCAY": self.pixel_scales[0],
+            "PIXSCAX": self.pixel_scales[1],
+            "ORIGINY": self.origin[0],
+            "ORIGINX": self.origin[1],
+        }
 
     @property
     def mask_centre(self) -> Tuple[float, float]:
