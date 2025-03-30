@@ -34,12 +34,19 @@ def mask_2d_centres_from(
 
     Examples
     --------
-    centres_scaled = mask_2d_centres_from(shape_native=(5, 5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
+    >>> centres_scaled = mask_2d_centres_from(shape_native=(5, 5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
+    >>> print(centres_scaled)
+    (0.0, 0.0)
     """
-    return (
-        0.5 * (shape_native[0] - 1) - (centre[0] / pixel_scales[0]),
-        0.5 * (shape_native[1] - 1) + (centre[1] / pixel_scales[1]),
-    )
+
+    # Calculate scaled y-coordinate by centering and adjusting for pixel scale
+    y_scaled = 0.5 * (shape_native[0] - 1) - (centre[0] / pixel_scales[0])
+
+    # Calculate scaled x-coordinate by centering and adjusting for pixel scale
+    x_scaled = 0.5 * (shape_native[1] - 1) + (centre[1] / pixel_scales[1])
+
+    # Return the scaled (y, x) coordinates
+    return (y_scaled, x_scaled)
 
 
 def mask_2d_circular_from(
@@ -70,16 +77,23 @@ def mask_2d_circular_from(
 
     Examples
     --------
-    mask = mask_2d_circular_from(shape_native=(10, 10), pixel_scales=(0.1, 0.1), radius=0.5, centre=(0.0, 0.0))
+    >>> mask = mask_2d_circular_from(shape_native=(10, 10), pixel_scales=(0.1, 0.1), radius=0.5, centre=(0.0, 0.0))
     """
+
+    # Get scaled coordinates of the mask center
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
+    # Create a grid of y, x indices for the mask
     y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+
+    # Scale the y and x indices based on pixel scales
     y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
     x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
+    # Compute squared distances from the center for each pixel
     distances_squared = x_scaled**2 + y_scaled**2
 
+    # Return a mask with True for pixels outside the circle and False for inside
     return distances_squared >= radius**2
 
 
@@ -114,18 +128,25 @@ def mask_2d_circular_annular_from(
 
     Examples
     --------
-    mask = mask_2d_circular_annular_from(
-        shape_native=(10, 10), pixel_scales=(0.1, 0.1), inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0)
-    )
+    >>> mask = mask_2d_circular_annular_from(
+    >>>     shape_native=(10, 10), pixel_scales=(0.1, 0.1), inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0)
+    >>> )
     """
+
+    # Get scaled coordinates of the mask center
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
+    # Create grid of y, x indices for the mask
     y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+
+    # Scale the y and x indices based on pixel scales
     y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
     x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
+    # Compute squared distances from the center for each pixel
     distances_squared = x_scaled**2 + y_scaled**2
 
+    # Return the mask where pixels are unmasked between inner and outer radii
     return ~(
         (distances_squared >= inner_radius**2) & (distances_squared <= outer_radius**2)
     )
@@ -166,30 +187,31 @@ def mask_2d_elliptical_from(
 
     Examples
     --------
-    mask = mask_2d_elliptical_from(
-        shape_native=(10, 10), pixel_scales=(0.1, 0.1), major_axis_radius=0.5, axis_ratio=0.5, angle=45.0, centre=(0.0, 0.0)
-    )
+    >>> mask = mask_2d_elliptical_from(
+    >>>     shape_native=(10, 10), pixel_scales=(0.1, 0.1), major_axis_radius=0.5, axis_ratio=0.5, angle=45.0, centre=(0.0, 0.0)
+    >>> )
     """
+
+    # Get scaled coordinates of the mask center
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
+    # Create grid of y, x indices for the mask
     y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+
+    # Scale the y and x indices based on pixel scales
     y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
     x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-    # Rotate the coordinates by the angle (counterclockwise)
-
+    # Compute the rotated coordinates and elliptical radius
     r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
-
     theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
-
     y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
     x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
-
-    # Compute the elliptical radius
     r_scaled_elliptical = np.sqrt(
         x_scaled_elliptical**2 + (y_scaled_elliptical / axis_ratio) ** 2
     )
 
+    # Return the mask where pixels are outside the elliptical region
     return ~(r_scaled_elliptical <= major_axis_radius)
 
 
@@ -231,7 +253,7 @@ def mask_2d_elliptical_annular_from(
         The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
         positive x-axis).
     centre
-            The centre of the elliptical annuli used to mask pixels.
+        The centre of the elliptical annuli used to mask pixels.
 
     Returns
     -------
@@ -240,42 +262,45 @@ def mask_2d_elliptical_annular_from(
 
     Examples
     --------
-    mask = mask_elliptical_annuli_from(
-        shape=(10, 10), pixel_scales=(0.1, 0.1),
-        inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
-        outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
-        centre=(0.0, 0.0))
+    >>> mask = mask_elliptical_annuli_from(
+    >>>     shape=(10, 10), pixel_scales=(0.1, 0.1),
+    >>>     inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
+    >>>     outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
+    >>>     centre=(0.0, 0.0)
+    >>> )
     """
+
+    # Get scaled coordinates of the mask center
     centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
+    # Create grid of y, x indices for the mask
     y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+
+    # Scale the y and x indices based on pixel scales
     y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
     x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-    # Rotate the coordinates for the inner annulus
+    # Compute and rotate coordinates for inner annulus
     r_scaled_inner = np.sqrt(x_scaled**2 + y_scaled**2)
     theta_rotated_inner = np.arctan2(y_scaled, x_scaled) + np.radians(inner_phi)
     y_scaled_elliptical_inner = r_scaled_inner * np.sin(theta_rotated_inner)
     x_scaled_elliptical_inner = r_scaled_inner * np.cos(theta_rotated_inner)
-
-    # Compute the elliptical radius for the inner annulus
     r_scaled_elliptical_inner = np.sqrt(
         x_scaled_elliptical_inner**2
         + (y_scaled_elliptical_inner / inner_axis_ratio) ** 2
     )
 
-    # Rotate the coordinates for the outer annulus
+    # Compute and rotate coordinates for outer annulus
     r_scaled_outer = np.sqrt(x_scaled**2 + y_scaled**2)
     theta_rotated_outer = np.arctan2(y_scaled, x_scaled) + np.radians(outer_phi)
     y_scaled_elliptical_outer = r_scaled_outer * np.sin(theta_rotated_outer)
     x_scaled_elliptical_outer = r_scaled_outer * np.cos(theta_rotated_outer)
-
-    # Compute the elliptical radius for the outer annulus
     r_scaled_elliptical_outer = np.sqrt(
         x_scaled_elliptical_outer**2
         + (y_scaled_elliptical_outer / outer_axis_ratio) ** 2
     )
 
+    # Return the mask where pixels are outside the inner and outer elliptical annuli
     return ~(
         (r_scaled_elliptical_inner >= inner_major_axis_radius)
         & (r_scaled_elliptical_outer <= outer_major_axis_radius)
@@ -283,33 +308,53 @@ def mask_2d_elliptical_annular_from(
 
 
 def mask_2d_via_pixel_coordinates_from(
-    shape_native: Tuple[int, int], pixel_coordinates: [list], buffer: int = 0
+    shape_native: Tuple[int, int], pixel_coordinates: list, buffer: int = 0
 ) -> np.ndarray:
     """
-    Returns a mask where all unmasked `False` entries are defined from an input list of list of pixel coordinates.
+    Returns a mask where all unmasked `False` entries are defined from an input list of 2D pixel coordinates.
 
-    These may be buffed via an input ``buffer``, whereby all entries in all 8 neighboring directions by this
+    These may be buffed via an input `buffer`, whereby all entries in all 8 neighboring directions are buffed by this
     amount.
 
     Parameters
     ----------
-    shape_native (int, int)
-        The (y,x) shape of the mask in units of pixels.
-    pixel_coordinates : [[int, int]]
-        The input lists of 2D pixel coordinates where `False` entries are created.
+    shape_native
+        The (y, x) shape of the mask in units of pixels.
+    pixel_coordinates
+        The input list of 2D pixel coordinates where `False` entries are created.
     buffer
-        All input ``pixel_coordinates`` are buffed with `False` entries in all 8 neighboring directions by this
+        All input `pixel_coordinates` are buffed with `False` entries in all 8 neighboring directions by this
         amount.
+
+    Returns
+    -------
+    np.ndarray
+        The 2D mask array where all entries in the input pixel coordinates are set to `False`, with optional buffering
+        applied to the neighboring entries.
+
+    Examples
+    --------
+    mask = mask_2d_via_pixel_coordinates_from(
+        shape_native=(10, 10),
+        pixel_coordinates=[[1, 2], [3, 4], [5, 6]],
+        buffer=1
+    )
     """
+    mask_2d = np.full(
+        shape=shape_native, fill_value=True
+    )  # Initialize mask with all True values
 
-    mask_2d = np.full(shape=shape_native, fill_value=True)
-
-    for y, x in pixel_coordinates:
+    for (
+        y,
+        x,
+    ) in (
+        pixel_coordinates
+    ):  # Loop over input coordinates to set corresponding mask entries to False
         mask_2d[y, x] = False
 
-    if buffer == 0:
+    if buffer == 0:  # If no buffer is specified, return the mask directly
         return mask_2d
-    return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
+    return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)  # Apply buf
 
 
 import numpy as np
@@ -317,18 +362,19 @@ import numpy as np
 
 def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     """
-    Compute the minimum 1D distance in the y and x directions from any False value at the mask's extreme positions
+    Compute the minimum 1D distance in the y and x directions from any `False` value at the mask's extreme positions
     (leftmost, rightmost, topmost, bottommost) to its closest edge.
 
     Parameters
     ----------
     mask
-        A 2D boolean array where False represents the unmasked region.
+        A 2D boolean array where `False` represents the unmasked region.
 
     Returns
     -------
-    The smallest distances of any extreme False value to the nearest edge in the vertical (y) and horizontal (x)
-    directions.
+    Tuple[int, int]
+        The smallest distances of any extreme `False` value to the nearest edge in the vertical (y) and horizontal (x)
+        directions.
 
     Examples
     --------
@@ -341,17 +387,29 @@ def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     >>> min_false_distance_to_edge(mask)
     (1, 1)
     """
-    false_indices = np.column_stack(np.where(mask == False))
+    false_indices = np.column_stack(
+        np.where(mask == False)
+    )  # Find all coordinates where mask is False
 
     if false_indices.size == 0:
-        raise ValueError("No False values found in the mask.")
+        raise ValueError(
+            "No False values found in the mask."
+        )  # Raise error if no False values
 
-    leftmost = false_indices[np.argmin(false_indices[:, 1])]
-    rightmost = false_indices[np.argmax(false_indices[:, 1])]
-    topmost = false_indices[np.argmin(false_indices[:, 0])]
-    bottommost = false_indices[np.argmax(false_indices[:, 0])]
+    leftmost = false_indices[
+        np.argmin(false_indices[:, 1])
+    ]  # Find the leftmost False coordinate
+    rightmost = false_indices[
+        np.argmax(false_indices[:, 1])
+    ]  # Find the rightmost False coordinate
+    topmost = false_indices[
+        np.argmin(false_indices[:, 0])
+    ]  # Find the topmost False coordinate
+    bottommost = false_indices[
+        np.argmax(false_indices[:, 0])
+    ]  # Find the bottommost False coordinate
 
-    height, width = mask.shape
+    height, width = mask.shape  # Get the height and width of the mask
 
     # Compute distances to respective edges
     left_dist = leftmost[1]  # Distance to left edge (column index)
@@ -359,8 +417,9 @@ def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     top_dist = topmost[0]  # Distance to top edge (row index)
     bottom_dist = height - 1 - bottommost[0]  # Distance to bottom edge
 
-    # Return the minimum distance to an edge
+    # Return the minimum distance to both edges
     return min(top_dist, bottom_dist), min(left_dist, right_dist)
+
 
 def blurring_mask_2d_from(
     mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
@@ -397,27 +456,47 @@ def blurring_mask_2d_from(
 
     """
 
-    y_distance, x_distance = min_false_distance_to_edge(mask_2d)
+    # Get the distance from False values to edges
+    y_distance, x_distance = min_false_distance_to_edge(
+        mask_2d
+    )
 
-    y_kernel_distance = (kernel_shape_native[0]) // 2
-    x_kernel_distance = (kernel_shape_native[1]) // 2
+    # Compute kernel half-size in y and x direction
+    y_kernel_distance = (
+        kernel_shape_native[0]
+    ) // 2
+    x_kernel_distance = (
+        kernel_shape_native[1]
+    ) // 2
 
+    # Check if mask is too small for the kernel size
     if (y_distance < y_kernel_distance) or (x_distance < x_kernel_distance):
-
         raise exc.MaskException(
             "The input mask is too small for the kernel shape. "
             "Please pad the mask before computing the blurring mask."
         )
 
-    kernel = np.ones(kernel_shape_native, dtype=np.uint8)
+    # Create a kernel with the given PSF shape
+    kernel = np.ones(
+        kernel_shape_native, dtype=np.uint8
+    )
 
-    convolved_mask = convolve(mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0)
+    # Convolve mask with kernel producing non-zero values around mask False values
+    convolved_mask = convolve(
+        mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0
+    )
 
-    result_mask = convolved_mask == np.prod(kernel_shape_native)
+    # Identify pixels that are non-zero and fully covered by kernel
+    result_mask = convolved_mask == np.prod(
+        kernel_shape_native
+    )
 
-    blurring_mask = ~mask_2d + result_mask
+    # Create the blurring mask by removing False values in original mask
+    blurring_mask = (
+        ~mask_2d + result_mask
+    )
 
-    return blurring_mask
+    return blurring_mask  
 
 
 @numba_util.jit()
