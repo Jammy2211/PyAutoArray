@@ -496,50 +496,7 @@ def blurring_mask_2d_from(
         ~mask_2d + result_mask
     )
 
-    return blurring_mask  
-
-
-@numba_util.jit()
-def mask_2d_via_shape_native_and_native_for_slim(
-    shape_native: Tuple[int, int], native_for_slim: np.ndarray
-) -> np.ndarray:
-    """
-    For a slimmed set of data that was computed by mapping unmasked values from a native 2D array of shape
-    (total_y_pixels, total_x_pixels), map its slimmed indexes back to the original 2D array to create the
-    native 2D mask.
-
-    This uses an array 'native_for_slim' of shape [total_masked_pixels[ where each index gives the native 2D pixel
-    indexes of the slimmed array's unmasked pixels, for example:
-
-    - If native_for_slim[0] = [0,0], the first value of the slimmed array maps to the pixel [0,0] of the native 2D array.
-    - If native_for_slim[1] = [0,1], the second value of the slimmed array maps to the pixel [0,1] of the native 2D array.
-    - If native_for_slim[4] = [1,1], the fifth value of the slimmed array maps to the pixel [1,1] of the native 2D array.
-
-    Parameters
-    ----------
-    shape_native
-        The shape of the 2D array which the pixels are defined on.
-    native_for_slim
-        An array describing the native 2D array index that every slimmed array index maps too.
-
-    Returns
-    -------
-    ndarray
-        A 2D mask array where unmasked values are `False`.
-
-    Examples
-    --------
-    native_for_slim = np.array([[0,1], [1,0], [1,1], [1,2], [2,1]])
-
-    mask = mask_from(shape=(3,3), native_for_slim=native_for_slim)
-    """
-
-    mask = np.ones(shape_native)
-
-    for index in range(len(native_for_slim)):
-        mask[native_for_slim[index, 0], native_for_slim[index, 1]] = False
-
-    return mask
+    return blurring_mask
 
 
 @numba_util.jit()

@@ -668,44 +668,6 @@ def test__blurring_mask_2d_from__mask_extends_beyond_edge_so_raises_mask_excepti
         util.mask_2d.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
 
 
-def test__mask_2d_via_shape_native_and_native_for_slim():
-    slim_to_native = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    shape = (2, 2)
-
-    mask = util.mask_2d.mask_2d_via_shape_native_and_native_for_slim(
-        shape_native=shape, native_for_slim=slim_to_native
-    )
-
-    assert (mask == np.array([[False, False], [False, False]])).all()
-
-    slim_to_native = np.array([[0, 0], [0, 1], [1, 0]])
-    shape = (2, 2)
-
-    mask = util.mask_2d.mask_2d_via_shape_native_and_native_for_slim(
-        shape_native=shape, native_for_slim=slim_to_native
-    )
-
-    assert (mask == np.array([[False, False], [False, True]])).all()
-
-    slim_to_native = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
-    shape = (3, 4)
-
-    mask = util.mask_2d.mask_2d_via_shape_native_and_native_for_slim(
-        shape_native=shape, native_for_slim=slim_to_native
-    )
-
-    assert (
-        mask
-        == np.array(
-            [
-                [False, False, True, True],
-                [False, True, True, True],
-                [False, False, True, False],
-            ]
-        )
-    ).all()
-
-
 def test__mask_1d_indexes_from():
     mask = np.array(
         [
