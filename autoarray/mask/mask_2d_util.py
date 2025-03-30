@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.ndimage import convolve
 from typing import Tuple
 import warnings
 
@@ -308,12 +309,58 @@ def mask_2d_via_pixel_coordinates_from(
 
     if buffer == 0:
         return mask_2d
-    else:
-        return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
+    return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
 
 
-from scipy.ndimage import convolve
+import numpy as np
 
+
+def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
+    """
+    Compute the minimum 1D distance in the y and x directions from any False value at the mask's extreme positions
+    (leftmost, rightmost, topmost, bottommost) to its closest edge.
+
+    Parameters
+    ----------
+    mask
+        A 2D boolean array where False represents the unmasked region.
+
+    Returns
+    -------
+    The smallest distances of any extreme False value to the nearest edge in the vertical (y) and horizontal (x)
+    directions.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...     [ True,  True,  True,  True],
+    ...     [ True, False, False,  True],
+    ...     [ True, False,  True,  True],
+    ...     [ True,  True,  True,  True]
+    ... ])
+    >>> min_false_distance_to_edge(mask)
+    (1, 1)
+    """
+    false_indices = np.column_stack(np.where(mask == False))
+
+    if false_indices.size == 0:
+        raise ValueError("No False values found in the mask.")
+
+    leftmost = false_indices[np.argmin(false_indices[:, 1])]
+    rightmost = false_indices[np.argmax(false_indices[:, 1])]
+    topmost = false_indices[np.argmin(false_indices[:, 0])]
+    bottommost = false_indices[np.argmax(false_indices[:, 0])]
+
+    height, width = mask.shape
+
+    # Compute distances to respective edges
+    left_dist = leftmost[1]  # Distance to left edge (column index)
+    right_dist = width - 1 - rightmost[1]  # Distance to right edge
+    top_dist = topmost[0]  # Distance to top edge (row index)
+    bottom_dist = height - 1 - bottommost[0]  # Distance to bottom edge
+
+    # Return the minimum distance to an edge
+    return min(top_dist, bottom_dist), min(left_dist, right_dist)
 
 def blurring_mask_2d_from(
     mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
@@ -350,18 +397,25 @@ def blurring_mask_2d_from(
 
     """
 
-    # Create a (3, 3) kernel of ones
+    y_distance, x_distance = min_false_distance_to_edge(mask_2d)
+
+    y_kernel_distance = (kernel_shape_native[0]) // 2
+    x_kernel_distance = (kernel_shape_native[1]) // 2
+
+    if (y_distance < y_kernel_distance) or (x_distance < x_kernel_distance):
+
+        raise exc.MaskException(
+            "The input mask is too small for the kernel shape. "
+            "Please pad the mask before computing the blurring mask."
+        )
+
     kernel = np.ones(kernel_shape_native, dtype=np.uint8)
 
-    # Convolve the mask with the kernel, applying logical AND to maintain 'True' regions
     convolved_mask = convolve(mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0)
 
-    # We want to return the mask where the convolved value is the full kernel size (i.e., 9 for a 3x3 kernel)
     result_mask = convolved_mask == np.prod(kernel_shape_native)
 
     blurring_mask = ~mask_2d + result_mask
-
-    print(blurring_mask * convolved_mask)
 
     return blurring_mask
 
