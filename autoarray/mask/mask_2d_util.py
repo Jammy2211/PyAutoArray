@@ -457,17 +457,11 @@ def blurring_mask_2d_from(
     """
 
     # Get the distance from False values to edges
-    y_distance, x_distance = min_false_distance_to_edge(
-        mask_2d
-    )
+    y_distance, x_distance = min_false_distance_to_edge(mask_2d)
 
     # Compute kernel half-size in y and x direction
-    y_kernel_distance = (
-        kernel_shape_native[0]
-    ) // 2
-    x_kernel_distance = (
-        kernel_shape_native[1]
-    ) // 2
+    y_kernel_distance = (kernel_shape_native[0]) // 2
+    x_kernel_distance = (kernel_shape_native[1]) // 2
 
     # Check if mask is too small for the kernel size
     if (y_distance < y_kernel_distance) or (x_distance < x_kernel_distance):
@@ -477,29 +471,18 @@ def blurring_mask_2d_from(
         )
 
     # Create a kernel with the given PSF shape
-    kernel = np.ones(
-        kernel_shape_native, dtype=np.uint8
-    )
+    kernel = np.ones(kernel_shape_native, dtype=np.uint8)
 
     # Convolve mask with kernel producing non-zero values around mask False values
-    convolved_mask = convolve(
-        mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0
-    )
+    convolved_mask = convolve(mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0)
 
     # Identify pixels that are non-zero and fully covered by kernel
-    result_mask = convolved_mask == np.prod(
-        kernel_shape_native
-    )
+    result_mask = convolved_mask == np.prod(kernel_shape_native)
 
     # Create the blurring mask by removing False values in original mask
-    blurring_mask = (
-        ~mask_2d + result_mask
-    )
-
-    return blurring_mask
+    return ~mask_2d + result_mask
 
 
-@numba_util.jit()
 def mask_slim_indexes_from(
     mask_2d: np.ndarray, return_masked_indexes: bool = True
 ) -> np.ndarray:
@@ -509,12 +492,12 @@ def mask_slim_indexes_from(
     For example, for the following ``Mask2D``:
 
     ::
-        [[True,  True,  True, True]
+        [[True,  True,  True, True],
          [True, False, False, True],
          [True, False,  True, True],
          [True,  True,  True, True]]
 
-    This has three unmasked (``False`` values) which have the ``slim`` indexes, there ``unmasked_slim`` is:
+    This has three unmasked (``False`` values) which have the ``slim`` indexes, their ``unmasked_slim`` is:
 
     ::
         [0, 1, 2]
@@ -522,36 +505,30 @@ def mask_slim_indexes_from(
     Parameters
     ----------
     mask_2d
-        The mask for which the 1D unmasked pixel indexes are computed.
+        A 2D array representing the mask, where `True` indicates a masked pixel and `False` indicates an unmasked pixel.
     return_masked_indexes
-        Whether to return the masked index values (`value=True`) or the unmasked index values (`value=False`).
+        A boolean flag that determines whether to return indexes of masked (`True`) or unmasked (`False`) pixels.
 
     Returns
     -------
-    np.ndarray
-        The 1D indexes of all unmasked pixels on the mask.
+    A 1D array of indexes corresponding to either the masked or unmasked pixels in the mask.
+
+    Examples
+    --------
+    >>> mask = np.array([[True, True, True, True],
+    ...                  [True, False, False, True],
+    ...                  [True, False, True, True],
+    ...                  [True, True, True, True]])
+    >>> mask_slim_indexes_from(mask, return_masked_indexes=True)
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> mask_slim_indexes_from(mask, return_masked_indexes=False)
+    array([10, 11])
     """
+    # Flatten the mask and use np.where to get indexes of either True or False
+    mask_flat = mask_2d.flatten()
 
-    mask_pixel_total = 0
-
-    for y in range(0, mask_2d.shape[0]):
-        for x in range(0, mask_2d.shape[1]):
-            if mask_2d[y, x] == return_masked_indexes:
-                mask_pixel_total += 1
-
-    mask_pixels = np.zeros(mask_pixel_total)
-    mask_index = 0
-    regular_index = 0
-
-    for y in range(0, mask_2d.shape[0]):
-        for x in range(0, mask_2d.shape[1]):
-            if mask_2d[y, x] == return_masked_indexes:
-                mask_pixels[mask_index] = regular_index
-                mask_index += 1
-
-            regular_index += 1
-
-    return mask_pixels
+    # Get the indexes where the mask is equal to return_masked_indexes (True or False)
+    return np.where(mask_flat == return_masked_indexes)[0]
 
 
 @numba_util.jit()
