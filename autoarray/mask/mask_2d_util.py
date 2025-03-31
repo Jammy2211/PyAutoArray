@@ -584,6 +584,24 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least one of its 8
     direct neighbors is masked (is `True`).
 
+    For example, for the following ``Mask2D``:
+
+    ::
+        [[True,  True,  True,  True, True],
+         [True, False, False, False, True],
+         [True, False, False, False, True],
+         [True, False, False, False, True],
+         [True,  True,  True,  True, True]]
+
+    The `edge_slim` indexes (given via ``mask_2d.derive_indexes.edge_slim``) is given by:
+
+    ::
+         [0, 1, 2, 3, 5, 6, 7, 8]
+
+    Note that index 4 is skipped, which corresponds to the ``False`` value in the centre of the mask, because it
+    does not neighbor a ``True`` value in any one of the eight neighboring directions and is therefore not at
+    an edge.
+
     Parameters
     ----------
     mask_2d
@@ -591,20 +609,19 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
-        A 1D array of indexes of all edge pixels on the mask.
+    A 1D array of indexes of all edge pixels on the mask.
 
     Examples
     --------
     >>> mask = np.array([
     ...     [True, True, True, True, True],
-    ...     [True, False, False, True, True],
     ...     [True, False, False, False, True],
-    ...     [True, True, False, True, True],
+    ...     [True, False, False, False, True],
+    ...     [True, False, False, False, True],
     ...     [True, True, True, True, True]
     ... ])
     >>> edge_1d_indexes_from(mask)
-    array([1, 2, 5, 7, 8, 9])
+    array([0, 1, 2, 3, 5, 6, 7, 8])
     """
     # Pad the mask to handle edge cases without index errors
     padded_mask = np.pad(mask_2d, pad_width=1, mode='constant', constant_values=True)
@@ -629,102 +646,12 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     return index_array[edge_mask]
 
 
-@numba_util.jit()
-def check_if_border_pixel(
-    mask_2d: np.ndarray, edge_pixel_slim: int, native_to_slim: np.ndarray
-) -> bool:
-    """
-    Checks if an input [y,x] pixel on the input `mask` is a border-pixel.
-
-    A borders pixel is a pixel which:
-
-    1) is not fully surrounding by `False` mask values.
-    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-       left, right).
-
-    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
-    pixels in an annular mask are edge pixels but not borders pixels.
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the input pixel is checked if it is a border pixel.
-    edge_pixel_slim
-        The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `native_index_for_slim_index_2d`).
-    native_to_slim
-        An array describing the native 2D array index that every slimmed array index maps too.
-
-    Returns
-    -------
-    bool
-        If `True` the pixel on the mask is a border pixel, else a `False` is returned because it is not.
-    """
-    edge_pixel_index = int(edge_pixel_slim)
-
-    y = int(native_to_slim[edge_pixel_index, 0])
-    x = int(native_to_slim[edge_pixel_index, 1])
-
-    if (
-        np.sum(mask_2d[0:y, x]) == y
-        or np.sum(mask_2d[y, x : mask_2d.shape[1]]) == mask_2d.shape[1] - x - 1
-        or np.sum(mask_2d[y : mask_2d.shape[0], x]) == mask_2d.shape[0] - y - 1
-        or np.sum(mask_2d[y, 0:x]) == x
-    ):
-        return True
-    else:
-        return False
-
-
-@numba_util.jit()
-def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
-    """
-    Returns the total number of border-pixels in a mask.
-
-    A borders pixel is a pixel which:
-
-    1) is not fully surrounding by `False` mask values.
-    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-       left, right).
-
-    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
-    pixels in an annular mask are edge pixels but not borders pixels.
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the total number of border pixels is computed.
-    edge_pixel_1d
-        The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `native_index_for_slim_index_2d`).
-    native_to_slim
-        An array describing the 2D array index that every 1D array index maps too.
-
-    Returns
-    -------
-    int
-        The total number of border pixels.
-    """
-
-    border_pixel_total = 0
-
-    for i in range(edge_pixels.shape[0]):
-        if check_if_border_pixel(mask_2d, edge_pixels[i], native_to_slim):
-            border_pixel_total += 1
-
-    return border_pixel_total
-
-
-@numba_util.jit()
 def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
-    Returns a slim array of shape [total_unmasked_border_pixels] listing all borders pixel indexes in the mask.
+    Returns a 1D array listing all border pixel indexes in the mask.
 
-    A borders pixel is a pixel which:
-
-    1) is not fully surrounding by `False` mask values.
-    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-       left, right).
+    A border pixel is an unmasked pixel (`False` value) that can reach the edge of the mask without encountering
+    a masked (`True`) pixel in any of the four cardinal directions (up, down, left, right).
 
     The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
     pixels in an annular mask are edge pixels but not borders pixels.
@@ -753,39 +680,53 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     Parameters
     ----------
     mask_2d
-        The mask for which the slimmed border pixel indexes are calculated.
+        A 2D boolean array where `False` values indicate unmasked pixels.
 
     Returns
     -------
-    np.ndarray
-        The slimmed indexes of all border pixels on the mask.
+    A 1D array of indexes of all border pixels on the mask.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...    [True,  True,  True,  True,  True,  True,  True,  True, True],
+    ...    [True, False, False, False, False, False, False, False, True],
+    ...    [True, False,  True,  True,  True,  True,  True, False, True],
+    ...    [True, False,  True, False, False, False,  True, False, True],
+    ...    [True, False,  True, False,  True, False,  True, False, True],
+    ...    [True, False,  True, False, False, False,  True, False, True],
+    ...    [True, False,  True,  True,  True,  True,  True, False, True],
+    ...    [True, False, False, False, False, False, False, False, True],
+    ...    [True,  True,  True,  True,  True,  True,  True,  True, True]
+    ... ])
+    >>> border_slim_indexes_from(mask)
+    array([0, 1, 2, 3, 5, 6, 7, 11, 12, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
     """
 
-    edge_pixels = edge_1d_indexes_from(mask_2d=mask_2d)
-    native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(
-        mask_2d=mask_2d,
-    )
+    # Compute cumulative sums along each direction
+    up_sums = np.cumsum(mask_2d, axis=0)
+    down_sums = np.cumsum(mask_2d[::-1, :], axis=0)[::-1, :]
+    left_sums = np.cumsum(mask_2d, axis=1)
+    right_sums = np.cumsum(mask_2d[:, ::-1], axis=1)[:, ::-1]
 
-    border_pixel_total = total_border_pixels_from(
-        mask_2d=mask_2d,
-        edge_pixels=edge_pixels,
-        native_to_slim=native_index_for_slim_index_2d,
-    )
+    # Get mask dimensions
+    height, width = mask_2d.shape
 
-    border_pixels = np.zeros(border_pixel_total)
+    # Identify border pixels: where the full length in any direction is True
+    border_mask = (
+        (up_sums == np.arange(height)[:, None]) |
+        (down_sums == np.arange(height - 1, -1, -1)[:, None]) |
+        (left_sums == np.arange(width)[None, :]) |
+        (right_sums == np.arange(width - 1, -1, -1)[None, :])
+    ) & ~mask_2d
 
-    border_pixel_index = 0
+    # Create an index array where False entries get sequential 1D indices
+    index_array = np.full(mask_2d.shape, fill_value=-1, dtype=int)
+    false_indices = np.flatnonzero(~mask_2d)
+    index_array[~mask_2d] = np.arange(len(false_indices))
 
-    for edge_pixel_index in range(edge_pixels.shape[0]):
-        if check_if_border_pixel(
-            mask_2d=mask_2d,
-            edge_pixel_slim=edge_pixels[edge_pixel_index],
-            native_to_slim=native_index_for_slim_index_2d,
-        ):
-            border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]
-            border_pixel_index += 1
-
-    return border_pixels
+    # Return the 1D indexes of the border pixels
+    return index_array[border_mask]
 
 
 @numba_util.jit()
