@@ -53,7 +53,7 @@ class Kernel2D(AbstractArray2D):
         )
 
         if normalize:
-            self._array[:] = np.divide(self._array, np.sum(self._array))
+            self._array = np.divide(self._array, np.sum(self._array))
 
     @classmethod
     def no_mask(

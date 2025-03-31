@@ -162,7 +162,7 @@ class Imaging(AbstractDataset):
 
         if psf is not None and use_normalized_psf:
             psf = Kernel2D.no_mask(
-                values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
+                values=psf.native._array, pixel_scales=psf.pixel_scales, normalize=True
             )
 
         self.psf = psf
