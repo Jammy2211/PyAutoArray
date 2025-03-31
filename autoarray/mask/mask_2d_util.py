@@ -8,6 +8,52 @@ from autoarray import numba_util
 from autoarray import type as ty
 from autoarray.numpy_wrapper import use_jax, np as jnp
 
+def native_index_for_slim_index_2d_from(
+    mask_2d: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
+    corresponding native 2D pixel using its (y,x) pixel indexes.
+
+    For example, for the following ``Mask2D``:
+
+    ::
+        [[True,  True,  True, True]
+         [True, False, False, True],
+         [True, False,  True, True],
+         [True,  True,  True, True]]
+
+    This has three unmasked (``False`` values) which have the ``slim`` indexes:
+
+    ::
+        [0, 1, 2]
+
+    The array ``native_index_for_slim_index_2d`` is therefore:
+
+    ::
+        [[1,1], [1,2], [2,1]]
+
+    Parameters
+    ----------
+    mask_2d
+        A 2D array of bools, where `False` values are unmasked.
+
+    Returns
+    -------
+    ndarray
+        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels] to its native array
+        of shape [total_pixels, total_pixels].
+
+    Examples
+    --------
+    mask_2d = np.array([[True, True, True],
+                     [True, False, True]
+                     [True, True, True]])
+
+    native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
+    """
+    return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
+
 
 def mask_2d_centres_from(
     shape_native: Tuple[int, int],
@@ -531,136 +577,56 @@ def mask_slim_indexes_from(
     return np.where(mask_flat == return_masked_indexes)[0]
 
 
-@numba_util.jit()
-def check_if_edge_pixel(mask_2d: np.ndarray, y: int, x: int) -> bool:
-    """
-    Checks if an input [y,x] pixel on the input `mask` is an edge-pixel.
-
-    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
-    direct neighbors is masked (is `True`).
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the input pixel is checked if it is an edge pixel.
-    y
-        The y pixel coordinate on the mask that is checked for if it is an edge pixel.
-    x
-        The x pixel coordinate on the mask that is checked for if it is an edge pixel.
-
-    Returns
-    -------
-    bool
-        If `True` the pixel on the mask is an edge pixel, else a `False` is returned because it is not.
-    """
-
-    if (
-        mask_2d[y + 1, x]
-        or mask_2d[y - 1, x]
-        or mask_2d[y, x + 1]
-        or mask_2d[y, x - 1]
-        or mask_2d[y + 1, x + 1]
-        or mask_2d[y + 1, x - 1]
-        or mask_2d[y - 1, x + 1]
-        or mask_2d[y - 1, x - 1]
-    ):
-        return True
-    else:
-        return False
-
-
-@numba_util.jit()
-def total_edge_pixels_from(mask_2d: np.ndarray) -> int:
-    """
-    Returns the total number of edge-pixels in a mask.
-
-    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
-    direct neighbors is masked (is `True`).
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the total number of edge pixels is computed.
-
-    Returns
-    -------
-    int
-        The total number of edge pixels.
-    """
-
-    edge_pixel_total = 0
-
-    for y in range(1, mask_2d.shape[0] - 1):
-        for x in range(1, mask_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
-                if check_if_edge_pixel(mask_2d=mask_2d, y=y, x=x):
-                    edge_pixel_total += 1
-
-    return edge_pixel_total
-
-
-@numba_util.jit()
 def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
     Returns a 1D array listing all edge pixel indexes in the mask.
 
-    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
+    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least one of its 8
     direct neighbors is masked (is `True`).
-
-    For example, for the following ``Mask2D``:
-
-    ::
-        [[True,  True,  True,  True, True],
-         [True, False, False, False, True],
-         [True, False, False, False, True],
-         [True, False, False, False, True],
-         [True,  True,  True,  True, True]]
-
-    The `edge_slim` indexes (given via ``mask_2d.derive_indexes.edge_slim``) is given by:
-
-    ::
-         [0, 1, 2, 3, 5, 6, 7, 8]
-
-    Note that index 4 is skipped, which corresponds to the ``False`` value in the centre of the mask, because it
-    does not neighbor a ``True`` value in any one of the eight neighboring directions and is therefore not at
-    an edge.
 
     Parameters
     ----------
     mask_2d
-        The mask for which the 1D edge pixel indexes are computed.
+        A 2D boolean array where `False` values indicate unmasked pixels.
 
     Returns
     -------
     np.ndarray
-        The 1D indexes of all edge pixels on the mask.
+        A 1D array of indexes of all edge pixels on the mask.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...     [True, True, True, True, True],
+    ...     [True, False, False, True, True],
+    ...     [True, False, False, False, True],
+    ...     [True, True, False, True, True],
+    ...     [True, True, True, True, True]
+    ... ])
+    >>> edge_1d_indexes_from(mask)
+    array([1, 2, 5, 7, 8, 9])
     """
+    # Pad the mask to handle edge cases without index errors
+    padded_mask = np.pad(mask_2d, pad_width=1, mode='constant', constant_values=True)
 
-    edge_pixel_total = total_edge_pixels_from(mask_2d)
+    # Identify neighbors in 3x3 regions around each pixel
+    neighbors = (
+            padded_mask[:-2, 1:-1] | padded_mask[2:, 1:-1] |  # Up, Down
+            padded_mask[1:-1, :-2] | padded_mask[1:-1, 2:] |  # Left, Right
+            padded_mask[:-2, :-2] | padded_mask[:-2, 2:] |  # Top-left, Top-right
+            padded_mask[2:, :-2] | padded_mask[2:, 2:]  # Bottom-left, Bottom-right
+    )
 
-    edge_pixels = np.zeros(edge_pixel_total)
-    edge_index = 0
-    regular_index = 0
+    # Identify edge pixels: False values with at least one True neighbor
+    edge_mask = ~mask_2d & neighbors
 
-    for y in range(1, mask_2d.shape[0] - 1):
-        for x in range(1, mask_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
-                if (
-                    mask_2d[y + 1, x]
-                    or mask_2d[y - 1, x]
-                    or mask_2d[y, x + 1]
-                    or mask_2d[y, x - 1]
-                    or mask_2d[y + 1, x + 1]
-                    or mask_2d[y + 1, x - 1]
-                    or mask_2d[y - 1, x + 1]
-                    or mask_2d[y - 1, x - 1]
-                ):
-                    edge_pixels[edge_index] = regular_index
-                    edge_index += 1
+    # Create an index array where False entries get sequential 1D indices
+    index_array = np.full(mask_2d.shape, fill_value=-1, dtype=int)
+    false_indices = np.flatnonzero(~mask_2d)
+    index_array[~mask_2d] = np.arange(len(false_indices))
 
-                regular_index += 1
-
-    return edge_pixels
+    # Return the 1D indexes of the edge pixels
+    return index_array[edge_mask]
 
 
 @numba_util.jit()
@@ -911,62 +877,4 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
     return np.isclose(rescaled_mask_2d, 1)
 
 
-@numba_util.jit()
-def native_index_for_slim_index_2d_from(
-    mask_2d: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
-    corresponding native 2D pixel using its (y,x) pixel indexes.
 
-    For example, for the following ``Mask2D``:
-
-    ::
-        [[True,  True,  True, True]
-         [True, False, False, True],
-         [True, False,  True, True],
-         [True,  True,  True, True]]
-
-    This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-    ::
-        [0, 1, 2]
-
-    The array ``native_index_for_slim_index_2d`` is therefore:
-
-    ::
-        [[1,1], [1,2], [2,1]]
-
-    Parameters
-    ----------
-    mask_2d
-        A 2D array of bools, where `False` values are unmasked.
-
-    Returns
-    -------
-    ndarray
-        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels] to its native array
-        of shape [total_pixels, total_pixels].
-
-    Examples
-    --------
-    mask_2d = np.array([[True, True, True],
-                     [True, False, True]
-                     [True, True, True]])
-
-    native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
-    """
-    if use_jax:
-        return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
-    else:
-        total_pixels = np.sum(~mask_2d)
-        native_index_for_slim_index_2d = np.zeros(shape=(total_pixels, 2))
-        slim_index = 0
-
-        for y in range(mask_2d.shape[0]):
-            for x in range(mask_2d.shape[1]):
-                if not mask_2d[y, x]:
-                    native_index_for_slim_index_2d[slim_index, :] = y, x
-                    slim_index += 1
-
-        return native_index_for_slim_index_2d

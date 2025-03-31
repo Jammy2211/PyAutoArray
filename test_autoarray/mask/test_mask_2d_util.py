@@ -695,19 +695,6 @@ def test__mask_1d_indexes_from():
     assert masked_slim[-1] == 48
 
 
-def test__total_edge_pixels_from_mask():
-    mask_2d = np.array(
-        [
-            [True, True, True, True, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, False, False, False, True],
-            [True, True, True, True, True],
-        ]
-    )
-
-    assert util.mask_2d.total_edge_pixels_from(mask_2d=mask_2d) == 8
-
 
 def test__edge_1d_indexes_from():
     mask = np.array(
@@ -723,6 +710,8 @@ def test__edge_1d_indexes_from():
     )
 
     edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
+
+    print(edge_pixels)
 
     assert (edge_pixels == np.array([0])).all()
 
