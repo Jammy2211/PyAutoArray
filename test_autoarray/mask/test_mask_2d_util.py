@@ -5,6 +5,34 @@ import numpy as np
 import pytest
 
 
+def test__native_index_for_slim_index_2d_from():
+    mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
+
+    sub_mask_index_for_sub_mask_1d_index = (
+        util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask)
+    )
+
+    assert (sub_mask_index_for_sub_mask_1d_index == np.array([[1, 1]])).all()
+
+    mask = np.array(
+        [
+            [True, False, True],
+            [False, False, False],
+            [True, False, True],
+            [True, True, False],
+        ]
+    )
+
+    sub_mask_index_for_sub_mask_1d_index = (
+        util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask)
+    )
+
+    assert (
+        sub_mask_index_for_sub_mask_1d_index
+        == np.array([[0, 1], [1, 0], [1, 1], [1, 2], [2, 1], [3, 2]])
+    ).all()
+
+
 def test__mask_2d_circular_from():
     mask = util.mask_2d.mask_2d_circular_from(
         shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=0.5
@@ -918,34 +946,6 @@ def test__border_slim_indexes_from():
                 31,
             ]
         )
-    ).all()
-
-
-def test__native_index_for_slim_index_2d_from():
-    mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
-
-    sub_mask_index_for_sub_mask_1d_index = (
-        util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask)
-    )
-
-    assert (sub_mask_index_for_sub_mask_1d_index == np.array([[1, 1]])).all()
-
-    mask = np.array(
-        [
-            [True, False, True],
-            [False, False, False],
-            [True, False, True],
-            [True, True, False],
-        ]
-    )
-
-    sub_mask_index_for_sub_mask_1d_index = (
-        util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask)
-    )
-
-    assert (
-        sub_mask_index_for_sub_mask_1d_index
-        == np.array([[0, 1], [1, 0], [1, 1], [1, 2], [2, 1], [3, 2]])
     ).all()
 
 

@@ -4,9 +4,7 @@ from typing import Tuple
 import warnings
 
 from autoarray import exc
-from autoarray import numba_util
-from autoarray import type as ty
-from autoarray.numpy_wrapper import use_jax, np as jnp
+from autoarray.numpy_wrapper import np as jnp
 
 def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray,
@@ -402,10 +400,6 @@ def mask_2d_via_pixel_coordinates_from(
         return mask_2d
     return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)  # Apply buf
 
-
-import numpy as np
-
-
 def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     """
     Compute the minimum 1D distance in the y and x directions from any `False` value at the mask's extreme positions
@@ -729,38 +723,61 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     return index_array[border_mask]
 
 
-@numba_util.jit()
 def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:
     """
-    Returns a buffed mask from an input mask, where the buffed mask is the input mask but all `False` entries in the
-    mask are buffed by an integer amount in all 8 surrouning pixels.
+    Returns a buffed mask from an input mask, where all `False` entries in the mask are "buffed" (set to `False`)
+    within a specified buffer range in all 8 surrounding directions.
+
+    A "buffed" mask is created by marking all the pixels within a square of size `buffer` around each `False`
+    entry as `False`. This process simulates expanding the masked region around each `False` entry by the specified
+    buffer distance.
 
     Parameters
     ----------
     mask_2d
-        The mask whose `False` entries are buffed.
+        A 2D boolean array where `False` values indicate unmasked pixels.
     buffer
-        The number of pixels around each `False` entry that pixel are buffed in all 8 directions.
+        The number of pixels around each `False` entry that should be buffed in all 8 surrounding directions.
+        This controls how far the "buffed" region extends from each `False` value.
 
     Returns
     -------
-    np.ndarray
-        The buffed mask.
+    A new 2D boolean array where all `False` entries in the input mask are expanded by the specified buffer
+    distance, setting all pixels within the buffer range to `False`.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...     [True, False, True],
+    ...     [False, False, False],
+    ...     [True, True, False]
+    ... ])
+    >>> buffed_mask_2d_from(mask, buffer=1)
+    array([[False, False, False],
+           [False, False, False],
+           [False, False, False]])
     """
+    # Initialize buffed mask as a copy of the input mask
     buffed_mask_2d = mask_2d.copy()
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                for y0 in range(y - buffer, y + 1 + buffer):
-                    for x0 in range(x - buffer, x + 1 + buffer):
-                        if (
-                            y0 >= 0
-                            and x0 >= 0
-                            and y0 <= mask_2d.shape[0] - 1
-                            and x0 <= mask_2d.shape[1] - 1
-                        ):
-                            buffed_mask_2d[y0, x0] = False
+    # Identify the coordinates of all False entries
+    false_coords = np.nonzero(~mask_2d)
+
+    # Create grid of offsets for the neighboring pixels (buffer range)
+    buffer_range = np.arange(-buffer, buffer + 1)
+
+    # Generate all possible neighbors for each False entry
+    dy, dx = np.meshgrid(buffer_range, buffer_range, indexing='ij')
+    neighbors = np.stack([dy.ravel(), dx.ravel()], axis=-1)
+
+    # Calculate all neighboring positions for all False coordinates
+    all_neighbors = np.add(np.array(false_coords).T[:, np.newaxis], neighbors)
+
+    # Clip the neighbors to stay within the bounds of the mask
+    valid_neighbors = np.clip(all_neighbors, [0, 0], [mask_2d.shape[0] - 1, mask_2d.shape[1] - 1])
+
+    # Update the buffed mask: set all the neighbors to False
+    buffed_mask_2d[valid_neighbors[:, :, 0], valid_neighbors[:, :, 1]] = False
 
     return buffed_mask_2d
 
