@@ -600,7 +600,6 @@ def grid_pixel_centres_2d_slim_from(
 
 
 
-@numba_util.jit()
 def grid_pixel_indexes_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -653,22 +652,12 @@ def grid_pixel_indexes_2d_slim_from(
         origin=origin,
     )
 
-    if use_jax:
-        grid_pixel_indexes_2d_slim = (
-            (grid_pixels_2d_slim * np.array([shape_native[1], 1]))
-            .sum(axis=1)
-            .astype(int)
-        )
-    else:
-        grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
+    return (
+        (grid_pixels_2d_slim * np.array([shape_native[1], 1]))
+        .sum(axis=1)
+        .astype(int)
+    )
 
-        for slim_index in range(grid_pixels_2d_slim.shape[0]):
-            grid_pixel_indexes_2d_slim[slim_index] = int(
-                grid_pixels_2d_slim[slim_index, 0] * shape_native[1]
-                + grid_pixels_2d_slim[slim_index, 1]
-            )
-
-    return grid_pixel_indexes_2d_slim
 
 
 @numba_util.jit()
