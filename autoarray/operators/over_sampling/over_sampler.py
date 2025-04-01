@@ -147,11 +147,11 @@ class OverSampler:
         )
 
     def tree_flatten(self):
-        return (self.mask,), ()
+        return (self.mask, self.sub_size), ()
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
-        return cls(mask=children[0])
+        return cls(mask=children[0], sub_size=children[1])
 
     @property
     def sub_total(self):

@@ -55,29 +55,20 @@ def check_grid_2d(grid_2d: np.ndarray):
 
 def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
     if len(grid_2d.shape) == 2:
-
-        def exception_message():
+        if grid_2d.shape[0] != mask_2d.pixels_in_mask:
             raise exc.GridException(
                 f"""
                 The input 2D grid does not have the same number of values as pixels in
                 the mask.
-                
+
                 The shape of the input grid_2d is {grid_2d.shape}.
                 The mask shape_native is {mask_2d.shape_native}.
                 The mask number of pixels is {mask_2d.pixels_in_mask}. 
                 """
             )
 
-        jax.lax.cond(
-            grid_2d.shape[0] != mask_2d.pixels_in_mask,
-            lambda _: jax.debug.callback(exception_message),
-            lambda _: None,
-            None,
-        )
-
     elif len(grid_2d.shape) == 3:
-
-        def exception_message():
+        if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native:
             raise exc.GridException(
                 f"""
                 The input 2D grid is not the same dimensions as the mask
@@ -87,13 +78,6 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 The mask shape_native is {mask_2d.shape_native}.
                 """
             )
-
-        jax.lax.cond(
-            (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native,
-            lambda _: jax.debug.callback(exception_message),
-            lambda _: None,
-            None,
-        )
 
 
 def convert_grid_2d(
@@ -129,8 +113,8 @@ def convert_grid_2d(
     is_native = len(grid_2d.shape) == 3
 
     if is_native:
-        grid_2d = grid_2d.at[:, :, 0].multiply(np.invert(mask_2d.array))
-        grid_2d = grid_2d.at[:, :, 1].multiply(np.invert(mask_2d.array))
+        grid_2d[:, :, 0] *= np.invert(mask_2d)
+        grid_2d[:, :, 1] *= np.invert(mask_2d)
 
     if is_native == store_native:
         return grid_2d
@@ -140,9 +124,10 @@ def convert_grid_2d(
             mask=np.array(mask_2d),
         )
     return grid_2d_native_from(
-        grid_2d_slim=np.array(grid_2d.array),
+        grid_2d_slim=np.array(grid_2d),
         mask_2d=np.array(mask_2d),
     )
+
 
 def convert_grid_2d_to_slim(
     grid_2d: Union[np.ndarray, List], mask_2d: Mask2D

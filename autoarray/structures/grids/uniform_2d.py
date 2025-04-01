@@ -1,4 +1,5 @@
 from __future__ import annotations
+import jax.numpy as jnp
 import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
@@ -14,7 +15,6 @@ from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
-from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.operators.over_sampling import over_sample_util
@@ -162,7 +162,7 @@ class Grid2D(Structure):
             over sampled grid is not passed in it is computed assuming uniformity.
         """
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=values,
+            grid_2d=np.array(values),
             mask_2d=mask,
             store_native=store_native,
         )
