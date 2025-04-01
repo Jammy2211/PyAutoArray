@@ -229,16 +229,11 @@ class AbstractArray2D(Structure):
             print(array_2d.native) # masked 2D data representation.
         """
 
-        try:
-            values = values._array
-        except AttributeError:
-            pass
-
         if conf.instance["general"]["structures"]["native_binned_only"]:
             store_native = True
 
         values = array_2d_util.convert_array_2d(
-            array_2d=values,
+            array_2d=np.array(values),
             mask_2d=mask,
             store_native=store_native,
             skip_mask=skip_mask,

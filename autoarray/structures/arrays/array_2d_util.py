@@ -15,6 +15,7 @@ from functools import partial
 
 
 
+
 def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     """
     If the input array input a convert is of type list, convert it to type NumPy array.
@@ -24,22 +25,16 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     array : list or ndarray
         The array which may be converted to an ndarray
     """
-    array = jax.lax.cond(
-            type(array) is list, lambda _: np.asarray(array), lambda _: array, None
-        )
+    array = np.asarray(array)
+
     return array
 
 
 def check_array_2d(array_2d: np.ndarray):
-    def exception_message():
+    if len(array_2d.shape) != 1:
         raise exc.ArrayException(
             "An array input into the Array2D.__new__ method is not of shape 1."
         )
-
-    cond = len(array_2d.shape) != 1
-    jax.lax.cond(
-        cond, lambda _: jax.debug.callback(exception_message), lambda _: None, None
-    )
 
 def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
     """
@@ -57,57 +52,38 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
     mask_2d
         The mask of the output Array2D.
     """
+    if len(array_2d.shape) == 1:
+        if array_2d.shape[0] != mask_2d.pixels_in_mask:
+            raise exc.ArrayException(
+                f"""
+                The input array is a slim 1D array, but it does not have the same number of entries as pixels in
+                the mask.
 
-    def exception_message_1():
-        raise exc.ArrayException(
-            f"""
-            The input array is a slim 1D array, but it does not have the same number of entries as pixels in
-            the mask.
+                This indicates that the number of unmaksed pixels in the mask  is different to the input slim array 
+                shape.
 
-            This indicates that the number of unmaksed pixels in the mask  is different to the input slim array 
-            shape.
+                The shapes of the two arrays (which this exception is raised because they are different) are as follows:
 
-            The shapes of the two arrays (which this exception is raised because they are different) are as follows:
+                Input array_2d_slim.shape = {array_2d.shape[0]}
+                Input mask_2d.pixels_in_mask = {mask_2d.pixels_in_mask}
+                Input mask_2d.shape_native = {mask_2d.shape_native}
+                """
+            )
 
-            Input array_2d_slim.shape = {array_2d.shape[0]}
-            Input mask_2d.pixels_in_mask = {mask_2d.pixels_in_mask}
-            Input mask_2d.shape_native = {mask_2d.shape_native}
-            """
-        )
+    if len(array_2d.shape) == 2:
+        if array_2d.shape != mask_2d.shape_native:
+            raise exc.ArrayException(
+                f"""
+                The input array is 2D but not the same dimensions as the mask.
 
-    cond_1 = (len(array_2d.shape) == 1) and (
-        array_2d.shape[0] != mask_2d.pixels_in_mask
-    )
+                This indicates the mask's shape is different to the input array shape.
 
-    jax.lax.cond(
-        cond_1,
-        lambda _: jax.debug.callback(exception_message_1),
-        lambda _: None,
-        None,
-    )
+                The shapes of the two arrays (which this exception is raised because they are different) are as follows:
 
-    def exception_message_2():
-        raise exc.ArrayException(
-            f"""
-            The input array is 2D but not the same dimensions as the mask.
-
-            This indicates the mask's shape is different to the input array shape.
-
-            The shapes of the two arrays (which this exception is raised because they are different) are as follows:
-
-            Input array_2d shape = {array_2d.shape}
-            Input mask_2d shape_native = {mask_2d.shape_native}
-            """
-        )
-
-    cond_2 = (len(array_2d.shape) == 2) and (array_2d.shape != mask_2d.shape_native)
-
-    jax.lax.cond(
-        cond_2,
-        lambda _: jax.debug.callback(exception_message_2),
-        lambda _: None,
-        None,
-    )
+                Input array_2d shape = {array_2d.shape}
+                Input mask_2d shape_native = {mask_2d.shape_native}
+                """
+            )
 
 def convert_array_2d(
     array_2d: Union[np.ndarray, List],
@@ -143,7 +119,6 @@ def convert_array_2d(
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
     is_native = len(array_2d.shape) == 2
-    mask_2d = np.array(mask_2d)
 
     if is_native and not skip_mask:
         array_2d *= np.invert(mask_2d)
