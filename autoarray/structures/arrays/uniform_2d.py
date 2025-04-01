@@ -232,8 +232,13 @@ class AbstractArray2D(Structure):
         if conf.instance["general"]["structures"]["native_binned_only"]:
             store_native = True
 
+        try:
+            values = values._array
+        except AttributeError:
+            values = values
+
         values = array_2d_util.convert_array_2d(
-            array_2d=np.array(values),
+            array_2d=values,
             mask_2d=mask,
             store_native=store_native,
             skip_mask=skip_mask,
