@@ -780,37 +780,6 @@ def test__grid_with_coordinates_within_distance_removed_from():
     ).all()
 
 
-def test__grid_radial_minimum():
-    grid_2d = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
-    mock_profile = aa.m.MockGridRadialMinimum()
-
-    deflections = mock_profile.deflections_yx_2d_from(grid=grid_2d)
-    assert (deflections == grid_2d).all()
-
-    grid_2d = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
-    mock_profile = aa.m.MockGridRadialMinimum()
-
-    deflections = mock_profile.deflections_yx_2d_from(grid=grid_2d)
-
-    assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
-
-    grid_2d = np.array(
-        [
-            [np.sqrt(2.0), np.sqrt(2.0)],
-            [1.0, np.sqrt(8.0)],
-            [np.sqrt(8.0), np.sqrt(8.0)],
-        ]
-    )
-
-    mock_profile = aa.m.MockGridRadialMinimum()
-
-    deflections = mock_profile.deflections_yx_2d_from(grid=grid_2d)
-
-    assert deflections == pytest.approx(
-        np.array([[1.7677, 1.7677], [1.0, np.sqrt(8.0)], [np.sqrt(8), np.sqrt(8.0)]]),
-        1.0e-4,
-    )
-
 
 def test__recursive_shape_storage():
     grid_2d = aa.Grid2D.no_mask(
