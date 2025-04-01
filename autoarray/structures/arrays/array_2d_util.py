@@ -1,5 +1,7 @@
 from __future__ import annotations
-
+import jax
+import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
@@ -9,11 +11,8 @@ from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
 from autoarray import exc
-from autoarray.numpy_wrapper import use_jax, np, jit
 from functools import partial
 
-if use_jax:
-    import jax
 
 
 def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
@@ -25,13 +24,9 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     array : list or ndarray
         The array which may be converted to an ndarray
     """
-    if use_jax:
-        array = jax.lax.cond(
+    array = jax.lax.cond(
             type(array) is list, lambda _: np.asarray(array), lambda _: array, None
         )
-    elif type(array) is list:
-        array = np.asarray(array)
-
     return array
 
 
@@ -42,13 +37,9 @@ def check_array_2d(array_2d: np.ndarray):
         )
 
     cond = len(array_2d.shape) != 1
-    if use_jax:
-        jax.lax.cond(
-            cond, lambda _: jax.debug.callback(exception_message), lambda _: None, None
-        )
-    elif cond:
-        exception_message()
-
+    jax.lax.cond(
+        cond, lambda _: jax.debug.callback(exception_message), lambda _: None, None
+    )
 
 def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
     """
@@ -88,15 +79,12 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
         array_2d.shape[0] != mask_2d.pixels_in_mask
     )
 
-    if use_jax:
-        jax.lax.cond(
-            cond_1,
-            lambda _: jax.debug.callback(exception_message_1),
-            lambda _: None,
-            None,
-        )
-    elif cond_1:
-        exception_message_1()
+    jax.lax.cond(
+        cond_1,
+        lambda _: jax.debug.callback(exception_message_1),
+        lambda _: None,
+        None,
+    )
 
     def exception_message_2():
         raise exc.ArrayException(
@@ -114,16 +102,12 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
 
     cond_2 = (len(array_2d.shape) == 2) and (array_2d.shape != mask_2d.shape_native)
 
-    if use_jax:
-        jax.lax.cond(
-            cond_2,
-            lambda _: jax.debug.callback(exception_message_2),
-            lambda _: None,
-            None,
-        )
-    elif cond_2:
-        exception_message_2()
-
+    jax.lax.cond(
+        cond_2,
+        lambda _: jax.debug.callback(exception_message_2),
+        lambda _: None,
+        None,
+    )
 
 def convert_array_2d(
     array_2d: Union[np.ndarray, List],
@@ -159,8 +143,7 @@ def convert_array_2d(
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
     is_native = len(array_2d.shape) == 2
-    if use_jax:
-        mask_2d = mask_2d.array
+    mask_2d = np.array(mask_2d)
 
     if is_native and not skip_mask:
         array_2d *= np.invert(mask_2d)
@@ -526,8 +509,6 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
 
     return index_slim_for_index_native_2d
 
-
-@numba_util.jit()
 def array_2d_slim_from(
     array_2d_native: np.ndarray,
     mask_2d: np.ndarray,
@@ -571,23 +552,7 @@ def array_2d_slim_from(
 
     array_2d_slim = array_2d_slim_from(mask=mask, array_2d=array_2d)
     """
-
-    if use_jax:
-        array_2d_slim = array_2d_native[~mask_2d.astype(bool)]
-    else:
-        total_pixels = np.sum(~mask_2d)
-
-        array_2d_slim = np.zeros(shape=total_pixels)
-        index = 0
-
-        for y in range(mask_2d.shape[0]):
-            for x in range(mask_2d.shape[1]):
-                if not mask_2d[y, x]:
-                    array_2d_slim[index] = array_2d_native[y, x]
-                    index += 1
-
-    return array_2d_slim
-
+    return array_2d_native[~mask_2d.astype(bool)]
 
 def array_2d_native_from(
     array_2d_slim: np.ndarray,
@@ -641,8 +606,7 @@ def array_2d_native_from(
     )
 
 
-@partial(jit, static_argnums=(1,))
-@numba_util.jit()
+@partial(jax.jit, static_argnums=(1,))
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
     shape: Tuple[int, int],
@@ -675,22 +639,11 @@ def array_2d_via_indexes_from(
     ndarray
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
-    if use_jax:
-        array_native_2d = (
-            np.zeros(shape)
-            .at[tuple(native_index_for_slim_index_2d.T)]
-            .set(array_2d_slim)
-        )
-    else:
-        array_native_2d = np.zeros(shape)
-
-        for slim_index in range(len(native_index_for_slim_index_2d)):
-            array_native_2d[
-                native_index_for_slim_index_2d[slim_index, 0],
-                native_index_for_slim_index_2d[slim_index, 1],
-            ] = array_2d_slim[slim_index]
-
-    return array_native_2d
+    return (
+        jnp.zeros(shape)
+        .at[tuple(native_index_for_slim_index_2d.T)]
+        .set(array_2d_slim)
+    )
 
 
 @numba_util.jit()
@@ -725,7 +678,7 @@ def array_2d_slim_complex_from(
         A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
     """
 
-    total_pixels = np.sum(~mask_2d)
+    total_pixels = np.sum(~mask)
 
     array_1d = 0 + 0j * np.zeros(shape=total_pixels)
     index = 0
