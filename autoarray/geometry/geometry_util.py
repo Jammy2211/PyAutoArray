@@ -242,7 +242,6 @@ def central_scaled_coordinate_2d_from(
     return (y_pixel, x_pixel)
 
 
-@numba_util.jit()
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
