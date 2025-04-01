@@ -182,7 +182,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
     return pixel_scales
 
 @numba_util.jit()
-def central_pixel_coordinates_2d_from(
+def central_pixel_coordinates_2d_numba_from(
     shape_native: Tuple[int, int],
 ) -> Tuple[float, float]:
     """
@@ -206,6 +206,68 @@ def central_pixel_coordinates_2d_from(
     return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
 
 @numba_util.jit()
+def central_scaled_coordinate_2d_numba_from(
+    shape_native: Tuple[int, int],
+    pixel_scales: ty.PixelScales,
+    origin: Tuple[float, float] = (0.0, 0.0),
+) -> Tuple[float, float]:
+    """
+    Returns the central scaled coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
+    from the shape of that data structure.
+
+    This is computed by using the data structure's shape and converting it to scaled units using an input
+    pixel-coordinates to scaled-coordinate conversion factor `pixel_scales`.
+
+    The origin of the scaled grid can also be input and moved from (0.0, 0.0).
+
+    Parameters
+    ----------
+    shape_native
+        The 2D shape of the data structure whose central scaled coordinates are computed.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the 2D data structure.
+    origin
+        The (y,x) scaled units origin of the coordinate system the central scaled coordinate is computed on.
+
+    Returns
+    -------
+    The central coordinates of the 2D data structure in scaled units.
+    """
+
+    central_pixel_coordinates = central_pixel_coordinates_2d_numba_from(
+        shape_native=shape_native
+    )
+
+    y_pixel = central_pixel_coordinates[0] + (origin[0] / pixel_scales[0])
+    x_pixel = central_pixel_coordinates[1] - (origin[1] / pixel_scales[1])
+
+    return (y_pixel, x_pixel)
+
+
+def central_pixel_coordinates_2d_from(
+    shape_native: Tuple[int, int],
+) -> Tuple[float, float]:
+    """
+    Returns the central pixel coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
+    from the shape of that data structure.
+
+    Examples of the central pixels are as follows:
+
+    - For a 3x3 image, the central pixel is pixel [1, 1].
+    - For a 4x4 image, the central pixel is [1.5, 1.5].
+
+    Parameters
+    ----------
+    shape_native
+        The dimensions of the data structure, which can be in 1D, 2D or higher dimensions.
+
+    Returns
+    -------
+    The central pixel coordinates of the data structure.
+    """
+    return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
+
+
 def central_scaled_coordinate_2d_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -234,7 +296,7 @@ def central_scaled_coordinate_2d_from(
     The central coordinates of the 2D data structure in scaled units.
     """
 
-    central_pixel_coordinates = central_pixel_coordinates_2d_from(
+    central_pixel_coordinates = central_pixel_coordinates_2d_numba_from(
         shape_native=shape_native
     )
 
@@ -242,7 +304,6 @@ def central_scaled_coordinate_2d_from(
     x_pixel = central_pixel_coordinates[1] - (origin[1] / pixel_scales[1])
 
     return (y_pixel, x_pixel)
-
 
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
@@ -437,7 +498,6 @@ def transform_grid_2d_from_reference_frame(
     return np.vstack((y, x)).T
 
 
-@numba_util.jit()
 def grid_pixels_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -478,30 +538,13 @@ def grid_pixels_2d_slim_from(
     grid_pixels_2d_slim = grid_scaled_2d_slim_from(grid_scaled_2d_slim=grid_scaled_2d_slim, shape=(2,2),
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
-
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
-    if use_jax:
-        centres_scaled = np.array(centres_scaled)
-        pixel_scales = np.array(pixel_scales)
-        sign = np.array([-1, 1])
-        return (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
-    else:
-        grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
-        for slim_index in range(grid_scaled_2d_slim.shape[0]):
-            grid_pixels_2d_slim[slim_index, 0] = (
-                (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
-                + centres_scaled[0]
-                + 0.5
-            )
-            grid_pixels_2d_slim[slim_index, 1] = (
-                (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
-                + centres_scaled[1]
-                + 0.5
-            )
-
-    return grid_pixels_2d_slim
+    centres_scaled = np.array(centres_scaled)
+    pixel_scales = np.array(pixel_scales)
+    sign = np.array([-1, 1])
+    return (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
 
 
 @numba_util.jit()
