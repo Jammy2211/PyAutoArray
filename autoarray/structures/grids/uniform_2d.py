@@ -1,7 +1,9 @@
 from __future__ import annotations
-from autoarray.numpy_wrapper import np, use_jax
+import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
+
+from autoarray.numpy_wrapper import use_jax
 
 from autoconf import conf
 from autoconf import cached_property
