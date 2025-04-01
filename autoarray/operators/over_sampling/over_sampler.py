@@ -220,11 +220,13 @@ class OverSampler:
         except AttributeError:
             pass
 
-        binned_array_2d = over_sample_util.binned_array_2d_from(
-            array_2d=np.array(array),
-            mask_2d=np.array(self.mask),
-            sub_size=np.array(self.sub_size).astype("int"),
-        )
+        # binned_array_2d = over_sample_util.binned_array_2d_from(
+        #     array_2d=np.array(array),
+        #     mask_2d=np.array(self.mask),
+        #     sub_size=np.array(self.sub_size).astype("int"),
+        # )
+
+        binned_array_2d = array.reshape(self.mask.shape_slim, self.sub_size[0]).mean(axis=1)
 
         return Array2D(
             values=binned_array_2d,

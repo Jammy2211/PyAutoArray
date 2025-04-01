@@ -422,7 +422,7 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
     grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 
-    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_numba_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 

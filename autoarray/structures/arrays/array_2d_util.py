@@ -23,8 +23,15 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     array : list or ndarray
         The array which may be converted to an ndarray
     """
-    array = np.asarray(array)
-
+    if isinstance(array, np.ndarray) or isinstance(array, list):
+        array = np.asarray(array)
+    elif isinstance(array, jnp.ndarray):
+        array = jax.lax.cond(
+            type(array) is list,
+            lambda _: jnp.asarray(array),
+            lambda _: array,
+            None
+        )
     return array
 
 
