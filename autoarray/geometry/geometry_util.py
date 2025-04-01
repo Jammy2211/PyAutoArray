@@ -547,7 +547,6 @@ def grid_pixels_2d_slim_from(
     return (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
 
 
-@numba_util.jit()
 def grid_pixel_centres_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -592,29 +591,13 @@ def grid_pixel_centres_2d_slim_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
 
-    if use_jax:
-        centres_scaled = np.array(centres_scaled)
-        pixel_scales = np.array(pixel_scales)
-        sign = np.array([-1.0, 1.0])
-        grid_pixels_2d_slim = (
-            (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
-        ).astype(int)
-    else:
-        grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
+    centres_scaled = np.array(centres_scaled)
+    pixel_scales = np.array(pixel_scales)
+    sign = np.array([-1.0, 1.0])
+    return (
+        (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
+    ).astype(int)
 
-        for slim_index in range(grid_scaled_2d_slim.shape[0]):
-            grid_pixels_2d_slim[slim_index, 0] = int(
-                (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
-                + centres_scaled[0]
-                + 0.5
-            )
-            grid_pixels_2d_slim[slim_index, 1] = int(
-                (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
-                + centres_scaled[1]
-                + 0.5
-            )
-
-    return grid_pixels_2d_slim
 
 
 @numba_util.jit()
