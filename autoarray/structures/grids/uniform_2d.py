@@ -4,8 +4,6 @@ import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
-from autoarray.numpy_wrapper import use_jax
-
 from autoconf import conf
 from autoconf import cached_property
 from autoconf.fitsable import ndarray_via_fits_from
@@ -820,7 +818,7 @@ class Grid2D(Structure):
             distance_mask += distances.native < distance
 
         mask = Mask2D(
-            mask=distance_mask,
+            mask=np.array(distance_mask),
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
@@ -841,8 +839,8 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        if use_jax:
-            squared_distances = np.square(self.array[:, 0] - coordinate[0]) + np.square(
+        if isinstance(self, jnp.ndarray):
+            squared_distances = jnp.square(self.array[:, 0] - coordinate[0]) + jnp.square(
                 self.array[:, 1] - coordinate[1]
             )
         else:
@@ -1015,10 +1013,16 @@ class Grid2D(Structure):
         of the grid's (y,x) values, whereas the `shape_native_scaled` uses the uniform geometry of the grid and its
         ``pixel_scales``, which means it has a buffer at each edge of half a ``pixel_scale``.
         """
-        return (
-            np.amax(self[:, 0]) - np.amin(self[:, 0]),
-            np.amax(self[:, 1]) - np.amin(self[:, 1]),
-        )
+        if isinstance(self, jnp.ndarray):
+            return (
+                np.amax(self.array[:, 0]) - np.amin(self.array[:, 0]),
+                np.amax(self.array[:, 1]) - np.amin(self.array[:, 1]),
+            )
+        else:
+            return (
+                np.amax(self[:, 0]) - np.amin(self[:, 0]),
+                np.amax(self[:, 1]) - np.amin(self[:, 1]),
+            )
 
     @property
     def scaled_minima(self) -> Tuple:
@@ -1026,10 +1030,10 @@ class Grid2D(Structure):
         The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        if use_jax:
+        if isinstance(self, jnp.ndarray):
             return (
-                np.amin(self.array[:, 0]).astype("float"),
-                np.amin(self.array[:, 1]).astype("float"),
+                jnp.amin(self.array[:, 0]).astype("float"),
+                jnp.amin(self.array[:, 1]).astype("float"),
             )
         else:
             return (
@@ -1043,10 +1047,10 @@ class Grid2D(Structure):
         The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        if use_jax:
+        if isinstance(self, jnp.ndarray):
             return (
-                np.amax(self.array[:, 0]).astype("float"),
-                np.amax(self.array[:, 1]).astype("float"),
+                jnp.amax(self.array[:, 0]).astype("float"),
+                jnp.amax(self.array[:, 1]).astype("float"),
             )
         else:
             return (
@@ -1103,7 +1107,7 @@ class Grid2D(Structure):
         )
 
         over_sample_size = np.pad(
-            self.over_sample_size.native,
+            self.over_sample_size.native._array,
             pad_width,
             mode="constant",
             constant_values=1,
