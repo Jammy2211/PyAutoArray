@@ -545,7 +545,7 @@ class Grid2D(Structure):
         """
 
         grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(mask),
+            mask_2d=mask._array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )

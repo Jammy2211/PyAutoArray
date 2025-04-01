@@ -193,7 +193,7 @@ class Imaging(AbstractDataset):
             The convolver given the masked imaging data's mask and PSF.
         """
 
-        return Convolver(mask=self.mask, kernel=self.psf)
+        return Convolver(mask=self.mask, kernel=Kernel2D(values=self.psf._array, mask=self.psf.mask, header=self.psf.header))
 
     @cached_property
     def w_tilde(self):
