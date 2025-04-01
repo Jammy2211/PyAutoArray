@@ -412,7 +412,7 @@ def scaled_coordinates_2d_from(
         origin=(0.0, 0.0)
     )
     """
-    central_scaled_coordinates = central_scaled_coordinate_2d_from(
+    central_scaled_coordinates = central_scaled_coordinate_2d_numba_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origins
     )
 
