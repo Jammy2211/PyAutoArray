@@ -1,4 +1,6 @@
+import jax.numpy as jnp
 from typing import Tuple, Union
+
 from autoarray.numpy_wrapper import np, use_jax
 
 from autoarray import numba_util
@@ -179,7 +181,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
 
     return pixel_scales
 
-
+@numba_util.jit()
 def central_pixel_coordinates_2d_from(
     shape_native: Tuple[int, int],
 ) -> Tuple[float, float]:
@@ -203,7 +205,7 @@ def central_pixel_coordinates_2d_from(
     """
     return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
 
-
+@numba_util.jit()
 def central_scaled_coordinate_2d_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -379,18 +381,21 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    if use_jax:
-        shifted_grid_2d = grid_2d.array - np.array(centre)
-    else:
-        shifted_grid_2d = grid_2d - np.array(centre)
-    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, axis=1))
-    theta_coordinate_to_profile = np.arctan2(
+    # if use_jax:
+    #     shifted_grid_2d = grid_2d.array - np.array(centre)
+    # else:
+    #     shifted_grid_2d = grid_2d - np.array(centre)
+
+    shifted_grid_2d = grid_2d.array - jnp.array(centre)
+
+    radius = jnp.sqrt(jnp.sum(shifted_grid_2d**2.0, axis=1))
+    theta_coordinate_to_profile = jnp.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
-    ) - np.radians(angle)
-    return np.vstack(
+    ) - jnp.radians(angle)
+    return jnp.vstack(
         [
-            radius * np.sin(theta_coordinate_to_profile),
-            radius * np.cos(theta_coordinate_to_profile),
+            radius * jnp.sin(theta_coordinate_to_profile),
+            radius * jnp.cos(theta_coordinate_to_profile),
         ]
     ).T
 
