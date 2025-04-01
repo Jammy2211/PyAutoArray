@@ -216,7 +216,6 @@ def convert_grid_2d_to_native(
     )
 
 
-@numba_util.jit()
 def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     """
     Returns the centre of a grid from a 1D grid.
