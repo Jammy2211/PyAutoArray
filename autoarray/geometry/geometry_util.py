@@ -1,7 +1,7 @@
 import jax.numpy as jnp
+import numpy as np
 from typing import Tuple, Union
 
-from autoarray.numpy_wrapper import np, use_jax
 
 from autoarray import numba_util
 from autoarray import type as ty
@@ -442,11 +442,6 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    # if use_jax:
-    #     shifted_grid_2d = grid_2d.array - np.array(centre)
-    # else:
-    #     shifted_grid_2d = grid_2d - np.array(centre)
-
     shifted_grid_2d = grid_2d.array - jnp.array(centre)
 
     radius = jnp.sqrt(jnp.sum(shifted_grid_2d**2.0, axis=1))
