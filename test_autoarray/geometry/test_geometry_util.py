@@ -1071,7 +1071,8 @@ def test__transform_2d_grid_from_reference_frame():
         grid_2d=transformed_grid_2d, centre=(8.0, 5.0), angle=137.0
     )
 
-    assert grid_2d == pytest.approx(original_grid_2d, 1.0e-4)
+
+    assert (np.abs(grid_2d - original_grid_2d) < 1e-4).all()
 
 
 def test__grid_pixels_2d_slim_from():

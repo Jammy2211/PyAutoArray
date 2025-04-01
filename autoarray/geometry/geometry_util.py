@@ -442,7 +442,7 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    shifted_grid_2d = grid_2d.array - jnp.array(centre)
+    shifted_grid_2d = np.array(grid_2d) - jnp.array(centre)
 
     radius = jnp.sqrt(jnp.sum(shifted_grid_2d**2.0, axis=1))
     theta_coordinate_to_profile = jnp.arctan2(
@@ -651,7 +651,6 @@ def grid_pixel_indexes_2d_slim_from(
         .sum(axis=1)
         .astype(int)
     )
-
 
 
 def grid_scaled_2d_slim_from(
