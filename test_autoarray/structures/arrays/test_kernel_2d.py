@@ -457,4 +457,4 @@ def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy
         normalize=True,
     )
 
-    assert kernel_astropy == pytest.approx(kernel_2d.native, 1e-4)
+    assert kernel_astropy == pytest.approx(kernel_2d.native._array, abs=1e-4)
