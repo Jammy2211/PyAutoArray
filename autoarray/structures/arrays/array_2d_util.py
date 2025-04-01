@@ -14,8 +14,6 @@ from autoarray import exc
 from functools import partial
 
 
-
-
 def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     """
     If the input array input a convert is of type list, convert it to type NumPy array.
