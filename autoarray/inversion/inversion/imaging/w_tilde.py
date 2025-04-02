@@ -526,7 +526,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 )
 
                 mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
-                    image=mapped_reconstructed_image
+                    image=mapped_reconstructed_image,
+                    mask=self.mask
                 )
 
             else:

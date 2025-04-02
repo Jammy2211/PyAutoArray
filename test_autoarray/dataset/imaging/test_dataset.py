@@ -8,6 +8,8 @@ import shutil
 
 import autoarray as aa
 
+from autoarray import exc
+
 test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))),
     "files",
@@ -241,3 +243,8 @@ def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
 
     with pytest.raises(aa.exc.DatasetException):
         aa.Imaging(data=array, noise_map=noise_map)
+
+def test__psf_not_odd_x_odd_kernel__raises_error():
+
+    with pytest.raises(exc.KernelException):
+        aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)

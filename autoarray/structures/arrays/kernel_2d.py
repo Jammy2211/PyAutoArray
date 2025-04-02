@@ -54,9 +54,6 @@ class Kernel2D(AbstractArray2D):
             store_native=store_native,
         )
 
-        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel2D Kernel2D must be odd")
-
         if normalize:
             self._array = np.divide(self._array, np.sum(self._array))
 
@@ -529,7 +526,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
-    def convolve_image_no_blurring(self, image, jax_method="fft"):
+    def convolve_image_no_blurring(self, image, mask, jax_method="fft"):
         """
         For a given 1D array and blurring array, convolve the two using this convolver.
 
@@ -547,13 +544,13 @@ class Kernel2D(AbstractArray2D):
         """
 
         slim_to_native = jnp.nonzero(
-            jnp.logical_not(image.mask.array), size=image.shape[0]
+            jnp.logical_not(mask.array), size=image.shape[0]
         )
 
-        expanded_array_native = jnp.zeros(image.mask.shape)
+        expanded_array_native = jnp.zeros(mask.shape)
 
         expanded_array_native = expanded_array_native.at[slim_to_native].set(
-            image.array
+            image
         )
 
         kernel = np.array(self.native.array)
@@ -564,4 +561,14 @@ class Kernel2D(AbstractArray2D):
 
         convolved_array_1d = convolve_native[slim_to_native]
 
-        return Array2D(values=convolved_array_1d, mask=image.mask)
+        return Array2D(values=convolved_array_1d, mask=mask)
+
+    def convolve_mapping_matrix(self, mapping_matrix, mask):
+        """For a given 1D array and blurring array, convolve the two using this convolver.
+
+        Parameters
+        ----------
+        image
+            1D array of the values which are to be blurred with the convolver's PSF.
+        """
+        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None))(mapping_matrix, mask).T
