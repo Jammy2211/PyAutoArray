@@ -53,7 +53,7 @@ class Kernel2D(AbstractArray2D):
         )
 
         if normalize:
-            self._array[:] = np.divide(self._array, np.sum(self._array))
+            self._array = np.divide(self._array, np.sum(self._array))
 
     @classmethod
     def no_mask(
@@ -383,7 +383,7 @@ class Kernel2D(AbstractArray2D):
 
         try:
             kernel_rescaled = rescale(
-                self.native,
+                np.array(self.native._array),
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
@@ -391,7 +391,7 @@ class Kernel2D(AbstractArray2D):
             )
         except TypeError:
             kernel_rescaled = rescale(
-                self.native,
+                np.array(self.native._array),
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
@@ -472,7 +472,7 @@ class Kernel2D(AbstractArray2D):
 
         array_2d = array.native
 
-        convolved_array_2d = scipy.signal.convolve2d(array_2d, self.native, mode="same")
+        convolved_array_2d = scipy.signal.convolve2d(array_2d._array, np.array(self.native._array), mode="same")
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
             mask_2d=np.array(array_2d.mask),

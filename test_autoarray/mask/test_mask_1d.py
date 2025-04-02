@@ -1,6 +1,4 @@
-from astropy.io import fits
 import numpy as np
-import os
 from os import path
 import pytest
 
@@ -53,34 +51,34 @@ def test__constructor__input_is_2d_mask__raises_exception():
 def test__is_all_true():
     mask = aa.Mask1D(mask=[False, False, False, False], pixel_scales=1.0)
 
-    assert mask.is_all_true is False
+    assert mask.is_all_true == False
 
     mask = aa.Mask1D(mask=[False, False], pixel_scales=1.0)
 
-    assert mask.is_all_true is False
+    assert mask.is_all_true == False
 
     mask = aa.Mask1D(mask=[False, True, False, False], pixel_scales=1.0)
 
-    assert mask.is_all_true is False
+    assert mask.is_all_true == False
 
     mask = aa.Mask1D(mask=[True, True, True, True], pixel_scales=1.0)
 
-    assert mask.is_all_true is True
+    assert mask.is_all_true == True
 
 
 def test__is_all_false():
     mask = aa.Mask1D(mask=[False, False, False, False], pixel_scales=1.0)
 
-    assert mask.is_all_false is True
+    assert mask.is_all_false == True
 
     mask = aa.Mask1D(mask=[False, False], pixel_scales=1.0)
 
-    assert mask.is_all_false is True
+    assert mask.is_all_false == True
 
     mask = aa.Mask1D(mask=[False, True, False, False], pixel_scales=1.0)
 
-    assert mask.is_all_false is False
+    assert mask.is_all_false == False
 
     mask = aa.Mask1D(mask=[True, True, False, False], pixel_scales=1.0)
 
-    assert mask.is_all_false is False
+    assert mask.is_all_false == False

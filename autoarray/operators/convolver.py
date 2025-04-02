@@ -221,7 +221,7 @@ class Convolver:
                         coordinates=(x, y),
                         mask=np.array(mask),
                         mask_index_array=self.mask_index_array,
-                        kernel_2d=np.array(self.kernel.native[:, :]),
+                        kernel_2d=self.kernel.native,
                     )
                     self.image_frame_1d_indexes[mask_1d_index, :] = (
                         image_frame_1d_indexes

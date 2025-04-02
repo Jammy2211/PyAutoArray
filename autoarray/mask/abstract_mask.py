@@ -2,12 +2,6 @@ from __future__ import annotations
 
 from abc import ABC
 import logging
-
-from autoarray.numpy_wrapper import np, use_jax
-
-if use_jax:
-    import jax
-
 import numpy as np
 from typing import Dict
 

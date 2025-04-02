@@ -184,8 +184,9 @@ class Geometry2D(AbstractGeometry2D):
         -------
         A 2D (y,x) pixel-value coordinate.
         """
+
         return geometry_util.scaled_coordinates_2d_from(
-            pixel_coordinates_2d=pixel_coordinates_2d,
+            pixel_coordinates_2d=np.array(pixel_coordinates_2d),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origins=self.origin,

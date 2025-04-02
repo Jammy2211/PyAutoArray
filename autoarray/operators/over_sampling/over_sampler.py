@@ -147,11 +147,11 @@ class OverSampler:
         )
 
     def tree_flatten(self):
-        return (self.mask,), ()
+        return (self.mask, self.sub_size), ()
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
-        return cls(mask=children[0])
+        return cls(mask=children[0], sub_size=children[1])
 
     @property
     def sub_total(self):
@@ -220,11 +220,13 @@ class OverSampler:
         except AttributeError:
             pass
 
-        binned_array_2d = over_sample_util.binned_array_2d_from(
-            array_2d=np.array(array),
-            mask_2d=np.array(self.mask),
-            sub_size=np.array(self.sub_size).astype("int"),
-        )
+        # binned_array_2d = over_sample_util.binned_array_2d_from(
+        #     array_2d=np.array(array),
+        #     mask_2d=np.array(self.mask),
+        #     sub_size=np.array(self.sub_size).astype("int"),
+        # )
+
+        binned_array_2d = array.reshape(self.mask.shape_slim, self.sub_size[0]**2).mean(axis=1)
 
         return Array2D(
             values=binned_array_2d,

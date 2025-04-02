@@ -162,7 +162,7 @@ class Imaging(AbstractDataset):
 
         if psf is not None and use_normalized_psf:
             psf = Kernel2D.no_mask(
-                values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
+                values=psf.native._array, pixel_scales=psf.pixel_scales, normalize=True
             )
 
         self.psf = psf
@@ -193,7 +193,7 @@ class Imaging(AbstractDataset):
             The convolver given the masked imaging data's mask and PSF.
         """
 
-        return Convolver(mask=self.mask, kernel=self.psf)
+        return Convolver(mask=self.mask, kernel=Kernel2D(values=self.psf._array, mask=self.psf.mask, header=self.psf.header))
 
     @cached_property
     def w_tilde(self):
