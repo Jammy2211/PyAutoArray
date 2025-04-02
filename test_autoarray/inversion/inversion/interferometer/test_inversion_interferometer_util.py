@@ -68,7 +68,6 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
 
-
 def test__inversion_interferometer__via_mapper(
     interferometer_7_no_fft,
     rectangular_mapper_7x7_3x3,
@@ -400,4 +399,3 @@ def test__identical_inversion_source_and_image_loops():
     assert inversion_image_loop.mapped_reconstructed_data == pytest.approx(
         inversion_source_loop.mapped_reconstructed_data, 1.0e-2
     )
-

@@ -3,12 +3,12 @@ from __future__ import annotations
 from abc import ABC
 import logging
 import numpy as np
-from pathlib import Path
-from typing import Dict, Union
+from typing import Dict
+
+from autoconf.fitsable import output_to_fits
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
-from autoarray import exc
 from autoarray import type as ty
 
 logging.basicConfig()
@@ -73,22 +73,10 @@ class Mask(AbstractNDArray, ABC):
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
         single value as a float.
         """
-        # for pixel_scale in self.pixel_scales:
-        #     if abs(pixel_scale - self.pixel_scales[0]) > 1.0e-8:
-        #         logger.warning(
-        #             f"""
-        #         The Mask has different pixel scales in each dimensions, which are {self.pixel_scales}.
-        #
-        #         This is not expected, and will lead to unexpected behaviour in the grid and mask classes.
-        #         The code will continue to run, but you should check that the pixel scales are as you expect and
-        #         that associated data structures (e.g. grids) are behaving as you expect.
-        #         """
-        #         )
-
         return self.pixel_scales[0]
 
     @property
-    def pixel_scale_header(self) -> Dict:
+    def header_dict(self) -> Dict:
         """
         Returns the pixel scale of the mask as a header dictionary, which can be written to a .fits file.
 
@@ -99,22 +87,43 @@ class Mask(AbstractNDArray, ABC):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
-        try:
-            return {"PIXSCALE": self.pixel_scale}
-        except exc.MaskException:
-            return {
-                "PIXSCALEY": self.pixel_scales[0],
-                "PIXSCALEX": self.pixel_scales[1],
-            }
 
     @property
     def dimensions(self) -> int:
         return len(self.shape)
 
-    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
+    def output_to_fits(self, file_path, overwrite=False):
         """
-        Overwrite with method to output the mask to a `.fits` file.
+        Write the Mask to a .fits file.
+
+        Before outputting a 2D NumPy array mask, the array may be flipped upside-down using np.flipud depending on
+        the project config files. This is for Astronomy projects so that structures appear the same orientation
+        as `.fits` files loaded in DS9.
+
+        Parameters
+        ----------
+        file_path
+            The full path of the file that is output, including the file name and `.fits` extension.
+        overwrite
+            If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
+            error is raised.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        mask = Mask2D(mask=np.full(shape=(5,5), fill_value=False))
+        mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
+        output_to_fits(
+            values=self.astype("float"),
+            file_path=file_path,
+            overwrite=overwrite,
+            header_dict=self.header_dict,
+            ext_name="mask",
+        )
 
     @property
     def pixels_in_mask(self) -> int:

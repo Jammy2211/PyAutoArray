@@ -56,17 +56,15 @@ def w_tilde_data_interferometer_from(
 
     w_tilde_data = np.zeros(image_pixels)
 
-    weight_map_real = visibilities_real / noise_map_real ** 2.0
+    weight_map_real = visibilities_real / noise_map_real**2.0
 
     for ip0 in range(image_pixels):
-
         value = 0.0
 
         y = grid_radians_slim[ip0, 1]
         x = grid_radians_slim[ip0, 0]
 
         for vis_1d_index in range(uv_wavelengths.shape[0]):
-
             value += weight_map_real[vis_1d_index] ** -2.0 * np.cos(
                 2.0
                 * np.pi
@@ -79,7 +77,6 @@ def w_tilde_data_interferometer_from(
         w_tilde_data[ip0] = value
 
     return w_tilde_data
-
 
 
 @numba_util.jit()
@@ -121,12 +118,10 @@ def w_tilde_curvature_interferometer_from(
 
     for i in range(w_tilde.shape[0]):
         for j in range(i, w_tilde.shape[1]):
-
             y_offset = grid_radians_slim[i, 1] - grid_radians_slim[j, 1]
             x_offset = grid_radians_slim[i, 0] - grid_radians_slim[j, 0]
 
             for vis_1d_index in range(uv_wavelengths.shape[0]):
-
                 w_tilde[i, j] += noise_map_real[vis_1d_index] ** -2.0 * np.cos(
                     2.0
                     * np.pi
@@ -259,7 +254,6 @@ def w_tilde_curvature_preload_interferometer_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             y_offset = grid_radians_2d[0, 0, 0] - grid_radians_2d[i, j, 0]
             x_offset = grid_radians_2d[0, 0, 1] - grid_radians_2d[i, j, 1]
 
@@ -277,9 +271,7 @@ def w_tilde_curvature_preload_interferometer_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             if j > 0:
-
                 y_offset = (
                     grid_radians_2d[0, -1, 0]
                     - grid_radians_2d[i, grid_x_shape - j - 1, 0]
@@ -303,9 +295,7 @@ def w_tilde_curvature_preload_interferometer_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             if i > 0:
-
                 y_offset = (
                     grid_radians_2d[-1, 0, 0]
                     - grid_radians_2d[grid_y_shape - i - 1, j, 0]
@@ -329,9 +319,7 @@ def w_tilde_curvature_preload_interferometer_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             if i > 0 and j > 0:
-
                 y_offset = (
                     grid_radians_2d[-1, -1, 0]
                     - grid_radians_2d[grid_y_shape - i - 1, grid_x_shape - j - 1, 0]
@@ -382,11 +370,9 @@ def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
     w_tilde_via_preload = np.zeros((slim_size, slim_size))
 
     for i in range(slim_size):
-
         i_y, i_x = native_index_for_slim_index[i]
 
         for j in range(i, slim_size):
-
             j_y, j_x = native_index_for_slim_index[j]
 
             y_diff = j_y - i_y
@@ -501,21 +487,17 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     curvature_matrix = np.zeros((pix_pixels, pix_pixels))
 
     for ip0 in range(image_pixels):
-
         ip0_y, ip0_x = native_index_for_slim_index[ip0]
 
         for ip0_pix in range(pix_size_for_sub_slim_index[ip0]):
-
             ip0_weight = pix_weights_for_sub_slim_index[ip0, ip0_pix]
 
             sp0 = pix_indexes_for_sub_slim_index[ip0, ip0_pix]
 
             for ip1 in range(image_pixels):
-
                 ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
                 for ip1_pix in range(pix_size_for_sub_slim_index[ip1]):
-
                     ip1_weight = pix_weights_for_sub_slim_index[ip1, ip1_pix]
 
                     sp1 = pix_indexes_for_sub_slim_index[ip1, ip1_pix]
@@ -562,6 +544,7 @@ def mapped_reconstructed_visibilities_from(
 """
 Welcome to the quagmire!
 """
+
 
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
@@ -647,7 +630,6 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
     return curvature_matrix
 
 
-
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_1_from(
     noise_map_real: np.ndarray,
@@ -655,7 +637,6 @@ def w_tilde_curvature_preload_interferometer_stage_1_from(
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -669,7 +650,6 @@ def w_tilde_curvature_preload_interferometer_stage_1_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             y_offset = grid_radians_2d[0, 0, 0] - grid_radians_2d[i, j, 0]
             x_offset = grid_radians_2d[0, 0, 1] - grid_radians_2d[i, j, 1]
 
@@ -687,6 +667,7 @@ def w_tilde_curvature_preload_interferometer_stage_1_from(
 
     return curvature_preload_stage_1
 
+
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_2_from(
     noise_map_real: np.ndarray,
@@ -694,7 +675,6 @@ def w_tilde_curvature_preload_interferometer_stage_2_from(
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -708,9 +688,7 @@ def w_tilde_curvature_preload_interferometer_stage_2_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             if j > 0:
-
                 y_offset = (
                     grid_radians_2d[0, -1, 0]
                     - grid_radians_2d[i, grid_x_shape - j - 1, 0]
@@ -742,7 +720,6 @@ def w_tilde_curvature_preload_interferometer_stage_3_from(
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -756,9 +733,7 @@ def w_tilde_curvature_preload_interferometer_stage_3_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             if i > 0:
-
                 y_offset = (
                     grid_radians_2d[-1, 0, 0]
                     - grid_radians_2d[grid_y_shape - i - 1, j, 0]
@@ -782,6 +757,7 @@ def w_tilde_curvature_preload_interferometer_stage_3_from(
 
     return curvature_preload_stage_3
 
+
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_4_from(
     noise_map_real: np.ndarray,
@@ -789,7 +765,6 @@ def w_tilde_curvature_preload_interferometer_stage_4_from(
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -803,9 +778,7 @@ def w_tilde_curvature_preload_interferometer_stage_4_from(
 
     for i in range(y_shape):
         for j in range(x_shape):
-
             if i > 0 and j > 0:
-
                 y_offset = (
                     grid_radians_2d[-1, -1, 0]
                     - grid_radians_2d[grid_y_shape - i - 1, grid_x_shape - j - 1, 0]
@@ -830,19 +803,16 @@ def w_tilde_curvature_preload_interferometer_stage_4_from(
     return curvature_preload_stage_4
 
 
-
-
 def w_tilde_curvature_preload_interferometer_in_stages_with_chunks_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
-    stage = "1",
+    stage="1",
     chunk: int = 100,
     check=True,
     directory=None,
 ) -> np.ndarray:
-
     if directory is None:
         raise NotImplementedError()
 
@@ -920,15 +890,15 @@ def w_tilde_curvature_preload_interferometer_in_stages_with_chunks_from(
 
         size = size + chunk
 
+
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_1_with_limits_placeholder_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
-    limits: list = []
+    limits: list = [],
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -943,7 +913,6 @@ def w_tilde_curvature_preload_interferometer_stage_1_with_limits_placeholder_fro
     i_lower, i_upper = limits
     for i in range(i_lower, i_upper):
         for j in range(x_shape):
-
             y_offset = grid_radians_2d[0, 0, 0] - grid_radians_2d[i, j, 0]
             x_offset = grid_radians_2d[0, 0, 1] - grid_radians_2d[i, j, 1]
 
@@ -961,15 +930,15 @@ def w_tilde_curvature_preload_interferometer_stage_1_with_limits_placeholder_fro
 
     return curvature_preload_stage_1
 
+
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_2_with_limits_placeholder_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
-    limits: list = []
+    limits: list = [],
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -984,9 +953,7 @@ def w_tilde_curvature_preload_interferometer_stage_2_with_limits_placeholder_fro
     i_lower, i_upper = limits
     for i in range(i_lower, i_upper):
         for j in range(x_shape):
-
             if j > 0:
-
                 y_offset = (
                     grid_radians_2d[0, -1, 0]
                     - grid_radians_2d[i, grid_x_shape - j - 1, 0]
@@ -1010,15 +977,15 @@ def w_tilde_curvature_preload_interferometer_stage_2_with_limits_placeholder_fro
 
     return curvature_preload_stage_2
 
+
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_3_with_limits_placeholder_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
-    limits: list = []
+    limits: list = [],
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -1033,9 +1000,7 @@ def w_tilde_curvature_preload_interferometer_stage_3_with_limits_placeholder_fro
     i_lower, i_upper = limits
     for i in range(i_lower, i_upper):
         for j in range(x_shape):
-
             if i > 0:
-
                 y_offset = (
                     grid_radians_2d[-1, 0, 0]
                     - grid_radians_2d[grid_y_shape - i - 1, j, 0]
@@ -1059,15 +1024,15 @@ def w_tilde_curvature_preload_interferometer_stage_3_with_limits_placeholder_fro
 
     return curvature_preload_stage_3
 
+
 @numba_util.jit()
 def w_tilde_curvature_preload_interferometer_stage_4_with_limits_placeholder_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d: Tuple[int, int],
     grid_radians_2d: np.ndarray,
-    limits: list = []
+    limits: list = [],
 ) -> np.ndarray:
-
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
@@ -1082,9 +1047,7 @@ def w_tilde_curvature_preload_interferometer_stage_4_with_limits_placeholder_fro
     i_lower, i_upper = limits
     for i in range(i_lower, i_upper):
         for j in range(x_shape):
-
             if i > 0 and j > 0:
-
                 y_offset = (
                     grid_radians_2d[-1, -1, 0]
                     - grid_radians_2d[grid_y_shape - i - 1, grid_x_shape - j - 1, 0]
@@ -1109,13 +1072,8 @@ def w_tilde_curvature_preload_interferometer_stage_4_with_limits_placeholder_fro
     return curvature_preload_stage_4
 
 
-
-def make_2d(
-    arr: mp.Array,
-    y_shape: int,
-    x_shape: int
-) -> np.ndarray:
-    '''
+def make_2d(arr: mp.Array, y_shape: int, x_shape: int) -> np.ndarray:
+    """
     Converts shared multiprocessing array into a non-square Numpy array of a given shape. Multiprocessing arrays must have only a single dimension.
 
     Parameters
@@ -1131,8 +1089,8 @@ def make_2d(
     -------
     para_result
         Reshaped array in Numpy array format.
-    '''
-    para_result_np = np.frombuffer(arr.get_obj(), dtype='float64')
+    """
+    para_result_np = np.frombuffer(arr.get_obj(), dtype="float64")
     para_result = para_result_np.reshape((y_shape, x_shape))
     return para_result
 
@@ -1145,8 +1103,9 @@ def parallel_preload(
     x_shape: int,
     i0: int,
     i1: int,
-    loop_number: int):
-    '''
+    loop_number: int,
+):
+    """
     Runs the each loop in the curvature preload calculation by calling the associated JIT accelerated function.
 
     Parameters
@@ -1175,34 +1134,59 @@ def parallel_preload(
     -------
     none
         Updates shared object
-    '''
+    """
     if loop_number == 1:
         for i in range(i0, i1):
-            jit_loop_preload_1(noise_map_real, uv_wavelengths, grid_radians_2d,
-                               curvature_preload, x_shape, i)
+            jit_loop_preload_1(
+                noise_map_real,
+                uv_wavelengths,
+                grid_radians_2d,
+                curvature_preload,
+                x_shape,
+                i,
+            )
     elif loop_number == 2:
         for i in range(i0, i1):
-            jit_loop_preload_2(noise_map_real, uv_wavelengths, grid_radians_2d,
-                               curvature_preload, x_shape, i)
+            jit_loop_preload_2(
+                noise_map_real,
+                uv_wavelengths,
+                grid_radians_2d,
+                curvature_preload,
+                x_shape,
+                i,
+            )
     elif loop_number == 3:
         for i in range(i0, i1):
-            jit_loop_preload_3(noise_map_real, uv_wavelengths, grid_radians_2d,
-                               curvature_preload, x_shape, i)
+            jit_loop_preload_3(
+                noise_map_real,
+                uv_wavelengths,
+                grid_radians_2d,
+                curvature_preload,
+                x_shape,
+                i,
+            )
     elif loop_number == 4:
         for i in range(i0, i1):
-            jit_loop_preload_4(noise_map_real, uv_wavelengths, grid_radians_2d,
-                               curvature_preload, x_shape, i)
+            jit_loop_preload_4(
+                noise_map_real,
+                uv_wavelengths,
+                grid_radians_2d,
+                curvature_preload,
+                x_shape,
+                i,
+            )
 
 
-@numba_util.jit(cache = True)
+@numba_util.jit(cache=True)
 def jit_loop_preload_1(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     grid_radians_2d: np.ndarray,
     curvature_preload: np.ndarray,
     x_shape: int,
-    i: int):
-    '''
+    i: int,
+):
+    """
     JIT-accelerated function for the first loop of the curvature preload calculation.
 
     Parameters
@@ -1227,33 +1211,34 @@ def jit_loop_preload_1(
     -------
     none
         Updates shared object
-    '''
+    """
     grid_y_shape = grid_radians_2d.shape[0]
     grid_x_shape = grid_radians_2d.shape[1]
     for j in range(x_shape):
-
         y_offset = grid_radians_2d[0, 0, 0] - grid_radians_2d[i, j, 0]
         x_offset = grid_radians_2d[0, 0, 1] - grid_radians_2d[i, j, 1]
 
         for vis_1d_index in range(uv_wavelengths.shape[0]):
-
-            curvature_preload[i, j] += noise_map_real[vis_1d_index
-            ] ** -2.0 * np.cos(2.0 * np.pi * (
-                        x_offset * uv_wavelengths[vis_1d_index, 0]
-                        + y_offset * uv_wavelengths[vis_1d_index, 1]
-                    )
+            curvature_preload[i, j] += noise_map_real[vis_1d_index] ** -2.0 * np.cos(
+                2.0
+                * np.pi
+                * (
+                    x_offset * uv_wavelengths[vis_1d_index, 0]
+                    + y_offset * uv_wavelengths[vis_1d_index, 1]
                 )
+            )
 
 
-@numba_util.jit(cache = True)
+@numba_util.jit(cache=True)
 def jit_loop_preload_2(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     grid_radians_2d: np.ndarray,
     curvature_preload: np.ndarray,
     x_shape: int,
-    i: int):
-    '''
+    i: int,
+):
+    """
     JIT-accelerated function for the second loop of the curvature preload calculation.
 
     Parameters
@@ -1278,39 +1263,41 @@ def jit_loop_preload_2(
     -------
     none
         Updates shared object
-    '''
+    """
     grid_y_shape = grid_radians_2d.shape[0]
     grid_x_shape = grid_radians_2d.shape[1]
     for j in range(x_shape):
         if j > 0:
-
             y_offset = (
-                grid_radians_2d[0, -1, 0]
-                - grid_radians_2d[i, grid_x_shape - j - 1, 0]
+                grid_radians_2d[0, -1, 0] - grid_radians_2d[i, grid_x_shape - j - 1, 0]
             )
             x_offset = (
-                grid_radians_2d[0, -1, 1]
-                - grid_radians_2d[i, grid_x_shape - j - 1, 1]
+                grid_radians_2d[0, -1, 1] - grid_radians_2d[i, grid_x_shape - j - 1, 1]
             )
 
             for vis_1d_index in range(uv_wavelengths.shape[0]):
-                curvature_preload[i, -j] += noise_map_real[vis_1d_index
-                ] ** -2.0 * np.cos(2.0 * np.pi * (
+                curvature_preload[i, -j] += noise_map_real[
+                    vis_1d_index
+                ] ** -2.0 * np.cos(
+                    2.0
+                    * np.pi
+                    * (
                         x_offset * uv_wavelengths[vis_1d_index, 0]
                         + y_offset * uv_wavelengths[vis_1d_index, 1]
                     )
                 )
 
 
-@numba_util.jit(cache = True)
+@numba_util.jit(cache=True)
 def jit_loop_preload_3(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     grid_radians_2d: np.ndarray,
     curvature_preload: np.ndarray,
     x_shape: int,
-    i: int):
-    '''
+    i: int,
+):
+    """
     JIT-accelerated function for the third loop of the curvature preload calculation.
 
     Parameters
@@ -1335,19 +1322,16 @@ def jit_loop_preload_3(
     -------
     none
         Updates shared object
-    '''
+    """
     grid_y_shape = grid_radians_2d.shape[0]
     grid_x_shape = grid_radians_2d.shape[1]
     for j in range(x_shape):
         if i > 0:
-
             y_offset = (
-                grid_radians_2d[-1, 0, 0]
-                - grid_radians_2d[grid_y_shape - i - 1, j, 0]
+                grid_radians_2d[-1, 0, 0] - grid_radians_2d[grid_y_shape - i - 1, j, 0]
             )
             x_offset = (
-                grid_radians_2d[-1, 0, 1]
-                - grid_radians_2d[grid_y_shape - i - 1, j, 1]
+                grid_radians_2d[-1, 0, 1] - grid_radians_2d[grid_y_shape - i - 1, j, 1]
             )
 
             for vis_1d_index in range(uv_wavelengths.shape[0]):
@@ -1363,15 +1347,16 @@ def jit_loop_preload_3(
                 )
 
 
-@numba_util.jit(cache = True)
+@numba_util.jit(cache=True)
 def jit_loop_preload_4(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     grid_radians_2d: np.ndarray,
     curvature_preload: np.ndarray,
     x_shape: int,
-    i: int):
-    '''
+    i: int,
+):
+    """
     JIT-accelerated function for the forth loop of the curvature preload calculation.
 
     Parameters
@@ -1396,12 +1381,11 @@ def jit_loop_preload_4(
     -------
     none
         Updates shared object
-    '''
+    """
     grid_y_shape = grid_radians_2d.shape[0]
     grid_x_shape = grid_radians_2d.shape[1]
     for j in range(x_shape):
         if i > 0 and j > 0:
-
             y_offset = (
                 grid_radians_2d[-1, -1, 0]
                 - grid_radians_2d[grid_y_shape - i - 1, grid_x_shape - j - 1, 0]
@@ -1425,16 +1409,12 @@ def jit_loop_preload_4(
 
 
 try:
-
     import numba
     from numba import prange
 
-
-    @numba.jit("void(f8[:,:], i8)", nopython=True, parallel=True, cache = True)
-    def jit_loop2(
-        curvature_matrix: np.ndarray,
-        pix_pixels: int):
-        '''
+    @numba.jit("void(f8[:,:], i8)", nopython=True, parallel=True, cache=True)
+    def jit_loop2(curvature_matrix: np.ndarray, pix_pixels: int):
+        """
         Performs second stage of curvature matrix calculation using Numba parallelisation and JIT.
 
         Parameters
@@ -1448,28 +1428,29 @@ try:
         -------
         none
             Updates shared object.
-        '''
+        """
 
         curvature_matrix_temp = curvature_matrix.copy()
         for i in prange(pix_pixels):
             for j in range(pix_pixels):
-                curvature_matrix[i, j] = curvature_matrix_temp[i, j] + curvature_matrix_temp[j, i]
+                curvature_matrix[i, j] = (
+                    curvature_matrix_temp[i, j] + curvature_matrix_temp[j, i]
+                )
 
 except ModuleNotFoundError:
-
     pass
 
 
-@numba_util.jit(cache = True)
+@numba_util.jit(cache=True)
 def jit_loop3(
     curvature_matrix: np.ndarray,
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index: np.ndarray,
     preload: np.float64,
-    image_pixels: int
-    ) -> np.ndarray:
-    '''
+    image_pixels: int,
+) -> np.ndarray:
+    """
     Third stage of curvature matrix calculation.
 
     Parameters
@@ -1491,11 +1472,10 @@ def jit_loop3(
     -------
     ndarray
         Fully computed curvature preload matrix F.
-    '''
+    """
     for ip0 in range(image_pixels):
         for ip0_pix in range(pix_size_for_sub_slim_index[ip0]):
             for ip1_pix in range(pix_size_for_sub_slim_index[ip0]):
-
                 sp0 = pix_indexes_for_sub_slim_index[ip0, ip0_pix]
                 sp1 = pix_indexes_for_sub_slim_index[ip0, ip1_pix]
 
@@ -1519,8 +1499,9 @@ def parallel_loop1(
     curvature_matrix: np.ndarray,
     i0: int,
     i1: int,
-    lock: mp.Lock):
-    '''
+    lock: mp.Lock,
+):
+    """
     This function prepares the first part of the curvature matrix calculation and is called by a multiprocessing process.
 
     Parameters
@@ -1550,22 +1531,28 @@ def parallel_loop1(
     ------
     none
         Updates shared object, doesn not return anything.
-    '''
+    """
     print(f"calling parallel_loop1 for process {mp.current_process().pid}.")
     image_pixels = len(native_index_for_slim_index)
     for ip0 in range(i0, i1):
         ip0_y, ip0_x = native_index_for_slim_index[ip0]
-        #print(f"Processing ip0={ip0}, ip0_y={ip0_y}, ip0_x={ip0_x}")
+        # print(f"Processing ip0={ip0}, ip0_y={ip0_y}, ip0_x={ip0_x}")
         for ip0_pix in range(pix_size_for_sub_slim_index[ip0]):
             sp0 = pix_indexes_for_sub_slim_index[ip0, ip0_pix]
-            result_vector = jit_calc_loop1(image_pixels,
-                                       native_index_for_slim_index,
-                                       pix_indexes_for_sub_slim_index,
-                                       pix_size_for_sub_slim_index,
-                                       pix_weights_for_sub_slim_index,
-                                       curvature_preload,
-                                       curvature_matrix[sp0, :].shape,
-                                       ip0, ip0_pix, i1, ip0_y, ip0_x)
+            result_vector = jit_calc_loop1(
+                image_pixels,
+                native_index_for_slim_index,
+                pix_indexes_for_sub_slim_index,
+                pix_size_for_sub_slim_index,
+                pix_weights_for_sub_slim_index,
+                curvature_preload,
+                curvature_matrix[sp0, :].shape,
+                ip0,
+                ip0_pix,
+                i1,
+                ip0_y,
+                ip0_x,
+            )
             with lock:
                 curvature_matrix[sp0, :] += result_vector
     print(f"finished parallel_loop1 for process {mp.current_process().pid}.")
@@ -1606,6 +1593,7 @@ def parallel_loop1_ChatGPT( # NOTE: THIS DID NOT FIX THE ISSUE ON COSMA ...
     np.add.at(curvature_matrix, np.nonzero(local_results), local_results[np.nonzero(local_results)])
 """
 
+
 def parallel_loop1_ChatGPT(
     curvature_preload: np.ndarray,
     pix_indexes_for_sub_slim_index: np.ndarray,
@@ -1615,9 +1603,8 @@ def parallel_loop1_ChatGPT(
     curvature_matrix: np.ndarray,
     i0: int,
     i1: int,
-    lock: mp.Lock
+    lock: mp.Lock,
 ):
-
     print(f"calling parallel_loop1 for process {mp.current_process().pid}.")
 
     image_pixels = len(native_index_for_slim_index)
@@ -1629,14 +1616,20 @@ def parallel_loop1_ChatGPT(
         ip0_y, ip0_x = native_index_for_slim_index[ip0]
         for ip0_pix in range(pix_size_for_sub_slim_index[ip0]):
             sp0 = pix_indexes_for_sub_slim_index[ip0, ip0_pix]
-            result_vector = jit_calc_loop1(image_pixels,
-                                           native_index_for_slim_index,
-                                           pix_indexes_for_sub_slim_index,
-                                           pix_size_for_sub_slim_index,
-                                           pix_weights_for_sub_slim_index,
-                                           curvature_preload,
-                                           local_curvature_matrix[sp0, :].shape,
-                                           ip0, ip0_pix, i1, ip0_y, ip0_x)
+            result_vector = jit_calc_loop1(
+                image_pixels,
+                native_index_for_slim_index,
+                pix_indexes_for_sub_slim_index,
+                pix_size_for_sub_slim_index,
+                pix_weights_for_sub_slim_index,
+                curvature_preload,
+                local_curvature_matrix[sp0, :].shape,
+                ip0,
+                ip0_pix,
+                i1,
+                ip0_y,
+                ip0_x,
+            )
             local_curvature_matrix[sp0, :] += result_vector
 
     # Write the local results to the shared memory with a single lock acquisition
@@ -1645,10 +1638,12 @@ def parallel_loop1_ChatGPT(
         curvature_matrix += local_curvature_matrix
 
     print(f"finished parallel_loop1 for process {mp.current_process().pid}.")
+
+
 # ---------------------------------------------------------------------------- #
 
 
-@numba_util.jit(cache = True)
+@numba_util.jit(cache=True)
 def jit_calc_loop1(
     image_pixels: int,
     native_index_for_slim_index: np.ndarray,
@@ -1661,8 +1656,9 @@ def jit_calc_loop1(
     ip0_pix: int,
     i1: int,
     ip0_y: int,
-    ip0_x: int) -> np.ndarray:
-    '''
+    ip0_x: int,
+) -> np.ndarray:
+    """
     Performs first stage of curvature matrix calculation in parallel using JIT. Returns a single column of the curvature matrix per function call.
 
     Parameters
@@ -1696,17 +1692,15 @@ def jit_calc_loop1(
     -------
     result_vector
         The column of the curvature matrix calculated in this loop iteration for this subprocess.
-    '''
+    """
 
     result_vector = np.zeros(result_vector_shape)
     ip0_weight = pix_weights_for_sub_slim_index[ip0, ip0_pix]
 
     for ip1 in range(ip0 + 1, image_pixels):
-
         ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
         for ip1_pix in range(pix_size_for_sub_slim_index[ip1]):
-
             sp1 = pix_indexes_for_sub_slim_index[ip1, ip1_pix]
             ip1_weight = pix_weights_for_sub_slim_index[ip1, ip1_pix]
 
@@ -1718,7 +1712,6 @@ def jit_calc_loop1(
     return result_vector
 
 
-
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from(
     curvature_preload: np.ndarray,
     pix_indexes_for_sub_slim_index: np.ndarray,
@@ -1726,7 +1719,8 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from(
     pix_weights_for_sub_slim_index: np.ndarray,
     native_index_for_slim_index: np.ndarray,
     pix_pixels: int,
-    n_processes: int = mp.cpu_count()) -> np.ndarray:
+    n_processes: int = mp.cpu_count(),
+) -> np.ndarray:
     """
     Returns the curvature matrix `F` (see Warren & Dye 2003) by computing it using `w_tilde_preload`
     (see `w_tilde_preload_interferometer_from`) for an interferometer inversion.
@@ -1772,43 +1766,52 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from(
         The curvature matrix `F` (see Warren & Dye 2003).
 
     """
-    print("calling \'curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from\'.")
+    print(
+        "calling 'curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from'."
+    )
     preload = curvature_preload[0, 0]
     image_pixels = len(native_index_for_slim_index)
 
     # Make sure there isn't more cores assigned than there is indices to loop over
-    if n_processes  > image_pixels:
+    if n_processes > image_pixels:
         n_processes = image_pixels
 
     # Set up parallel code
-    idx_diff = int(image_pixels/n_processes)
+    idx_diff = int(image_pixels / n_processes)
     idxs = []
     for n in range(n_processes):
-        idxs.append(idx_diff*n)
+        idxs.append(idx_diff * n)
     idxs.append(len(native_index_for_slim_index))
 
     idx_access_list = []
-    for i in range(len(idxs)-1):
+    for i in range(len(idxs) - 1):
         id0 = idxs[i]
-        id1 = idxs[i+1]
+        id1 = idxs[i + 1]
         idx_access_list.append([id0, id1])
 
     lock = mp.Lock()
-    para_result_jit_arr = mp.Array('d', pix_pixels*pix_pixels)
+    para_result_jit_arr = mp.Array("d", pix_pixels * pix_pixels)
 
     # Run first loop in parallel
     print("starting 1st loop.")
 
     processes = [
-    mp.Process(target = parallel_loop1,
-    args = (curvature_preload,
-            pix_indexes_for_sub_slim_index,
-            pix_size_for_sub_slim_index,
-            pix_weights_for_sub_slim_index,
-            native_index_for_slim_index,
-            make_2d(para_result_jit_arr, pix_pixels, pix_pixels),
-            i0, i1,
-            lock)) for i0, i1 in idx_access_list]
+        mp.Process(
+            target=parallel_loop1,
+            args=(
+                curvature_preload,
+                pix_indexes_for_sub_slim_index,
+                pix_size_for_sub_slim_index,
+                pix_weights_for_sub_slim_index,
+                native_index_for_slim_index,
+                make_2d(para_result_jit_arr, pix_pixels, pix_pixels),
+                i0,
+                i1,
+                lock,
+            ),
+        )
+        for i0, i1 in idx_access_list
+    ]
 
     """
     processes = [
@@ -1824,16 +1827,12 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from(
     for i, p in enumerate(processes):
         p.start()
         time.sleep(0.01)
-        #logging.info(f"Started process {p.pid}.")
-        print(
-            "process {} started (id = {}).".format(i, p.pid)
-        )
+        # logging.info(f"Started process {p.pid}.")
+        print("process {} started (id = {}).".format(i, p.pid))
     for j, p in enumerate(processes):
         p.join()
-        #logging.info(f"Process {p.pid} finished.")
-        print(
-            "process {} finished (id = {}).".format(j, p.pid)
-        )
+        # logging.info(f"Process {p.pid} finished.")
+        print("process {} finished (id = {}).".format(j, p.pid))
     print("finished 1st loop.")
 
     # Run second loop
@@ -1844,11 +1843,13 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_para_from(
 
     # Run final loop
     print("starting 3rd loop.")
-    curvature_matrix = jit_loop3(curvature_matrix,
-              pix_indexes_for_sub_slim_index,
-              pix_size_for_sub_slim_index,
-              pix_weights_for_sub_slim_index,
-              preload,
-              image_pixels)
+    curvature_matrix = jit_loop3(
+        curvature_matrix,
+        pix_indexes_for_sub_slim_index,
+        pix_size_for_sub_slim_index,
+        pix_weights_for_sub_slim_index,
+        preload,
+        image_pixels,
+    )
     print("finished 3rd loop.")
     return curvature_matrix

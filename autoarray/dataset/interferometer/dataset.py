@@ -2,9 +2,9 @@ from astropy.io import fits
 import logging
 import numpy as np
 from pathlib import Path
-from typing import Optional
 
 from autoconf import cached_property
+from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
@@ -13,8 +13,6 @@ from autoarray.operators.transformer import TransformerNUFFT
 
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
-
-from autoarray.structures.arrays import array_2d_util
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 
@@ -91,7 +89,11 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        self.preprocessing_directory = Path(preprocessing_directory) if preprocessing_directory is not None else None
+        self.preprocessing_directory = (
+            Path(preprocessing_directory)
+            if preprocessing_directory is not None
+            else None
+        )
 
     @cached_property
     def grids(self):
@@ -127,7 +129,7 @@ class Interferometer(AbstractDataset):
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
-        uv_wavelengths = array_2d_util.numpy_array_2d_via_fits_from(
+        uv_wavelengths = ndarray_via_fits_from(
             file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
         )
 
@@ -140,15 +142,11 @@ class Interferometer(AbstractDataset):
         )
 
     def w_tilde_preprocessing(self):
-
         if self.preprocessing_directory.is_dir():
-
             filename = "{}/curvature_preload.fits".format(self.preprocessing_directory)
 
             if not self.preprocessing_directory.isfile(filename):
-                print(
-                    "The file {} does not exist".format(filename)
-                )
+                print("The file {} does not exist".format(filename))
                 logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
                 curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
@@ -271,8 +269,8 @@ class Interferometer(AbstractDataset):
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
 
         if self.uv_wavelengths is not None and uv_wavelengths_path is not None:
-            array_2d_util.numpy_array_2d_to_fits(
-                array_2d=self.uv_wavelengths,
+            output_to_fits(
+                values=self.uv_wavelengths,
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,
             )

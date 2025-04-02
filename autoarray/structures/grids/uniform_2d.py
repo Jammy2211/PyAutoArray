@@ -5,6 +5,7 @@ from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
 from autoconf import cached_property
+from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
@@ -575,7 +576,7 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the grid.
         """
 
-        grid_2d = array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=0)
+        grid_2d = ndarray_via_fits_from(file_path=file_path, hdu=0)
 
         return Grid2D.no_mask(
             values=grid_2d,

@@ -247,4 +247,3 @@ def test__preconditioner_matrix_via_mapping_matrix_from():
         preconditioner_matrix
         == np.array([[5.0, 2.0, 3.0], [4.0, 9.0, 6.0], [7.0, 8.0, 13.0]])
     ).all()
-
