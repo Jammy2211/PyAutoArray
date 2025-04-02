@@ -484,22 +484,29 @@ class Kernel2D(AbstractArray2D):
         return Array2D(values=convolved_array_1d, mask=array_2d.mask)
 
     def jax_convolve(self, image, blurring_image, method="auto"):
-        slim_to_2D_index_image = jnp.nonzero(
+
+        slim_to_native = jnp.nonzero(
             jnp.logical_not(self.mask.array), size=image.shape[0]
         )
-        slim_to_2D_index_blurring = jnp.nonzero(
+        slim_to_native_blurring = jnp.nonzero(
             jnp.logical_not(self.blurring_mask), size=blurring_image.shape[0]
         )
+
         expanded_image_native = jnp.zeros(self.mask.shape)
-        expanded_image_native = expanded_image_native.at[slim_to_2D_index_image].set(
+
+        expanded_image_native = expanded_image_native.at[slim_to_native].set(
             image.array
         )
-        expanded_image_native = expanded_image_native.at[slim_to_2D_index_blurring].set(
+        expanded_image_native = expanded_image_native.at[slim_to_native_blurring].set(
             blurring_image.array
         )
+
         kernel = np.array(self.kernel.native.array)
+
         convolve_native = jax.scipy.signal.convolve(
             expanded_image_native, kernel, mode="same", method=method
         )
-        convolve_slim = convolve_native[slim_to_2D_index_image]
+
+        convolve_slim = convolve_native[slim_to_native]
+
         return convolve_slim
