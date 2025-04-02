@@ -1,14 +1,6 @@
-from autoarray import exc
 from autoarray import util
 
 import numpy as np
-import pytest
-
-
-def test__total_image_pixels_1d_from():
-    mask_1d = np.array([False, True, False, False, False, True])
-
-    assert util.mask_1d.total_pixels_1d_from(mask_1d=mask_1d) == 4
 
 
 def test__native_index_for_slim_index_1d_from():
