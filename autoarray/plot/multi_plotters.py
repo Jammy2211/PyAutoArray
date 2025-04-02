@@ -301,7 +301,7 @@ class MultiFigurePlotter:
             The list of function names that are called to plot the figures on the subplot.
         figure_name_list
             The list of figure names that are plotted on the subplot.
-        filenane
+        filename
             The filename that the .fits file is output to.
         tag_list
             The list of tags that are used to set the `EXTNAME` of each hdu of the .fits file.
