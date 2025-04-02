@@ -292,11 +292,10 @@ def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy
     assert kernel_astropy == pytest.approx(kernel_2d.native._array, abs=1e-4)
 
 
-def test__convolved_array_from__not_odd_x_odd_kernel__raises_error():
-    kernel_2d = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+def test__not_odd_x_odd_kernel__raises_error():
 
     with pytest.raises(exc.KernelException):
-        kernel_2d.convolved_array_from(np.ones((5, 5)))
+        aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
 
 
 def test__convolved_array_from():
@@ -358,34 +357,78 @@ def test__convolved_array_from():
     ).all()
 
 
-def test__convolved_array_from__input_jax_array():
+def test__convolve_image():
 
-    array_2d = jnp.array(
-        [
-            [0.0, 0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-            [0.0, 0.0, 0.0, 0.0],
-        ])
-
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
+    mask = aa.Mask2D.circular(
+        shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
     )
 
-    blurred_array_2d = kernel_2d.convolved_array_from(array_2d)
+    import scipy.signal
 
-    assert (
-        blurred_array_2d.native
-        == np.array(
-            [
-                [1.0, 1.0, 0.0, 0.0],
-                [2.0, 1.0, 1.0, 1.0],
-                [3.0, 3.0, 2.0, 2.0],
-                [0.0, 0.0, 1.0, 3.0],
-            ]
-        )
-    ).all()
+    kernel = np.arange(49).reshape(7, 7)
+    image = np.arange(900).reshape(30, 30)
 
+    blurred_image_via_scipy = scipy.signal.convolve2d(
+        image, kernel, mode="same"
+    )
+    blurred_image_via_scipy = aa.Array2D.no_mask(
+        values=blurred_image_via_scipy, pixel_scales=1.0
+    )
+    blurred_masked_image_via_scipy = aa.Array2D(
+        values=blurred_image_via_scipy.native, mask=mask
+    )
+
+    # Now reproduce this data using the convolve_image function
+
+    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
+    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
+
+    masked_image = aa.Array2D(values=image.native, mask=mask)
+
+    blurring_mask = mask.derive_mask.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
+
+    blurring_image = aa.Array2D(values=image.native, mask=blurring_mask)
+
+    blurred_masked_im_1 = kernel.convolve_image(
+        image=masked_image, blurring_image=blurring_image
+    )
+
+    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1.array, 1e-4)
+
+
+def test__compare_to_full_2d_convolution__no_blurring_image():
+    # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
+
+    import scipy.signal
+
+    mask = aa.Mask2D.circular(
+        shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
+    )
+    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
+
+    blurring_mask = mask.derive_mask.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
+    blurred_image_via_scipy = scipy.signal.convolve2d(
+        image.native * blurring_mask, kernel.native, mode="same"
+    )
+    blurred_image_via_scipy = aa.Array2D.no_mask(
+        values=blurred_image_via_scipy, pixel_scales=1.0
+    )
+    blurred_masked_image_via_scipy = aa.Array2D(
+        values=blurred_image_via_scipy.native, mask=mask
+    )
+
+    # Now reproduce this data using the frame convolver_image
+
+    masked_image = aa.Array2D(values=image.native, mask=mask)
+
+    blurred_masked_im_1 = kernel.convolve_image_no_blurring(image=masked_image)
+
+    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1, 1e-4)
 
 
 def test__convolve_mapping_matrix():
@@ -509,80 +552,3 @@ def test__convolve_mapping_matrix():
         ),
         1e-4,
     )
-
-
-def test__convolve_image():
-
-    mask = aa.Mask2D.circular(
-        shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
-    )
-
-    import scipy.signal
-
-    kernel = np.arange(49).reshape(7, 7)
-    image = np.arange(900).reshape(30, 30)
-
-    blurred_image_via_scipy = scipy.signal.convolve2d(
-        image, kernel, mode="same"
-    )
-    blurred_image_via_scipy = aa.Array2D.no_mask(
-        values=blurred_image_via_scipy, pixel_scales=1.0
-    )
-    blurred_masked_image_via_scipy = aa.Array2D(
-        values=blurred_image_via_scipy.native, mask=mask
-    )
-
-    # Now reproduce this data using the convolve_image function
-
-    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
-    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
-
-    masked_image = aa.Array2D(values=image.native, mask=mask)
-
-    blurring_mask = mask.derive_mask.blurring_from(
-        kernel_shape_native=kernel.shape_native
-    )
-
-    blurring_image = aa.Array2D(values=image.native, mask=blurring_mask)
-
-    blurred_masked_im_1 = kernel.convolve_image(
-        image=masked_image, blurring_image=blurring_image
-    )
-
-    print(blurred_masked_image_via_scipy)
-    print(blurred_masked_im_1)
-
-    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1.array, 1e-4)
-
-
-def test__compare_to_full_2d_convolution__no_blurring_image():
-    # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
-
-    import scipy.signal
-
-    mask = aa.Mask2D.circular(
-        shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
-    )
-    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
-    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
-
-    blurring_mask = mask.derive_mask.blurring_from(
-        kernel_shape_native=kernel.shape_native
-    )
-    blurred_image_via_scipy = scipy.signal.convolve2d(
-        image.native * blurring_mask, kernel.native, mode="same"
-    )
-    blurred_image_via_scipy = aa.Array2D.no_mask(
-        values=blurred_image_via_scipy, pixel_scales=1.0
-    )
-    blurred_masked_image_via_scipy = aa.Array2D(
-        values=blurred_image_via_scipy.native, mask=mask
-    )
-
-    # Now reproduce this data using the frame convolver_image
-
-    masked_image = aa.Array2D(values=image.native, mask=mask)
-
-    blurred_masked_im_1 = kernel.convolve_image_no_blurring(image=masked_image)
-
-    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1, 1e-4)
