@@ -483,37 +483,6 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=array_2d.mask)
 
-    def convolved_array_with_mask_from(self, array: Array2D, mask: Mask2D) -> Array2D:
-        """
-        Convolve an array with this Kernel2D
-
-        Parameters
-        ----------
-        image
-            An array representing the image the Kernel2D is convolved with.
-
-        Returns
-        -------
-        convolved_image
-            An array representing the image after convolution.
-
-        Raises
-        ------
-        KernelException if either Kernel2D psf dimension is odd
-        """
-
-        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel2D Kernel2D must be odd")
-
-        convolved_array_2d = scipy.signal.convolve2d(array, self.native, mode="same")
-
-        convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(mask),
-            array_2d_native=np.array(convolved_array_2d),
-        )
-
-        return Array2D(values=convolved_array_1d, mask=mask)
-
     def jax_convolve(self, image, blurring_image, method="auto"):
         slim_to_2D_index_image = jnp.nonzero(
             jnp.logical_not(self.mask.array), size=image.shape[0]
