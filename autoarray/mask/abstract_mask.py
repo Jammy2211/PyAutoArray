@@ -7,8 +7,9 @@ from autoarray.numpy_wrapper import np, use_jax
 
 if use_jax:
     import jax
-from pathlib import Path
-from typing import Dict, Union
+
+import numpy as np
+from typing import Dict
 
 from autoconf.fitsable import output_to_fits
 
