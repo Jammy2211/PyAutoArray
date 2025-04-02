@@ -487,12 +487,12 @@ class Kernel2D(AbstractArray2D):
 
     def convolve_image(self, image, blurring_image, jax_method="fft"):
         """
-        For a given 1D array and blurring array, convolve the two using this convolver.
+        For a given 1D array and blurring array, convolve the two using this psf.
 
         Parameters
         ----------
         image
-            1D array of the values which are to be blurred with the convolver's PSF.
+            1D array of the values which are to be blurred with the psf's PSF.
         blurring_image
             1D array of the blurring values which blur into the array after PSF convolution.
         jax_method
@@ -530,12 +530,12 @@ class Kernel2D(AbstractArray2D):
 
     def convolve_image_no_blurring(self, image, mask, jax_method="fft"):
         """
-        For a given 1D array and blurring array, convolve the two using this convolver.
+        For a given 1D array and blurring array, convolve the two using this psf.
 
         Parameters
         ----------
         image
-            1D array of the values which are to be blurred with the convolver's PSF.
+            1D array of the values which are to be blurred with the psf's PSF.
         blurring_image
             1D array of the blurring values which blur into the array after PSF convolution.
         jax_method
@@ -562,12 +562,12 @@ class Kernel2D(AbstractArray2D):
         return Array2D(values=convolved_array_1d, mask=mask)
 
     def convolve_mapping_matrix(self, mapping_matrix, mask):
-        """For a given 1D array and blurring array, convolve the two using this convolver.
+        """For a given 1D array and blurring array, convolve the two using this psf.
 
         Parameters
         ----------
         image
-            1D array of the values which are to be blurred with the convolver's PSF.
+            1D array of the values which are to be blurred with the psf's PSF.
         """
         return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None))(
             mapping_matrix, mask
