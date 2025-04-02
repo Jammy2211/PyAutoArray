@@ -226,7 +226,7 @@ class OverSampler:
         #     sub_size=np.array(self.sub_size).astype("int"),
         # )
 
-        binned_array_2d = array.reshape(self.mask.shape_slim, self.sub_size[0]).mean(axis=1)
+        binned_array_2d = array.reshape(self.mask.shape_slim, self.sub_size[0]**2).mean(axis=1)
 
         return Array2D(
             values=binned_array_2d,
