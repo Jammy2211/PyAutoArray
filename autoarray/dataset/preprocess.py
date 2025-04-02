@@ -328,7 +328,7 @@ def background_noise_map_via_edges_from(image, no_edges):
 def psf_with_odd_dimensions_from(psf):
     """
     If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
-    dimensions (odd-sized dimensions are required by a *Convolver*).
+    dimensions (odd-sized dimensions are required for 2D convolution).
 
     Kernels are rescaled using the scikit-image routine rescale, which performs rescaling via an interpolation
     routine. This may lead to loss of accuracy in the PSF kernel and it is advised that users, where possible,

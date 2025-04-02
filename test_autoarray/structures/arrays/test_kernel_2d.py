@@ -248,6 +248,58 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
     assert (kernel_2d.native == (1.0 / 15.0) * np.ones((5, 3))).all()
 
 
+def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy_gaussian_model():
+    pixel_scales = 0.1
+
+    x_stddev = (
+        1.0e-5
+        * (units.deg).to(units.arcsec)
+        / pixel_scales
+        / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+    )
+    y_stddev = (
+        2.0e-5
+        * (units.deg).to(units.arcsec)
+        / pixel_scales
+        / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+    )
+
+    theta_deg = 230.0
+    theta = Angle(theta_deg, "deg").radian
+
+    gaussian_astropy = functional_models.Gaussian2D(
+        amplitude=1.0,
+        x_mean=1.0,
+        y_mean=1.0,
+        x_stddev=x_stddev,
+        y_stddev=y_stddev,
+        theta=theta,
+    )
+
+    shape = (3, 3)
+    y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+    kernel_astropy = gaussian_astropy(x, y)
+    kernel_astropy /= np.sum(kernel_astropy)
+
+    kernel_2d = aa.Kernel2D.from_as_gaussian_via_alma_fits_header_parameters(
+        shape_native=shape,
+        pixel_scales=pixel_scales,
+        y_stddev=2.0e-5,
+        x_stddev=1.0e-5,
+        theta=theta_deg,
+        normalize=True,
+    )
+
+    assert kernel_astropy == pytest.approx(kernel_2d.native._array, abs=1e-4)
+
+
+def test__convolved_array_from__not_odd_x_odd_kernel__raises_error():
+    kernel_2d = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+
+    with pytest.raises(exc.KernelException):
+        kernel_2d.convolved_array_from(np.ones((5, 5)))
+
+
 def test__convolved_array_from():
     array_2d = aa.Array2D.no_mask(
         values=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=1.0
@@ -408,53 +460,261 @@ def test__convolved_array_from():
     ).all()
 
 
-def test__convolved_array_from__not_odd_x_odd_kernel__raises_error():
-    kernel_2d = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
-
-    with pytest.raises(exc.KernelException):
-        kernel_2d.convolved_array_from(np.ones((5, 5)))
-
-
-def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy_gaussian_model():
-    pixel_scales = 0.1
-
-    x_stddev = (
-        1.0e-5
-        * (units.deg).to(units.arcsec)
-        / pixel_scales
-        / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-    )
-    y_stddev = (
-        2.0e-5
-        * (units.deg).to(units.arcsec)
-        / pixel_scales
-        / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+def test__convolve_mapping_matrix__asymetric_convolver__matrix_blurred_correctly():
+    mask = np.array(
+        [
+            [True, True, True, True, True, True],
+            [True, False, False, False, False, True],
+            [True, False, False, False, False, True],
+            [True, False, False, False, False, True],
+            [True, False, False, False, False, True],
+            [True, True, True, True, True, True],
+        ]
     )
 
-    theta_deg = 230.0
-    theta = Angle(theta_deg, "deg").radian
-
-    gaussian_astropy = functional_models.Gaussian2D(
-        amplitude=1.0,
-        x_mean=1.0,
-        y_mean=1.0,
-        x_stddev=x_stddev,
-        y_stddev=y_stddev,
-        theta=theta,
+    asymmetric_kernel = aa.Kernel2D.no_mask(
+        values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
     )
 
-    shape = (3, 3)
-    y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-    kernel_astropy = gaussian_astropy(x, y)
-    kernel_astropy /= np.sum(kernel_astropy)
+    convolver = aa.Convolver(mask=mask, kernel=asymmetric_kernel)
 
-    kernel_2d = aa.Kernel2D.from_as_gaussian_via_alma_fits_header_parameters(
-        shape_native=shape,
-        pixel_scales=pixel_scales,
-        y_stddev=2.0e-5,
-        x_stddev=1.0e-5,
-        theta=theta_deg,
-        normalize=True,
+    mapping = np.array(
+        [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [
+                0,
+                1,
+                0,
+            ],  # The 0.3 should be 'chopped' from this pixel as it is on the right-most edge
+            [0, 0, 0],
+            [1, 0, 0],
+            [0, 0, 1],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ]
     )
 
-    assert kernel_astropy == pytest.approx(kernel_2d.native._array, abs=1e-4)
+    blurred_mapping = convolver.convolve_mapping_matrix(mapping)
+
+    assert (
+        blurred_mapping
+        == np.array(
+            [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0.4, 0],
+                [0, 0.2, 0],
+                [0.4, 0, 0],
+                [0.2, 0, 0.4],
+                [0.3, 0, 0.2],
+                [0, 0.1, 0.3],
+                [0, 0, 0],
+                [0.1, 0, 0],
+                [0, 0, 0.1],
+                [0, 0, 0],
+            ]
+        )
+    ).all()
+
+    asymmetric_kernel = aa.Kernel2D.no_mask(
+        values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
+    )
+
+    convolver = aa.Convolver(mask=mask, kernel=asymmetric_kernel)
+
+    mapping = np.array(
+        [
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [
+                0,
+                1,
+                0,
+            ],  # The 0.3 should be 'chopped' from this pixel as it is on the right-most edge
+            [1, 0, 0],
+            [1, 0, 0],
+            [0, 0, 1],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ]
+    )
+
+    blurred_mapping = convolver.convolve_mapping_matrix(mapping)
+
+    assert blurred_mapping == pytest.approx(
+        np.array(
+            [
+                [0, 0.6, 0],
+                [0, 0.9, 0],
+                [0, 0.5, 0],
+                [0, 0.3, 0],
+                [0, 0.1, 0],
+                [0, 0.1, 0],
+                [0, 0.5, 0],
+                [0, 0.2, 0],
+                [0.6, 0, 0],
+                [0.5, 0, 0.4],
+                [0.3, 0, 0.2],
+                [0, 0.1, 0.3],
+                [0.1, 0, 0],
+                [0.1, 0, 0],
+                [0, 0, 0.1],
+                [0, 0, 0],
+            ]
+        ),
+        1e-4,
+    )
+
+
+def test__convolution__cross_mask_with_blurring_entries__returns_array():
+    cross_mask = aa.Mask2D(
+        mask=[
+            [True, True, True, True, True],
+            [True, True, False, True, True],
+            [True, False, False, False, True],
+            [True, True, False, True, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=0.1,
+    )
+
+    kernel = aa.Kernel2D.no_mask(
+        values=[[0, 0.2, 0], [0.2, 0.4, 0.2], [0, 0.2, 0]], pixel_scales=0.1
+    )
+
+    convolver = aa.Convolver(mask=cross_mask, kernel=kernel)
+
+    image_array = aa.Array2D(values=[1, 0, 0, 0, 0], mask=cross_mask)
+
+    blurring_mask = cross_mask.derive_mask.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
+
+    blurring_array = aa.Array2D(
+        values=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mask=blurring_mask
+    )
+
+    result = convolver.convolve_image(image=image_array, blurring_image=blurring_array)
+
+    assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0.0, 0.0])).all()
+
+
+def test__compare_to_full_2d_convolution():
+    # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
+
+    import scipy.signal
+
+    mask = aa.Mask2D.circular(
+        shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
+    )
+    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
+
+    blurred_image_via_scipy = scipy.signal.convolve2d(
+        image.native, kernel.native, mode="same"
+    )
+    blurred_image_via_scipy = aa.Array2D.no_mask(
+        values=blurred_image_via_scipy, pixel_scales=1.0
+    )
+    blurred_masked_image_via_scipy = aa.Array2D(
+        values=blurred_image_via_scipy.native, mask=mask
+    )
+
+    # Now reproduce this data using the frame convolver_image
+
+    masked_image = aa.Array2D(values=image.native, mask=mask)
+
+    blurring_mask = mask.derive_mask.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
+
+    convolver = aa.Convolver(mask=mask, kernel=kernel)
+
+    blurring_image = aa.Array2D(values=image.native, mask=blurring_mask)
+
+    blurred_masked_im_1 = convolver.convolve_image(
+        image=masked_image, blurring_image=blurring_image
+    )
+
+    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1, 1e-4)
+
+
+def test__compare_to_full_2d_convolution__no_blurring_image():
+    # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
+
+    import scipy.signal
+
+    mask = aa.Mask2D.circular(
+        shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
+    )
+    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
+
+    blurring_mask = mask.derive_mask.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
+    blurred_image_via_scipy = scipy.signal.convolve2d(
+        image.native * blurring_mask, kernel.native, mode="same"
+    )
+    blurred_image_via_scipy = aa.Array2D.no_mask(
+        values=blurred_image_via_scipy, pixel_scales=1.0
+    )
+    blurred_masked_image_via_scipy = aa.Array2D(
+        values=blurred_image_via_scipy.native, mask=mask
+    )
+
+    # Now reproduce this data using the frame convolver_image
+
+    masked_image = aa.Array2D(values=image.native, mask=mask)
+
+    convolver = aa.Convolver(mask=mask, kernel=kernel)
+
+    blurred_masked_im_1 = convolver.convolve_image_no_blurring(image=masked_image)
+
+    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1, 1e-4)
+
+
+def test__summed_convolved_array_from():
+    mask = aa.Mask2D(
+        mask=[
+            [True, True, True, True, True],
+            [True, True, True, True, True],
+            [True, False, False, False, True],
+            [True, True, True, True, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=0.1,
+    )
+
+    kernel = aa.Kernel2D.no_mask(
+        values=[[0, 0.0, 0], [0.5, 1.0, 0.5], [0, 0.0, 0]], pixel_scales=0.1
+    )
+
+    convolver = aa.Convolver(mask=mask, kernel=kernel)
+
+    image_array = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
+
+    summed_convolved_array = convolver.convolve_image_no_blurring(image=image_array)
+
+    assert summed_convolved_array == pytest.approx(np.array([2.0, 4.0, 4.0]), 1.0e-4)

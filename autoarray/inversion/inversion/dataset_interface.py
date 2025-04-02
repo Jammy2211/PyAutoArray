@@ -4,7 +4,7 @@ class DatasetInterface:
         data,
         noise_map,
         grids=None,
-        convolver=None,
+        psf=None,
         transformer=None,
         w_tilde=None,
         noise_covariance_matrix=None,
@@ -41,7 +41,7 @@ class DatasetInterface:
         border_relocator
            The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
            edge.
-        convolver
+        psf
             Perform 2D convolution of the imaigng data's PSF when computing the operated mapping matrix.
         transformer
             Performs a Fourier transform of the image-data from real-space to visibilities when computing the
@@ -59,7 +59,7 @@ class DatasetInterface:
         self.data = data
         self.noise_map = noise_map
         self.grids = grids
-        self.convolver = convolver
+        self.psf = psf
         self.transformer = transformer
         self.w_tilde = w_tilde
         self.noise_covariance_matrix = noise_covariance_matrix

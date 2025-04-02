@@ -146,8 +146,8 @@ class DeriveMask2D:
         Returns a blurring ``Mask2D``, representing all masked pixels (given by ``True``) whose values are blurred
         into unmasked pixels (given by ``False``) when a 2D convolution is performed.
 
-        This mask is used by the ``Convolver2D`` object to ensure that 2D convolution can be performed on masked
-        data structures without missing values.
+        This mask is used by the PSF to ensure that 2D convolution can be performed on masked data structures without
+        missing values.
 
         For example, for the following ``Mask2D``:
 

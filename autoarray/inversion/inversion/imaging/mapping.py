@@ -39,10 +39,8 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         Parameters
         ----------
-        noise_map
-            The noise-map of the observed imaging data which values are solved for.
-        convolver
-            The convolver which performs a 2D convolution on the mapping matrix with the imaging data's PSF.
+        dataset
+            The dataset containing the image data, noise-map and psf which is fitted by the inversion.
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
@@ -80,7 +78,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper = mapper_list[i]
             param_range = mapper_param_range_list[i]
 
-            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
                 mapping_matrix=mapper.mapping_matrix
             )
 
@@ -142,7 +140,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
                 mapping_matrix=mapper_i.mapping_matrix
             )
 

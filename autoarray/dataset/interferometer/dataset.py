@@ -276,5 +276,5 @@ class Interferometer(AbstractDataset):
             )
 
     @property
-    def convolver(self):
+    def psf(self):
         return None

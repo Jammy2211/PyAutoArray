@@ -37,14 +37,14 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
     psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
     dataset = aa.Imaging(
-        data=image, noise_map=noise_map, psf=psf, pad_for_convolver=False
+        data=image, noise_map=noise_map, psf=psf, pad_for_psf=False
     )
 
     assert dataset.data.shape_native == (3, 3)
     assert dataset.noise_map.shape_native == (3, 3)
 
     dataset = aa.Imaging(
-        data=image, noise_map=noise_map, psf=psf, pad_for_convolver=True
+        data=image, noise_map=noise_map, psf=psf, pad_for_psf=True
     )
 
     assert dataset.data.shape_native == (5, 5)
@@ -144,7 +144,6 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
     assert (masked_imaging_7x7.psf.slim == (1.0 / 3.0) * psf_3x3.slim).all()
 
     assert type(masked_imaging_7x7.psf) == aa.Kernel2D
-    assert type(masked_imaging_7x7.convolver) == aa.Convolver
     assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (35,)
     assert masked_imaging_7x7.w_tilde.indexes.shape == (35,)
     assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
@@ -226,7 +225,6 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
     assert masked_dataset.psf.native == pytest.approx(
         (1.0 / 49.0) * np.ones((7, 7)), 1.0e-4
     )
-    assert masked_dataset.convolver.kernel.shape_native == (7, 7)
     assert (masked_dataset.data == np.array([1.0])).all()
     assert (masked_dataset.noise_map == np.array([2.0])).all()
 

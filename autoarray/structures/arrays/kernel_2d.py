@@ -1,4 +1,6 @@
 from astropy import units
+import jax
+import jax.numpy as jnp
 import numpy as np
 import scipy.signal
 from pathlib import Path
@@ -361,7 +363,7 @@ class Kernel2D(AbstractArray2D):
     ) -> "Kernel2D":
         """
         If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
-        dimensions (odd-sized dimensions are required by a *Convolver*).
+        dimensions (odd-sized dimensions are required for 2D convolution).
 
         The PSF can be scaled to larger / smaller sizes than the input size, if the rescale factor uses values that
         deviate furher from 1.0.
@@ -511,3 +513,24 @@ class Kernel2D(AbstractArray2D):
         )
 
         return Array2D(values=convolved_array_1d, mask=mask)
+
+    def jax_convolve(self, image, blurring_image, method="auto"):
+        slim_to_2D_index_image = jnp.nonzero(
+            jnp.logical_not(self.mask.array), size=image.shape[0]
+        )
+        slim_to_2D_index_blurring = jnp.nonzero(
+            jnp.logical_not(self.blurring_mask), size=blurring_image.shape[0]
+        )
+        expanded_image_native = jnp.zeros(self.mask.shape)
+        expanded_image_native = expanded_image_native.at[slim_to_2D_index_image].set(
+            image.array
+        )
+        expanded_image_native = expanded_image_native.at[slim_to_2D_index_blurring].set(
+            blurring_image.array
+        )
+        kernel = np.array(self.kernel.native.array)
+        convolve_native = jax.scipy.signal.convolve(
+            expanded_image_native, kernel, mode="same", method=method
+        )
+        convolve_slim = convolve_native[slim_to_2D_index_image]
+        return convolve_slim
