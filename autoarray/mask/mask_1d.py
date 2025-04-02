@@ -21,6 +21,10 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
+class Mask1DKeys(Enum):
+    PIXSCA = "PIXSCA"
+    ORIGIN = "ORIGIN"
+
 class Mask1D(Mask):
     def __init__(
         self,
@@ -173,11 +177,8 @@ class Mask1D(Mask):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
-        class GridKeys(Enum):
-            PIXSCA = "PIXSCA"
-            ORIGIN = "ORIGIN"
 
         return {
-            GridKeys.PIXSCA: self.pixel_scales[0],
-            GridKeys.ORIGIN: self.origin[0],
+            Mask1DKeys.PIXSCA: self.pixel_scales[0],
+            Mask1DKeys.ORIGIN: self.origin[0],
         }

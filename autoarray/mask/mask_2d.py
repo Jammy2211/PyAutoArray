@@ -31,6 +31,13 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
+class Mask2DKeys(Enum):
+    PIXSCAY = "PIXSCAY"
+    PIXSCAX = "PIXSCAX"
+    ORIGINY = "ORIGINY"
+    ORIGINX = "ORIGINX"
+
+
 class Mask2D(Mask):
     # noinspection PyUnusedLocal
     def __init__(
@@ -718,17 +725,11 @@ class Mask2D(Mask):
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
 
-        class GridKeys(Enum):
-            PIXSCAY = "PIXSCAY"
-            PIXSCAX = "PIXSCAX"
-            ORIGINY = "ORIGINY"
-            ORIGINX = "ORIGINX"
-
         return {
-            GridKeys.PIXSCAY: self.pixel_scales[0],
-            GridKeys.PIXSCAX: self.pixel_scales[1],
-            GridKeys.ORIGINY: self.origin[0],
-            GridKeys.ORIGINX: self.origin[1],
+            Mask2DKeys.PIXSCAY: self.pixel_scales[0],
+            Mask2DKeys.PIXSCAX: self.pixel_scales[1],
+            Mask2DKeys.ORIGINY: self.origin[0],
+            Mask2DKeys.ORIGINX: self.origin[1],
         }
 
     @property
