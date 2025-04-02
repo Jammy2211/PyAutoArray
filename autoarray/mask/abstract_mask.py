@@ -3,8 +3,7 @@ from __future__ import annotations
 from abc import ABC
 import logging
 import numpy as np
-from pathlib import Path
-from typing import Dict, Union
+from typing import Dict
 
 from autoconf.fitsable import output_to_fits
 

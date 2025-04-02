@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 import logging
 import numpy as np
 from pathlib import Path
@@ -19,6 +20,10 @@ from autoarray import type as ty
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+
+class Mask1DKeys(Enum):
+    PIXSCA = "PIXSCA"
+    ORIGIN = "ORIGIN"
 
 class Mask1D(Mask):
     def __init__(
@@ -172,7 +177,8 @@ class Mask1D(Mask):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
+
         return {
-            "PIXSCA": self.pixel_scales[0],
-            "ORIGIN": self.origin[0],
+            Mask1DKeys.PIXSCA: self.pixel_scales[0],
+            Mask1DKeys.ORIGIN: self.origin[0],
         }

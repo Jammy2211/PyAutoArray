@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from enum import Enum
 import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
@@ -28,6 +29,13 @@ from autoarray.mask import mask_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
+
+
+class Mask2DKeys(Enum):
+    PIXSCAY = "PIXSCAY"
+    PIXSCAX = "PIXSCAX"
+    ORIGINY = "ORIGINY"
+    ORIGINX = "ORIGINX"
 
 
 class Mask2D(Mask):
@@ -716,11 +724,12 @@ class Mask2D(Mask):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
+
         return {
-            "PIXSCAY": self.pixel_scales[0],
-            "PIXSCAX": self.pixel_scales[1],
-            "ORIGINY": self.origin[0],
-            "ORIGINX": self.origin[1],
+            Mask2DKeys.PIXSCAY: self.pixel_scales[0],
+            Mask2DKeys.PIXSCAX: self.pixel_scales[1],
+            Mask2DKeys.ORIGINY: self.origin[0],
+            Mask2DKeys.ORIGINX: self.origin[1],
         }
 
     @property
