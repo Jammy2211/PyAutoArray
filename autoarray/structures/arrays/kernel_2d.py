@@ -54,6 +54,9 @@ class Kernel2D(AbstractArray2D):
             store_native=store_native,
         )
 
+        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
+            raise exc.KernelException("Kernel2D Kernel2D must be odd")
+
         if normalize:
             self._array = np.divide(self._array, np.sum(self._array))
 
@@ -500,59 +503,28 @@ class Kernel2D(AbstractArray2D):
             kernels that are more than about 5x5. Default is `fft`.
         """
 
-        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel2D Kernel2D must be odd")
-
-        print(type(image.native + blurring_image.native))
-        print(type(self.native))
-
-        convolved_array_2d = scipy.signal.convolve2d((image.native + blurring_image.native)._array, self.native._array, mode="same")
-
-        convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(image.mask),
-            array_2d_native=convolved_array_2d,
-        )
-
-        return Array2D(values=convolved_array_1d, mask=image.mask)
-
-    def convolve_image_jax_from(self, array, blurring_array, method="auto"):
-        """
-        For a given 1D array and blurring array, convolve the two using this convolver.
-
-        Parameters
-        ----------
-        array
-            1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_array
-            1D array of the blurring values which blur into the array after PSF convolution.
-        jax_method
-            If JAX is enabled this keyword will indicate what method is used for the PSF
-            convolution. Can be either `direct` to calculate it in real space or `fft`
-            to calculated it via a fast Fourier transform. `fft` is typically faster for
-            kernels that are more than about 5x5. Default is `fft`.
-        """
         slim_to_native = jnp.nonzero(
-            jnp.logical_not(self.mask.array), size=array.shape[0]
+            jnp.logical_not(image.mask.array), size=image.shape[0]
         )
         slim_to_native_blurring = jnp.nonzero(
-            jnp.logical_not(self.blurring_mask), size=blurring_array.shape[0]
+            jnp.logical_not(blurring_image.mask.array), size=blurring_image.shape[0]
         )
 
-        expanded_array_native = jnp.zeros(self.mask.shape)
+        expanded_array_native = jnp.zeros(image.mask.shape)
 
         expanded_array_native = expanded_array_native.at[slim_to_native].set(
-            array.array
+            image.array
         )
         expanded_array_native = expanded_array_native.at[slim_to_native_blurring].set(
-            blurring_array.array
+            blurring_image.array
         )
 
-        kernel = np.array(self.kernel.native.array)
+        kernel = np.array(self.native.array)
 
         convolve_native = jax.scipy.signal.convolve(
-            expanded_array_native, kernel, mode="same", method=method
+            expanded_array_native, kernel, mode="same", method=jax_method
         )
 
-        convolve_slim = convolve_native[slim_to_native]
+        convolved_array_1d = convolve_native[slim_to_native]
 
-        return convolve_slim
+        return Array2D(values=convolved_array_1d, mask=image.mask)

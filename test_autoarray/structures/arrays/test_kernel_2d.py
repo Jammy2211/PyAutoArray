@@ -549,7 +549,10 @@ def test__convolve_image():
         image=masked_image, blurring_image=blurring_image
     )
 
-    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1, 1e-4)
+    print(blurred_masked_image_via_scipy)
+    print(blurred_masked_im_1)
+
+    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1.array, 1e-4)
 
 
 def test__compare_to_full_2d_convolution__no_blurring_image():
