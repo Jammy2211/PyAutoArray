@@ -528,3 +528,40 @@ class Kernel2D(AbstractArray2D):
         convolved_array_1d = convolve_native[slim_to_native]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
+
+    def convolve_image_no_blurring(self, image, jax_method="fft"):
+        """
+        For a given 1D array and blurring array, convolve the two using this convolver.
+
+        Parameters
+        ----------
+        image
+            1D array of the values which are to be blurred with the convolver's PSF.
+        blurring_image
+            1D array of the blurring values which blur into the array after PSF convolution.
+        jax_method
+            If JAX is enabled this keyword will indicate what method is used for the PSF
+            convolution. Can be either `direct` to calculate it in real space or `fft`
+            to calculated it via a fast Fourier transform. `fft` is typically faster for
+            kernels that are more than about 5x5. Default is `fft`.
+        """
+
+        slim_to_native = jnp.nonzero(
+            jnp.logical_not(image.mask.array), size=image.shape[0]
+        )
+
+        expanded_array_native = jnp.zeros(image.mask.shape)
+
+        expanded_array_native = expanded_array_native.at[slim_to_native].set(
+            image.array
+        )
+
+        kernel = np.array(self.native.array)
+
+        convolve_native = jax.scipy.signal.convolve(
+            expanded_array_native, kernel, mode="same", method=jax_method
+        )
+
+        convolved_array_1d = convolve_native[slim_to_native]
+
+        return Array2D(values=convolved_array_1d, mask=image.mask)
