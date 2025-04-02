@@ -463,16 +463,10 @@ def grid_2d_slim_over_sampled_via_mask_from(
                         #     )
                         # else:
                         grid_slim[sub_index, 0] = -(
-                            y_scaled
-                            - y_sub_half
-                            + y1 * y_sub_step
-                            + (y_sub_step / 2.0)
+                            y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )
                         grid_slim[sub_index, 1] = (
-                            x_scaled
-                            - x_sub_half
-                            + x1 * x_sub_step
-                            + (x_sub_step / 2.0)
+                            x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
                         )
                         sub_index += 1
 

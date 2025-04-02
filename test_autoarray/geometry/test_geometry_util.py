@@ -994,7 +994,8 @@ def test__transform_2d_grid_to_reference_frame():
                 [0.0, np.sqrt(2)],
                 [np.sqrt(2) / 2.0, np.sqrt(2) / 2.0],
             ]
-        ), abs=1.0e-4
+        ),
+        abs=1.0e-4,
     )
 
     transformed_grid_2d = aa.util.geometry.transform_grid_2d_to_reference_frame(
@@ -1070,7 +1071,6 @@ def test__transform_2d_grid_from_reference_frame():
     original_grid_2d = aa.util.geometry.transform_grid_2d_from_reference_frame(
         grid_2d=transformed_grid_2d, centre=(8.0, 5.0), angle=137.0
     )
-
 
     assert grid_2d == pytest.approx(original_grid_2d, abs=1.0e-4)
 

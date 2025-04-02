@@ -840,9 +840,9 @@ class Grid2D(Structure):
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
         if isinstance(self, jnp.ndarray):
-            squared_distances = jnp.square(self.array[:, 0] - coordinate[0]) + jnp.square(
-                self.array[:, 1] - coordinate[1]
-            )
+            squared_distances = jnp.square(
+                self.array[:, 0] - coordinate[0]
+            ) + jnp.square(self.array[:, 1] - coordinate[1])
         else:
             squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
                 self[:, 1] - coordinate[1]

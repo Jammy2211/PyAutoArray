@@ -575,7 +575,6 @@ def test__grid_2d_radial_projected_shape_slim_from():
         pixel_scales=grid_2d.pixel_scales,
     )
 
-
     assert grid_radii == pytest.approx(grid_radii_util, 1.0e-4)
     assert grid_radial_shape_slim == grid_radii_util.shape[0]
 
@@ -780,7 +779,6 @@ def test__grid_with_coordinates_within_distance_removed_from():
             ]
         )
     ).all()
-
 
 
 def test__recursive_shape_storage():

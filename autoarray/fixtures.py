@@ -110,7 +110,6 @@ def make_blurring_grid_2d_7x7():
     return aa.Grid2D.from_mask(mask=make_blurring_mask_2d_7x7())
 
 
-
 def make_image_7x7():
     return aa.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 

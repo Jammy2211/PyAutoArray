@@ -474,7 +474,9 @@ class Kernel2D(AbstractArray2D):
 
         array_2d = array.native
 
-        convolved_array_2d = scipy.signal.convolve2d(array_2d._array, np.array(self.native._array), mode="same")
+        convolved_array_2d = scipy.signal.convolve2d(
+            array_2d._array, np.array(self.native._array), mode="same"
+        )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
             mask_2d=np.array(array_2d.mask),
@@ -543,15 +545,11 @@ class Kernel2D(AbstractArray2D):
             kernels that are more than about 5x5. Default is `fft`.
         """
 
-        slim_to_native = jnp.nonzero(
-            jnp.logical_not(mask.array), size=image.shape[0]
-        )
+        slim_to_native = jnp.nonzero(jnp.logical_not(mask.array), size=image.shape[0])
 
         expanded_array_native = jnp.zeros(mask.shape)
 
-        expanded_array_native = expanded_array_native.at[slim_to_native].set(
-            image
-        )
+        expanded_array_native = expanded_array_native.at[slim_to_native].set(image)
 
         kernel = np.array(self.native.array)
 
@@ -571,4 +569,6 @@ class Kernel2D(AbstractArray2D):
         image
             1D array of the values which are to be blurred with the convolver's PSF.
         """
-        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None))(mapping_matrix, mask).T
+        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None))(
+            mapping_matrix, mask
+        ).T

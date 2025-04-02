@@ -362,9 +362,7 @@ def test__convolve_image():
     kernel = np.arange(49).reshape(7, 7)
     image = np.arange(900).reshape(30, 30)
 
-    blurred_image_via_scipy = scipy.signal.convolve2d(
-        image, kernel, mode="same"
-    )
+    blurred_image_via_scipy = scipy.signal.convolve2d(image, kernel, mode="same")
     blurred_image_via_scipy = aa.Array2D.no_mask(
         values=blurred_image_via_scipy, pixel_scales=1.0
     )
@@ -389,7 +387,9 @@ def test__convolve_image():
         image=masked_image, blurring_image=blurring_image
     )
 
-    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1.array, 1e-4)
+    assert blurred_masked_image_via_scipy == pytest.approx(
+        blurred_masked_im_1.array, 1e-4
+    )
 
 
 def test__convolve_image_no_blurring():
@@ -404,9 +404,7 @@ def test__convolve_image_no_blurring():
     kernel = np.arange(49).reshape(7, 7)
     image = np.arange(900).reshape(30, 30)
 
-    blurring_mask = mask.derive_mask.blurring_from(
-        kernel_shape_native=kernel.shape
-    )
+    blurring_mask = mask.derive_mask.blurring_from(kernel_shape_native=kernel.shape)
     blurred_image_via_scipy = scipy.signal.convolve2d(
         image * blurring_mask, kernel, mode="same"
     )
@@ -424,22 +422,29 @@ def test__convolve_image_no_blurring():
 
     masked_image = aa.Array2D(values=image.native, mask=mask)
 
-    blurred_masked_im_1 = kernel.convolve_image_no_blurring(image=masked_image, mask=mask)
+    blurred_masked_im_1 = kernel.convolve_image_no_blurring(
+        image=masked_image, mask=mask
+    )
 
-    assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1.array, 1e-4)
+    assert blurred_masked_image_via_scipy == pytest.approx(
+        blurred_masked_im_1.array, 1e-4
+    )
 
 
 def test__convolve_mapping_matrix():
-    mask = aa.Mask2D(mask=np.array(
-        [
-            [True, True, True, True, True, True],
-            [True, False, False, False, False, True],
-            [True, False, False, False, False, True],
-            [True, False, False, False, False, True],
-            [True, False, False, False, False, True],
-            [True, True, True, True, True, True],
-        ]
-    ), pixel_scales=1.0)
+    mask = aa.Mask2D(
+        mask=np.array(
+            [
+                [True, True, True, True, True, True],
+                [True, False, False, False, False, True],
+                [True, False, False, False, False, True],
+                [True, False, False, False, False, True],
+                [True, False, False, False, False, True],
+                [True, True, True, True, True, True],
+            ]
+        ),
+        pixel_scales=1.0,
+    )
 
     kernel = aa.Kernel2D.no_mask(
         values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
@@ -474,27 +479,30 @@ def test__convolve_mapping_matrix():
 
     assert (
         blurred_mapping
-        == pytest.approx(np.array(
-            [
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
-                [0, 0.4, 0],
-                [0, 0.2, 0],
-                [0.4, 0, 0],
-                [0.2, 0, 0.4],
-                [0.3, 0, 0.2],
-                [0, 0.1, 0.3],
-                [0, 0, 0],
-                [0.1, 0, 0],
-                [0, 0, 0.1],
-                [0, 0, 0],
-            ]
-        )
-    ), 1.0e-4)
+        == pytest.approx(
+            np.array(
+                [
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0, 0],
+                    [0, 0.4, 0],
+                    [0, 0.2, 0],
+                    [0.4, 0, 0],
+                    [0.2, 0, 0.4],
+                    [0.3, 0, 0.2],
+                    [0, 0.1, 0.3],
+                    [0, 0, 0],
+                    [0.1, 0, 0],
+                    [0, 0, 0.1],
+                    [0, 0, 0],
+                ]
+            )
+        ),
+        1.0e-4,
+    )
 
     kernel = aa.Kernel2D.no_mask(
         values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
@@ -526,8 +534,6 @@ def test__convolve_mapping_matrix():
     )
 
     blurred_mapping = kernel.convolve_mapping_matrix(mapping, mask)
-
-    print(blurred_mapping)
 
     assert blurred_mapping == pytest.approx(
         np.array(

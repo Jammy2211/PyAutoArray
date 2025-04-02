@@ -25,6 +25,7 @@ class Mask1DKeys(Enum):
     PIXSCA = "PIXSCA"
     ORIGIN = "ORIGIN"
 
+
 class Mask1D(Mask):
     def __init__(
         self,

@@ -723,7 +723,6 @@ def test__mask_1d_indexes_from():
     assert masked_slim[-1] == 48
 
 
-
 def test__edge_1d_indexes_from():
     mask = np.array(
         [

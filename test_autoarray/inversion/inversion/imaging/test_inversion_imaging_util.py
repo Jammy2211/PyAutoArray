@@ -282,9 +282,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         w_tilde=w_tilde, mapping_matrix=mapping_matrix
     )
 
-    blurred_mapping_matrix = psf.convolve_mapping_matrix(
-        mapping_matrix=mapping_matrix
-    )
+    blurred_mapping_matrix = psf.convolve_mapping_matrix(mapping_matrix=mapping_matrix)
 
     curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
         mapping_matrix=blurred_mapping_matrix,

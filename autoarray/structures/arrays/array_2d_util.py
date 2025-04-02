@@ -27,10 +27,7 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
         array = np.asarray(array)
     elif isinstance(array, jnp.ndarray):
         array = jax.lax.cond(
-            type(array) is list,
-            lambda _: jnp.asarray(array),
-            lambda _: array,
-            None
+            type(array) is list, lambda _: jnp.asarray(array), lambda _: array, None
         )
     return array
 
@@ -40,6 +37,7 @@ def check_array_2d(array_2d: np.ndarray):
         raise exc.ArrayException(
             "An array input into the Array2D.__new__ method is not of shape 1."
         )
+
 
 def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
     """
@@ -89,6 +87,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
                 Input mask_2d shape_native = {mask_2d.shape_native}
                 """
             )
+
 
 def convert_array_2d(
     array_2d: Union[np.ndarray, List],
@@ -489,6 +488,7 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
 
     return index_slim_for_index_native_2d
 
+
 def array_2d_slim_from(
     array_2d_native: np.ndarray,
     mask_2d: np.ndarray,
@@ -533,6 +533,7 @@ def array_2d_slim_from(
     array_2d_slim = array_2d_slim_from(mask=mask, array_2d=array_2d)
     """
     return array_2d_native[~mask_2d.astype(bool)]
+
 
 def array_2d_native_from(
     array_2d_slim: np.ndarray,
@@ -620,9 +621,7 @@ def array_2d_via_indexes_from(
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
     return (
-        jnp.zeros(shape)
-        .at[tuple(native_index_for_slim_index_2d.T)]
-        .set(array_2d_slim)
+        jnp.zeros(shape).at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
     )
 
 

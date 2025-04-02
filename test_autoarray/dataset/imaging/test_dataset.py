@@ -38,16 +38,12 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
     noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
-    dataset = aa.Imaging(
-        data=image, noise_map=noise_map, psf=psf, pad_for_psf=False
-    )
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, pad_for_psf=False)
 
     assert dataset.data.shape_native == (3, 3)
     assert dataset.noise_map.shape_native == (3, 3)
 
-    dataset = aa.Imaging(
-        data=image, noise_map=noise_map, psf=psf, pad_for_psf=True
-    )
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, pad_for_psf=True)
 
     assert dataset.data.shape_native == (5, 5)
     assert dataset.noise_map.shape_native == (5, 5)
@@ -243,6 +239,7 @@ def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
 
     with pytest.raises(aa.exc.DatasetException):
         aa.Imaging(data=array, noise_map=noise_map)
+
 
 def test__psf_not_odd_x_odd_kernel__raises_error():
 
