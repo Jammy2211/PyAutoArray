@@ -528,9 +528,7 @@ def binned_array_2d_from(
     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    total_pixels = mask_2d_util.total_pixels_2d_from(
-        mask_2d=mask_2d,
-    )
+    total_pixels = np.sum(~mask_2d)
 
     sub_fraction = 1.0 / sub_size**2
 

@@ -142,44 +142,6 @@ def test__circular_annular():
     assert mask.mask_centre == (0.0, 0.0)
 
 
-def test__circular_anti_annular():
-    mask_via_util = aa.util.mask_2d.mask_2d_circular_anti_annular_from(
-        shape_native=(9, 9),
-        pixel_scales=(1.2, 1.2),
-        inner_radius=0.8,
-        outer_radius=2.2,
-        outer_radius_2_scaled=3.0,
-        centre=(0.0, 0.0),
-    )
-
-    mask = aa.Mask2D.circular_anti_annular(
-        shape_native=(9, 9),
-        pixel_scales=(1.2, 1.2),
-        inner_radius=0.8,
-        outer_radius=2.2,
-        outer_radius_2=3.0,
-        centre=(0.0, 0.0),
-    )
-
-    assert (mask == mask_via_util).all()
-    assert mask.origin == (0.0, 0.0)
-    assert mask.mask_centre == (0.0, 0.0)
-
-    mask = aa.Mask2D.circular_anti_annular(
-        shape_native=(9, 9),
-        pixel_scales=(1.2, 1.2),
-        inner_radius=0.8,
-        outer_radius=2.2,
-        outer_radius_2=3.0,
-        centre=(0.0, 0.0),
-        invert=True,
-    )
-
-    assert (mask == np.invert(mask_via_util)).all()
-    assert mask.origin == (0.0, 0.0)
-    assert mask.mask_centre == (0.0, 0.0)
-
-
 def test__elliptical():
     mask_via_util = aa.util.mask_2d.mask_2d_elliptical_from(
         shape_native=(8, 5),

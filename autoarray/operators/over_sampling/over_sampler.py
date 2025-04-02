@@ -11,6 +11,7 @@ from autoarray.operators.over_sampling import over_sample_util
 
 from autofit.jax_wrapper import register_pytree_node_class
 
+
 @register_pytree_node_class
 class OverSampler:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):

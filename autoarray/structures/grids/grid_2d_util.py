@@ -273,7 +273,7 @@ def grid_2d_slim_via_mask_from(
     grid_slim = grid_2d_slim_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d)
+    total_pixels = np.sum(~mask_2d)
 
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
@@ -284,8 +284,10 @@ def grid_2d_slim_via_mask_from(
         pixel_scales = np.array(pixel_scales)
         sign = np.array([-1.0, 1.0])
         grid_slim = (
-            np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled
-        ) * sign * pixel_scales
+            (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
+            * sign
+            * pixel_scales
+        )
     else:
         index = 0
         grid_slim = np.zeros(shape=(total_pixels, 2))

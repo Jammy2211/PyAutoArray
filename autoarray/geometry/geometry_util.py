@@ -182,7 +182,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
 
 @numba_util.jit()
 def central_pixel_coordinates_2d_from(
-    shape_native: Tuple[int, int]
+    shape_native: Tuple[int, int],
 ) -> Tuple[float, float]:
     """
     Returns the central pixel coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
@@ -477,7 +477,6 @@ def grid_pixels_2d_slim_from(
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
@@ -543,7 +542,6 @@ def grid_pixel_centres_2d_slim_from(
     grid_pixels_2d_slim = grid_scaled_2d_slim_from(grid_scaled_2d_slim=grid_scaled_2d_slim, shape=(2,2),
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
-
 
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
@@ -629,8 +627,10 @@ def grid_pixel_indexes_2d_slim_from(
 
     if use_jax:
         grid_pixel_indexes_2d_slim = (
-            grid_pixels_2d_slim * np.array([shape_native[1], 1])
-        ).sum(axis=1).astype(int)
+            (grid_pixels_2d_slim * np.array([shape_native[1], 1]))
+            .sum(axis=1)
+            .astype(int)
+        )
     else:
         grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
 
@@ -690,7 +690,9 @@ def grid_scaled_2d_slim_from(
         centres_scaled = np.array(centres_scaled)
         pixel_scales = np.array(pixel_scales)
         sign = np.array([-1, 1])
-        grid_scaled_2d_slim = (grid_pixels_2d_slim - centres_scaled - 0.5) * pixel_scales * sign
+        grid_scaled_2d_slim = (
+            (grid_pixels_2d_slim - centres_scaled - 0.5) * pixel_scales * sign
+        )
     else:
         grid_scaled_2d_slim = np.zeros((grid_pixels_2d_slim.shape[0], 2))
 
@@ -755,7 +757,7 @@ def grid_pixel_centres_2d_from(
         centres_scaled = np.array(centres_scaled)
         pixel_scales = np.array(pixel_scales)
         sign = np.array([-1.0, 1.0])
-        grid_pixels_2d =  (
+        grid_pixels_2d = (
             (sign * grid_scaled_2d / pixel_scales) + centres_scaled + 0.5
         ).astype(int)
     else:
@@ -764,17 +766,21 @@ def grid_pixel_centres_2d_from(
         for y in range(grid_scaled_2d.shape[0]):
             for x in range(grid_scaled_2d.shape[1]):
                 grid_pixels_2d[y, x, 0] = int(
-                    (-grid_scaled_2d[y, x, 0] / pixel_scales[0]) + centres_scaled[0] + 0.5
+                    (-grid_scaled_2d[y, x, 0] / pixel_scales[0])
+                    + centres_scaled[0]
+                    + 0.5
                 )
                 grid_pixels_2d[y, x, 1] = int(
-                    (grid_scaled_2d[y, x, 1] / pixel_scales[1]) + centres_scaled[1] + 0.5
+                    (grid_scaled_2d[y, x, 1] / pixel_scales[1])
+                    + centres_scaled[1]
+                    + 0.5
                 )
 
     return grid_pixels_2d
 
 
 def extent_symmetric_from(
-    extent: Tuple[float, float, float, float]
+    extent: Tuple[float, float, float, float],
 ) -> Tuple[float, float, float, float]:
     """
     Given an input extent of the form (x_min, x_max, y_min, y_max), this function returns an extent which is

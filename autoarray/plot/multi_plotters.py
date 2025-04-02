@@ -270,6 +270,74 @@ class MultiFigurePlotter:
             )
         plotter.close_subplot_figure()
 
+    def output_to_fits(
+        self,
+        func_name_list: List[str],
+        figure_name_list: List[str],
+        filename: str,
+        tag_list: Optional[List[str]] = None,
+        remove_fits_first: bool = False,
+        **kwargs,
+    ):
+        """
+        Outputs a list of figures of the plotter objects in the `plotter_list` to a single .fits file.
+
+        This function takes as input lists of  function names and figure names and then calls them via
+        the `plotter_list` with an interface that outputs each to a .fits file.
+
+        For example, if you have multiple `ImagingPlotter` objects and want to output the `data` and `noise_map` of
+        each to a single .fits files, you would input:
+
+        - `func_name_list=['figures_2d', 'figures_2d']` and
+        - `figure_name_list=['data', 'noise_map']`.
+
+        The implementation of this code is hacky, with it using a specific interface in the `Output` object
+        which sets the format to `fits_multi`  to call a function which outputs the .fits files. A major visualuzation
+        refactor is required to make this more elegant.
+
+        Parameters
+        ----------
+        func_name_list
+            The list of function names that are called to plot the figures on the subplot.
+        figure_name_list
+            The list of figure names that are plotted on the subplot.
+        filename
+            The filename that the .fits file is output to.
+        tag_list
+            The list of tags that are used to set the `EXTNAME` of each hdu of the .fits file.
+        remove_fits_first
+            If the .fits file already exists, it is removed before the new .fits file is output, else it is updated
+            with the figure going into the next hdu.
+        kwargs
+            Any additional keyword arguments that are passed to the function that plots the figure on the subplot.
+        """
+
+        output_path = self.plotter_list[0].mat_plot_2d.output.output_path_from(
+            format="fits_multi"
+        )
+        output_fits_file = Path(output_path) / f"{filename}.fits"
+
+        if remove_fits_first:
+            output_fits_file.unlink(missing_ok=True)
+
+        for i, plotter in enumerate(self.plotter_list):
+            plotter.mat_plot_2d.output._format = "fits_multi"
+
+            plotter.set_filename(filename=f"{filename}")
+
+            for j, (func_name, figure_name) in enumerate(
+                zip(func_name_list, figure_name_list)
+            ):
+                if tag_list is not None:
+                    plotter.mat_plot_2d.output._tag_fits_multi = tag_list[j]
+
+                self.plot_via_func(
+                    plotter=plotter,
+                    figure_name=figure_name,
+                    func_name=func_name,
+                    kwargs=kwargs,
+                )
+
 
 class MultiYX1DPlotter:
     def __init__(
