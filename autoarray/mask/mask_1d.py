@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 import logging
 import numpy as np
 from pathlib import Path
@@ -172,7 +173,11 @@ class Mask1D(Mask):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
+        class GridKeys(Enum):
+            PIXSCA = "PIXSCA"
+            ORIGIN = "ORIGIN"
+
         return {
-            "PIXSCA": self.pixel_scales[0],
-            "ORIGIN": self.origin[0],
+            GridKeys.PIXSCA: self.pixel_scales[0],
+            GridKeys.ORIGIN: self.origin[0],
         }

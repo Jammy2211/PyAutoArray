@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from enum import Enum
 import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
@@ -716,11 +717,18 @@ class Mask2D(Mask):
         -------
         A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
         """
+
+        class GridKeys(Enum):
+            PIXSCAY = "PIXSCAY"
+            PIXSCAX = "PIXSCAX"
+            ORIGINY = "ORIGINY"
+            ORIGINX = "ORIGINX"
+
         return {
-            "PIXSCAY": self.pixel_scales[0],
-            "PIXSCAX": self.pixel_scales[1],
-            "ORIGINY": self.origin[0],
-            "ORIGINX": self.origin[1],
+            GridKeys.PIXSCAY: self.pixel_scales[0],
+            GridKeys.PIXSCAX: self.pixel_scales[1],
+            GridKeys.ORIGINY: self.origin[0],
+            GridKeys.ORIGINX: self.origin[1],
         }
 
     @property
