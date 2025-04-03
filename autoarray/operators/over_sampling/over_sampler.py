@@ -10,7 +10,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.operators.over_sampling import over_sample_util
 
-from autofit.jax_wrapper import register_pytree_node_class
+from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 @register_pytree_node_class

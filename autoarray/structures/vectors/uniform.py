@@ -2,7 +2,6 @@ import logging
 
 import numpy as np
 import jax.numpy as jnp
-# from autofit.jax_wrapper import numpy as np, use_jax
 from typing import List, Optional, Tuple, Union
 
 from autoarray.structures.arrays.uniform_2d import Array2D

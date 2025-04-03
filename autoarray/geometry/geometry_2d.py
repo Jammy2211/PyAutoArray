@@ -13,8 +13,6 @@ from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray import type as ty
 from autoarray.geometry import geometry_util
 
-from autofit.jax_wrapper import use_jax
-
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
