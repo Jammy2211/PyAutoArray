@@ -3,6 +3,7 @@ import autoarray.plot as aplt
 from os import path
 import pytest
 import numpy as np
+import jax.numpy as jnp
 import shutil
 
 directory = path.dirname(path.realpath(__file__))
