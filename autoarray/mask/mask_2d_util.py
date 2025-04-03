@@ -1,10 +1,10 @@
 import numpy as np
+import jax.numpy as jnp
 from scipy.ndimage import convolve
 from typing import Tuple
 import warnings
 
 from autoarray import exc
-from autoarray.numpy_wrapper import np as jnp
 
 
 def native_index_for_slim_index_2d_from(
