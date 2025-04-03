@@ -6,6 +6,7 @@ import warnings
 from autoarray import exc
 from autoarray.numpy_wrapper import np as jnp
 
+
 def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray,
 ) -> np.ndarray:
@@ -400,6 +401,7 @@ def mask_2d_via_pixel_coordinates_from(
         return mask_2d
     return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)  # Apply buf
 
+
 def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     """
     Compute the minimum 1D distance in the y and x directions from any `False` value at the mask's extreme positions
@@ -618,14 +620,18 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     array([0, 1, 2, 3, 5, 6, 7, 8])
     """
     # Pad the mask to handle edge cases without index errors
-    padded_mask = np.pad(mask_2d, pad_width=1, mode='constant', constant_values=True)
+    padded_mask = np.pad(mask_2d, pad_width=1, mode="constant", constant_values=True)
 
     # Identify neighbors in 3x3 regions around each pixel
     neighbors = (
-            padded_mask[:-2, 1:-1] | padded_mask[2:, 1:-1] |  # Up, Down
-            padded_mask[1:-1, :-2] | padded_mask[1:-1, 2:] |  # Left, Right
-            padded_mask[:-2, :-2] | padded_mask[:-2, 2:] |  # Top-left, Top-right
-            padded_mask[2:, :-2] | padded_mask[2:, 2:]  # Bottom-left, Bottom-right
+        padded_mask[:-2, 1:-1]
+        | padded_mask[2:, 1:-1]  # Up, Down
+        | padded_mask[1:-1, :-2]
+        | padded_mask[1:-1, 2:]  # Left, Right
+        | padded_mask[:-2, :-2]
+        | padded_mask[:-2, 2:]  # Top-left, Top-right
+        | padded_mask[2:, :-2]
+        | padded_mask[2:, 2:]  # Bottom-left, Bottom-right
     )
 
     # Identify edge pixels: False values with at least one True neighbor
@@ -708,10 +714,10 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
 
     # Identify border pixels: where the full length in any direction is True
     border_mask = (
-        (up_sums == np.arange(height)[:, None]) |
-        (down_sums == np.arange(height - 1, -1, -1)[:, None]) |
-        (left_sums == np.arange(width)[None, :]) |
-        (right_sums == np.arange(width - 1, -1, -1)[None, :])
+        (up_sums == np.arange(height)[:, None])
+        | (down_sums == np.arange(height - 1, -1, -1)[:, None])
+        | (left_sums == np.arange(width)[None, :])
+        | (right_sums == np.arange(width - 1, -1, -1)[None, :])
     ) & ~mask_2d
 
     # Create an index array where False entries get sequential 1D indices
@@ -767,14 +773,16 @@ def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:
     buffer_range = np.arange(-buffer, buffer + 1)
 
     # Generate all possible neighbors for each False entry
-    dy, dx = np.meshgrid(buffer_range, buffer_range, indexing='ij')
+    dy, dx = np.meshgrid(buffer_range, buffer_range, indexing="ij")
     neighbors = np.stack([dy.ravel(), dx.ravel()], axis=-1)
 
     # Calculate all neighboring positions for all False coordinates
     all_neighbors = np.add(np.array(false_coords).T[:, np.newaxis], neighbors)
 
     # Clip the neighbors to stay within the bounds of the mask
-    valid_neighbors = np.clip(all_neighbors, [0, 0], [mask_2d.shape[0] - 1, mask_2d.shape[1] - 1])
+    valid_neighbors = np.clip(
+        all_neighbors, [0, 0], [mask_2d.shape[0] - 1, mask_2d.shape[1] - 1]
+    )
 
     # Update the buffed mask: set all the neighbors to False
     buffed_mask_2d[valid_neighbors[:, :, 0], valid_neighbors[:, :, 1]] = False
@@ -833,6 +841,3 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
     rescaled_mask_2d[:, 0] = 1
     rescaled_mask_2d[:, rescaled_mask_2d.shape[1] - 1] = 1
     return np.isclose(rescaled_mask_2d, 1)
-
-
-

@@ -12,7 +12,7 @@ class MockInversionImaging(InversionImagingMapping):
         self,
         data=None,
         noise_map=None,
-        convolver=None,
+        psf=None,
         linear_obj_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
@@ -22,7 +22,7 @@ class MockInversionImaging(InversionImagingMapping):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
-            convolver=convolver,
+            psf=psf,
         )
 
         super().__init__(
@@ -70,7 +70,7 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         self,
         data=None,
         noise_map=None,
-        convolver=None,
+        psf=None,
         w_tilde=None,
         linear_obj_list=None,
         curvature_matrix_mapper_diag=None,
@@ -79,7 +79,7 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
-            convolver=convolver,
+            psf=psf,
         )
 
         super().__init__(

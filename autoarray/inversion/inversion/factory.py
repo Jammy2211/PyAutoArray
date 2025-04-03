@@ -172,8 +172,7 @@ def inversion_interferometer_from(
     dataset
         The dataset (e.g. `Interferometer`) whose data is reconstructed via the `Inversion`.
     w_tilde
-        Object which uses the `Imaging` dataset's PSF / `Convolver` operateor to perform the `Inversion` using the
-        w-tilde formalism.
+        Object which uses the `Imaging` dataset's PSF to perform the `Inversion` using the w-tilde formalism.
     linear_obj_list
         The list of linear objects (e.g. analytic functions, a mapper with a pixelized grid) which reconstruct the
         input dataset's data and whose values are solved for via the inversion.

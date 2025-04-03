@@ -32,8 +32,7 @@ class AbstractInversionImaging(AbstractInversion):
         of the linear object parameters that best reconstruct the dataset to be solved, via linear matrix algebra.
 
         This object contains matrices and vectors which perform an inversion for fits to an `Imaging` dataset. This
-        includes operations which use a PSF / `Convolver` in order to incorporate blurring into the solved for
-        linear object pixels.
+        includes operations which use a PSF in order to incorporate blurring into the solved for linear object pixels.
 
         The inversion may be regularized, whereby the parameters of the linear objects used to reconstruct the data
         are smoothed with one another such that their solved for values conform to certain properties (e.g. smoothness
@@ -76,8 +75,8 @@ class AbstractInversionImaging(AbstractInversion):
         )
 
     @property
-    def convolver(self):
-        return self.dataset.convolver
+    def psf(self):
+        return self.dataset.psf
 
     @property
     def operated_mapping_matrix_list(self) -> List[np.ndarray]:
@@ -88,7 +87,7 @@ class AbstractInversionImaging(AbstractInversion):
         This is used to construct the simultaneous linear equations which reconstruct the data.
 
         This property returns the a list of each linear object's blurred mapping matrix, which is computed by
-        blurring each linear object's `mapping_matrix` property with the `Convolver` operator.
+        blurring each linear object's `mapping_matrix` property with the `psf` operator.
 
         A linear object may have a `operated_mapping_matrix_override` property, which bypasses  the `mapping_matrix`
         computation and convolution operator and is directly placed in the `operated_mapping_matrix_list`.
@@ -96,7 +95,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return [
             (
-                self.convolver.convolve_mapping_matrix(
+                self.psf.convolve_mapping_matrix(
                     mapping_matrix=linear_obj.mapping_matrix
                 )
                 if linear_obj.operated_mapping_matrix_override is None
@@ -139,7 +138,7 @@ class AbstractInversionImaging(AbstractInversion):
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
-                operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                operated_mapping_matrix = self.psf.convolve_mapping_matrix(
                     mapping_matrix=linear_func.mapping_matrix
                 )
 
@@ -221,7 +220,7 @@ class AbstractInversionImaging(AbstractInversion):
         mapper_operated_mapping_matrix_dict = {}
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
                 mapping_matrix=mapper.mapping_matrix
             )
 

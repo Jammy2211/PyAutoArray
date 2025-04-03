@@ -42,11 +42,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         Parameters
         ----------
-        noise_map
-            The noise-map of the observed imaging data which values are solved for.
-        convolver
-            The convolver used to perform 2D convolution of the imaigng data's PSF when computing the operated
-            mapping matrix.
+        dataset
+            The dataset containing the image data, noise-map and psf which is fitted by the inversion.
         w_tilde
             An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
             the mapping matrix.
@@ -76,7 +73,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return inversion_imaging_util.w_tilde_data_imaging_from(
             image_native=np.array(self.data.native),
             noise_map_native=np.array(self.noise_map.native),
-            kernel_native=np.array(self.convolver.kernel.native),
+            kernel_native=np.array(self.psf.kernel.native),
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
         )
 
@@ -528,8 +525,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     values=mapped_reconstructed_image, mask=self.mask
                 )
 
-                mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
-                    image=mapped_reconstructed_image
+                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
+                    image=mapped_reconstructed_image, mask=self.mask
                 )
 
             else:

@@ -198,9 +198,9 @@ class DeriveIndexes2D:
 
             print(derive_indexes_2d.edge_slim)
         """
-        return mask_2d_util.edge_1d_indexes_from(mask_2d=np.array(self.mask).astype("bool")).astype(
-            "int"
-        )
+        return mask_2d_util.edge_1d_indexes_from(
+            mask_2d=np.array(self.mask).astype("bool")
+        ).astype("int")
 
     @property
     def edge_native(self) -> np.ndarray:

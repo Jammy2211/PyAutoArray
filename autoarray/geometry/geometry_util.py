@@ -181,6 +181,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
 
     return pixel_scales
 
+
 @numba_util.jit()
 def central_pixel_coordinates_2d_numba_from(
     shape_native: Tuple[int, int],
@@ -204,6 +205,7 @@ def central_pixel_coordinates_2d_numba_from(
     The central pixel coordinates of the data structure.
     """
     return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
+
 
 @numba_util.jit()
 def central_scaled_coordinate_2d_numba_from(
@@ -304,6 +306,7 @@ def central_scaled_coordinate_2d_from(
     x_pixel = central_pixel_coordinates[1] - (origin[1] / pixel_scales[1])
 
     return (y_pixel, x_pixel)
+
 
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
@@ -589,9 +592,9 @@ def grid_pixel_centres_2d_slim_from(
     centres_scaled = np.array(centres_scaled)
     pixel_scales = np.array(pixel_scales)
     sign = np.array([-1.0, 1.0])
-    return (
-        (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
-    ).astype(int)
+    return ((sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5).astype(
+        int
+    )
 
 
 def grid_pixel_indexes_2d_slim_from(
@@ -647,9 +650,7 @@ def grid_pixel_indexes_2d_slim_from(
     )
 
     return (
-        (grid_pixels_2d_slim * np.array([shape_native[1], 1]))
-        .sum(axis=1)
-        .astype(int)
+        (grid_pixels_2d_slim * np.array([shape_native[1], 1])).sum(axis=1).astype(int)
     )
 
 
@@ -698,9 +699,7 @@ def grid_scaled_2d_slim_from(
     centres_scaled = np.array(centres_scaled)
     pixel_scales = np.array(pixel_scales)
     sign = np.array([-1, 1])
-    return (
-        (grid_pixels_2d_slim - centres_scaled - 0.5) * pixel_scales * sign
-    )
+    return (grid_pixels_2d_slim - centres_scaled - 0.5) * pixel_scales * sign
 
 
 def grid_pixel_centres_2d_from(
@@ -750,9 +749,7 @@ def grid_pixel_centres_2d_from(
     centres_scaled = np.array(centres_scaled)
     pixel_scales = np.array(pixel_scales)
     sign = np.array([-1.0, 1.0])
-    return (
-        (sign * grid_scaled_2d / pixel_scales) + centres_scaled + 0.5
-    ).astype(int)
+    return ((sign * grid_scaled_2d / pixel_scales) + centres_scaled + 0.5).astype(int)
 
 
 def extent_symmetric_from(
