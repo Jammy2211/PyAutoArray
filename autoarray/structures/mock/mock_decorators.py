@@ -165,7 +165,3 @@ class MockGridRadialMinimum:
 
     def radial_grid_from(self, grid):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
-
-    @decorators.relocate_to_radial_minimum
-    def deflections_yx_2d_from(self, grid):
-        return grid
