@@ -1,5 +1,6 @@
-from autoarray.numpy_wrapper import np
-from typing import List, Tuple, Union
+import numpy as np
+import jax.numpy as jnp
+from typing import Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -184,7 +185,7 @@ class OverSampler:
         """
         The area of every sub-pixel in the mask.
         """
-        sub_pixel_areas = np.zeros(self.sub_total)
+        sub_pixel_areas = jnp.zeros(self.sub_total)
 
         k = 0
 
@@ -221,9 +222,9 @@ class OverSampler:
             pass
 
         # binned_array_2d = over_sample_util.binned_array_2d_from(
-        #     array_2d=np.array(array),
-        #     mask_2d=np.array(self.mask),
-        #     sub_size=np.array(self.sub_size).astype("int"),
+        #     array_2d=jnp.array(array),
+        #     mask_2d=jnp.array(self.mask),
+        #     sub_size=jnp.array(self.sub_size).astype("int"),
         # )
 
         binned_array_2d = array.reshape(

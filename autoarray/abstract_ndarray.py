@@ -4,10 +4,11 @@ from copy import copy
 
 from abc import ABC
 from abc import abstractmethod
+import jax.numpy as jnp
 
 from autoconf.fitsable import output_to_fits
 
-from autoarray.numpy_wrapper import np, register_pytree_node, Array
+from autoarray.numpy_wrapper import register_pytree_node, Array
 
 from typing import TYPE_CHECKING
 
@@ -82,7 +83,7 @@ class AbstractNDArray(ABC):
 
     def invert(self):
         new = self.copy()
-        new._array = np.invert(new._array)
+        new._array = jnp.invert(new._array)
         return new
 
     @classmethod
@@ -104,7 +105,7 @@ class AbstractNDArray(ABC):
     @staticmethod
     def flip_hdu_for_ds9(values):
         if conf.instance["general"]["fits"]["flip_for_ds9"]:
-            return np.flipud(values)
+            return jnp.flipud(values)
         return values
 
     @classmethod
@@ -117,7 +118,7 @@ class AbstractNDArray(ABC):
             setattr(instance, key, value)
         return instance
 
-    def with_new_array(self, array: np.ndarray) -> "AbstractNDArray":
+    def with_new_array(self, array: jnp.ndarray) -> "AbstractNDArray":
         """
         Copy this object but give it a new array.
 
@@ -164,7 +165,7 @@ class AbstractNDArray(ABC):
 
     @to_new_array
     def sqrt(self):
-        return np.sqrt(self._array)
+        return jnp.sqrt(self._array)
 
     @property
     def array(self):
@@ -330,13 +331,13 @@ class AbstractNDArray(ABC):
         result = self._array[item]
         if isinstance(item, slice):
             result = self.with_new_array(result)
-        if isinstance(result, np.ndarray):
+        if isinstance(result, jnp.ndarray):
             result = self.with_new_array(result)
         return result
 
     def __setitem__(self, key, value):
-        if isinstance(key, (np.ndarray, AbstractNDArray, Array)):
-            self._array = np.where(key, value, self._array)
+        if isinstance(key, (jnp.ndarray, AbstractNDArray, Array)):
+            self._array = jnp.where(key, value, self._array)
         else:
             self._array[key] = value
 
