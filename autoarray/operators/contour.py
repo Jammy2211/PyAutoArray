@@ -1,6 +1,6 @@
 from __future__ import annotations
-from autoarray.numpy_wrapper import np, use_jax
 import numpy
+import jax.numpy as jnp
 from skimage import measure
 from scipy.spatial import ConvexHull
 from scipy.spatial import QhullError
@@ -42,16 +42,13 @@ class Grid2DContour:
             return self._contour_array
 
         pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=np.array(self.grid),
+            grid_scaled_2d_slim=jnp.array(self.grid),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
         ).astype("int")
 
-        arr = np.zeros(self.shape_native)
-        if use_jax:
-            arr = arr.at[tuple(np.array(pixel_centres).T)].set(1)
-        else:
-            arr[tuple(np.array(pixel_centres).T)] = 1
+        arr = jnp.zeros(self.shape_native)
+        arr = arr.at[tuple(jnp.array(pixel_centres).T)].set(1)
 
         return arr
 
@@ -74,7 +71,7 @@ class Grid2DContour:
                 pixel_scales=self.pixel_scales,
             )
 
-            factor = 0.5 * np.array(self.pixel_scales) * np.array([-1.0, 1.0])
+            factor = 0.5 * jnp.array(self.pixel_scales) * jnp.array([-1.0, 1.0])
             grid_scaled_1d += factor
 
             contour_list.append(Grid2DIrregular(values=grid_scaled_1d))
@@ -104,7 +101,7 @@ class Grid2DContour:
         hull_x = grid_convex[hull_vertices, 0]
         hull_y = grid_convex[hull_vertices, 1]
 
-        grid_hull = np.zeros((len(hull_vertices), 2))
+        grid_hull = jnp.zeros((len(hull_vertices), 2))
 
         grid_hull[:, 1] = hull_x
         grid_hull[:, 0] = hull_y

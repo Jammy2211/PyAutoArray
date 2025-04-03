@@ -1,5 +1,5 @@
-from autoarray.numpy_wrapper import np
 from functools import wraps
+import numpy as np
 from typing import Union
 
 from autoarray.structures.grids.uniform_1d import Grid1D
