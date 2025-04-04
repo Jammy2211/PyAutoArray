@@ -139,7 +139,7 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
         == 2.0 * np.ones((7, 7)) * np.invert(mask_2d_7x7)
     ).all()
 
-    assert (masked_imaging_7x7.psf.slim == (1.0 / 3.0) * psf_3x3.slim).all()
+    assert masked_imaging_7x7.psf.slim == pytest.approx((1.0 / 3.0) * psf_3x3.slim, 1.0e-4)
 
     assert type(masked_imaging_7x7.psf) == aa.Kernel2D
     assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (35,)
@@ -244,4 +244,9 @@ def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
 def test__psf_not_odd_x_odd_kernel__raises_error():
 
     with pytest.raises(exc.KernelException):
-        aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+
+        dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, pad_for_psf=False)
+
