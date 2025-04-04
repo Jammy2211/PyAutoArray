@@ -6,7 +6,7 @@ def test__loads_default_values_from_config_if_not_input():
 
     assert include.origin is True
     assert include.mask == True
-    assert include.border is True
+    assert include.border is False
     assert include.parallel_overscan is True
     assert include.serial_prescan is True
     assert include.serial_overscan is False
