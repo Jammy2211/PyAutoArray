@@ -158,8 +158,8 @@ def chi_squared_complex_from(*, chi_squared_map: jnp.ndarray) -> float:
     chi_squared_map
         The chi-squared-map of values of the model-data fit to the dataset.
     """
-    chi_squared_real = jnp.sum(chi_squared_map.real)
-    chi_squared_imag = jnp.sum(chi_squared_map.imag)
+    chi_squared_real = jnp.sum(np.array(chi_squared_map.real))
+    chi_squared_imag = jnp.sum(np.array(chi_squared_map.imag))
     return chi_squared_real + chi_squared_imag
 
 
@@ -174,8 +174,8 @@ def noise_normalization_complex_from(*, noise_map: jnp.ndarray) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    noise_normalization_real = jnp.sum(jnp.log(2 * jnp.pi * noise_map.real**2.0))
-    noise_normalization_imag = jnp.sum(jnp.log(2 * jnp.pi * noise_map.imag**2.0))
+    noise_normalization_real = jnp.sum(jnp.log(2 * jnp.pi * np.array(noise_map).real**2.0))
+    noise_normalization_imag = jnp.sum(jnp.log(2 * jnp.pi * np.array(noise_map).imag**2.0))
     return noise_normalization_real + noise_normalization_imag
 
 
