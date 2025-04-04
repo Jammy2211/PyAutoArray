@@ -166,8 +166,9 @@ class Imaging(AbstractDataset):
 
         self.psf = psf
 
-        if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel2D Kernel2D must be odd")
+        if psf is not None:
+            if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
+                raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
     @cached_property
     def grids(self):
