@@ -8,21 +8,11 @@ class NUFFTPlaceholder:
     pass
 
 
-class PyLopsPlaceholder:
-    pass
-
-
 try:
     from pynufft.linalg.nufft_cpu import NUFFT_cpu
 except ModuleNotFoundError:
     NUFFT_cpu = NUFFTPlaceholder
 
-try:
-    import pylops
-
-    PyLopsOperator = pylops.LinearOperator
-except ModuleNotFoundError:
-    PyLopsOperator = PyLopsPlaceholder
 
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -42,20 +32,8 @@ def pynufft_exception():
     )
 
 
-def pylops_exception():
-    raise ModuleNotFoundError(
-        "\n--------------------\n"
-        "You are attempting to perform interferometer analysis.\n\n"
-        "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed.\n\n"
-        "Install it via the command `pip install pylops==2.3.1`.\n\n"
-        "----------------------"
-    )
-
-
-class TransformerDFT(PyLopsOperator):
+class TransformerDFT:
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
-        if isinstance(self, PyLopsPlaceholder):
-            pylops_exception()
 
         super().__init__()
 
@@ -146,13 +124,10 @@ class TransformerDFT(PyLopsOperator):
             )
 
 
-class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
+class TransformerNUFFT(NUFFT_cpu):
     def __init__(self, uv_wavelengths, real_space_mask):
         if isinstance(self, NUFFTPlaceholder):
             pynufft_exception()
-
-        if isinstance(self, PyLopsPlaceholder):
-            pylops_exception()
 
         super(TransformerNUFFT, self).__init__()
 

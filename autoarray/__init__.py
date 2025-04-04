@@ -44,7 +44,6 @@ from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from .inversion.inversion.interferometer.w_tilde import InversionInterferometerWTilde
 from .inversion.inversion.interferometer.mapping import InversionInterferometerMapping
-from .inversion.inversion.interferometer.lop import InversionInterferometerMappingPyLops
 from .inversion.linear_obj.linear_obj import LinearObj
 from .inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from .mask.derive.indexes_2d import DeriveIndexes2D

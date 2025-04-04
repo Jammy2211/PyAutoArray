@@ -5,13 +5,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
-try:
-    import pylops
-
-    PyLopsOperator = pylops.LinearOperator
-except ModuleNotFoundError:
-    PyLopsOperator = object
-
 
 class AbstractRegularization:
     def __init__(self):
@@ -174,19 +167,3 @@ class AbstractRegularization:
         The regularization matrix.
         """
         raise NotImplementedError
-
-
-class RegularizationLop(PyLopsOperator):
-    def __init__(self, regularization_matrix):
-        self.regularization_matrix = regularization_matrix
-        self.pixels = regularization_matrix.shape[0]
-        self.dims = self.pixels
-        self.shape = (self.pixels, self.pixels)
-        self.dtype = dtype
-        self.explicit = False
-
-    def _matvec(self, x):
-        return np.dot(self.regularization_matrix, x)
-
-    def _rmatvec(self, x):
-        return np.dot(self.regularization_matrix.T, x)

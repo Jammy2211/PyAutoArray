@@ -68,23 +68,6 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
 
-def test__inversion_interferometer__via_mapper(
-    interferometer_7_no_fft,
-    rectangular_mapper_7x7_3x3,
-    delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
-    regularization_constant,
-):
-    inversion = aa.Inversion(
-        dataset=interferometer_7_no_fft,
-        linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_linear_operators=True),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangular)
-    assert isinstance(inversion, aa.InversionInterferometerMappingPyLops)
-
-
 def test__w_tilde_curvature_interferometer_from():
     noise_map = np.array([1.0, 2.0, 3.0])
     uv_wavelengths = np.array([[0.0001, 2.0, 3000.0], [3000.0, 2.0, 0.0001]])
