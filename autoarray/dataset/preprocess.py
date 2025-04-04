@@ -263,15 +263,15 @@ def edges_from(image, no_edges):
     edges = []
 
     for edge_no in range(no_edges):
-        top_edge = image.native[edge_no, edge_no : image.shape_native[1] - edge_no]
-        bottom_edge = image.native[
+        top_edge = image.native.array[edge_no, edge_no : image.shape_native[1] - edge_no]
+        bottom_edge = image.native.array[
             image.shape_native[0] - 1 - edge_no,
             edge_no : image.shape_native[1] - edge_no,
         ]
-        left_edge = image.native[
+        left_edge = image.native.array[
             edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no
         ]
-        right_edge = image.native[
+        right_edge = image.native.array[
             edge_no + 1 : image.shape_native[0] - 1 - edge_no,
             image.shape_native[1] - 1 - edge_no,
         ]
@@ -517,8 +517,8 @@ def noise_map_with_signal_to_noise_limit_from(
     noise_map_limit = np.where(
         (signal_to_noise_map.native > signal_to_noise_limit)
         & (noise_limit_mask == False),
-        np.abs(data.native) / signal_to_noise_limit,
-        noise_map.native,
+        np.abs(data.native.array) / signal_to_noise_limit,
+        noise_map.native.array,
     )
 
     mask = Mask2D.all_false(
