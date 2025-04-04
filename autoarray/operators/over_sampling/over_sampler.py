@@ -147,6 +147,16 @@ class OverSampler:
             over_sample_size=sub_size, mask=mask
         )
 
+
+    @property
+    def sub_is_uniform(self) -> bool:
+        """
+        Returns True if the sub_size is uniform across all pixels in the mask.
+        """
+        return np.all(
+            np.isclose(self.sub_size.array, self.sub_size.array[0])
+        )
+
     def tree_flatten(self):
         return (self.mask, self.sub_size), ()
 
@@ -185,7 +195,7 @@ class OverSampler:
         """
         The area of every sub-pixel in the mask.
         """
-        sub_pixel_areas = jnp.zeros(self.sub_total)
+        sub_pixel_areas = np.zeros(self.sub_total)
 
         k = 0
 
@@ -221,15 +231,24 @@ class OverSampler:
         except AttributeError:
             pass
 
-        # binned_array_2d = over_sample_util.binned_array_2d_from(
-        #     array_2d=jnp.array(array),
-        #     mask_2d=jnp.array(self.mask),
-        #     sub_size=jnp.array(self.sub_size).astype("int"),
-        # )
+        if self.sub_is_uniform:
+            binned_array_2d = array.reshape(
+                self.mask.shape_slim, self.sub_size[0] ** 2
+            ).mean(axis=1)
+        else:
 
-        binned_array_2d = array.reshape(
-            self.mask.shape_slim, self.sub_size[0] ** 2
-        ).mean(axis=1)
+            # Define group sizes
+            group_sizes = jnp.array(self.sub_size.array.astype("int") ** 2)
+
+            # Compute the cumulative sum of group sizes to get split points
+            split_indices = jnp.cumsum(group_sizes)
+
+            # Ensure correct concatenation by making 0 a JAX array
+            start_indices = jnp.concatenate((jnp.array([0]), split_indices[:-1]))
+
+            # Compute the group means
+            binned_array_2d = jnp.array(
+                [array[start:end].mean() for start, end in zip(start_indices, split_indices)])
 
         return Array2D(
             values=binned_array_2d,
