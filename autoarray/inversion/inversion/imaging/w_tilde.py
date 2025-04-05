@@ -71,10 +71,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @profile_func
     def w_tilde_data(self):
         return inversion_imaging_util.w_tilde_data_imaging_from(
-            image_native=np.array(self.data.native),
-            noise_map_native=np.array(self.noise_map.native),
-            kernel_native=np.array(self.psf.kernel.native),
-            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
+            image_native=np.array(self.data.native.array).astype("float"),
+            noise_map_native=np.array(self.noise_map.native.array).astype("float"),
+            kernel_native=np.array(self.psf.native.array).astype("float"),
+            native_index_for_slim_index=np.array(self.data.mask.derive_indexes.native_for_slim).astype("int"),
         )
 
     @property
@@ -525,9 +525,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     values=mapped_reconstructed_image, mask=self.mask
                 )
 
-                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
+                mapped_reconstructed_image = np.array(self.psf.convolve_image_no_blurring(
                     image=mapped_reconstructed_image, mask=self.mask
-                )
+                ).array)
 
             else:
                 operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
