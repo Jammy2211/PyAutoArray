@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import jax.numpy as jnp
 import numpy as np
 import itertools
 from scipy.spatial import ConvexHull
@@ -54,8 +55,11 @@ class GridScatter(AbstractMatWrap2D):
         if len(config_dict["c"]) > 1:
             config_dict["c"] = config_dict["c"][0]
 
+        if isinstance(grid, jnp.ndarray):
+            grid = np.array(grid.array)
+
         try:
-            plt.scatter(y=grid.array[:, 0], x=grid.array[:, 1], **config_dict)
+            plt.scatter(y=grid[:, 0], x=grid[:, 1], **config_dict)
         except (IndexError, TypeError):
             return self.scatter_grid_list(grid_list=grid)
 

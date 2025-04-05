@@ -485,7 +485,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=array_2d.mask)
 
-    def convolve_image(self, image, blurring_image, jax_method="fft"):
+    def convolve_image(self, image, blurring_image, jax_method="direct"):
         """
         For a given 1D array and blurring array, convolve the two using this psf.
 
@@ -528,7 +528,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
-    def convolve_image_no_blurring(self, image, mask, jax_method="fft"):
+    def convolve_image_no_blurring(self, image, mask, jax_method="direct"):
         """
         For a given 1D array and blurring array, convolve the two using this psf.
 
@@ -561,7 +561,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=mask)
 
-    def convolve_mapping_matrix(self, mapping_matrix, mask):
+    def convolve_mapping_matrix(self, mapping_matrix, mask, jax_method="direct"):
         """For a given 1D array and blurring array, convolve the two using this psf.
 
         Parameters
@@ -569,6 +569,6 @@ class Kernel2D(AbstractArray2D):
         image
             1D array of the values which are to be blurred with the psf's PSF.
         """
-        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None))(
-            mapping_matrix, mask
+        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None, None))(
+            mapping_matrix, mask, jax_method
         ).T

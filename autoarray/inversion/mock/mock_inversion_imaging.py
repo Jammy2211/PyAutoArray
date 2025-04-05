@@ -13,6 +13,7 @@ class MockInversionImaging(InversionImagingMapping):
         data=None,
         noise_map=None,
         psf=None,
+        convolver=None,
         linear_obj_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
@@ -23,6 +24,7 @@ class MockInversionImaging(InversionImagingMapping):
             data=data,
             noise_map=noise_map,
             psf=psf,
+            convolver=convolver,
         )
 
         super().__init__(

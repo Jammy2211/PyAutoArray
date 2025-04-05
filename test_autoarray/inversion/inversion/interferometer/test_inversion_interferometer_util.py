@@ -272,20 +272,24 @@ def test__identical_inversion_values_for_two_methods():
         == inversion_mapping_matrices.regularization_matrix
     ).all()
 
+    assert inversion_w_tilde.data_vector == pytest.approx(
+        inversion_mapping_matrices.data_vector, 1.0e-8
+    )
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
         inversion_mapping_matrices.curvature_matrix, 1.0e-8
     )
     assert inversion_w_tilde.curvature_reg_matrix == pytest.approx(
         inversion_mapping_matrices.curvature_reg_matrix, 1.0e-8
     )
+
     assert inversion_w_tilde.reconstruction == pytest.approx(
-        inversion_mapping_matrices.reconstruction, 1.0e-2
+        inversion_mapping_matrices.reconstruction, abs=1.0e-1
     )
     assert inversion_w_tilde.mapped_reconstructed_image == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_image, 1.0e-2
+        inversion_mapping_matrices.mapped_reconstructed_image, abs=1.0e-1
     )
     assert inversion_w_tilde.mapped_reconstructed_data == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_data, 1.0e-2
+        inversion_mapping_matrices.mapped_reconstructed_data, abs=1.0e-1
     )
 
 

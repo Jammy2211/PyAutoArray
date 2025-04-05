@@ -13,7 +13,9 @@ directory = path.dirname(path.realpath(__file__))
 
 def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
     inversion = aa.m.MockInversionImaging(
-        psf=psf_3x3, linear_obj_list=[rectangular_mapper_7x7_3x3]
+        psf=psf_3x3,
+        linear_obj_list=[rectangular_mapper_7x7_3x3],
+        convolver=aa.Convolver(kernel=psf_3x3, mask=rectangular_mapper_7x7_3x3.mapper_grids.mask)
     )
 
     assert inversion.operated_mapping_matrix_list[0][0, 0] == pytest.approx(1.0, 1e-4)
@@ -24,6 +26,7 @@ def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
     inversion = aa.m.MockInversionImaging(
         psf=psf,
         linear_obj_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
+        convolver=aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
     )
 
     operated_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
@@ -54,7 +57,8 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
     )
 
     inversion = aa.m.MockInversionImaging(
-        psf=psf, linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj]
+        psf=psf, linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj],
+        convolver=aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
     )
 
     operated_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
@@ -88,6 +92,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         data=np.ones(2),
         noise_map=noise_map,
         psf=psf,
+        convolver=aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 10)))
     )
 
     inversion = aa.InversionImagingMapping(
