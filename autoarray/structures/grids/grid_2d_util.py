@@ -801,7 +801,6 @@ def compute_polygon_area(points):
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
-@numba_util.jit()
 def grid_pixels_in_mask_pixels_from(
     grid, shape_native, pixel_scales, origin
 ) -> np.ndarray:
@@ -832,10 +831,11 @@ def grid_pixels_in_mask_pixels_from(
 
     mesh_pixels_per_image_pixel = np.zeros(shape=shape_native)
 
-    for i in range(grid_pixel_centres.shape[0]):
-        y = grid_pixel_centres[i, 0]
-        x = grid_pixel_centres[i, 1]
+    # Assuming grid_pixel_centres is a 2D array where each row contains (y, x) indices.
+    y_indices = grid_pixel_centres[:, 0]
+    x_indices = grid_pixel_centres[:, 1]
 
-        mesh_pixels_per_image_pixel[y, x] += 1
+    # Use np.add.at to increment the specific indices in a safe and efficient manner
+    np.add.at(mesh_pixels_per_image_pixel, (y_indices, x_indices), 1)
 
     return mesh_pixels_per_image_pixel

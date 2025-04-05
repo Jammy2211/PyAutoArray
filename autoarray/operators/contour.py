@@ -101,9 +101,6 @@ class Grid2DContour:
         hull_x = grid_convex[hull_vertices, 0]
         hull_y = grid_convex[hull_vertices, 1]
 
-        grid_hull = jnp.zeros((len(hull_vertices), 2))
-
-        grid_hull[:, 1] = hull_x
-        grid_hull[:, 0] = hull_y
+        grid_hull = jnp.stack((hull_y, hull_x), axis=-1)
 
         return grid_hull

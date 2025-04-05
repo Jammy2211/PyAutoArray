@@ -521,13 +521,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     reconstruction=reconstruction,
                 )
 
-                mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image, mask=self.mask
-                )
-
-                mapped_reconstructed_image = np.array(self.psf.convolve_image_no_blurring(
+                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
                     image=mapped_reconstructed_image, mask=self.mask
-                ).array)
+                ).array
+
+                mapped_reconstructed_image = Array2D(
+                    values=np.array(mapped_reconstructed_image), mask=self.mask
+                )
 
             else:
                 operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
