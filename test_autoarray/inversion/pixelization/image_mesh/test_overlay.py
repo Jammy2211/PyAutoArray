@@ -323,13 +323,13 @@ def test__image_plane_mesh_grid_from__simple():
 
     total_pixels = overlay_util.total_pixels_2d_from(
         mask_2d=mask.array,
-        overlaid_centres=overlaid_centres,
+        overlaid_centres=np.array(overlaid_centres),
     )
 
     overlay_for_mask_2d_util = overlay_util.overlay_for_mask_from(
         total_pixels=total_pixels,
         mask=mask.array,
-        overlaid_centres=overlaid_centres,
+        overlaid_centres=np.array(overlaid_centres),
     ).astype("int")
 
     image_mesh_util = overlay_util.overlay_via_unmasked_overlaid_from(

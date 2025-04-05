@@ -11,9 +11,9 @@ import pytest
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__operated_mapping_matrix_property(psf_7x7, rectangular_mapper_7x7_3x3):
+def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
     inversion = aa.m.MockInversionImaging(
-        psf=psf_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
+        psf=psf_3x3, linear_obj_list=[rectangular_mapper_7x7_3x3]
     )
 
     assert inversion.operated_mapping_matrix_list[0][0, 0] == pytest.approx(1.0, 1e-4)
@@ -42,7 +42,7 @@ def test__operated_mapping_matrix_property(psf_7x7, rectangular_mapper_7x7_3x3):
 
 
 def test__operated_mapping_matrix_property__with_operated_mapping_matrix_override(
-    psf_7x7, rectangular_mapper_7x7_3x3
+    psf_3x3, rectangular_mapper_7x7_3x3
 ):
     psf = aa.m.MockPSF(operated_mapping_matrix=np.ones((2, 2)))
 
