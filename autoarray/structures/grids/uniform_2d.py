@@ -180,7 +180,7 @@ class Grid2D(Structure):
         self.over_sampler = OverSampler(sub_size=over_sample_size, mask=mask)
 
         if over_sampled is None:
-            self.over_sampled = (
+            over_sampled = (
                 over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
                     mask_2d=np.array(self.mask),
                     pixel_scales=self.mask.pixel_scales,
@@ -188,6 +188,8 @@ class Grid2D(Structure):
                     origin=self.mask.origin,
                 )
             )
+
+            self.over_sampled = Grid2DIrregular(values=over_sampled)
 
         else:
             self.over_sampled = over_sampled

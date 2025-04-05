@@ -445,7 +445,12 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    shifted_grid_2d = np.array(grid_2d) - jnp.array(centre)
+    try:
+        grid_2d = grid_2d.array
+    except AttributeError:
+        pass
+
+    shifted_grid_2d = grid_2d - jnp.array(centre)
 
     radius = jnp.sqrt(jnp.sum(shifted_grid_2d**2.0, axis=1))
     theta_coordinate_to_profile = jnp.arctan2(
@@ -477,23 +482,23 @@ def transform_grid_2d_from_reference_frame(
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
 
-    cos_angle = np.cos(np.radians(angle))
-    sin_angle = np.sin(np.radians(angle))
+    cos_angle = jnp.cos(jnp.radians(angle))
+    sin_angle = jnp.sin(jnp.radians(angle))
 
-    y = np.add(
-        np.add(
-            np.multiply(grid_2d[:, 1], sin_angle), np.multiply(grid_2d[:, 0], cos_angle)
+    y = jnp.add(
+        jnp.add(
+            jnp.multiply(grid_2d[:, 1], sin_angle), jnp.multiply(grid_2d[:, 0], cos_angle)
         ),
         centre[0],
     )
-    x = np.add(
-        np.add(
-            np.multiply(grid_2d[:, 1], cos_angle),
-            -np.multiply(grid_2d[:, 0], sin_angle),
+    x = jnp.add(
+        jnp.add(
+            jnp.multiply(grid_2d[:, 1], cos_angle),
+            -jnp.multiply(grid_2d[:, 0], sin_angle),
         ),
         centre[1],
     )
-    return np.vstack((y, x)).T
+    return jnp.vstack((y, x)).T
 
 
 def grid_pixels_2d_slim_from(
