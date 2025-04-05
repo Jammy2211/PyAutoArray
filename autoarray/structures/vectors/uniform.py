@@ -140,6 +140,11 @@ class VectorYX2D(AbstractVectorYX2D):
         if type(values) is list:
             values = np.asarray(values)
 
+        try:
+            values = values._array
+        except AttributeError:
+            values = values
+
         values = grid_2d_util.convert_grid_2d(
             grid_2d=values, mask_2d=mask, store_native=store_native
         )

@@ -549,7 +549,10 @@ class Kernel2D(AbstractArray2D):
 
         expanded_array_native = jnp.zeros(mask.shape)
 
-        expanded_array_native = expanded_array_native.at[slim_to_native].set(image)
+        if isinstance(image, np.ndarray) or isinstance(image, jnp.ndarray):
+            expanded_array_native = expanded_array_native.at[slim_to_native].set(image)
+        else:
+            expanded_array_native = expanded_array_native.at[slim_to_native].set(image.array)
 
         kernel = np.array(self.native.array)
 

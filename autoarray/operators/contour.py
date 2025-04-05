@@ -55,8 +55,14 @@ class Grid2DContour:
     @property
     def contour_list(self):
         # make sure to use base numpy to convert JAX array back to a normal array
+
+        if isinstance(self.contour_array, jnp.ndarray):
+            contour_array = np.array(self.contour_array)
+        else:
+            contour_array = np.array(self.contour_array.array)
+
         contour_indices_list = measure.find_contours(
-            np.array(self.contour_array), 0
+            contour_array, 0
         )
 
         if len(contour_indices_list) == 0:

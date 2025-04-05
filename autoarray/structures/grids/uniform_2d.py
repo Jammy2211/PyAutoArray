@@ -159,6 +159,7 @@ class Grid2D(Structure):
             not uniform (e.g. due to gravitational lensing) is cannot be computed internally in this function. If the
             over sampled grid is not passed in it is computed assuming uniformity.
         """
+
         values = grid_2d_util.convert_grid_2d(
             grid_2d=np.array(values),
             mask_2d=mask,
