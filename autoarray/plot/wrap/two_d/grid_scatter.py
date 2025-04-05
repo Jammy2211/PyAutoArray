@@ -9,6 +9,7 @@ from typing import List, Union
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 
 class GridScatter(AbstractMatWrap2D):
@@ -55,7 +56,7 @@ class GridScatter(AbstractMatWrap2D):
         if len(config_dict["c"]) > 1:
             config_dict["c"] = config_dict["c"][0]
 
-        if isinstance(grid, jnp.ndarray):
+        if isinstance(grid, jnp.ndarray) or isinstance(grid, Abstract2DMesh):
             grid = np.array(grid.array)
 
         try:
