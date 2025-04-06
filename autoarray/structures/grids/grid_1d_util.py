@@ -40,21 +40,23 @@ def convert_grid_1d(
 
     grid_1d = grid_2d_util.convert_grid(grid=grid_1d)
 
+    is_numpy = True if isinstance(grid_1d, np.ndarray) else False
+
     is_native = grid_1d.shape[0] == mask_1d.shape_native[0]
 
-    mask_1d = jnp.array(mask_1d.array)
-
     if is_native == store_native:
-        return grid_1d
+        grid_1d = grid_1d
     elif not store_native:
-        return grid_1d_slim_from(
+        grid_1d = grid_1d_slim_from(
             grid_1d_native=grid_1d,
             mask_1d=mask_1d,
         )
-    return grid_1d_native_from(
-        grid_1d_slim=grid_1d,
-        mask_1d=mask_1d,
-    )
+    else:
+        grid_1d = grid_1d_native_from(
+            grid_1d_slim=grid_1d,
+            mask_1d=mask_1d,
+        )
+    return np.array(grid_1d) if is_numpy else jnp.array(grid_1d)
 
 
 def grid_1d_slim_via_shape_slim_from(
