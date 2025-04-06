@@ -57,7 +57,6 @@ def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
     return pixel_scales
 
 
-@numba_util.jit()
 def central_pixel_coordinates_1d_from(
     shape_slim: Tuple[int],
 ) -> Union[Tuple[float], Tuple[float]]:
@@ -85,7 +84,6 @@ def central_pixel_coordinates_1d_from(
     return (float(shape_slim[0] - 1) / 2,)
 
 
-@numba_util.jit()
 def central_scaled_coordinate_1d_from(
     shape_slim: Tuple[float],
     pixel_scales: ty.PixelScales,

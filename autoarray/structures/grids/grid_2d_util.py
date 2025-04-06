@@ -1,7 +1,6 @@
 from __future__ import annotations
 import numpy as np
 import jax.numpy as jnp
-import jax
 
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
@@ -13,6 +12,16 @@ from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import numba_util
 from autoarray import type as ty
+
+
+def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
+
+    try:
+        grid = grid.array
+    except AttributeError:
+        pass
+
+    return jnp.asarray(grid)
 
 
 def check_grid_slim(grid, shape_native):
@@ -34,14 +43,6 @@ def check_grid_slim(grid, shape_native):
             The input shape_native parameter is not a tuple of type (int, int).
             """
         )
-
-
-def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
-    if type(grid) is list:
-        grid = np.asarray(grid)
-
-    return grid
-
 
 def check_grid_2d(grid_2d: np.ndarray):
     if grid_2d.shape[-1] != 2:

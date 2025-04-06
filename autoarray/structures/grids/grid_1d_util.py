@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+import jax.numpy as jnp
 from typing import TYPE_CHECKING, List, Union, Tuple
 
 if TYPE_CHECKING:
@@ -43,16 +44,18 @@ def convert_grid_1d(
 
     is_native = grid_1d.shape[0] == mask_1d.shape_native[0]
 
+    mask_1d = jnp.array(mask_1d.array)
+
     if is_native == store_native:
         return grid_1d
     elif not store_native:
         return grid_1d_slim_from(
             grid_1d_native=grid_1d,
-            mask_1d=np.array(mask_1d),
+            mask_1d=mask_1d,
         )
     return grid_1d_native_from(
         grid_1d_slim=grid_1d,
-        mask_1d=np.array(mask_1d),
+        mask_1d=mask_1d,
     )
 
 
@@ -95,7 +98,6 @@ def grid_1d_slim_via_shape_slim_from(
     )
 
 
-@numba_util.jit()
 def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -131,23 +133,13 @@ def grid_1d_slim_via_mask_from(
     mask = np.array([True, False, True, False, False, False])
     grid_slim = grid_1d_via_mask_from(mask_1d=mask_1d, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
-
-    total_pixels = mask_1d_util.total_pixels_1d_from(mask_1d)
-
-    grid_1d = np.zeros(shape=(total_pixels,))
-
     centres_scaled = geometry_util.central_scaled_coordinate_1d_from(
         shape_slim=mask_1d.shape, pixel_scales=pixel_scales, origin=origin
     )
-
-    index = 0
-
-    for x in range(mask_1d.shape[0]):
-        if not mask_1d[x]:
-            grid_1d[index] = (x - centres_scaled[0]) * pixel_scales[0]
-            index += 1
-
-    return grid_1d
+    indices = jnp.arange(mask_1d.shape[0])
+    unmasked = jnp.logical_not(mask_1d)
+    coords = (indices - centres_scaled[0]) * pixel_scales[0]
+    return coords[unmasked]
 
 
 def grid_1d_slim_from(
