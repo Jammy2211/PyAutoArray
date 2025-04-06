@@ -44,6 +44,9 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         grid
             The irregular grid of (y,x) coordinates where each vector is located.
         """
+        if type(values) is list:
+            values = np.asarray(values)
+
         self.grid = Grid2DIrregular(values=grid)
 
         super().__init__(values)

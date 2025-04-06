@@ -179,7 +179,7 @@ class Grid1D(Structure):
             origin=origin,
         )
 
-        return Grid1D(values=values, mask=mask)
+        return Grid1D(values=np.array(values), mask=mask)
 
     @classmethod
     def from_mask(cls, mask: Mask1D) -> "Grid1D":
@@ -196,12 +196,12 @@ class Grid1D(Structure):
         """
 
         grid_1d = grid_1d_util.grid_1d_slim_via_mask_from(
-            mask_1d=np.array(mask),
+            mask_1d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )
 
-        return Grid1D(values=grid_1d, mask=mask)
+        return Grid1D(values=np.array(grid_1d), mask=mask)
 
     @classmethod
     def uniform(

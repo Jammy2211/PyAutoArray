@@ -692,7 +692,7 @@ class Array2D(AbstractArray2D):
             origin=origin,
         )
 
-        return Array2D(values=values, mask=mask, header=header)
+        return Array2D(values=np.array(values), mask=mask, header=header)
 
     @classmethod
     def full(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from typing import TYPE_CHECKING, Union, List, Tuple
+from typing import TYPE_CHECKING, Union
 from typing import List, Tuple
 
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -12,7 +12,6 @@ from autoarray.geometry import geometry_util
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import numba_util
-from autoarray.mask import mask_2d_util
 
 from autoarray import type as ty
 
@@ -601,7 +600,7 @@ def over_sample_size_via_radial_bins_from(
         radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
 
         sub_size_of_centre = sub_size_radial_bins_from(
-            radial_grid=np.array(radial_grid),
+            radial_grid=np.array(radial_grid.array),
             sub_size_list=np.array(sub_size_list),
             radial_list=np.array(radial_list),
         )

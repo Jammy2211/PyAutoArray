@@ -247,7 +247,7 @@ class Grid2D(Structure):
         )
 
         return Grid2D(
-            values=values,
+            values=np.array(values),
             mask=mask,
             over_sample_size=over_sample_size,
         )
@@ -548,7 +548,7 @@ class Grid2D(Structure):
         """
 
         grid_2d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask,
+            mask_2d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )

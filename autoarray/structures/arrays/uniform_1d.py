@@ -88,7 +88,7 @@ class Array1D(Structure):
             origin=origin,
         )
 
-        return Array1D(values=values, mask=mask, header=header)
+        return Array1D(values=np.array(values), mask=mask, header=header)
 
     @classmethod
     def full(
