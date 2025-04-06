@@ -139,7 +139,7 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
         == 2.0 * np.ones((7, 7)) * np.invert(mask_2d_7x7)
     ).all()
 
-    assert masked_imaging_7x7.psf.slim == pytest.approx((1.0 / 3.0) * psf_3x3.slim, 1.0e-4)
+    assert masked_imaging_7x7.psf.slim == pytest.approx((1.0 / 3.0) * psf_3x3.slim.array, 1.0e-4)
 
     assert type(masked_imaging_7x7.psf) == aa.Kernel2D
     assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (35,)
@@ -156,10 +156,19 @@ def test__apply_noise_scaling(imaging_7x7, mask_2d_7x7):
     assert masked_imaging_7x7.noise_map.native[4, 4] == 1e5
 
 
-def test__apply_noise_scaling__use_signal_to_noise_value(imaging_7x7, mask_2d_7x7):
-    imaging_7x7 = copy.copy(imaging_7x7)
+def test__apply_noise_scaling__use_signal_to_noise_value(image_7x7, psf_3x3, noise_map_7x7, mask_2d_7x7):
 
-    imaging_7x7.data[24] = 2.0
+    image_7x7 = np.array(image_7x7.native.array)
+    image_7x7[3,3] = 2.0
+
+    image_7x7 = aa.Array2D(values=image_7x7, mask=mask_2d_7x7)
+
+    imaging_7x7 = aa.Imaging(
+        data=image_7x7,
+        psf=psf_3x3,
+        noise_map=noise_map_7x7,
+        over_sample_size_lp=1,
+    )
 
     masked_imaging_7x7 = imaging_7x7.apply_noise_scaling(
         mask=mask_2d_7x7, signal_to_noise_value=0.1, should_zero_data=False
