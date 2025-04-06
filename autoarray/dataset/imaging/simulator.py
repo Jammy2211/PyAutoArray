@@ -151,7 +151,7 @@ class SimulatorImaging:
                 pixel_scales=image.pixel_scales,
             )
 
-        if np.isnan(noise_map).any():
+        if np.isnan(noise_map.array).any():
             raise exc.DatasetException(
                 "The noise-map has NaN values in it. This suggests your exposure time and / or"
                 "background sky levels are too low, creating signal counts at or close to 0.0."
