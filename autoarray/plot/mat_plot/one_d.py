@@ -166,7 +166,7 @@ class MatPlot1D(AbstractMatPlot):
         text_manual_dict_y=None,
         bypass: bool = False,
     ):
-        if (y is None) or np.count_nonzero(y) == 0 or np.isnan(y).all():
+        if (y.array is None) or np.count_nonzero(y.array) == 0 or np.isnan(y.array).all():
             return
 
         ax = None
@@ -198,8 +198,8 @@ class MatPlot1D(AbstractMatPlot):
         label = self.legend.label or auto_labels.legend
 
         self.yx_plot.plot_y_vs_x(
-            y=y,
-            x=x,
+            y=y.array,
+            x=x.array,
             label=label,
             plot_axis_type=plot_axis_type,
             y_errors=y_errors,
@@ -229,18 +229,18 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         if x_errors is not None:
-            min_value_x = np.nanmin(x - x_errors)
-            max_value_x = np.nanmax(x + x_errors)
+            min_value_x = np.nanmin(x.array - x_errors)
+            max_value_x = np.nanmax(x.array + x_errors)
         else:
-            min_value_x = np.nanmin(x)
-            max_value_x = np.nanmax(x)
+            min_value_x = np.nanmin(x.array)
+            max_value_x = np.nanmax(x.array)
 
         if y_errors is not None:
-            min_value_y = np.nanmin(y - y_errors)
-            max_value_y = np.nanmax(y + y_errors)
+            min_value_y = np.nanmin(y.array - y_errors)
+            max_value_y = np.nanmax(y.array + y_errors)
         else:
-            min_value_y = np.nanmin(y)
-            max_value_y = np.nanmax(y)
+            min_value_y = np.nanmin(y.array)
+            max_value_y = np.nanmax(y.array)
 
         if should_plot_zero:
             if min_value_y > 0:
