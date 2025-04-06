@@ -11,7 +11,6 @@ from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
 from autoarray import exc
-from functools import partial
 
 
 def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
@@ -23,8 +22,14 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     array : list or ndarray
         The array which may be converted to an ndarray
     """
+
+    try:
+        array = array.array
+    except AttributeError:
+        pass
+
     if isinstance(array, np.ndarray) or isinstance(array, list):
-        array = np.asarray(array)
+        array = jnp.asarray(array)
     elif isinstance(array, jnp.ndarray):
         array = jax.lax.cond(
             type(array) is list, lambda _: jnp.asarray(array), lambda _: array, None
