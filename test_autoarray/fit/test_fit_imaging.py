@@ -30,7 +30,7 @@ def test__data_and_model_are_identical__no_masking__check_values_are_correct():
 
     assert fit.chi_squared == 0.0
     assert fit.reduced_chi_squared == 0.0
-    assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map**2.0))
+    assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map.array**2.0))
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
 
@@ -59,7 +59,7 @@ def test__data_and_model_are_different__include_masking__check_values_are_correc
 
     assert fit.chi_squared == 0.25
     assert fit.reduced_chi_squared == 0.25 / 3.0
-    assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map**2.0))
+    assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map.array**2.0))
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
 
@@ -92,7 +92,7 @@ def test__data_and_model_are_identical__inversion_included__changes_certain_prop
 
     assert fit.chi_squared == 0.0
     assert fit.reduced_chi_squared == 0.0
-    assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map**2.0))
+    assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map.array**2.0))
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     assert fit.log_likelihood_with_regularization == -0.5 * (
