@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, List, Union
 if TYPE_CHECKING:
     from autoarray.mask.mask_1d import Mask1D
 
-from autoarray import numba_util
 from autoarray.mask import mask_1d_util
 from autoarray.structures.arrays import array_2d_util
 
@@ -127,8 +126,6 @@ def array_1d_native_from(
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )
 
-
-@numba_util.jit()
 def array_1d_via_indexes_1d_from(
     array_1d_slim: np.ndarray,
     shape: int,
@@ -167,11 +164,5 @@ def array_1d_via_indexes_1d_from(
     ndarray
         The native 1D array of values mapped from the slimmed array with dimensions (total_x_pixels).
     """
-    array_1d_native = np.zeros(shape)
-
-    for slim_index in range(len(native_index_for_slim_index_1d)):
-        array_1d_native[native_index_for_slim_index_1d[slim_index]] = array_1d_slim[
-            slim_index
-        ]
-
-    return array_1d_native
+    array_1d_native = jnp.zeros(shape)
+    return array_1d_native.at[native_index_for_slim_index_1d].set(array_1d_slim)
