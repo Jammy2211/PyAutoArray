@@ -417,6 +417,7 @@ class MatPlot2D(AbstractMatPlot):
 
         if not self.is_for_subplot:
             fig, ax = self.figure.open()
+            print(ax)
         else:
             ax = self.setup_subplot()
 
@@ -450,6 +451,7 @@ class MatPlot2D(AbstractMatPlot):
                 )
 
             if self.colorbar is not None:
+
                 colorbar = self.colorbar.set_with_color_values(
                     units=self.units,
                     cmap=self.cmap.cmap,
