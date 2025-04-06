@@ -115,15 +115,18 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
 
 
 def test__new_imaging_with_arrays_trimmed_via_kernel_shape():
-    data = aa.Array2D.full(fill_value=20.0, shape_native=(3, 3), pixel_scales=1.0)
-    data[4] = 5.0
 
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(3, 3), pixel_scales=1.0
+    data = aa.Array2D.no_mask(
+        values=[[20.0, 20.0, 20.0], [20.0, 5.0, 20.0], [20.0, 20.0, 20.0]],
+        pixel_scales=1.0,
     )
-    noise_map_array[4] = 2.0
 
-    dataset = ds.AbstractDataset(data=data, noise_map=noise_map_array)
+    noise_map = aa.Array2D.no_mask(
+        values=[[20.0, 20.0, 20.0], [20.0, 2.0, 20.0], [20.0, 20.0, 20.0]],
+        pixel_scales=1.0,
+    )
+
+    dataset = ds.AbstractDataset(data=data, noise_map=noise_map)
 
     dataset_trimmed = dataset.trimmed_after_convolution_from(kernel_shape=(3, 3))
 
@@ -146,8 +149,8 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     grid_sub_2 = dataset_7x7.grids.lp
     grids_pixelization_sub_2 = dataset_7x7.grids.pixelization
 
-    dataset_7x7.grids.__dict__["lp"][0][0] = 100.0
-    dataset_7x7.grids.__dict__["pixelization"][0][0] = 100.0
+    dataset_7x7.grids.lp = dataset_7x7.grids.lp.at[0, 0].set(100.0)
+    dataset_7x7.grids.pixelization = dataset_7x7.grids.pixelization.at[0, 0].set(100.0)
 
     assert dataset_7x7.grids.lp[0][0] == pytest.approx(100.0, 1.0e-4)
     assert dataset_7x7.grids.pixelization[0][0] == pytest.approx(100.0, 1.0e-4)

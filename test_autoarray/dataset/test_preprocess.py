@@ -497,7 +497,7 @@ def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
     background_noise_map = aa.Array2D.no_mask(
         [[0.5, 0.25, 0.25], [0.25, 0.25, 0.25], [0.25, 0.25, 0.25]], pixel_scales=1.0
     )
-    
+
     exposure_time_map = (
         aa.preprocess.exposure_time_map_via_exposure_time_and_background_noise_map_from(
             exposure_time=exposure_time, background_noise_map=background_noise_map
