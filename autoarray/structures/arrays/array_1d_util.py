@@ -40,22 +40,25 @@ def convert_array_1d(
     """
     array_1d = array_2d_util.convert_array(array=array_1d)
 
+    is_numpy = True if isinstance(array_1d, np.ndarray) else False
+
     is_native = array_1d.shape[0] == mask_1d.shape_native[0]
 
     mask_1d = jnp.array(mask_1d.array)
 
     if is_native == store_native:
-        return array_1d
+        array_1d = array_1d
     elif not store_native:
-        return array_1d_slim_from(
+        array_1d = array_1d_slim_from(
             array_1d_native=array_1d,
             mask_1d=mask_1d,
         )
-
-    return array_1d_native_from(
-        array_1d_slim=array_1d,
-        mask_1d=mask_1d,
-    )
+    else:
+        array_1d = array_1d_native_from(
+            array_1d_slim=array_1d,
+            mask_1d=mask_1d,
+        )
+    return np.array(array_1d) if is_numpy else jnp.array(array_1d)
 
 
 def array_1d_slim_from(

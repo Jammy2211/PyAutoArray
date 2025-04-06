@@ -122,10 +122,7 @@ def convert_array_2d(
     """
     array_2d = convert_array(array=array_2d).copy()
 
-    if isinstance(array_2d, np.ndarray):
-        is_numpy = True
-    else:
-        is_numpy = False
+    is_numpy = True if isinstance(array_2d, np.ndarray) else False
 
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
@@ -135,17 +132,17 @@ def convert_array_2d(
         array_2d *= np.invert(mask_2d)
 
     if is_native == store_native:
-        return np.array(array_2d) if is_numpy else jnp.array(array_2d)
+        array_2d = array_2d
     elif not store_native:
         array_2d = array_2d_slim_from(
             array_2d_native=array_2d,
             mask_2d=mask_2d,
         )
-        return np.array(array_2d) if is_numpy else jnp.array(array_2d)
-    array_2d = array_2d_native_from(
-        array_2d_slim=array_2d,
-        mask_2d=mask_2d,
-    )
+    else:
+        array_2d = array_2d_native_from(
+            array_2d_slim=array_2d,
+            mask_2d=mask_2d,
+        )
     return np.array(array_2d) if is_numpy else jnp.array(array_2d)
 
 
