@@ -166,7 +166,18 @@ class MatPlot1D(AbstractMatPlot):
         text_manual_dict_y=None,
         bypass: bool = False,
     ):
-        if (y.array is None) or np.count_nonzero(y.array) == 0 or np.isnan(y.array).all():
+
+        try:
+            y = y.array
+        except AttributeError:
+            pass
+
+        try:
+            x = x.array
+        except AttributeError:
+            pass
+
+        if (y is None) or np.count_nonzero(y) == 0 or np.isnan(y).all():
             return
 
         ax = None
@@ -185,7 +196,7 @@ class MatPlot1D(AbstractMatPlot):
             x = np.arange(len(y))
             use_integers = True
             pixel_scales = (x[1] - x[0],)
-            x = Array1D.no_mask(values=x, pixel_scales=pixel_scales)
+            x = Array1D.no_mask(values=x, pixel_scales=pixel_scales).array
 
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"
@@ -198,8 +209,8 @@ class MatPlot1D(AbstractMatPlot):
         label = self.legend.label or auto_labels.legend
 
         self.yx_plot.plot_y_vs_x(
-            y=y.array,
-            x=x.array,
+            y=y,
+            x=x,
             label=label,
             plot_axis_type=plot_axis_type,
             y_errors=y_errors,
@@ -229,18 +240,18 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         if x_errors is not None:
-            min_value_x = np.nanmin(x.array - x_errors)
-            max_value_x = np.nanmax(x.array + x_errors)
+            min_value_x = np.nanmin(x - x_errors)
+            max_value_x = np.nanmax(x + x_errors)
         else:
-            min_value_x = np.nanmin(x.array)
-            max_value_x = np.nanmax(x.array)
+            min_value_x = np.nanmin(x)
+            max_value_x = np.nanmax(x)
 
         if y_errors is not None:
-            min_value_y = np.nanmin(y.array - y_errors)
-            max_value_y = np.nanmax(y.array + y_errors)
+            min_value_y = np.nanmin(y - y_errors)
+            max_value_y = np.nanmax(y + y_errors)
         else:
-            min_value_y = np.nanmin(y.array)
-            max_value_y = np.nanmax(y.array)
+            min_value_y = np.nanmin(y)
+            max_value_y = np.nanmax(y)
 
         if should_plot_zero:
             if min_value_y > 0:
