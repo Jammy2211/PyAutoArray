@@ -493,11 +493,11 @@ def test__background_noise_map_via_edges_of_image_from_5():
 
 def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
     exposure_time = 6.0
-    background_noise_map = aa.Array2D.full(
-        fill_value=0.25, shape_native=(3, 3), pixel_scales=1.0
-    )
-    background_noise_map[0] = 0.5
 
+    background_noise_map = aa.Array2D.no_mask(
+        [[0.5, 0.25, 0.25], [0.25, 0.25, 0.25], [0.25, 0.25, 0.25]], pixel_scales=1.0
+    )
+    
     exposure_time_map = (
         aa.preprocess.exposure_time_map_via_exposure_time_and_background_noise_map_from(
             exposure_time=exposure_time, background_noise_map=background_noise_map
@@ -556,6 +556,7 @@ def test__poisson_noise_from_data():
 def test__data_with_poisson_noised_added():
     data = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
+
     data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
         data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
@@ -661,49 +662,32 @@ def test__data_with_complex_gaussian_noise_added():
 
 
 def test__noise_map_with_signal_to_noise_limit_from():
-    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
-    image[3] = 5.0
 
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
-    )
-    noise_map_array[3] = 2.0
+    image = aa.Array2D.no_mask(values=[[20, 20], [20, 5]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask(values=[[5, 5], [5, 2]], pixel_scales=1.0)
 
     noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
-        data=image, noise_map=noise_map_array, signal_to_noise_limit=100.0
+        data=image, noise_map=noise_map, signal_to_noise_limit=100.0
     )
 
     assert (noise_map.slim == np.array([5.0, 5.0, 5.0, 2.0])).all()
 
-    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
-    image[3] = 5.0
-
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
-    )
-    noise_map_array[3] = 2.0
+    noise_map = aa.Array2D.no_mask(values=[[5, 5], [5, 2]], pixel_scales=1.0)
 
     noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
-        data=image, noise_map=noise_map_array, signal_to_noise_limit=2.0
+        data=image, noise_map=noise_map, signal_to_noise_limit=2.0
     )
 
     assert (noise_map.native == np.array([[10.0, 10.0], [10.0, 2.5]])).all()
 
-    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
-    image[2] = 5.0
-    image[3] = 5.0
-
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
-    )
-    noise_map_array[2] = 2.0
-    noise_map_array[3] = 2.0
+    image = aa.Array2D.no_mask(values=[[20, 20], [5, 5]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask(values=[[5, 5], [2, 2]], pixel_scales=1.0)
 
     mask = aa.Mask2D(mask=[[True, False], [False, True]], pixel_scales=1.0)
 
     noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
         data=image,
-        noise_map=noise_map_array,
+        noise_map=noise_map,
         signal_to_noise_limit=2.0,
         noise_limit_mask=mask,
     )

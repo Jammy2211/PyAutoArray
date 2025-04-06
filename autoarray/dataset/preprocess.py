@@ -149,7 +149,7 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
         The exposure time at every data-point of the data.
     """
     return data_eps.with_new_array(
-        np.abs(data_eps * exposure_time_map) ** 0.5 / exposure_time_map
+        np.abs(data_eps.array * exposure_time_map.array) ** 0.5 / exposure_time_map.array
     )
 
 
@@ -406,9 +406,10 @@ def poisson_noise_via_data_eps_from(data_eps, exposure_time_map, seed=-1):
         An array describing simulated poisson noise_maps
     """
     setup_random_seed(seed)
-    image_counts = np.multiply(data_eps, exposure_time_map)
+
+    image_counts = np.multiply(data_eps.array, exposure_time_map.array)
     return data_eps - np.divide(
-        np.random.poisson(image_counts, data_eps.shape), exposure_time_map
+        np.random.poisson(image_counts, data_eps.shape), exposure_time_map.array
     )
 
 
@@ -505,8 +506,6 @@ def noise_map_with_signal_to_noise_limit_from(
     from autoarray.mask.mask_2d import Mask2D
     from autoarray.structures.arrays.uniform_1d import Array1D
     from autoarray.structures.arrays.uniform_2d import Array2D
-
-    # TODO : Refacotr into a util
 
     signal_to_noise_map = data / noise_map
     signal_to_noise_map[signal_to_noise_map < 0] = 0
