@@ -441,7 +441,7 @@ def test__from_mask():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=np.array(mask), pixel_scales=(2.0, 2.0)
+        mask_2d=mask, pixel_scales=(2.0, 2.0)
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -451,8 +451,8 @@ def test__from_mask():
     assert grid_2d.pixel_scales == (2.0, 2.0)
 
     grid_2d_native = aa.util.grid_2d.grid_2d_native_from(
-        grid_2d_slim=np.array(grid_2d),
-        mask_2d=np.array(mask),
+        grid_2d_slim=grid_2d.array,
+        mask_2d=mask,
     )
 
     assert (grid_2d_native == grid_2d.native).all()

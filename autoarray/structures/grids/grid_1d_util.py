@@ -7,10 +7,8 @@ if TYPE_CHECKING:
     from autoarray.mask.mask_1d import Mask1D
 
 from autoarray.structures.arrays import array_1d_util
-from autoarray import numba_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
-from autoarray.mask import mask_1d_util
 from autoarray import type as ty
 
 

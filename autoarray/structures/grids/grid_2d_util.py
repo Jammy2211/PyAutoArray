@@ -113,20 +113,22 @@ def convert_grid_2d(
 
     is_native = len(grid_2d.shape) == 3
 
+    mask_2d = jnp.array(mask_2d.array)
+
     if is_native:
-        grid_2d[:, :, 0] *= np.invert(mask_2d)
-        grid_2d[:, :, 1] *= np.invert(mask_2d)
+        grid_2d = grid_2d.at[:, :, 0].multiply(jnp.invert(mask_2d))
+        grid_2d = grid_2d.at[:, :, 1].multiply(jnp.invert(mask_2d))
 
     if is_native == store_native:
         return grid_2d
     elif not store_native:
         return grid_2d_slim_from(
-            grid_2d_native=np.array(grid_2d),
-            mask=np.array(mask_2d),
+            grid_2d_native=grid_2d,
+            mask=mask_2d,
         )
     return grid_2d_native_from(
-        grid_2d_slim=np.array(grid_2d),
-        mask_2d=np.array(mask_2d),
+        grid_2d_slim=grid_2d,
+        mask_2d=mask_2d,
     )
 
 
@@ -724,7 +726,7 @@ def grid_2d_native_from(
         mask_2d=mask_2d,
     )
 
-    return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
+    return jnp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 
 @numba_util.jit()
