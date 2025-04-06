@@ -21,7 +21,10 @@ def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
     except AttributeError:
         pass
 
-    return jnp.asarray(grid)
+    if isinstance(grid, list):
+        grid = np.asarray(grid)
+
+    return grid
 
 
 def check_grid_slim(grid, shape_native):
@@ -109,28 +112,33 @@ def convert_grid_2d(
 
     grid_2d = convert_grid(grid=grid_2d)
 
+    is_numpy = True if isinstance(grid_2d, np.ndarray) else False
+
     check_grid_2d_and_mask_2d(grid_2d=grid_2d, mask_2d=mask_2d)
 
     is_native = len(grid_2d.shape) == 3
 
-    mask_2d = jnp.array(mask_2d.array)
-
     if is_native:
-        grid_2d = grid_2d.at[:, :, 0].multiply(jnp.invert(mask_2d))
-        grid_2d = grid_2d.at[:, :, 1].multiply(jnp.invert(mask_2d))
+        if not is_numpy:
+            grid_2d = grid_2d.at[:, :, 0].multiply(jnp.invert(mask_2d))
+            grid_2d = grid_2d.at[:, :, 1].multiply(jnp.invert(mask_2d))
+        else:
+            grid_2d[:, :, 0] *= np.invert(mask_2d)
+            grid_2d[:, :, 1] *= np.invert(mask_2d)
 
     if is_native == store_native:
-        return grid_2d
+        grid_2d = grid_2d
     elif not store_native:
-        return grid_2d_slim_from(
+        grid_2d = grid_2d_slim_from(
             grid_2d_native=grid_2d,
             mask=mask_2d,
         )
-    return grid_2d_native_from(
-        grid_2d_slim=grid_2d,
-        mask_2d=mask_2d,
-    )
-
+    else:
+        grid_2d = grid_2d_native_from(
+            grid_2d_slim=grid_2d,
+            mask_2d=mask_2d,
+        )
+    return np.array(grid_2d) if is_numpy else jnp.array(grid_2d)
 
 def convert_grid_2d_to_slim(
     grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
