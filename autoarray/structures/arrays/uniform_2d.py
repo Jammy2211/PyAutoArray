@@ -459,7 +459,7 @@ class AbstractArray2D(Structure):
         """
 
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native._array),
+            array_2d=np.array(self.native.array),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -493,7 +493,7 @@ class AbstractArray2D(Structure):
             The number pixels around the extracted array used as a buffer.
         """
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native._array),
+            array_2d=np.array(self.native.array),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -527,7 +527,7 @@ class AbstractArray2D(Structure):
         """
 
         resized_array_2d = array_2d_util.resized_array_2d_from(
-            array_2d=np.array(self.native._array), resized_shape=new_shape
+            array_2d=np.array(self.native.array), resized_shape=new_shape
         )
 
         resized_mask = self.mask.resized_from(
@@ -587,14 +587,14 @@ class AbstractArray2D(Structure):
         psf_cut_x = int(np.ceil(kernel_shape[1] / 2)) - 1
         array_y = int(self.mask.shape[0])
         array_x = int(self.mask.shape[1])
-        trimmed_array_2d = self.native[
+        trimmed_array_2d = self.native.array[
             psf_cut_y : array_y - psf_cut_y, psf_cut_x : array_x - psf_cut_x
         ]
 
         resized_mask = self.mask.resized_from(new_shape=trimmed_array_2d.shape)
 
         array = array_2d_util.convert_array_2d(
-            array_2d=trimmed_array_2d._array, mask_2d=resized_mask
+            array_2d=trimmed_array_2d, mask_2d=resized_mask
         )
 
         return Array2D(

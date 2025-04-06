@@ -27,7 +27,10 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     except AttributeError:
         pass
 
-    return jnp.asarray(array)
+    if isinstance(array, list):
+        array = np.asarray(array)
+
+    return array
 
 
 
@@ -119,27 +122,31 @@ def convert_array_2d(
     """
     array_2d = convert_array(array=array_2d).copy()
 
-    check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
+    if isinstance(array_2d, np.ndarray):
+        is_numpy = True
+    else:
+        is_numpy = False
 
-    mask_2d = jnp.array(mask_2d.array)
+    check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
     is_native = len(array_2d.shape) == 2
 
     if is_native and not skip_mask:
-        array_2d *= jnp.invert(mask_2d)
+        array_2d *= np.invert(mask_2d)
 
     if is_native == store_native:
-        return array_2d
+        return np.array(array_2d) if is_numpy else jnp.array(array_2d)
     elif not store_native:
-        return array_2d_slim_from(
+        array_2d = array_2d_slim_from(
             array_2d_native=array_2d,
             mask_2d=mask_2d,
         )
+        return np.array(array_2d) if is_numpy else jnp.array(array_2d)
     array_2d = array_2d_native_from(
         array_2d_slim=array_2d,
         mask_2d=mask_2d,
     )
-    return array_2d
+    return np.array(array_2d) if is_numpy else jnp.array(array_2d)
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:

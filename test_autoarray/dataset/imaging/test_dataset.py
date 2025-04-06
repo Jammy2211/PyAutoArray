@@ -105,6 +105,7 @@ def test__from_fits():
 
 
 def test__output_to_fits(imaging_7x7, test_data_path):
+
     imaging_7x7.output_to_fits(
         data_path=path.join(test_data_path, "data.fits"),
         psf_path=path.join(test_data_path, "psf.fits"),

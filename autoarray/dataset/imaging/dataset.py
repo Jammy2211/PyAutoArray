@@ -135,6 +135,8 @@ class Imaging(AbstractDataset):
                     f"the image and noise-map yourself."
                 )
 
+        print(type(data.array))
+
         super().__init__(
             data=data,
             noise_map=noise_map,
