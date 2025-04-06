@@ -44,8 +44,6 @@ def convert_array_1d(
 
     is_native = array_1d.shape[0] == mask_1d.shape_native[0]
 
-    mask_1d = jnp.array(mask_1d.array)
-
     if is_native == store_native:
         array_1d = array_1d
     elif not store_native:
@@ -124,7 +122,7 @@ def array_1d_native_from(
     ).astype("int")
 
     return array_1d_via_indexes_1d_from(
-        array_1d_slim=np.array(array_1d_slim),
+        array_1d_slim=array_1d_slim,
         shape=shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )

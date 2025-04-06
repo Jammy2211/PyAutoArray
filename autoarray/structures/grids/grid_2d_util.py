@@ -120,11 +120,11 @@ def convert_grid_2d(
 
     if is_native:
         if not is_numpy:
-            grid_2d = grid_2d.at[:, :, 0].multiply(jnp.invert(mask_2d))
-            grid_2d = grid_2d.at[:, :, 1].multiply(jnp.invert(mask_2d))
+            grid_2d = grid_2d.at[:, :, 0].multiply(~mask_2d)
+            grid_2d = grid_2d.at[:, :, 1].multiply(~mask_2d)
         else:
-            grid_2d[:, :, 0] *= np.invert(mask_2d)
-            grid_2d[:, :, 1] *= np.invert(mask_2d)
+            grid_2d[:, :, 0] *= ~mask_2d
+            grid_2d[:, :, 1] *= ~mask_2d
 
     if is_native == store_native:
         grid_2d = grid_2d
@@ -682,16 +682,16 @@ def grid_2d_slim_from(
     """
 
     grid_1d_slim_y = array_2d_util.array_2d_slim_from(
-        array_2d_native=np.array(grid_2d_native[:, :, 0]),
-        mask_2d=np.array(mask),
+        array_2d_native=grid_2d_native[:, :, 0],
+        mask_2d=mask,
     )
 
     grid_1d_slim_x = array_2d_util.array_2d_slim_from(
-        array_2d_native=np.array(grid_2d_native[:, :, 1]),
-        mask_2d=np.array(mask),
+        array_2d_native=grid_2d_native[:, :, 1],
+        mask_2d=mask,
     )
 
-    return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
+    return jnp.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
 
 
 def grid_2d_native_from(

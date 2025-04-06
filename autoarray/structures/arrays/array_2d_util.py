@@ -129,7 +129,7 @@ def convert_array_2d(
     is_native = len(array_2d.shape) == 2
 
     if is_native and not skip_mask:
-        array_2d *= np.invert(mask_2d)
+        array_2d *= ~mask_2d
 
     if is_native == store_native:
         array_2d = array_2d
