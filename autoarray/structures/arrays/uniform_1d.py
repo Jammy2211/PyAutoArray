@@ -25,11 +25,6 @@ class Array1D(Structure):
         store_native: bool = False,
     ):
 
-        try:
-            values = values._array
-        except AttributeError:
-            values = values
-
         values = array_1d_util.convert_array_1d(
             array_1d=values,
             mask_1d=mask,

@@ -28,13 +28,8 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     except AttributeError:
         pass
 
-    if isinstance(array, np.ndarray) or isinstance(array, list):
-        array = jnp.asarray(array)
-    elif isinstance(array, jnp.ndarray):
-        array = jax.lax.cond(
-            type(array) is list, lambda _: jnp.asarray(array), lambda _: array, None
-        )
-    return array
+    return jnp.asarray(array)
+
 
 
 def check_array_2d(array_2d: np.ndarray):

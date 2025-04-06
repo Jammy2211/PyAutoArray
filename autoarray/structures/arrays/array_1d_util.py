@@ -1,4 +1,5 @@
 from __future__ import annotations
+import jax.numpy as jnp
 import numpy as np
 from typing import TYPE_CHECKING, List, Union
 
@@ -38,26 +39,26 @@ def convert_array_1d(
         If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
         mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
-
     array_1d = array_2d_util.convert_array(array=array_1d)
 
     is_native = array_1d.shape[0] == mask_1d.shape_native[0]
+
+    mask_1d = jnp.array(mask_1d.array)
 
     if is_native == store_native:
         return array_1d
     elif not store_native:
         return array_1d_slim_from(
-            array_1d_native=np.array(array_1d),
-            mask_1d=np.array(mask_1d),
+            array_1d_native=array_1d,
+            mask_1d=mask_1d,
         )
 
     return array_1d_native_from(
         array_1d_slim=array_1d,
-        mask_1d=np.array(mask_1d),
+        mask_1d=mask_1d,
     )
 
 
-@numba_util.jit()
 def array_1d_slim_from(
     array_1d_native: np.ndarray,
     mask_1d: np.ndarray,
@@ -105,19 +106,8 @@ def array_1d_slim_from(
 
     array_1d_slim = array_1d_slim_from(array_1d_native, array_2d=array_2d)
     """
-
-    total_pixels = mask_1d_util.total_pixels_1d_from(
-        mask_1d=mask_1d,
-    )
-
-    line_1d_slim = np.zeros(shape=total_pixels)
-    index = 0
-
-    for x in range(mask_1d.shape[0]):
-        if not mask_1d[x]:
-            line_1d_slim[index] = array_1d_native[x]
-            index += 1
-
+    unmasked_indices = ~mask_1d
+    line_1d_slim = array_1d_native[unmasked_indices]
     return line_1d_slim
 
 
