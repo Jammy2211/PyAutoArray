@@ -119,7 +119,6 @@ def central_scaled_coordinate_1d_from(
     return (x_pixel,)
 
 
-@numba_util.jit()
 def pixel_coordinates_1d_from(
     scaled_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
@@ -137,7 +136,6 @@ def pixel_coordinates_1d_from(
     return (x_pixel,)
 
 
-@numba_util.jit()
 def scaled_coordinates_1d_from(
     pixel_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],

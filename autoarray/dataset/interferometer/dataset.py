@@ -205,7 +205,7 @@ class Interferometer(AbstractDataset):
         return WTildeInterferometer(
             w_matrix=w_matrix,
             curvature_preload=curvature_preload,
-            dirty_image=dirty_image,
+            dirty_image=np.array(dirty_image.array),
             real_space_mask=self.real_space_mask,
             noise_map_value=self.noise_map[0],
         )

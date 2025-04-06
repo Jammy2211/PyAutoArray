@@ -82,10 +82,12 @@ class Figure(AbstractMatWrap):
         """
         Wraps the Matplotlib method 'plt.figure' for opening a figure.
         """
-        config_dict = self.config_dict
-        config_dict.pop("aspect")
-        fig = plt.figure(**config_dict)
-        return fig, plt.gca()
+        if not plt.fignum_exists(num=1):
+            config_dict = self.config_dict
+            config_dict.pop("aspect")
+            fig = plt.figure(**config_dict)
+            return fig, plt.gca()
+        return None, None
 
     def close(self):
         """

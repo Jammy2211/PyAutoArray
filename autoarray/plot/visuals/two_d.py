@@ -64,7 +64,7 @@ class Visuals2D(AbstractVisuals):
             plotter.grid_scatter.scatter_grid(grid=self.grid.array)
 
         if self.mesh_grid is not None:
-            plotter.mesh_grid_scatter.scatter_grid(grid=self.mesh_grid)
+            plotter.mesh_grid_scatter.scatter_grid(grid=self.mesh_grid.array)
 
         if self.positions is not None:
             plotter.positions_scatter.scatter_grid(grid=self.positions)
