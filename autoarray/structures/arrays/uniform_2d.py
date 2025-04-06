@@ -962,7 +962,7 @@ class Array2D(AbstractArray2D):
         )
 
         grid_pixels = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=np.array(grid.slim),
+            grid_scaled_2d_slim=grid.slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
         )

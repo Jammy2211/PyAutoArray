@@ -65,6 +65,8 @@ class Grid2DContour:
             contour_array, 0
         )
 
+        print(contour_indices_list)
+
         if len(contour_indices_list) == 0:
             return []
 

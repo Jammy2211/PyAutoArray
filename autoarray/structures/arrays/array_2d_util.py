@@ -122,21 +122,23 @@ def convert_array_2d(
 
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
+    mask_2d = jnp.array(mask_2d.array)
+
     is_native = len(array_2d.shape) == 2
 
     if is_native and not skip_mask:
-        array_2d *= np.invert(mask_2d)
+        array_2d *= jnp.invert(mask_2d)
 
     if is_native == store_native:
         return array_2d
     elif not store_native:
         return array_2d_slim_from(
-            array_2d_native=np.array(array_2d),
-            mask_2d=np.array(mask_2d),
+            array_2d_native=array_2d,
+            mask_2d=mask_2d,
         )
     array_2d = array_2d_native_from(
         array_2d_slim=array_2d,
-        mask_2d=np.array(mask_2d),
+        mask_2d=mask_2d,
     )
     return array_2d
 
@@ -587,7 +589,6 @@ def array_2d_native_from(
     )
 
 
-@partial(jax.jit, static_argnums=(1,))
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
     shape: Tuple[int, int],

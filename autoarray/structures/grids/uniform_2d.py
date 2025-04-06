@@ -161,7 +161,7 @@ class Grid2D(Structure):
         """
 
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=np.array(values),
+            grid_2d=values,
             mask_2d=mask,
             store_native=store_native,
         )
@@ -320,7 +320,7 @@ class Grid2D(Structure):
             x = np.asarray(x)
 
         return cls.no_mask(
-            values=np.stack((y, x), axis=-1),
+            values=jnp.stack((y, x), axis=-1),
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
