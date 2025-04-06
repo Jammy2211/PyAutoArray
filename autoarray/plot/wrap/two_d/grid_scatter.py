@@ -56,9 +56,6 @@ class GridScatter(AbstractMatWrap2D):
         if len(config_dict["c"]) > 1:
             config_dict["c"] = config_dict["c"][0]
 
-        if isinstance(grid, jnp.ndarray) or isinstance(grid, Abstract2DMesh):
-            grid = np.array(grid.array)
-
         try:
             plt.scatter(y=grid[:, 0], x=grid[:, 1], **config_dict)
         except (IndexError, TypeError):

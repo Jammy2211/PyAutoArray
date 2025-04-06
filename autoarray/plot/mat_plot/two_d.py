@@ -438,11 +438,11 @@ class MatPlot2D(AbstractMatPlot):
 
             if y_errors is None and x_errors is None:
                 self.grid_scatter.scatter_grid_colored(
-                    grid=grid, color_array=color_array, cmap=cmap
+                    grid=grid.array, color_array=color_array, cmap=cmap
                 )
             else:
                 self.grid_errorbar.errorbar_grid_colored(
-                    grid=grid,
+                    grid=grid.array,
                     cmap=cmap,
                     color_array=color_array,
                     y_errors=y_errors,
@@ -496,7 +496,7 @@ class MatPlot2D(AbstractMatPlot):
             self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=grid, geometry=grid.geometry
+            plotter=self, grid_indexes=grid.array, geometry=grid.geometry
         )
 
         if not self.is_for_subplot:
