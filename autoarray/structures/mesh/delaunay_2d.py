@@ -71,7 +71,7 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
 
         interpolated_array = mesh_util.delaunay_interpolated_array_from(
             shape_native=shape_native,
-            interpolation_grid_slim=interpolation_grid.slim,
+            interpolation_grid_slim=np.array(interpolation_grid.slim.array),
             delaunay=self.delaunay,
             pixel_values=values,
         )

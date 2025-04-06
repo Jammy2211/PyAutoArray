@@ -96,7 +96,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         `MeshException`, which helps exception handling in the `inversion` package.
         """
         try:
-            return scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
+            return scipy.spatial.Delaunay(np.asarray([self.array[:, 0], self.array[:, 1]]).T)
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
             raise exc.MeshException() from e
 
