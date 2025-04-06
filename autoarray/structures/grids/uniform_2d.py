@@ -320,7 +320,7 @@ class Grid2D(Structure):
             x = np.asarray(x)
 
         return cls.no_mask(
-            values=jnp.stack((y, x), axis=-1),
+            values=np.stack((y, x), axis=-1),
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
@@ -547,14 +547,14 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the grid.
         """
 
-        grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask._array,
+        grid_2d = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=mask,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )
 
         return Grid2D(
-            values=grid_1d,
+            values=np.array(grid_2d),
             mask=mask,
             over_sample_size=over_sample_size,
         )

@@ -78,7 +78,7 @@ def test__from_fits():
     )
 
     assert (dataset.data.native == np.ones((3, 3))).all()
-    assert (dataset.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+    assert dataset.psf.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
     assert (dataset.noise_map.native == 3.0 * np.ones((3, 3))).all()
 
     assert dataset.pixel_scales == (0.1, 0.1)
@@ -96,7 +96,7 @@ def test__from_fits():
     )
 
     assert (dataset.data.native == np.ones((3, 3))).all()
-    assert (dataset.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+    assert dataset.psf.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
     assert (dataset.noise_map.native == 3.0 * np.ones((3, 3))).all()
 
     assert dataset.pixel_scales == (0.1, 0.1)

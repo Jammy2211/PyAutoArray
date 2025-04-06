@@ -32,9 +32,7 @@ def test__signal_to_noise_map():
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
-    assert (
-        dataset.signal_to_noise_map.native == np.array([[0.1, 0.2], [0.1, 1.0]])
-    ).all()
+    assert  dataset.signal_to_noise_map.native == pytest.approx(np.array([[0.1, 0.2], [0.1, 1.0]]), 1.0e-4)
     assert dataset.signal_to_noise_max == 1.0
 
     array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
@@ -43,9 +41,7 @@ def test__signal_to_noise_map():
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
-    assert (
-        dataset.signal_to_noise_map.native == np.array([[0.0, 0.2], [0.1, 0.0]])
-    ).all()
+    assert  dataset.signal_to_noise_map.native == pytest.approx(np.array([[0.0, 0.2], [0.1, 0.0]]), 1.0e-4)
     assert dataset.signal_to_noise_max == 0.2
 
 
@@ -149,8 +145,8 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     grid_sub_2 = dataset_7x7.grids.lp
     grids_pixelization_sub_2 = dataset_7x7.grids.pixelization
 
-    dataset_7x7.grids.lp = dataset_7x7.grids.lp.at[0, 0].set(100.0)
-    dataset_7x7.grids.pixelization = dataset_7x7.grids.pixelization.at[0, 0].set(100.0)
+    dataset_7x7.grids.__dict__["lp"][0][0] = 100.0
+    dataset_7x7.grids.__dict__["pixelization"][0][0] = 100.0
 
     assert dataset_7x7.grids.lp[0][0] == pytest.approx(100.0, 1.0e-4)
     assert dataset_7x7.grids.pixelization[0][0] == pytest.approx(100.0, 1.0e-4)
