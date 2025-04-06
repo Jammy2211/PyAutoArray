@@ -48,12 +48,12 @@ class TransformerDFT:
 
         if preload_transform:
             self.preload_real_transforms = transformer_util.preload_real_transforms(
-                grid_radians=np.array(self.grid),
+                grid_radians=np.array(self.grid.array),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
             self.preload_imag_transforms = transformer_util.preload_imag_transforms(
-                grid_radians=np.array(self.grid),
+                grid_radians=np.array(self.grid.array),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -79,14 +79,14 @@ class TransformerDFT:
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=np.array(image),
+                image_1d=np.array(image.array),
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
             visibilities = transformer_util.visibilities_jit(
-                image_1d=np.array(image.slim),
+                image_1d=np.array(image.slim.array),
                 grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
