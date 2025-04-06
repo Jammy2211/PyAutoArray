@@ -227,13 +227,13 @@ class OverSampler:
             return self
 
         try:
-            array = array.slim
+            array = array.slim.array
         except AttributeError:
             pass
 
         if self.sub_is_uniform:
             binned_array_2d = array.reshape(
-                self.mask.shape_slim, self.sub_size[0] ** 2
+                self.mask.shape_slim, self.sub_size.array[0] ** 2
             ).mean(axis=1)
         else:
 
