@@ -154,7 +154,7 @@ class OverSampler:
         Returns True if the sub_size is uniform across all pixels in the mask.
         """
         return np.all(
-            np.isclose(self.sub_size.array, self.sub_size.array[0])
+            np.isclose(self.sub_size, self.sub_size[0])
         )
 
     def tree_flatten(self):
@@ -233,12 +233,12 @@ class OverSampler:
 
         if self.sub_is_uniform:
             binned_array_2d = array.reshape(
-                self.mask.shape_slim, self.sub_size.array[0] ** 2
+                self.mask.shape_slim, self.sub_size[0] ** 2
             ).mean(axis=1)
         else:
 
             # Define group sizes
-            group_sizes = jnp.array(self.sub_size.array.astype("int") ** 2)
+            group_sizes = jnp.array(self.sub_size.array ** 2)
 
             # Compute the cumulative sum of group sizes to get split points
             split_indices = jnp.cumsum(group_sizes)
@@ -310,7 +310,7 @@ class OverSampler:
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
         return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=np.array(self.sub_size)
+            mask_2d=self.mask.array, sub_size=self.sub_size.array
         ).astype("int")
 
     @cached_property
@@ -363,7 +363,7 @@ class OverSampler:
             print(derive_indexes_2d.slim_for_sub_slim)
         """
         return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size)
+            mask_2d=np.array(self.mask), sub_size=self.sub_size.array
         ).astype("int")
 
     @property
@@ -386,7 +386,7 @@ class OverSampler:
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size).astype("int"),
+            sub_size=self.sub_size.array.astype("int"),
             origin=self.mask.origin,
         )
 

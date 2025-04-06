@@ -44,9 +44,9 @@ def over_sample_size_convert_to_array_2d_from(
     if isinstance(over_sample_size, int):
         over_sample_size = np.full(
             fill_value=over_sample_size, shape=mask.pixels_in_mask
-        ).astype("int")
+        )
 
-    return Array2D(values=over_sample_size, mask=mask)
+    return Array2D(values=np.array(over_sample_size).astype("int"), mask=mask)
 
 
 @numba_util.jit()
@@ -444,23 +444,6 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
-                        # if use_jax:
-                        #     # while this makes it run, it is very, very slow
-                        #     grid_slim = grid_slim.at[sub_index, 0].set(
-                        #         -(
-                        #             y_scaled
-                        #             - y_sub_half
-                        #             + y1 * y_sub_step
-                        #             + (y_sub_step / 2.0)
-                        #         )
-                        #     )
-                        #     grid_slim = grid_slim.at[sub_index, 1].set(
-                        #         x_scaled
-                        #         - x_sub_half
-                        #         + x1 * x_sub_step
-                        #         + (x_sub_step / 2.0)
-                        #     )
-                        # else:
                         grid_slim[sub_index, 0] = -(
                             y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )

@@ -185,7 +185,7 @@ class Grid2D(Structure):
                 over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
                     mask_2d=np.array(self.mask),
                     pixel_scales=self.mask.pixel_scales,
-                    sub_size=np.array(self.over_sampler.sub_size._array).astype("int"),
+                    sub_size=self.over_sampler.sub_size.array.astype("int"),
                     origin=self.mask.origin,
                 )
             )
