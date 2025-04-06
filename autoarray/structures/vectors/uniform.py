@@ -137,14 +137,6 @@ class VectorYX2D(AbstractVectorYX2D):
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
 
-        if type(values) is list:
-            values = np.asarray(values)
-
-        try:
-            values = values._array
-        except AttributeError:
-            values = values
-
         values = grid_2d_util.convert_grid_2d(
             grid_2d=values, mask_2d=mask, store_native=store_native
         )
