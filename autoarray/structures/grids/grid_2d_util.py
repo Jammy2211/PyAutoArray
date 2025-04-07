@@ -564,7 +564,7 @@ def grid_scaled_2d_slim_radial_projected_from(
         grid_scaled_2d_slim_radii[slim_index, 1] = radii
         radii += pixel_scale
 
-    return grid_scaled_2d_slim_radii
+    return grid_scaled_2d_slim_radii  + 1e-6
 
 
 @numba_util.jit()

@@ -1000,7 +1000,7 @@ class Grid2D(Structure):
         if remove_projected_centre:
             grid_radial_projected_2d = grid_radial_projected_2d[1:, :]
 
-        return Grid2DIrregular(values=grid_radial_projected_2d + 1e-6)
+        return Grid2DIrregular(values=grid_radial_projected_2d)
 
     @property
     def shape_native_scaled_interior(self) -> Tuple[float, float]:

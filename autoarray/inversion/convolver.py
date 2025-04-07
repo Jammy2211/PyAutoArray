@@ -328,11 +328,11 @@ class Convolver:
             )
 
         convolved_image = self.convolve_jit(
-            image_1d_array=np.array(image.slim),
+            image_1d_array=np.array(image.slim.array),
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
-            blurring_1d_array=np.array(blurring_image.slim),
+            blurring_1d_array=np.array(blurring_image.slim.array),
             blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
             blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
