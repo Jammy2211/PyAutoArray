@@ -319,4 +319,4 @@ class Grid1D(Structure):
             grid_2d=grid, centre=(0.0, 0.0), angle=angle
         )
 
-        return Grid2DIrregular(values=grid)
+        return Grid2DIrregular(values=grid + 1e-6)

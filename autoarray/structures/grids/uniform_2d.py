@@ -1000,7 +1000,7 @@ class Grid2D(Structure):
         if remove_projected_centre:
             grid_radial_projected_2d = grid_radial_projected_2d[1:, :]
 
-        return Grid2DIrregular(values=grid_radial_projected_2d)
+        return Grid2DIrregular(values=grid_radial_projected_2d + 1e-6)
 
     @property
     def shape_native_scaled_interior(self) -> Tuple[float, float]:
@@ -1098,6 +1098,7 @@ class Grid2D(Structure):
         padded_mask = Mask2D.all_false(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
+            origin=self.origin
         )
 
         pad_width = (
@@ -1106,7 +1107,7 @@ class Grid2D(Structure):
         )
 
         over_sample_size = np.pad(
-            self.over_sample_size.native._array,
+            self.over_sample_size.native.array,
             pad_width,
             mode="constant",
             constant_values=1,

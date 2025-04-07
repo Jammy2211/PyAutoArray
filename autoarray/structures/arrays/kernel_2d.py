@@ -475,7 +475,7 @@ class Kernel2D(AbstractArray2D):
         array_2d = array.native
 
         convolved_array_2d = scipy.signal.convolve2d(
-            array_2d._array, np.array(self.native._array), mode="same"
+            array_2d.array, np.array(self.native.array), mode="same"
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
