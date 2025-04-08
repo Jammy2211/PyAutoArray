@@ -33,7 +33,6 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     return array
 
 
-
 def check_array_2d(array_2d: np.ndarray):
     if len(array_2d.shape) != 1:
         raise exc.ArrayException(

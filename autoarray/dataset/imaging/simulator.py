@@ -161,7 +161,9 @@ class SimulatorImaging:
             image = image - background_sky_map
 
         mask = Mask2D.all_false(
-            shape_native=image.shape_native, pixel_scales=image.pixel_scales, origin=image.origin
+            shape_native=image.shape_native,
+            pixel_scales=image.pixel_scales,
+            origin=image.origin,
         )
 
         image = Array2D(values=image, mask=mask)

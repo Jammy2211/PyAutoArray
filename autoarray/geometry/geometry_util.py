@@ -483,7 +483,8 @@ def transform_grid_2d_from_reference_frame(
 
     y = jnp.add(
         jnp.add(
-            jnp.multiply(grid_2d[:, 1], sin_angle), jnp.multiply(grid_2d[:, 0], cos_angle)
+            jnp.multiply(grid_2d[:, 1], sin_angle),
+            jnp.multiply(grid_2d[:, 0], cos_angle),
         ),
         centre[0],
     )

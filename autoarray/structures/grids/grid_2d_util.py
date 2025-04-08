@@ -47,6 +47,7 @@ def check_grid_slim(grid, shape_native):
             """
         )
 
+
 def check_grid_2d(grid_2d: np.ndarray):
     if grid_2d.shape[-1] != 2:
         raise exc.GridException(
@@ -139,6 +140,7 @@ def convert_grid_2d(
             mask_2d=mask_2d,
         )
     return np.array(grid_2d) if is_numpy else jnp.array(grid_2d)
+
 
 def convert_grid_2d_to_slim(
     grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
@@ -564,7 +566,7 @@ def grid_scaled_2d_slim_radial_projected_from(
         grid_scaled_2d_slim_radii[slim_index, 1] = radii
         radii += pixel_scale
 
-    return grid_scaled_2d_slim_radii  + 1e-6
+    return grid_scaled_2d_slim_radii + 1e-6
 
 
 @numba_util.jit()

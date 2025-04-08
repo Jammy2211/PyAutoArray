@@ -61,9 +61,7 @@ class Grid2DContour:
         else:
             contour_array = np.array(self.contour_array.array)
 
-        contour_indices_list = measure.find_contours(
-            contour_array, 0
-        )
+        contour_indices_list = measure.find_contours(contour_array, 0)
 
         print(contour_indices_list)
 

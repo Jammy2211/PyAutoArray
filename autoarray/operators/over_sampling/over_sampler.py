@@ -147,15 +147,12 @@ class OverSampler:
             over_sample_size=sub_size, mask=mask
         )
 
-
     @property
     def sub_is_uniform(self) -> bool:
         """
         Returns True if the sub_size is uniform across all pixels in the mask.
         """
-        return np.all(
-            np.isclose(self.sub_size, self.sub_size[0])
-        )
+        return np.all(np.isclose(self.sub_size, self.sub_size[0]))
 
     def tree_flatten(self):
         return (self.mask, self.sub_size), ()
@@ -238,7 +235,7 @@ class OverSampler:
         else:
 
             # Define group sizes
-            group_sizes = jnp.array(self.sub_size.array ** 2)
+            group_sizes = jnp.array(self.sub_size.array**2)
 
             # Compute the cumulative sum of group sizes to get split points
             split_indices = jnp.cumsum(group_sizes)
@@ -248,7 +245,11 @@ class OverSampler:
 
             # Compute the group means
             binned_array_2d = jnp.array(
-                [array[start:end].mean() for start, end in zip(start_indices, split_indices)])
+                [
+                    array[start:end].mean()
+                    for start, end in zip(start_indices, split_indices)
+                ]
+            )
 
         return Array2D(
             values=binned_array_2d,

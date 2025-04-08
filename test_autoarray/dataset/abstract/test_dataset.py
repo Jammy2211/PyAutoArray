@@ -32,7 +32,9 @@ def test__signal_to_noise_map():
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
-    assert  dataset.signal_to_noise_map.native == pytest.approx(np.array([[0.1, 0.2], [0.1, 1.0]]), 1.0e-4)
+    assert dataset.signal_to_noise_map.native == pytest.approx(
+        np.array([[0.1, 0.2], [0.1, 1.0]]), 1.0e-4
+    )
     assert dataset.signal_to_noise_max == 1.0
 
     array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
@@ -41,7 +43,9 @@ def test__signal_to_noise_map():
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
-    assert  dataset.signal_to_noise_map.native == pytest.approx(np.array([[0.0, 0.2], [0.1, 0.0]]), 1.0e-4)
+    assert dataset.signal_to_noise_map.native == pytest.approx(
+        np.array([[0.0, 0.2], [0.1, 0.0]]), 1.0e-4
+    )
     assert dataset.signal_to_noise_max == 0.2
 
 

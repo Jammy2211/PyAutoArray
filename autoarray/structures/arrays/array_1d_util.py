@@ -127,6 +127,7 @@ def array_1d_native_from(
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )
 
+
 def array_1d_via_indexes_1d_from(
     array_1d_slim: np.ndarray,
     shape: int,

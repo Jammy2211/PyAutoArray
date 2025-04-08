@@ -133,12 +133,15 @@ def test__noise_map_from_image_exposure_time_map():
         data_eps=image, exposure_time_map=exposure_time_map
     )
 
-    assert poisson_noise_map.native == pytest.approx(np.array(
+    assert poisson_noise_map.native == pytest.approx(
+        np.array(
             [
                 [np.sqrt(5.0), np.sqrt(6.0) / 2.0],
                 [np.sqrt(30.0) / 3.0, np.sqrt(80.0) / 4.0],
             ]
-        ), 1.0e-4)
+        ),
+        1.0e-4,
+    )
 
 
 def test__noise_map_from_image_exposure_time_map_and_background_noise_map():

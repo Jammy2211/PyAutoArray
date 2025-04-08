@@ -74,7 +74,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
             image_native=np.array(self.data.native.array).astype("float"),
             noise_map_native=np.array(self.noise_map.native.array).astype("float"),
             kernel_native=np.array(self.psf.native.array).astype("float"),
-            native_index_for_slim_index=np.array(self.data.mask.derive_indexes.native_for_slim).astype("int"),
+            native_index_for_slim_index=np.array(
+                self.data.mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
     @property

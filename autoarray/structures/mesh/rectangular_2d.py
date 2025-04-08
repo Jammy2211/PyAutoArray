@@ -178,7 +178,9 @@ class Mesh2DRectangular(Abstract2DMesh):
             shape_native=shape_native, extent=extent
         )
 
-        interpolated_array = griddata(points=self.array, values=values, xi=interpolation_grid)
+        interpolated_array = griddata(
+            points=self.array, values=values, xi=interpolation_grid
+        )
 
         interpolated_array = interpolated_array.reshape(shape_native)
 

@@ -393,7 +393,10 @@ class VectorYX2D(AbstractVectorYX2D):
         """
         Returns the magnitude of every vector which are computed as sqrt(y**2 + x**2).
         """
-        return Array2D(values=jnp.sqrt(self.array[:, 0] ** 2.0 + self.array[:, 1] ** 2.0), mask=self.mask)
+        return Array2D(
+            values=jnp.sqrt(self.array[:, 0] ** 2.0 + self.array[:, 1] ** 2.0),
+            mask=self.mask,
+        )
 
     @property
     def y(self) -> Array2D:

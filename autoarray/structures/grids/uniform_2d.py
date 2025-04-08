@@ -181,13 +181,11 @@ class Grid2D(Structure):
         self.over_sampler = OverSampler(sub_size=over_sample_size, mask=mask)
 
         if over_sampled is None:
-            over_sampled = (
-                over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-                    mask_2d=np.array(self.mask),
-                    pixel_scales=self.mask.pixel_scales,
-                    sub_size=self.over_sampler.sub_size.array.astype("int"),
-                    origin=self.mask.origin,
-                )
+            over_sampled = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+                mask_2d=np.array(self.mask),
+                pixel_scales=self.mask.pixel_scales,
+                sub_size=self.over_sampler.sub_size.array.astype("int"),
+                origin=self.mask.origin,
             )
 
             self.over_sampled = Grid2DIrregular(values=over_sampled)
@@ -842,9 +840,9 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        squared_distances = jnp.square(
-            self.array[:, 0] - coordinate[0]
-        ) + jnp.square(self.array[:, 1] - coordinate[1])
+        squared_distances = jnp.square(self.array[:, 0] - coordinate[0]) + jnp.square(
+            self.array[:, 1] - coordinate[1]
+        )
 
         return Array2D(values=squared_distances, mask=self.mask)
 
@@ -1098,7 +1096,7 @@ class Grid2D(Structure):
         padded_mask = Mask2D.all_false(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
-            origin=self.origin
+            origin=self.origin,
         )
 
         pad_width = (

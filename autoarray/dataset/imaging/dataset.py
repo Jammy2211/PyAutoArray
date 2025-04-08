@@ -227,7 +227,9 @@ class Imaging(AbstractDataset):
         ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
             kernel_native=np.array(self.psf.native.array).astype("float64"),
-            native_index_for_slim_index=np.array(self.mask.derive_indexes.native_for_slim).astype("int"),
+            native_index_for_slim_index=np.array(
+                self.mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
         return WTildeImaging(

@@ -43,7 +43,9 @@ def test__normalized_residual_map_from():
         residual_map=residual_map, noise_map=noise_map
     )
 
-    assert normalized_residual_map == pytest.approx(jnp.array([0.0, 0.0, 0.0, 0.0]), 1.0e-4)
+    assert normalized_residual_map == pytest.approx(
+        jnp.array([0.0, 0.0, 0.0, 0.0]), 1.0e-4
+    )
 
     model_data = jnp.array([11.0, 10.0, 9.0, 8.0])
 
@@ -53,7 +55,9 @@ def test__normalized_residual_map_from():
         residual_map=residual_map, noise_map=noise_map
     )
 
-    assert normalized_residual_map == pytest.approx(jnp.array([-(1.0 / 2.0), 0.0, (1.0 / 2.0), (2.0 / 2.0)]), 1.0e-4)
+    assert normalized_residual_map == pytest.approx(
+        jnp.array([-(1.0 / 2.0), 0.0, (1.0 / 2.0), (2.0 / 2.0)]), 1.0e-4
+    )
 
 
 def test__normalized_residual_map_with_mask_from():
@@ -70,7 +74,9 @@ def test__normalized_residual_map_with_mask_from():
         residual_map=residual_map, mask=mask, noise_map=noise_map
     )
 
-    assert normalized_residual_map == pytest.approx(jnp.array([0.0, 0.0, (1.0 / 2.0), 0.0]), abs=1.0e-4)
+    assert normalized_residual_map == pytest.approx(
+        jnp.array([0.0, 0.0, (1.0 / 2.0), 0.0]), abs=1.0e-4
+    )
 
 
 def test__normalized_residual_map_complex_from():

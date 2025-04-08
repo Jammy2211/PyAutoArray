@@ -244,7 +244,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    assert grid_radii == pytest.approx(np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]]), abs=1.0e-4
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-1.0, 3.0, -1.0, 1.0]),
@@ -252,7 +254,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    assert grid_radii == pytest.approx(np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0]]), abs=1.0e-4
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-2.0, 1.0, -1.0, 1.0]),
@@ -260,7 +264,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    assert grid_radii == pytest.approx(np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0], [0.0, 4.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0], [0.0, 4.0]]), abs=1.0e-4
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-1.0, 1.0, -1.0, 1.0]),
@@ -268,7 +274,10 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(0.1, 0.5),
     )
 
-    assert grid_radii == pytest.approx(np.array([[0.0, 1.0], [0.0, 1.5], [0.0, 2.0], [0.0, 2.5], [0.0, 3.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[0.0, 1.0], [0.0, 1.5], [0.0, 2.0], [0.0, 2.5], [0.0, 3.0]]),
+        abs=1.0e-4,
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([5.0, 8.0, 99.9, 100.1]),
@@ -276,7 +285,8 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(10.0, 0.25),
     )
 
-    assert grid_radii == pytest.approx(np.array(
+    assert grid_radii == pytest.approx(
+        np.array(
             [
                 [100.0, 7.0],
                 [100.0, 7.25],
@@ -288,7 +298,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
                 [100.0, 8.75],
                 [100.0, 9.0],
             ]
-        ), abs=1.0e-4)
+        ),
+        abs=1.0e-4,
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-1.0, 1.0, -1.0, 3.0]),
@@ -296,7 +308,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    assert grid_radii == pytest.approx(np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]]), abs=1.0e-4
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-1.0, 1.0, -2.0, 1.0]),
@@ -304,7 +318,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    assert grid_radii == pytest.approx(np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [1.0, 3.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [1.0, 3.0]]), abs=1.0e-4
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-1.0, 1.0, -1.0, 1.0]),
@@ -312,7 +328,10 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(0.5, 0.1),
     )
 
-    assert grid_radii == pytest.approx(np.array([[1.0, 0.0], [1.0, 0.5], [1.0, 1.0], [1.0, 1.5], [1.0, 2.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[1.0, 0.0], [1.0, 0.5], [1.0, 1.0], [1.0, 1.5], [1.0, 2.0]]),
+        abs=1.0e-4,
+    )
 
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([99.9, 100.1, -1.0, 3.0]),
@@ -320,7 +339,9 @@ def test__grid_scaled_2d_slim_radial_projected_from():
         pixel_scales=(1.5, 10.0),
     )
 
-    assert grid_radii == pytest.approx(np.array([[-1.0, 100.0], [-1.0, 101.5], [-1.0, 103.0]]), abs=1.0e-4)
+    assert grid_radii == pytest.approx(
+        np.array([[-1.0, 100.0], [-1.0, 101.5], [-1.0, 103.0]]), abs=1.0e-4
+    )
 
 
 def test__grid_2d_slim_from():

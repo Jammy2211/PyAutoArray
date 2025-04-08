@@ -149,7 +149,8 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
         The exposure time at every data-point of the data.
     """
     return data_eps.with_new_array(
-        np.abs(data_eps.array * exposure_time_map.array) ** 0.5 / exposure_time_map.array
+        np.abs(data_eps.array * exposure_time_map.array) ** 0.5
+        / exposure_time_map.array
     )
 
 
@@ -263,7 +264,9 @@ def edges_from(image, no_edges):
     edges = []
 
     for edge_no in range(no_edges):
-        top_edge = image.native.array[edge_no, edge_no : image.shape_native[1] - edge_no]
+        top_edge = image.native.array[
+            edge_no, edge_no : image.shape_native[1] - edge_no
+        ]
         bottom_edge = image.native.array[
             image.shape_native[0] - 1 - edge_no,
             edge_no : image.shape_native[1] - edge_no,
@@ -521,7 +524,9 @@ def noise_map_with_signal_to_noise_limit_from(
     )
 
     mask = Mask2D.all_false(
-        shape_native=data.shape_native, pixel_scales=data.pixel_scales, origin=data.origin
+        shape_native=data.shape_native,
+        pixel_scales=data.pixel_scales,
+        origin=data.origin,
     )
 
     if len(noise_map.native) == 1:
