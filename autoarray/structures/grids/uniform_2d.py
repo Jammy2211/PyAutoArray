@@ -159,8 +159,9 @@ class Grid2D(Structure):
             not uniform (e.g. due to gravitational lensing) is cannot be computed internally in this function. If the
             over sampled grid is not passed in it is computed assuming uniformity.
         """
+
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=np.array(values),
+            grid_2d=values,
             mask_2d=mask,
             store_native=store_native,
         )
@@ -180,14 +181,14 @@ class Grid2D(Structure):
         self.over_sampler = OverSampler(sub_size=over_sample_size, mask=mask)
 
         if over_sampled is None:
-            self.over_sampled = (
-                over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-                    mask_2d=np.array(self.mask),
-                    pixel_scales=self.mask.pixel_scales,
-                    sub_size=np.array(self.over_sampler.sub_size._array).astype("int"),
-                    origin=self.mask.origin,
-                )
+            over_sampled = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+                mask_2d=np.array(self.mask),
+                pixel_scales=self.mask.pixel_scales,
+                sub_size=self.over_sampler.sub_size.array.astype("int"),
+                origin=self.mask.origin,
             )
+
+            self.over_sampled = Grid2DIrregular(values=over_sampled)
 
         else:
             self.over_sampled = over_sampled
@@ -244,7 +245,7 @@ class Grid2D(Structure):
         )
 
         return Grid2D(
-            values=values,
+            values=np.array(values),
             mask=mask,
             over_sample_size=over_sample_size,
         )
@@ -544,14 +545,14 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the grid.
         """
 
-        grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask._array,
+        grid_2d = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )
 
         return Grid2D(
-            values=grid_1d,
+            values=np.array(grid_2d),
             mask=mask,
             over_sample_size=over_sample_size,
         )
@@ -839,14 +840,10 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        if isinstance(self, jnp.ndarray):
-            squared_distances = jnp.square(
-                self.array[:, 0] - coordinate[0]
-            ) + jnp.square(self.array[:, 1] - coordinate[1])
-        else:
-            squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
-                self[:, 1] - coordinate[1]
-            )
+        squared_distances = jnp.square(self.array[:, 0] - coordinate[0]) + jnp.square(
+            self.array[:, 1] - coordinate[1]
+        )
+
         return Array2D(values=squared_distances, mask=self.mask)
 
     def distances_to_coordinate_from(
@@ -863,7 +860,7 @@ class Grid2D(Structure):
         squared_distance = self.squared_distances_to_coordinate_from(
             coordinate=coordinate
         )
-        distances = np.sqrt(squared_distance.array)
+        distances = jnp.sqrt(squared_distance.array)
         return Array2D(values=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(
@@ -1099,6 +1096,7 @@ class Grid2D(Structure):
         padded_mask = Mask2D.all_false(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
+            origin=self.origin,
         )
 
         pad_width = (
@@ -1107,7 +1105,7 @@ class Grid2D(Structure):
         )
 
         over_sample_size = np.pad(
-            self.over_sample_size.native._array,
+            self.over_sample_size.native.array,
             pad_width,
             mode="constant",
             constant_values=1,

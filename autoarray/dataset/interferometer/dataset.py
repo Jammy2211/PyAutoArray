@@ -193,7 +193,9 @@ class Interferometer(AbstractDataset):
 
         w_matrix = inversion_interferometer_util.w_tilde_via_preload_from(
             w_tilde_preload=curvature_preload,
-            native_index_for_slim_index=self.real_space_mask.derive_indexes.native_for_slim,
+            native_index_for_slim_index=np.array(
+                self.real_space_mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
         dirty_image = self.transformer.image_from(
@@ -205,7 +207,7 @@ class Interferometer(AbstractDataset):
         return WTildeInterferometer(
             w_matrix=w_matrix,
             curvature_preload=curvature_preload,
-            dirty_image=dirty_image,
+            dirty_image=np.array(dirty_image.array),
             real_space_mask=self.real_space_mask,
             noise_map_value=self.noise_map[0],
         )

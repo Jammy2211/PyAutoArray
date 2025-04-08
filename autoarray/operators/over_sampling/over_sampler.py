@@ -1,5 +1,6 @@
-from autoarray.numpy_wrapper import np
-from typing import List, Tuple, Union
+import numpy as np
+import jax.numpy as jnp
+from typing import Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -9,7 +10,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.operators.over_sampling import over_sample_util
 
-from autofit.jax_wrapper import register_pytree_node_class
+from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 @register_pytree_node_class
@@ -146,6 +147,13 @@ class OverSampler:
             over_sample_size=sub_size, mask=mask
         )
 
+    @property
+    def sub_is_uniform(self) -> bool:
+        """
+        Returns True if the sub_size is uniform across all pixels in the mask.
+        """
+        return np.all(np.isclose(self.sub_size, self.sub_size[0]))
+
     def tree_flatten(self):
         return (self.mask, self.sub_size), ()
 
@@ -216,19 +224,32 @@ class OverSampler:
             return self
 
         try:
-            array = array.slim
+            array = array.slim.array
         except AttributeError:
             pass
 
-        # binned_array_2d = over_sample_util.binned_array_2d_from(
-        #     array_2d=np.array(array),
-        #     mask_2d=np.array(self.mask),
-        #     sub_size=np.array(self.sub_size).astype("int"),
-        # )
+        if self.sub_is_uniform:
+            binned_array_2d = array.reshape(
+                self.mask.shape_slim, self.sub_size[0] ** 2
+            ).mean(axis=1)
+        else:
 
-        binned_array_2d = array.reshape(
-            self.mask.shape_slim, self.sub_size[0] ** 2
-        ).mean(axis=1)
+            # Define group sizes
+            group_sizes = jnp.array(self.sub_size.array**2)
+
+            # Compute the cumulative sum of group sizes to get split points
+            split_indices = jnp.cumsum(group_sizes)
+
+            # Ensure correct concatenation by making 0 a JAX array
+            start_indices = jnp.concatenate((jnp.array([0]), split_indices[:-1]))
+
+            # Compute the group means
+            binned_array_2d = jnp.array(
+                [
+                    array[start:end].mean()
+                    for start, end in zip(start_indices, split_indices)
+                ]
+            )
 
         return Array2D(
             values=binned_array_2d,
@@ -290,7 +311,7 @@ class OverSampler:
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
         return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=np.array(self.sub_size)
+            mask_2d=self.mask.array, sub_size=self.sub_size.array
         ).astype("int")
 
     @cached_property
@@ -343,7 +364,7 @@ class OverSampler:
             print(derive_indexes_2d.slim_for_sub_slim)
         """
         return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size)
+            mask_2d=np.array(self.mask), sub_size=self.sub_size.array
         ).astype("int")
 
     @property
@@ -366,7 +387,7 @@ class OverSampler:
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size).astype("int"),
+            sub_size=self.sub_size.array.astype("int"),
             origin=self.mask.origin,
         )
 

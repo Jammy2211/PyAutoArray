@@ -1,11 +1,11 @@
 from __future__ import annotations
+import jax.numpy as jnp
 import numpy as np
 from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_1d import Mask1D
 
-from autoarray import numba_util
 from autoarray.mask import mask_1d_util
 from autoarray.structures.arrays import array_2d_util
 
@@ -38,26 +38,27 @@ def convert_array_1d(
         If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
         mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
-
     array_1d = array_2d_util.convert_array(array=array_1d)
+
+    is_numpy = True if isinstance(array_1d, np.ndarray) else False
 
     is_native = array_1d.shape[0] == mask_1d.shape_native[0]
 
     if is_native == store_native:
-        return array_1d
+        array_1d = array_1d
     elif not store_native:
-        return array_1d_slim_from(
-            array_1d_native=np.array(array_1d),
-            mask_1d=np.array(mask_1d),
+        array_1d = array_1d_slim_from(
+            array_1d_native=array_1d,
+            mask_1d=mask_1d,
         )
+    else:
+        array_1d = array_1d_native_from(
+            array_1d_slim=array_1d,
+            mask_1d=mask_1d,
+        )
+    return np.array(array_1d) if is_numpy else jnp.array(array_1d)
 
-    return array_1d_native_from(
-        array_1d_slim=array_1d,
-        mask_1d=np.array(mask_1d),
-    )
 
-
-@numba_util.jit()
 def array_1d_slim_from(
     array_1d_native: np.ndarray,
     mask_1d: np.ndarray,
@@ -105,19 +106,8 @@ def array_1d_slim_from(
 
     array_1d_slim = array_1d_slim_from(array_1d_native, array_2d=array_2d)
     """
-
-    total_pixels = mask_1d_util.total_pixels_1d_from(
-        mask_1d=mask_1d,
-    )
-
-    line_1d_slim = np.zeros(shape=total_pixels)
-    index = 0
-
-    for x in range(mask_1d.shape[0]):
-        if not mask_1d[x]:
-            line_1d_slim[index] = array_1d_native[x]
-            index += 1
-
+    unmasked_indices = ~mask_1d
+    line_1d_slim = array_1d_native[unmasked_indices]
     return line_1d_slim
 
 
@@ -132,13 +122,12 @@ def array_1d_native_from(
     ).astype("int")
 
     return array_1d_via_indexes_1d_from(
-        array_1d_slim=np.array(array_1d_slim),
+        array_1d_slim=array_1d_slim,
         shape=shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )
 
 
-@numba_util.jit()
 def array_1d_via_indexes_1d_from(
     array_1d_slim: np.ndarray,
     shape: int,
@@ -177,11 +166,5 @@ def array_1d_via_indexes_1d_from(
     ndarray
         The native 1D array of values mapped from the slimmed array with dimensions (total_x_pixels).
     """
-    array_1d_native = np.zeros(shape)
-
-    for slim_index in range(len(native_index_for_slim_index_1d)):
-        array_1d_native[native_index_for_slim_index_1d[slim_index]] = array_1d_slim[
-            slim_index
-        ]
-
-    return array_1d_native
+    array_1d_native = jnp.zeros(shape)
+    return array_1d_native.at[native_index_for_slim_index_1d].set(array_1d_slim)

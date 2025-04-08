@@ -198,13 +198,6 @@ class Preloads:
         if fit_0.inversion.total(cls=AbstractMapper) == 0:
             return
 
-        from autoarray.inversion.inversion.interferometer.lop import (
-            InversionInterferometerMappingPyLops,
-        )
-
-        if isinstance(fit_0.inversion, InversionInterferometerMappingPyLops):
-            return
-
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
 
@@ -237,13 +230,6 @@ class Preloads:
         """
 
         self.operated_mapping_matrix = None
-
-        from autoarray.inversion.inversion.interferometer.lop import (
-            InversionInterferometerMappingPyLops,
-        )
-
-        if isinstance(fit_0.inversion, InversionInterferometerMappingPyLops):
-            return
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion

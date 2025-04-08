@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from typing import TYPE_CHECKING, Union, List, Tuple
+from typing import TYPE_CHECKING, Union
 from typing import List, Tuple
 
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -12,7 +12,6 @@ from autoarray.geometry import geometry_util
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import numba_util
-from autoarray.mask import mask_2d_util
 
 from autoarray import type as ty
 
@@ -45,9 +44,9 @@ def over_sample_size_convert_to_array_2d_from(
     if isinstance(over_sample_size, int):
         over_sample_size = np.full(
             fill_value=over_sample_size, shape=mask.pixels_in_mask
-        ).astype("int")
+        )
 
-    return Array2D(values=over_sample_size, mask=mask)
+    return Array2D(values=np.array(over_sample_size).astype("int"), mask=mask)
 
 
 @numba_util.jit()
@@ -445,23 +444,6 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
-                        # if use_jax:
-                        #     # while this makes it run, it is very, very slow
-                        #     grid_slim = grid_slim.at[sub_index, 0].set(
-                        #         -(
-                        #             y_scaled
-                        #             - y_sub_half
-                        #             + y1 * y_sub_step
-                        #             + (y_sub_step / 2.0)
-                        #         )
-                        #     )
-                        #     grid_slim = grid_slim.at[sub_index, 1].set(
-                        #         x_scaled
-                        #         - x_sub_half
-                        #         + x1 * x_sub_step
-                        #         + (x_sub_step / 2.0)
-                        #     )
-                        # else:
                         grid_slim[sub_index, 0] = -(
                             y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )
@@ -601,7 +583,7 @@ def over_sample_size_via_radial_bins_from(
         radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
 
         sub_size_of_centre = sub_size_radial_bins_from(
-            radial_grid=np.array(radial_grid),
+            radial_grid=np.array(radial_grid.array),
             sub_size_list=np.array(sub_size_list),
             radial_list=np.array(radial_list),
         )

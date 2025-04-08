@@ -255,7 +255,7 @@ class Kernel2D(AbstractArray2D):
         """
 
         grid = Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
-        grid_shifted = np.subtract(grid, centre)
+        grid_shifted = np.subtract(grid.array, centre)
         grid_radius = np.sqrt(np.sum(grid_shifted**2.0, 1))
         theta_coordinate_to_profile = np.arctan2(
             grid_shifted[:, 0], grid_shifted[:, 1]
@@ -475,7 +475,7 @@ class Kernel2D(AbstractArray2D):
         array_2d = array.native
 
         convolved_array_2d = scipy.signal.convolve2d(
-            array_2d._array, np.array(self.native._array), mode="same"
+            array_2d.array, np.array(self.native.array), mode="same"
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
@@ -485,7 +485,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=array_2d.mask)
 
-    def convolve_image(self, image, blurring_image, jax_method="fft"):
+    def convolve_image(self, image, blurring_image, jax_method="direct"):
         """
         For a given 1D array and blurring array, convolve the two using this psf.
 
@@ -528,7 +528,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
-    def convolve_image_no_blurring(self, image, mask, jax_method="fft"):
+    def convolve_image_no_blurring(self, image, mask, jax_method="direct"):
         """
         For a given 1D array and blurring array, convolve the two using this psf.
 
@@ -549,7 +549,12 @@ class Kernel2D(AbstractArray2D):
 
         expanded_array_native = jnp.zeros(mask.shape)
 
-        expanded_array_native = expanded_array_native.at[slim_to_native].set(image)
+        if isinstance(image, np.ndarray) or isinstance(image, jnp.ndarray):
+            expanded_array_native = expanded_array_native.at[slim_to_native].set(image)
+        else:
+            expanded_array_native = expanded_array_native.at[slim_to_native].set(
+                image.array
+            )
 
         kernel = np.array(self.native.array)
 
@@ -561,7 +566,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=mask)
 
-    def convolve_mapping_matrix(self, mapping_matrix, mask):
+    def convolve_mapping_matrix(self, mapping_matrix, mask, jax_method="direct"):
         """For a given 1D array and blurring array, convolve the two using this psf.
 
         Parameters
@@ -569,6 +574,6 @@ class Kernel2D(AbstractArray2D):
         image
             1D array of the values which are to be blurred with the psf's PSF.
         """
-        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None))(
-            mapping_matrix, mask
+        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None, None))(
+            mapping_matrix, mask, jax_method
         ).T

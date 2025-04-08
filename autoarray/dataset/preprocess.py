@@ -149,7 +149,8 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
         The exposure time at every data-point of the data.
     """
     return data_eps.with_new_array(
-        np.abs(data_eps * exposure_time_map) ** 0.5 / exposure_time_map
+        np.abs(data_eps.array * exposure_time_map.array) ** 0.5
+        / exposure_time_map.array
     )
 
 
@@ -263,15 +264,17 @@ def edges_from(image, no_edges):
     edges = []
 
     for edge_no in range(no_edges):
-        top_edge = image.native[edge_no, edge_no : image.shape_native[1] - edge_no]
-        bottom_edge = image.native[
+        top_edge = image.native.array[
+            edge_no, edge_no : image.shape_native[1] - edge_no
+        ]
+        bottom_edge = image.native.array[
             image.shape_native[0] - 1 - edge_no,
             edge_no : image.shape_native[1] - edge_no,
         ]
-        left_edge = image.native[
+        left_edge = image.native.array[
             edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no
         ]
-        right_edge = image.native[
+        right_edge = image.native.array[
             edge_no + 1 : image.shape_native[0] - 1 - edge_no,
             image.shape_native[1] - 1 - edge_no,
         ]
@@ -406,9 +409,10 @@ def poisson_noise_via_data_eps_from(data_eps, exposure_time_map, seed=-1):
         An array describing simulated poisson noise_maps
     """
     setup_random_seed(seed)
-    image_counts = np.multiply(data_eps, exposure_time_map)
+
+    image_counts = np.multiply(data_eps.array, exposure_time_map.array)
     return data_eps - np.divide(
-        np.random.poisson(image_counts, data_eps.shape), exposure_time_map
+        np.random.poisson(image_counts, data_eps.shape), exposure_time_map.array
     )
 
 
@@ -506,8 +510,6 @@ def noise_map_with_signal_to_noise_limit_from(
     from autoarray.structures.arrays.uniform_1d import Array1D
     from autoarray.structures.arrays.uniform_2d import Array2D
 
-    # TODO : Refacotr into a util
-
     signal_to_noise_map = data / noise_map
     signal_to_noise_map[signal_to_noise_map < 0] = 0
 
@@ -517,12 +519,14 @@ def noise_map_with_signal_to_noise_limit_from(
     noise_map_limit = np.where(
         (signal_to_noise_map.native > signal_to_noise_limit)
         & (noise_limit_mask == False),
-        np.abs(data.native) / signal_to_noise_limit,
-        noise_map.native,
+        np.abs(data.native.array) / signal_to_noise_limit,
+        noise_map.native.array,
     )
 
     mask = Mask2D.all_false(
-        shape_native=data.shape_native, pixel_scales=data.pixel_scales
+        shape_native=data.shape_native,
+        pixel_scales=data.pixel_scales,
+        origin=data.origin,
     )
 
     if len(noise_map.native) == 1:

@@ -220,10 +220,12 @@ class Overlay(AbstractImageMesh):
             origin=origin,
         )
 
-        overlaid_centres = geometry_util.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=unmasked_overlay_grid,
-            shape_native=mask.shape_native,
-            pixel_scales=mask.pixel_scales,
+        overlaid_centres = np.array(
+            geometry_util.grid_pixel_centres_2d_slim_from(
+                grid_scaled_2d_slim=unmasked_overlay_grid,
+                shape_native=mask.shape_native,
+                pixel_scales=mask.pixel_scales,
+            )
         ).astype("int")
 
         total_pixels = total_pixels_2d_from(

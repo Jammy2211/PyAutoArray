@@ -8,21 +8,11 @@ class NUFFTPlaceholder:
     pass
 
 
-class PyLopsPlaceholder:
-    pass
-
-
 try:
     from pynufft.linalg.nufft_cpu import NUFFT_cpu
 except ModuleNotFoundError:
     NUFFT_cpu = NUFFTPlaceholder
 
-try:
-    import pylops
-
-    PyLopsOperator = pylops.LinearOperator
-except ModuleNotFoundError:
-    PyLopsOperator = PyLopsPlaceholder
 
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -42,20 +32,8 @@ def pynufft_exception():
     )
 
 
-def pylops_exception():
-    raise ModuleNotFoundError(
-        "\n--------------------\n"
-        "You are attempting to perform interferometer analysis.\n\n"
-        "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed.\n\n"
-        "Install it via the command `pip install pylops==2.3.1`.\n\n"
-        "----------------------"
-    )
-
-
-class TransformerDFT(PyLopsOperator):
+class TransformerDFT:
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
-        if isinstance(self, PyLopsPlaceholder):
-            pylops_exception()
 
         super().__init__()
 
@@ -70,12 +48,12 @@ class TransformerDFT(PyLopsOperator):
 
         if preload_transform:
             self.preload_real_transforms = transformer_util.preload_real_transforms(
-                grid_radians=np.array(self.grid),
+                grid_radians=np.array(self.grid.array),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
             self.preload_imag_transforms = transformer_util.preload_imag_transforms(
-                grid_radians=np.array(self.grid),
+                grid_radians=np.array(self.grid.array),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -101,14 +79,14 @@ class TransformerDFT(PyLopsOperator):
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=np.array(image),
+                image_1d=np.array(image.array),
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
             visibilities = transformer_util.visibilities_jit(
-                image_1d=np.array(image.slim),
+                image_1d=np.array(image.slim.array),
                 grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
@@ -118,7 +96,7 @@ class TransformerDFT(PyLopsOperator):
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
         image_slim = transformer_util.image_via_jit_from(
             n_pixels=self.grid.shape[0],
-            grid_radians=np.array(self.grid),
+            grid_radians=np.array(self.grid.array),
             uv_wavelengths=self.uv_wavelengths,
             visibilities=visibilities.in_array,
         )
@@ -146,13 +124,10 @@ class TransformerDFT(PyLopsOperator):
             )
 
 
-class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
+class TransformerNUFFT(NUFFT_cpu):
     def __init__(self, uv_wavelengths, real_space_mask):
         if isinstance(self, NUFFTPlaceholder):
             pynufft_exception()
-
-        if isinstance(self, PyLopsPlaceholder):
-            pylops_exception()
 
         super(TransformerNUFFT, self).__init__()
 

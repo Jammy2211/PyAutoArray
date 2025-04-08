@@ -72,6 +72,7 @@ class MapperGrids:
 
     @property
     def mesh_pixels_per_image_pixels(self):
+
         mesh_pixels_per_image_pixels = grid_2d_util.grid_pixels_in_mask_pixels_from(
             grid=np.array(self.image_plane_mesh_grid),
             shape_native=self.mask.shape_native,

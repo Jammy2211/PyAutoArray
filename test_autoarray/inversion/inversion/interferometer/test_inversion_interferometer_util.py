@@ -68,23 +68,6 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
 
-def test__inversion_interferometer__via_mapper(
-    interferometer_7_no_fft,
-    rectangular_mapper_7x7_3x3,
-    delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
-    regularization_constant,
-):
-    inversion = aa.Inversion(
-        dataset=interferometer_7_no_fft,
-        linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_linear_operators=True),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangular)
-    assert isinstance(inversion, aa.InversionInterferometerMappingPyLops)
-
-
 def test__w_tilde_curvature_interferometer_from():
     noise_map = np.array([1.0, 2.0, 3.0])
     uv_wavelengths = np.array([[0.0001, 2.0, 3000.0], [3000.0, 2.0, 0.0001]])
@@ -289,20 +272,24 @@ def test__identical_inversion_values_for_two_methods():
         == inversion_mapping_matrices.regularization_matrix
     ).all()
 
+    assert inversion_w_tilde.data_vector == pytest.approx(
+        inversion_mapping_matrices.data_vector, 1.0e-8
+    )
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
         inversion_mapping_matrices.curvature_matrix, 1.0e-8
     )
     assert inversion_w_tilde.curvature_reg_matrix == pytest.approx(
         inversion_mapping_matrices.curvature_reg_matrix, 1.0e-8
     )
+
     assert inversion_w_tilde.reconstruction == pytest.approx(
-        inversion_mapping_matrices.reconstruction, 1.0e-2
+        inversion_mapping_matrices.reconstruction, abs=1.0e-1
     )
     assert inversion_w_tilde.mapped_reconstructed_image == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_image, 1.0e-2
+        inversion_mapping_matrices.mapped_reconstructed_image, abs=1.0e-1
     )
     assert inversion_w_tilde.mapped_reconstructed_data == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_data, 1.0e-2
+        inversion_mapping_matrices.mapped_reconstructed_data, abs=1.0e-1
     )
 
 

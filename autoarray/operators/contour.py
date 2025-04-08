@@ -1,6 +1,6 @@
 from __future__ import annotations
-from autoarray.numpy_wrapper import np, use_jax
-import numpy
+import numpy as np
+import jax.numpy as jnp
 from skimage import measure
 from scipy.spatial import ConvexHull
 from scipy.spatial import QhullError
@@ -47,20 +47,23 @@ class Grid2DContour:
             pixel_scales=self.pixel_scales,
         ).astype("int")
 
-        arr = np.zeros(self.shape_native)
-        if use_jax:
-            arr = arr.at[tuple(np.array(pixel_centres).T)].set(1)
-        else:
-            arr[tuple(np.array(pixel_centres).T)] = 1
+        arr = jnp.zeros(self.shape_native)
+        arr = arr.at[tuple(jnp.array(pixel_centres).T)].set(1)
 
         return arr
 
     @property
     def contour_list(self):
         # make sure to use base numpy to convert JAX array back to a normal array
-        contour_indices_list = measure.find_contours(
-            numpy.array(self.contour_array.array), 0
-        )
+
+        if isinstance(self.contour_array, jnp.ndarray):
+            contour_array = np.array(self.contour_array)
+        else:
+            contour_array = np.array(self.contour_array.array)
+
+        contour_indices_list = measure.find_contours(contour_array, 0)
+
+        print(contour_indices_list)
 
         if len(contour_indices_list) == 0:
             return []
@@ -89,10 +92,10 @@ class Grid2DContour:
             return None
 
         # cast JAX arrays to base numpy arrays
-        grid_convex = numpy.zeros((len(self.grid), 2))
+        grid_convex = np.zeros((len(self.grid), 2))
 
-        grid_convex[:, 0] = numpy.array(self.grid[:, 1])
-        grid_convex[:, 1] = numpy.array(self.grid[:, 0])
+        grid_convex[:, 0] = np.array(self.grid[:, 1])
+        grid_convex[:, 1] = np.array(self.grid[:, 0])
 
         try:
             hull = ConvexHull(grid_convex)
@@ -104,9 +107,6 @@ class Grid2DContour:
         hull_x = grid_convex[hull_vertices, 0]
         hull_y = grid_convex[hull_vertices, 1]
 
-        grid_hull = np.zeros((len(hull_vertices), 2))
-
-        grid_hull[:, 1] = hull_x
-        grid_hull[:, 0] = hull_y
+        grid_hull = jnp.stack((hull_y, hull_x), axis=-1)
 
         return grid_hull

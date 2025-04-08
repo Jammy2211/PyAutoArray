@@ -59,7 +59,7 @@ class Mask1D(Mask):
             mask = np.asarray(mask).astype("bool")
 
         if invert:
-            mask = np.invert(mask)
+            mask = ~mask
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales,)
@@ -153,7 +153,9 @@ class Mask1D(Mask):
         """
 
         return cls(
-            array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu),
+            mask=np.array(
+                array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu)
+            ),
             pixel_scales=pixel_scales,
             origin=origin,
         )

@@ -20,6 +20,7 @@ from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
 from .geometry.geometry_2d import Geometry2D
+from .inversion.convolver import Convolver
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization import mesh
 from .inversion.pixelization import image_mesh
@@ -44,7 +45,6 @@ from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from .inversion.inversion.interferometer.w_tilde import InversionInterferometerWTilde
 from .inversion.inversion.interferometer.mapping import InversionInterferometerMapping
-from .inversion.inversion.interferometer.lop import InversionInterferometerMappingPyLops
 from .inversion.linear_obj.linear_obj import LinearObj
 from .inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from .mask.derive.indexes_2d import DeriveIndexes2D

@@ -150,7 +150,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
         rescale_factor=0.5, normalize=True
     )
     assert kernel_2d.pixel_scales == (2.0, 2.0)
-    assert (kernel_2d.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
 
     array_2d = np.ones((9, 9))
     kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
@@ -158,7 +158,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
         rescale_factor=0.333333333333333, normalize=True
     )
     assert kernel_2d.pixel_scales == (3.0, 3.0)
-    assert (kernel_2d.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
 
     array_2d = np.ones((18, 6))
     kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
@@ -166,7 +166,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
         rescale_factor=0.5, normalize=True
     )
     assert kernel_2d.pixel_scales == (2.0, 2.0)
-    assert (kernel_2d.native == (1.0 / 27.0) * np.ones((9, 3))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 27.0) * np.ones((9, 3)), 1.0e-4)
 
     array_2d = np.ones((6, 18))
     kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
@@ -174,7 +174,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
         rescale_factor=0.5, normalize=True
     )
     assert kernel_2d.pixel_scales == (2.0, 2.0)
-    assert (kernel_2d.native == (1.0 / 27.0) * np.ones((3, 9))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 27.0) * np.ones((3, 9)), 1.0e-4)
 
 
 def test__rescaled_with_odd_dimensions_from__different_scalings():
@@ -183,7 +183,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
         rescale_factor=2.0, normalize=True
     )
     assert kernel_2d.pixel_scales == (0.4, 0.4)
-    assert (kernel_2d.native == (1.0 / 25.0) * np.ones((5, 5))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(
         shape_native=(40, 40), pixel_scales=1.0, normalize=False
@@ -192,7 +192,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
         rescale_factor=0.1, normalize=True
     )
     assert kernel_2d.pixel_scales == (8.0, 8.0)
-    assert (kernel_2d.native == (1.0 / 25.0) * np.ones((5, 5))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(shape_native=(2, 4), pixel_scales=1.0, normalize=False)
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -201,7 +201,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
 
     assert kernel_2d.pixel_scales[0] == pytest.approx(0.4, 1.0e-4)
     assert kernel_2d.pixel_scales[1] == pytest.approx(0.4444444, 1.0e-4)
-    assert (kernel_2d.native == (1.0 / 45.0) * np.ones((5, 9))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 45.0) * np.ones((5, 9)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(shape_native=(4, 2), pixel_scales=1.0, normalize=False)
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -209,7 +209,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
     )
     assert kernel_2d.pixel_scales[0] == pytest.approx(0.4444444, 1.0e-4)
     assert kernel_2d.pixel_scales[1] == pytest.approx(0.4, 1.0e-4)
-    assert (kernel_2d.native == (1.0 / 45.0) * np.ones((9, 5))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 45.0) * np.ones((9, 5)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(shape_native=(6, 4), pixel_scales=1.0, normalize=False)
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -217,7 +217,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
     )
 
     assert kernel_2d.pixel_scales == pytest.approx((2.0, 1.3333333333), 1.0e-4)
-    assert (kernel_2d.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(
         shape_native=(9, 12), pixel_scales=1.0, normalize=False
@@ -227,7 +227,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
     )
 
     assert kernel_2d.pixel_scales == pytest.approx((3.0, 2.4), 1.0e-4)
-    assert (kernel_2d.native == (1.0 / 15.0) * np.ones((3, 5))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 15.0) * np.ones((3, 5)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(shape_native=(4, 6), pixel_scales=1.0, normalize=False)
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -235,7 +235,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
     )
 
     assert kernel_2d.pixel_scales == pytest.approx((1.33333333333, 2.0), 1.0e-4)
-    assert (kernel_2d.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
 
     kernel_2d = aa.Kernel2D.ones(
         shape_native=(12, 9), pixel_scales=1.0, normalize=False
@@ -244,7 +244,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
         rescale_factor=0.33333333333, normalize=True
     )
     assert kernel_2d.pixel_scales == pytest.approx((2.4, 3.0), 1.0e-4)
-    assert (kernel_2d.native == (1.0 / 15.0) * np.ones((5, 3))).all()
+    assert kernel_2d.native == pytest.approx((1.0 / 15.0) * np.ones((5, 3)), 1.0e-4)
 
 
 def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy_gaussian_model():

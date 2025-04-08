@@ -269,13 +269,13 @@ class BorderRelocator:
             return grid
 
         values = grid_2d_util.relocated_grid_via_jit_from(
-            grid=np.array(grid),
-            border_grid=np.array(grid[self.border_slim]),
+            grid=np.array(grid.array),
+            border_grid=np.array(grid.array[self.border_slim]),
         )
 
         over_sampled = grid_2d_util.relocated_grid_via_jit_from(
-            grid=np.array(grid.over_sampled),
-            border_grid=np.array(grid.over_sampled[self.sub_border_slim]),
+            grid=np.array(grid.over_sampled.array),
+            border_grid=np.array(grid.over_sampled.array[self.sub_border_slim]),
         )
 
         return Grid2D(
@@ -303,7 +303,7 @@ class BorderRelocator:
 
         return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=np.array(mesh_grid),
+                grid=np.array(mesh_grid.array),
                 border_grid=np.array(grid[self.sub_border_slim]),
             ),
         )

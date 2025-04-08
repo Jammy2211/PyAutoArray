@@ -213,9 +213,7 @@ class VisibilitiesNoiseMap(Visibilities):
         A collection of (real, imag) visibilities noise-map values which are used to represent the noise-map in
         an `Interferometer` dataset.
 
-        This data structure behaves the same as the `Visibilities` structure (see `AbstractVisibilities.__new__`). The
-        only difference is that it includes a `WeightOperator` used by `Inversion`'s which use `LinearOperators` and
-        the library `PyLops` to fit `Interferometer` data.
+        This data structure behaves the same as the `Visibilities` structure (see `AbstractVisibilities.__new__`).
 
         Parameters
         ----------

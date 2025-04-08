@@ -71,10 +71,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @profile_func
     def w_tilde_data(self):
         return inversion_imaging_util.w_tilde_data_imaging_from(
-            image_native=np.array(self.data.native),
-            noise_map_native=np.array(self.noise_map.native),
-            kernel_native=np.array(self.psf.kernel.native),
-            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
+            image_native=np.array(self.data.native.array).astype("float"),
+            noise_map_native=np.array(self.noise_map.native.array).astype("float"),
+            kernel_native=np.array(self.psf.native.array).astype("float"),
+            native_index_for_slim_index=np.array(
+                self.data.mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
     @property
@@ -207,8 +209,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             diag = inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
                 blurred_mapping_matrix=operated_mapping_matrix,
-                image=np.array(self.data),
-                noise_map=np.array(self.noise_map),
+                image=self.data.array,
+                noise_map=self.noise_map.array,
             )
 
             param_range = linear_func_param_range[linear_func_index]
@@ -521,12 +523,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     reconstruction=reconstruction,
                 )
 
-                mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image, mask=self.mask
-                )
-
                 mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
                     image=mapped_reconstructed_image, mask=self.mask
+                ).array
+
+                mapped_reconstructed_image = Array2D(
+                    values=np.array(mapped_reconstructed_image), mask=self.mask
                 )
 
             else:

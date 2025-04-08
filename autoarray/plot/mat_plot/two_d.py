@@ -313,7 +313,7 @@ class MatPlot2D(AbstractMatPlot):
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
 
-        norm = self.cmap.norm_from(array=array, use_log10=self.use_log10)
+        norm = self.cmap.norm_from(array=array.array, use_log10=self.use_log10)
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
@@ -427,10 +427,10 @@ class MatPlot2D(AbstractMatPlot):
 
         if color_array is None:
             if y_errors is None and x_errors is None:
-                self.grid_scatter.scatter_grid(grid=grid_plot)
+                self.grid_scatter.scatter_grid(grid=grid_plot.array)
             else:
                 self.grid_errorbar.errorbar_grid(
-                    grid=grid_plot, y_errors=y_errors, x_errors=x_errors
+                    grid=grid_plot.array, y_errors=y_errors, x_errors=x_errors
                 )
 
         elif color_array is not None:
@@ -438,11 +438,11 @@ class MatPlot2D(AbstractMatPlot):
 
             if y_errors is None and x_errors is None:
                 self.grid_scatter.scatter_grid_colored(
-                    grid=grid, color_array=color_array, cmap=cmap
+                    grid=grid.array, color_array=color_array, cmap=cmap
                 )
             else:
                 self.grid_errorbar.errorbar_grid_colored(
-                    grid=grid,
+                    grid=grid.array,
                     cmap=cmap,
                     color_array=color_array,
                     y_errors=y_errors,
@@ -450,6 +450,7 @@ class MatPlot2D(AbstractMatPlot):
                 )
 
             if self.colorbar is not None:
+
                 colorbar = self.colorbar.set_with_color_values(
                     units=self.units,
                     cmap=self.cmap.cmap,
@@ -496,7 +497,7 @@ class MatPlot2D(AbstractMatPlot):
             self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=grid, geometry=grid.geometry
+            plotter=self, grid_indexes=grid.array, geometry=grid.geometry
         )
 
         if not self.is_for_subplot:

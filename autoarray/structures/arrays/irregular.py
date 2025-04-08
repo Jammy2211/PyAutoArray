@@ -38,12 +38,6 @@ class ArrayIrregular(Structure):
             A collection of values.
         """
 
-        # if len(values) == 0:
-        #     return []
-
-        # if isinstance(values, ArrayIrregular):
-        #     return values
-
         if type(values) is list:
             values = np.asarray(values)
 

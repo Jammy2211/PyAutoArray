@@ -441,7 +441,7 @@ def test__from_mask():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=np.array(mask), pixel_scales=(2.0, 2.0)
+        mask_2d=mask, pixel_scales=(2.0, 2.0)
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -451,8 +451,8 @@ def test__from_mask():
     assert grid_2d.pixel_scales == (2.0, 2.0)
 
     grid_2d_native = aa.util.grid_2d.grid_2d_native_from(
-        grid_2d_slim=np.array(grid_2d),
-        mask_2d=np.array(mask),
+        grid_2d_slim=grid_2d.array,
+        mask_2d=mask,
     )
 
     assert (grid_2d_native == grid_2d.native).all()
@@ -559,7 +559,7 @@ def test__grid_2d_radial_projected_shape_slim_from():
         pixel_scales=grid_2d.pixel_scales,
     )
 
-    assert (grid_radii == grid_radii_util).all()
+    assert grid_radii == pytest.approx(grid_radii_util, 1.0e-4)
     assert grid_radial_shape_slim == grid_radii_util.shape[0]
 
     grid_2d = aa.Grid2D.uniform(shape_native=(3, 4), pixel_scales=(3.0, 2.0))

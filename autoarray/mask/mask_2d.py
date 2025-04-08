@@ -200,11 +200,8 @@ class Mask2D(Mask):
         if type(mask) is list:
             mask = np.asarray(mask).astype("bool")
 
-        if not isinstance(mask, np.ndarray):
-            mask = mask._array
-
         if invert:
-            mask = np.invert(mask)
+            mask = ~mask
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
@@ -327,7 +324,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=mask,
+            mask=np.array(mask),
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -381,7 +378,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=mask,
+            mask=np.array(mask),
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -438,7 +435,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=mask,
+            mask=np.array(mask),
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -508,7 +505,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=mask,
+            mask=np.array(mask),
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -556,7 +553,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=mask,
+            mask=np.array(mask),
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -594,7 +591,7 @@ class Mask2D(Mask):
             mask = np.invert(mask.astype("bool"))
 
         mask = Mask2D(
-            mask=mask,
+            mask=np.array(mask),
             pixel_scales=pixel_scales,
             origin=origin,
         )
@@ -743,7 +740,7 @@ class Mask2D(Mask):
         from autoarray.mask.mask_2d import Mask2D
 
         rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
-            mask_2d=np.array(self),
+            mask_2d=self.array,
             rescale_factor=rescale_factor,
         )
 
@@ -802,7 +799,7 @@ class Mask2D(Mask):
         """
 
         resized_mask = array_2d_util.resized_array_2d_from(
-            array_2d=np.array(self._array),
+            array_2d=self.array,
             resized_shape=new_shape,
             pad_value=pad_value,
         ).astype("bool")

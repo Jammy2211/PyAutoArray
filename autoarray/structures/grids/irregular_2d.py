@@ -233,8 +233,8 @@ class Grid2DIrregular(AbstractNDArray):
         radial_distances_max = np.zeros((self.shape[0]))
 
         for i in range(self.shape[0]):
-            x_distances = np.square(np.subtract(self[i, 0], self[:, 0]))
-            y_distances = np.square(np.subtract(self[i, 1], self[:, 1]))
+            x_distances = np.square(np.subtract(self.array[i, 0], self.array[:, 0]))
+            y_distances = np.square(np.subtract(self.array[i, 1], self.array[:, 1]))
 
             radial_distances_max[i] = np.sqrt(np.max(np.add(x_distances, y_distances)))
 

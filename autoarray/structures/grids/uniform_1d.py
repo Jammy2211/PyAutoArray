@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+import jax.numpy as jnp
 from typing import List, Union, Tuple
 
 from autoarray.structures.abstract_structure import Structure
@@ -178,7 +179,7 @@ class Grid1D(Structure):
             origin=origin,
         )
 
-        return Grid1D(values=values, mask=mask)
+        return Grid1D(values=np.array(values), mask=mask)
 
     @classmethod
     def from_mask(cls, mask: Mask1D) -> "Grid1D":
@@ -195,12 +196,12 @@ class Grid1D(Structure):
         """
 
         grid_1d = grid_1d_util.grid_1d_slim_via_mask_from(
-            mask_1d=np.array(mask),
+            mask_1d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )
 
-        return Grid1D(values=grid_1d, mask=mask)
+        return Grid1D(values=np.array(grid_1d), mask=mask)
 
     @classmethod
     def uniform(
@@ -311,11 +312,11 @@ class Grid1D(Structure):
             The projected and rotated 2D grid of (y,x) coordinates.
         """
 
-        grid = np.zeros((self.mask.pixels_in_mask, 2))
-        grid[:, 1] = self.slim
+        grid = jnp.zeros((self.mask.pixels_in_mask, 2))
+        grid = grid.at[:, 1].set(self.slim.array)
 
         grid = geometry_util.transform_grid_2d_to_reference_frame(
             grid_2d=grid, centre=(0.0, 0.0), angle=angle
         )
 
-        return Grid2DIrregular(values=grid)
+        return Grid2DIrregular(values=grid + 1e-6)

@@ -112,7 +112,7 @@ class DeriveGrid2D:
             origin=self.mask.origin,
         )
 
-        return Grid2D(values=grid_slim, mask=self.mask.derive_mask.all_false)
+        return Grid2D(values=np.array(grid_slim), mask=self.mask.derive_mask.all_false)
 
     @property
     def unmasked(self) -> Grid2D:
@@ -158,12 +158,12 @@ class DeriveGrid2D:
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self.mask),
+        grid_2d = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
-        return Grid2D(values=grid_1d, mask=self.mask)
+        return Grid2D(values=np.array(grid_2d), mask=self.mask)
 
     @property
     def edge(self) -> Grid2D:

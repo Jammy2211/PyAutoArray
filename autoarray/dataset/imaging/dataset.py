@@ -166,8 +166,9 @@ class Imaging(AbstractDataset):
 
         self.psf = psf
 
-        if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel2D Kernel2D must be odd")
+        if psf is not None:
+            if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
+                raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
     @cached_property
     def grids(self):
@@ -177,6 +178,27 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
         )
+
+    @cached_property
+    def convolver(self):
+        """
+        Returns a `Convolver` from a mask and 2D PSF kernel.
+
+        The `Convolver` stores in memory the array indexing between the mask and PSF, enabling efficient 2D PSF
+        convolution of images and matrices used for linear algebra calculations (see `operators.convolver`).
+
+        This uses lazy allocation such that the calculation is only performed when the convolver is used, ensuring
+        efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        Convolver
+            The convolver given the masked imaging data's mask and PSF.
+        """
+
+        from autoarray.inversion.convolver import Convolver
+
+        return Convolver(mask=self.mask, kernel=self.psf)
 
     @cached_property
     def w_tilde(self):
@@ -203,9 +225,11 @@ class Imaging(AbstractDataset):
             indexes,
             lengths,
         ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=np.array(self.noise_map.native),
-            kernel_native=np.array(self.psf.native),
-            native_index_for_slim_index=self.mask.derive_indexes.native_for_slim,
+            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
+            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            native_index_for_slim_index=np.array(
+                self.mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
         return WTildeImaging(
@@ -408,20 +432,20 @@ class Imaging(AbstractDataset):
         """
 
         if signal_to_noise_value is None:
-            noise_map = self.noise_map.native
-            noise_map[mask == False] = noise_value
+            noise_map = np.array(self.noise_map.native.array)
+            noise_map[mask.array == False] = noise_value
         else:
             noise_map = np.where(
                 mask == False,
-                np.median(self.data.native[mask.derive_mask.edge == False])
+                np.median(self.data.native.array[mask.derive_mask.edge == False])
                 / signal_to_noise_value,
-                self.noise_map.native,
+                self.noise_map.native.array,
             )
 
         if should_zero_data:
-            data = np.where(np.invert(mask), 0.0, self.data.native)
+            data = np.where(np.invert(mask.array), 0.0, self.data.native.array)
         else:
-            data = self.data.native
+            data = self.data.native.array
 
         data_unmasked = Array2D.no_mask(
             values=data,

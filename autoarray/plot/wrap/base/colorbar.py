@@ -194,6 +194,7 @@ class Colorbar(AbstractMatWrap):
         )
 
         if tick_values is None and tick_labels is None:
+
             cb = plt.colorbar(
                 mappable=mappable,
                 ax=ax,

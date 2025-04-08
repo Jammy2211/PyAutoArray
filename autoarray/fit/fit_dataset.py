@@ -86,7 +86,7 @@ class AbstractFit(ABC):
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
-        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
+        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map.array)
 
     @property
     def noise_normalization(self) -> float:
@@ -95,7 +95,7 @@ class AbstractFit(ABC):
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
-        return fit_util.noise_normalization_from(noise_map=self.noise_map)
+        return fit_util.noise_normalization_from(noise_map=self.noise_map.array)
 
     @property
     def log_likelihood(self) -> float:

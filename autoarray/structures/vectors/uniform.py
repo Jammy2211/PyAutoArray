@@ -1,7 +1,7 @@
 import logging
 
-# import numpy as np
-from autofit.jax_wrapper import numpy as np, use_jax
+import numpy as np
+import jax.numpy as jnp
 from typing import List, Optional, Tuple, Union
 
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -136,9 +136,6 @@ class VectorYX2D(AbstractVectorYX2D):
             If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
-
-        if type(values) is list:
-            values = np.asarray(values)
 
         values = grid_2d_util.convert_grid_2d(
             grid_2d=values, mask_2d=mask, store_native=store_native
@@ -396,11 +393,10 @@ class VectorYX2D(AbstractVectorYX2D):
         """
         Returns the magnitude of every vector which are computed as sqrt(y**2 + x**2).
         """
-        if use_jax:
-            s = self.array
-        else:
-            s = self
-        return Array2D(values=np.sqrt(s[:, 0] ** 2.0 + s[:, 1] ** 2.0), mask=self.mask)
+        return Array2D(
+            values=jnp.sqrt(self.array[:, 0] ** 2.0 + self.array[:, 1] ** 2.0),
+            mask=self.mask,
+        )
 
     @property
     def y(self) -> Array2D:

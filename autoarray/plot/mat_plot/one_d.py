@@ -166,6 +166,17 @@ class MatPlot1D(AbstractMatPlot):
         text_manual_dict_y=None,
         bypass: bool = False,
     ):
+
+        try:
+            y = y.array
+        except AttributeError:
+            pass
+
+        try:
+            x = x.array
+        except AttributeError:
+            pass
+
         if (y is None) or np.count_nonzero(y) == 0 or np.isnan(y).all():
             return
 
@@ -185,7 +196,7 @@ class MatPlot1D(AbstractMatPlot):
             x = np.arange(len(y))
             use_integers = True
             pixel_scales = (x[1] - x[0],)
-            x = Array1D.no_mask(values=x, pixel_scales=pixel_scales)
+            x = Array1D.no_mask(values=x, pixel_scales=pixel_scales).array
 
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"

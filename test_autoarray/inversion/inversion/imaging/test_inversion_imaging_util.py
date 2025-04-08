@@ -204,22 +204,24 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
         mapping_matrix = mapper.mapping_matrix
 
         blurred_mapping_matrix = psf.convolve_mapping_matrix(
-            mapping_matrix=mapping_matrix
+            mapping_matrix=mapping_matrix, mask=mask
         )
 
         data_vector = (
             aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
-                blurred_mapping_matrix=blurred_mapping_matrix,
+                blurred_mapping_matrix=np.array(blurred_mapping_matrix),
                 image=np.array(image),
                 noise_map=np.array(noise_map),
             )
         )
 
         w_tilde_data = aa.util.inversion_imaging.w_tilde_data_imaging_from(
-            image_native=np.array(image.native),
-            noise_map_native=np.array(noise_map.native),
-            kernel_native=np.array(kernel.native),
-            native_index_for_slim_index=mask.derive_indexes.native_for_slim,
+            image_native=np.array(image.native.array),
+            noise_map_native=np.array(noise_map.native.array),
+            kernel_native=np.array(kernel.native.array),
+            native_index_for_slim_index=np.array(
+                mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
         (
@@ -273,16 +275,20 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     mapping_matrix = mapper.mapping_matrix
 
     w_tilde = aa.util.inversion_imaging.w_tilde_curvature_imaging_from(
-        noise_map_native=np.array(noise_map.native),
-        kernel_native=np.array(kernel.native),
-        native_index_for_slim_index=mask.derive_indexes.native_for_slim,
+        noise_map_native=np.array(noise_map.native.array),
+        kernel_native=np.array(kernel.native.array),
+        native_index_for_slim_index=np.array(
+            mask.derive_indexes.native_for_slim
+        ).astype("int"),
     )
 
     curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
         w_tilde=w_tilde, mapping_matrix=mapping_matrix
     )
 
-    blurred_mapping_matrix = psf.convolve_mapping_matrix(mapping_matrix=mapping_matrix)
+    blurred_mapping_matrix = psf.convolve_mapping_matrix(
+        mapping_matrix=mapping_matrix, mask=mask
+    )
 
     curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
         mapping_matrix=blurred_mapping_matrix,
@@ -326,9 +332,11 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             w_tilde_indexes,
             w_tilde_lengths,
         ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=np.array(noise_map.native),
-            kernel_native=np.array(kernel.native),
-            native_index_for_slim_index=mask.derive_indexes.native_for_slim,
+            noise_map_native=np.array(noise_map.native.array),
+            kernel_native=np.array(kernel.native.array),
+            native_index_for_slim_index=np.array(
+                mask.derive_indexes.native_for_slim
+            ).astype("int"),
         )
 
         (
@@ -355,11 +363,12 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
         )
 
         blurred_mapping_matrix = psf.convolve_mapping_matrix(
-            mapping_matrix=mapping_matrix
+            mapping_matrix=mapping_matrix,
+            mask=mask,
         )
 
         curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix,
+            mapping_matrix=np.array(blurred_mapping_matrix),
             noise_map=np.array(noise_map),
         )
 

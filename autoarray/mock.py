@@ -15,6 +15,8 @@ from autoarray.inversion.mock.mock_inversion_interferometer import (
 from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
 from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer
 from autoarray.mask.mock.mock_mask import MockMask
+from autoarray.operators.mock.mock_psf import MockConvolver
+from autoarray.operators.mock.mock_psf import MockPSF
 from autoarray.structures.mock.mock_grid import MockGrid2DMesh
 from autoarray.structures.mock.mock_grid import MockMeshGrid
 from autoarray.structures.mock.mock_decorators import MockGridRadialMinimum

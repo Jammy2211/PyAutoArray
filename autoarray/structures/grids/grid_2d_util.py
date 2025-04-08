@@ -1,7 +1,6 @@
 from __future__ import annotations
 import numpy as np
 import jax.numpy as jnp
-import jax
 
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
@@ -13,6 +12,19 @@ from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import numba_util
 from autoarray import type as ty
+
+
+def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
+
+    try:
+        grid = grid.array
+    except AttributeError:
+        pass
+
+    if isinstance(grid, list):
+        grid = np.asarray(grid)
+
+    return grid
 
 
 def check_grid_slim(grid, shape_native):
@@ -34,13 +46,6 @@ def check_grid_slim(grid, shape_native):
             The input shape_native parameter is not a tuple of type (int, int).
             """
         )
-
-
-def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
-    if type(grid) is list:
-        grid = np.asarray(grid)
-
-    return grid
 
 
 def check_grid_2d(grid_2d: np.ndarray):
@@ -108,25 +113,33 @@ def convert_grid_2d(
 
     grid_2d = convert_grid(grid=grid_2d)
 
+    is_numpy = True if isinstance(grid_2d, np.ndarray) else False
+
     check_grid_2d_and_mask_2d(grid_2d=grid_2d, mask_2d=mask_2d)
 
     is_native = len(grid_2d.shape) == 3
 
     if is_native:
-        grid_2d[:, :, 0] *= np.invert(mask_2d)
-        grid_2d[:, :, 1] *= np.invert(mask_2d)
+        if not is_numpy:
+            grid_2d = grid_2d.at[:, :, 0].multiply(~mask_2d)
+            grid_2d = grid_2d.at[:, :, 1].multiply(~mask_2d)
+        else:
+            grid_2d[:, :, 0] *= ~mask_2d
+            grid_2d[:, :, 1] *= ~mask_2d
 
     if is_native == store_native:
-        return grid_2d
+        grid_2d = grid_2d
     elif not store_native:
-        return grid_2d_slim_from(
-            grid_2d_native=np.array(grid_2d),
-            mask=np.array(mask_2d),
+        grid_2d = grid_2d_slim_from(
+            grid_2d_native=grid_2d,
+            mask=mask_2d,
         )
-    return grid_2d_native_from(
-        grid_2d_slim=np.array(grid_2d),
-        mask_2d=np.array(mask_2d),
-    )
+    else:
+        grid_2d = grid_2d_native_from(
+            grid_2d_slim=grid_2d,
+            mask_2d=mask_2d,
+        )
+    return np.array(grid_2d) if is_numpy else jnp.array(grid_2d)
 
 
 def convert_grid_2d_to_slim(
@@ -553,7 +566,7 @@ def grid_scaled_2d_slim_radial_projected_from(
         grid_scaled_2d_slim_radii[slim_index, 1] = radii
         radii += pixel_scale
 
-    return grid_scaled_2d_slim_radii
+    return grid_scaled_2d_slim_radii + 1e-6
 
 
 @numba_util.jit()
@@ -671,16 +684,16 @@ def grid_2d_slim_from(
     """
 
     grid_1d_slim_y = array_2d_util.array_2d_slim_from(
-        array_2d_native=np.array(grid_2d_native[:, :, 0]),
-        mask_2d=np.array(mask),
+        array_2d_native=grid_2d_native[:, :, 0],
+        mask_2d=mask,
     )
 
     grid_1d_slim_x = array_2d_util.array_2d_slim_from(
-        array_2d_native=np.array(grid_2d_native[:, :, 1]),
-        mask_2d=np.array(mask),
+        array_2d_native=grid_2d_native[:, :, 1],
+        mask_2d=mask,
     )
 
-    return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
+    return jnp.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
 
 
 def grid_2d_native_from(
@@ -723,7 +736,7 @@ def grid_2d_native_from(
         mask_2d=mask_2d,
     )
 
-    return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
+    return jnp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 
 @numba_util.jit()
@@ -801,7 +814,6 @@ def compute_polygon_area(points):
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
-@numba_util.jit()
 def grid_pixels_in_mask_pixels_from(
     grid, shape_native, pixel_scales, origin
 ) -> np.ndarray:
@@ -832,10 +844,11 @@ def grid_pixels_in_mask_pixels_from(
 
     mesh_pixels_per_image_pixel = np.zeros(shape=shape_native)
 
-    for i in range(grid_pixel_centres.shape[0]):
-        y = grid_pixel_centres[i, 0]
-        x = grid_pixel_centres[i, 1]
+    # Assuming grid_pixel_centres is a 2D array where each row contains (y, x) indices.
+    y_indices = grid_pixel_centres[:, 0]
+    x_indices = grid_pixel_centres[:, 1]
 
-        mesh_pixels_per_image_pixel[y, x] += 1
+    # Use np.add.at to increment the specific indices in a safe and efficient manner
+    np.add.at(mesh_pixels_per_image_pixel, (y_indices, x_indices), 1)
 
     return mesh_pixels_per_image_pixel

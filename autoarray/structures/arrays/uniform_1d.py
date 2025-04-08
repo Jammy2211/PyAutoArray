@@ -24,6 +24,7 @@ class Array1D(Structure):
         header: Optional[Header] = None,
         store_native: bool = False,
     ):
+
         values = array_1d_util.convert_array_1d(
             array_1d=values,
             mask_1d=mask,
@@ -87,7 +88,7 @@ class Array1D(Structure):
             origin=origin,
         )
 
-        return Array1D(values=values, mask=mask, header=header)
+        return Array1D(values=np.array(values), mask=mask, header=header)
 
     @classmethod
     def full(

@@ -78,7 +78,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper = mapper_list[i]
             param_range = mapper_param_range_list[i]
 
-            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
                 mapping_matrix=mapper.mapping_matrix
             )
 
@@ -112,8 +112,8 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         return inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=self.operated_mapping_matrix,
-            image=np.array(self.data),
-            noise_map=np.array(self.noise_map),
+            image=self.data.array,
+            noise_map=self.noise_map.array,
         )
 
     @property
@@ -140,7 +140,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
                 mapping_matrix=mapper_i.mapping_matrix
             )
 

@@ -738,8 +738,6 @@ def test__edge_1d_indexes_from():
 
     edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
-    print(edge_pixels)
-
     assert (edge_pixels == np.array([0])).all()
 
     mask = np.array(
