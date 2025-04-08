@@ -70,8 +70,6 @@ def test__normalized_residual_map_with_mask_from():
         residual_map=residual_map, mask=mask, noise_map=noise_map
     )
 
-    print(normalized_residual_map)
-
     assert normalized_residual_map == pytest.approx(jnp.array([0.0, 0.0, (1.0 / 2.0), 0.0]), abs=1.0e-4)
 
 

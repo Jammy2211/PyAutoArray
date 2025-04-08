@@ -417,7 +417,6 @@ class MatPlot2D(AbstractMatPlot):
 
         if not self.is_for_subplot:
             fig, ax = self.figure.open()
-            print(ax)
         else:
             ax = self.setup_subplot()
 
@@ -428,10 +427,10 @@ class MatPlot2D(AbstractMatPlot):
 
         if color_array is None:
             if y_errors is None and x_errors is None:
-                self.grid_scatter.scatter_grid(grid=grid_plot)
+                self.grid_scatter.scatter_grid(grid=grid_plot.array)
             else:
                 self.grid_errorbar.errorbar_grid(
-                    grid=grid_plot, y_errors=y_errors, x_errors=x_errors
+                    grid=grid_plot.array, y_errors=y_errors, x_errors=x_errors
                 )
 
         elif color_array is not None:

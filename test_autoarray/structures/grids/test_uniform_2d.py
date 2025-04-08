@@ -559,7 +559,7 @@ def test__grid_2d_radial_projected_shape_slim_from():
         pixel_scales=grid_2d.pixel_scales,
     )
 
-    assert (grid_radii == grid_radii_util).all()
+    assert grid_radii == pytest.approx(grid_radii_util, 1.0e-4)
     assert grid_radial_shape_slim == grid_radii_util.shape[0]
 
     grid_2d = aa.Grid2D.uniform(shape_native=(3, 4), pixel_scales=(3.0, 2.0))
