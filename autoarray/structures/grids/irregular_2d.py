@@ -45,8 +45,13 @@ class Grid2DIrregular(AbstractNDArray):
         if type(values) is list:
             if isinstance(values[0], Grid2DIrregular):
                 values = values
+            elif isinstance(values[0], jnp.ndarray):
+                values = jnp.asarray(values)
             else:
-                values = np.asarray(values)
+                try:
+                    values = np.asarray(values)
+                except ValueError:
+                    pass
 
         super().__init__(values)
 
