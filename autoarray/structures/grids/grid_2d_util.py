@@ -1,8 +1,5 @@
 from __future__ import annotations
 import numpy as np
-import jax.numpy as jnp
-import jax
-
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
@@ -12,6 +9,7 @@ from autoarray import exc
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import numba_util
+from autoarray.mask import mask_2d_util
 from autoarray import type as ty
 
 
@@ -60,7 +58,7 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 f"""
                 The input 2D grid does not have the same number of values as pixels in
                 the mask.
-
+                
                 The shape of the input grid_2d is {grid_2d.shape}.
                 The mask shape_native is {mask_2d.shape_native}.
                 The mask number of pixels is {mask_2d.pixels_in_mask}. 
@@ -179,6 +177,7 @@ def convert_grid_2d_to_native(
     )
 
 
+@numba_util.jit()
 def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     """
     Returns the centre of a grid from a 1D grid.
@@ -198,6 +197,7 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     return centre_y, centre_x
 
 
+@numba_util.jit()
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -237,18 +237,24 @@ def grid_2d_slim_via_mask_from(
     grid_slim = grid_2d_slim_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
+    total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d)
+
+    grid_slim = np.zeros(shape=(total_pixels, 2))
+
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 
-    centres_scaled = jnp.array(centres_scaled)
-    pixel_scales = jnp.array(pixel_scales)
-    sign = jnp.array([-1.0, 1.0])
-    return (
-        (jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
-        * sign
-        * pixel_scales
-    )
+    index = 0
+
+    for y in range(mask_2d.shape[0]):
+        for x in range(mask_2d.shape[1]):
+            if not mask_2d[y, x]:
+                grid_slim[index, 0] = -(y - centres_scaled[0]) * pixel_scales[0]
+                grid_slim[index, 1] = (x - centres_scaled[1]) * pixel_scales[1]
+                index += 1
+
+    return grid_slim
 
 
 def grid_2d_via_mask_from(
@@ -744,7 +750,9 @@ def grid_2d_slim_upscaled_from(
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    grid_2d_slim_upscaled = np.zeros(shape=(grid_slim.shape[0] * upscale_factor**2, 2))
+    grid_2d_slim_upscaled = np.zeros(
+        shape=(grid_slim.shape[0] * upscale_factor**2, 2)
+    )
 
     upscale_index = 0
 

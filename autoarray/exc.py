@@ -106,6 +106,17 @@ class PlottingException(Exception):
     pass
 
 
+class PreloadsException(Exception):
+    """
+    Raises exceptions associated with the `preloads.py` module and `Preloads` class.
+
+    For example if the preloaded quantities lead to a change in figure of merit of a fit compared to a fit without
+    preloading.
+    """
+
+    pass
+
+
 class ProfilingException(Exception):
     """
     Raises exceptions associated with in-built profiling tools (e.g. the `profile_func` decorator).

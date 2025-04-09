@@ -152,7 +152,7 @@ def test__slice_2d__addition():
     image = np.ones((2, 2))
     region = aa.Region2D(region=(0, 1, 0, 1))
 
-    array = array.at[region.slice].add(image[region.slice])
+    array[region.slice] += image[region.slice]
 
     assert (array == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
@@ -161,7 +161,7 @@ def test__slice_2d__addition():
     image = np.ones((2, 2))
     region = aa.Region2D(region=(0, 1, 0, 1))
 
-    array = array.at[region.slice].add(image[region.slice])
+    array[region.slice] += image[region.slice]
 
     assert (array == np.array([[2.0, 1.0], [1.0, 1.0]])).all()
 
@@ -170,7 +170,7 @@ def test__slice_2d__addition():
     image = np.ones((3, 3))
     region = aa.Region2D(region=(1, 3, 2, 3))
 
-    array = array.at[region.slice].add(image[region.slice])
+    array[region.slice] += image[region.slice]
 
     assert (
         array == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 2.0], [1.0, 1.0, 2.0]])
@@ -183,7 +183,7 @@ def test__slice_2d__set_to_zerose():
 
     region = aa.Region2D(region=(0, 1, 0, 1))
 
-    array = array.at[region.slice].set(0)
+    array[region.slice] = 0
 
     assert (array == np.array([[0.0, 1.0], [1.0, 1.0]])).all()
 
@@ -192,7 +192,7 @@ def test__slice_2d__set_to_zerose():
 
     region = aa.Region2D(region=(1, 3, 2, 3))
 
-    array = array.at[region.slice].set(0)
+    array[region.slice] = 0
 
     assert (
         array == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 0.0], [1.0, 1.0, 0.0]])

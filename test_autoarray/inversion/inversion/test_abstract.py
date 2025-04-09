@@ -307,6 +307,61 @@ def test__regularization_matrix():
     assert inversion.regularization_matrix == pytest.approx(regularization_matrix)
 
 
+def test__preloads__operated_mapping_matrix():
+    operated_mapping_matrix = 2.0 * np.ones((9, 3))
+
+    preloads = aa.Preloads(
+        operated_mapping_matrix=operated_mapping_matrix,
+    )
+
+    # noinspection PyTypeChecker
+    inversion = aa.m.MockInversionImaging(
+        noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper(), preloads=preloads
+    )
+
+    assert inversion.operated_mapping_matrix[0, 0] == 2.0
+
+
+def test__linear_func_operated_mapping_matrix_dict():
+    dict_0 = {"key0": np.array([1.0, 2.0])}
+
+    preloads = aa.Preloads(linear_func_operated_mapping_matrix_dict=dict_0)
+
+    # noinspection PyTypeChecker
+    inversion = aa.m.MockInversionImagingWTilde(
+        noise_map=np.ones(9),
+        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        preloads=preloads,
+    )
+
+    assert list(inversion.linear_func_operated_mapping_matrix_dict.values())[
+        0
+    ] == pytest.approx(dict_0["key0"], 1.0e-4)
+
+
+def test__curvature_matrix_mapper_diag_preload():
+    curvature_matrix_mapper_diag = 2.0 * np.ones((9, 3))
+
+    preloads = aa.Preloads(curvature_matrix_mapper_diag=curvature_matrix_mapper_diag)
+
+    # noinspection PyTypeChecker
+    inversion = aa.m.MockInversionImagingWTilde(
+        noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper(), preloads=preloads
+    )
+
+    assert inversion._curvature_matrix_mapper_diag == pytest.approx(
+        curvature_matrix_mapper_diag, 1.0e-4
+    )
+
+
+def test__preload_of_regularization_matrix__overwrites_calculation():
+    inversion = aa.m.MockInversion(
+        preloads=aa.Preloads(regularization_matrix=np.ones((2, 2)))
+    )
+
+    assert (inversion.regularization_matrix == np.ones((2, 2))).all()
+
+
 def test__reconstruction_reduced():
     linear_obj_list = [
         aa.m.MockLinearObj(parameters=2, regularization=aa.m.MockRegularization()),
@@ -523,6 +578,17 @@ def test__regularization_term():
     #                                    [5.0]
 
     assert inversion.regularization_term == 34.0
+
+
+def test__preload_of_log_det_regularization_term_overwrites_calculation():
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[
+            aa.m.MockLinearObj(parameters=3, regularization=aa.m.MockRegularization())
+        ],
+        preloads=aa.Preloads(log_det_regularization_matrix_term=1.0),
+    )
+
+    assert inversion.log_det_regularization_matrix_term == 1.0
 
 
 def test__determinant_of_positive_definite_matrix_via_cholesky():

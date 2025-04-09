@@ -12,6 +12,7 @@ from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.preloads import Preloads
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.inversion.inversion import inversion_util
@@ -27,6 +28,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         w_tilde: WTildeInterferometer,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -65,6 +67,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 

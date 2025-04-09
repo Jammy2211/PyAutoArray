@@ -462,7 +462,7 @@ def test__background_noise_map_via_edges_of_image_from_4():
     )
 
     assert np.allclose(
-        background_noise_map.native.array,
+        background_noise_map.native,
         np.full(fill_value=np.std(np.arange(28)), shape=image.shape_native),
     )
 
@@ -486,7 +486,7 @@ def test__background_noise_map_via_edges_of_image_from_5():
     )
 
     assert np.allclose(
-        background_noise_map.native.array,
+        background_noise_map.native,
         np.full(fill_value=np.std(np.arange(48)), shape=image.shape_native),
     )
 

@@ -71,16 +71,6 @@ def test__binned_array_2d_from():
     )
 
     over_sampling = aa.OverSampler(
-        mask=mask, sub_size=aa.Array2D(values=[2, 2], mask=mask)
-    )
-
-    arr = np.array([1.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0, 10.0])
-
-    binned_array_2d = over_sampling.binned_array_2d_from(array=arr)
-
-    assert binned_array_2d.slim == pytest.approx(np.array([5.75, 10.0]), 1.0e-4)
-
-    over_sampling = aa.OverSampler(
         mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask)
     )
 

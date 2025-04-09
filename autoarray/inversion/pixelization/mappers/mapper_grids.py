@@ -2,6 +2,9 @@ from __future__ import annotations
 import numpy as np
 from typing import TYPE_CHECKING, Dict, Optional
 
+if TYPE_CHECKING:
+    from autoarray import Preloads
+
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -19,6 +22,7 @@ class MapperGrids:
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
+        preloads: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -55,15 +59,21 @@ class MapperGrids:
         adapt_data
             An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
+        preloads
+            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+            for example the `source_plane_mesh_grid` could be preloaded.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
+
+        from autoarray.preloads import Preloads
 
         self.mask = mask
         self.source_plane_data_grid = source_plane_data_grid
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid
         self.adapt_data = adapt_data
+        self.preloads = preloads or Preloads()
         self.run_time_dict = run_time_dict
 
     @property

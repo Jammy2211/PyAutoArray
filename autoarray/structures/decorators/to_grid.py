@@ -1,5 +1,6 @@
-from functools import wraps
 import numpy as np
+from functools import wraps
+
 from typing import List, Union
 
 from autoarray.structures.decorators.abstract import AbstractMaker

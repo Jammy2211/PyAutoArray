@@ -1,5 +1,6 @@
-from functools import wraps
 import numpy as np
+from functools import wraps
+
 from typing import Union
 
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -50,7 +51,7 @@ def transform(func):
         """
 
         if not kwargs.get("is_transformed"):
-            kwargs["is_transformed"] = True
+            kwargs = {"is_transformed": True}
 
             transformed_grid = obj.transformed_to_reference_frame_grid_from(
                 grid, **kwargs

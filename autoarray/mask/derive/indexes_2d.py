@@ -1,7 +1,6 @@
 from __future__ import annotations
 import logging
 import numpy as np
-
 from autoarray.numpy_wrapper import register_pytree_node_class
 from typing import TYPE_CHECKING
 
@@ -199,9 +198,9 @@ class DeriveIndexes2D:
 
             print(derive_indexes_2d.edge_slim)
         """
-        return mask_2d_util.edge_1d_indexes_from(
-            mask_2d=np.array(self.mask).astype("bool")
-        ).astype("int")
+        return mask_2d_util.edge_1d_indexes_from(mask_2d=np.array(self.mask)).astype(
+            "int"
+        )
 
     @property
     def edge_native(self) -> np.ndarray:
@@ -302,7 +301,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.border_slim)
         """
         return mask_2d_util.border_slim_indexes_from(
-            mask_2d=np.array(self.mask).astype("bool")
+            mask_2d=np.array(self.mask)
         ).astype("int")
 
     @property
