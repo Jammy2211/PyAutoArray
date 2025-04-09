@@ -255,14 +255,12 @@ class Grid2DIrregular(AbstractNDArray):
         the `Grid2DIrregular` to the input grid.
         """
 
-        grid_of_closest = jnp.zeros((grid_pair.shape[0], 2))
+        jax_array = jnp.asarray(self.array)
 
-        for i in range(grid_pair.shape[0]):
-            x_distances = np.square(np.subtract(grid_pair[i, 0], self[:, 0]))
-            y_distances = np.square(np.subtract(grid_pair[i, 1], self[:, 1]))
+        def closest_point(point):
+            x_distances = jnp.square(point[0] - jax_array[:, 0])
+            y_distances = jnp.square(point[1] - jax_array[:, 1])
+            radial_distances = x_distances + y_distances
+            return jax_array[jnp.argmin(radial_distances)]
 
-            radial_distances = np.add(x_distances, y_distances)
-
-            grid_of_closest[i, :] = self[np.argmin(radial_distances), :]
-
-        return Grid2DIrregular(values=grid_of_closest)
+        return jax.vmap(closest_point)(grid_pair.array)
