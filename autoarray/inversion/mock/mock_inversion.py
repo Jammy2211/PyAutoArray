@@ -4,6 +4,7 @@ from typing import List
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 
 
 class MockInversion(AbstractInversion):
@@ -30,6 +31,7 @@ class MockInversion(AbstractInversion):
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
     ):
         dataset = DatasetInterface(
             data=data,
@@ -40,6 +42,7 @@ class MockInversion(AbstractInversion):
             dataset=dataset,
             linear_obj_list=linear_obj_list or [],
             settings=settings,
+            preloads=preloads,
         )
 
         self._operated_mapping_matrix = operated_mapping_matrix

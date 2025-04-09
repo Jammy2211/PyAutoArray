@@ -229,13 +229,13 @@ class AbstractArray2D(Structure):
             print(array_2d.native) # masked 2D data representation.
         """
 
-        if conf.instance["general"]["structures"]["native_binned_only"]:
-            store_native = True
-
         try:
             values = values._array
         except AttributeError:
-            values = values
+            pass
+
+        if conf.instance["general"]["structures"]["native_binned_only"]:
+            store_native = True
 
         values = array_2d_util.convert_array_2d(
             array_2d=values,
@@ -464,7 +464,7 @@ class AbstractArray2D(Structure):
         """
 
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native._array),
+            array_2d=np.array(self.native),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -498,7 +498,7 @@ class AbstractArray2D(Structure):
             The number pixels around the extracted array used as a buffer.
         """
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native._array),
+            array_2d=np.array(self.native),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -532,7 +532,7 @@ class AbstractArray2D(Structure):
         """
 
         resized_array_2d = array_2d_util.resized_array_2d_from(
-            array_2d=np.array(self.native._array), resized_shape=new_shape
+            array_2d=np.array(self.native), resized_shape=new_shape
         )
 
         resized_mask = self.mask.resized_from(
@@ -599,7 +599,7 @@ class AbstractArray2D(Structure):
         resized_mask = self.mask.resized_from(new_shape=trimmed_array_2d.shape)
 
         array = array_2d_util.convert_array_2d(
-            array_2d=trimmed_array_2d._array, mask_2d=resized_mask
+            array_2d=trimmed_array_2d, mask_2d=resized_mask
         )
 
         return Array2D(

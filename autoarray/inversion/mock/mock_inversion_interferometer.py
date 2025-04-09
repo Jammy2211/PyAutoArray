@@ -5,6 +5,7 @@ from autoarray.inversion.inversion.interferometer.mapping import (
     InversionInterferometerMapping,
 )
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 
 
 class MockInversionInterferometer(InversionInterferometerMapping):
@@ -16,6 +17,7 @@ class MockInversionInterferometer(InversionInterferometerMapping):
         linear_obj_list=None,
         operated_mapping_matrix=None,
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
     ):
         dataset = DatasetInterface(
             data=data,
@@ -27,6 +29,7 @@ class MockInversionInterferometer(InversionInterferometerMapping):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
         )
 
         self._operated_mapping_matrix = operated_mapping_matrix

@@ -9,6 +9,7 @@ from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.operators.convolver import Convolver
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -29,7 +30,7 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
-        pad_for_psf: bool = False,
+        pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
     ):
@@ -76,7 +77,7 @@ class Imaging(AbstractDataset):
         over_sample_size_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
-        pad_for_psf
+        pad_for_convolver
             The PSF convolution may extend beyond the edges of the image mask, which can lead to edge effects in the
             convolved image. If `True`, the image and noise-map are padded to ensure the PSF convolution does not
             extend beyond the edge of the image.
@@ -89,9 +90,9 @@ class Imaging(AbstractDataset):
 
         self.unmasked = None
 
-        self.pad_for_psf = pad_for_psf
+        self.pad_for_convolver = pad_for_convolver
 
-        if pad_for_psf and psf is not None:
+        if pad_for_convolver and psf is not None:
             try:
                 data.mask.derive_mask.blurring_from(
                     kernel_shape_native=psf.shape_native
@@ -161,14 +162,10 @@ class Imaging(AbstractDataset):
 
         if psf is not None and use_normalized_psf:
             psf = Kernel2D.no_mask(
-                values=psf.native._array, pixel_scales=psf.pixel_scales, normalize=True
+                values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
 
         self.psf = psf
-
-        if psf is not None:
-            if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
-                raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
     @cached_property
     def grids(self):
@@ -178,6 +175,25 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
         )
+
+    @cached_property
+    def convolver(self):
+        """
+        Returns a `Convolver` from a mask and 2D PSF kernel.
+
+        The `Convolver` stores in memory the array indexing between the mask and PSF, enabling efficient 2D PSF
+        convolution of images and matrices used for linear algebra calculations (see `operators.convolver`).
+
+        This uses lazy allocation such that the calculation is only performed when the convolver is used, ensuring
+        efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        Convolver
+            The convolver given the masked imaging data's mask and PSF.
+        """
+
+        return Convolver(mask=self.mask, kernel=self.psf)
 
     @cached_property
     def w_tilde(self):
@@ -204,9 +220,9 @@ class Imaging(AbstractDataset):
             indexes,
             lengths,
         ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
-            native_index_for_slim_index=np.array(self.mask.derive_indexes.native_for_slim).astype("int"),
+            noise_map_native=np.array(self.noise_map.native),
+            kernel_native=np.array(self.psf.native),
+            native_index_for_slim_index=self.mask.derive_indexes.native_for_slim,
         )
 
         return WTildeImaging(
@@ -354,7 +370,7 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=noise_covariance_matrix,
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
-            pad_for_psf=True,
+            pad_for_convolver=True,
         )
 
         dataset.unmasked = unmasked_dataset
@@ -409,20 +425,20 @@ class Imaging(AbstractDataset):
         """
 
         if signal_to_noise_value is None:
-            noise_map = np.array(self.noise_map.native.array)
-            noise_map[mask.array == False] = noise_value
+            noise_map = self.noise_map.native
+            noise_map[mask == False] = noise_value
         else:
             noise_map = np.where(
                 mask == False,
-                np.median(self.data.native.array[mask.derive_mask.edge == False])
+                np.median(self.data.native[mask.derive_mask.edge == False])
                 / signal_to_noise_value,
-                self.noise_map.native.array,
+                self.noise_map.native,
             )
 
         if should_zero_data:
-            data = np.where(np.invert(mask.array), 0.0, self.data.native.array)
+            data = np.where(np.invert(mask), 0.0, self.data.native)
         else:
-            data = self.data.native.array
+            data = self.data.native
 
         data_unmasked = Array2D.no_mask(
             values=data,
@@ -447,7 +463,7 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            pad_for_psf=False,
+            pad_for_convolver=False,
             check_noise_map=False,
         )
 
@@ -495,7 +511,7 @@ class Imaging(AbstractDataset):
             over_sample_size_lp=over_sample_size_lp or self.over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization
             or self.over_sample_size_pixelization,
-            pad_for_psf=False,
+            pad_for_convolver=False,
             check_noise_map=False,
         )
 

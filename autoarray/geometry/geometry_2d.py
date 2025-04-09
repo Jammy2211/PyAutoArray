@@ -182,9 +182,8 @@ class Geometry2D(AbstractGeometry2D):
         -------
         A 2D (y,x) pixel-value coordinate.
         """
-
         return geometry_util.scaled_coordinates_2d_from(
-            pixel_coordinates_2d=np.array(pixel_coordinates_2d),
+            pixel_coordinates_2d=pixel_coordinates_2d,
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origins=self.origin,
@@ -235,7 +234,7 @@ class Geometry2D(AbstractGeometry2D):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid_pixels_2d = geometry_util.grid_pixels_2d_slim_from(
-            grid_scaled_2d_slim=np.array(grid_scaled_2d.array),
+            grid_scaled_2d_slim=np.array(grid_scaled_2d),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,

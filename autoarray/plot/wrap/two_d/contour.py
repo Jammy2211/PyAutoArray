@@ -93,10 +93,10 @@ class Contour(AbstractMatWrap2D):
         config_dict.pop("use_log10")
         config_dict.pop("include_values")
 
-        levels = self.levels_from(array.array)
+        levels = self.levels_from(array)
 
         ax = plt.contour(
-            array.native.array[::-1], levels=levels, extent=extent, **config_dict
+            array.native[::-1], levels=levels, extent=extent, **config_dict
         )
         if self.include_values:
             try:

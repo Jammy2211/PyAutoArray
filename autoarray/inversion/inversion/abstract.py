@@ -31,6 +31,7 @@ class AbstractInversion:
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Optional["Preloads"] = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -69,9 +70,16 @@ class AbstractInversion:
             input dataset's data and whose values are solved for via the inversion.
         settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+        preloads
+            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+            for example certain matrices used by the linear algebra could be preloaded.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
+
+        from autoarray.preloads import Preloads
+
+        preloads = preloads or Preloads()
 
         # try:
         #     import numba
@@ -90,6 +98,7 @@ class AbstractInversion:
 
         self.settings = settings
 
+        self.preloads = preloads
         self.run_time_dict = run_time_dict
 
     @property
@@ -313,6 +322,10 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
+
+        if self.preloads.operated_mapping_matrix is not None:
+            return self.preloads.operated_mapping_matrix
+
         return np.hstack(self.operated_mapping_matrix_list)
 
     @cached_property
@@ -343,6 +356,9 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
+        if self.preloads.regularization_matrix is not None:
+            return self.preloads.regularization_matrix
+
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
@@ -493,12 +509,12 @@ class AbstractInversion:
 
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
 
-                solutions[values_to_solve] = (
-                    inversion_util.reconstruction_positive_only_from(
-                        data_vector=data_vector_input,
-                        curvature_reg_matrix=curvature_reg_matrix_input,
-                        settings=self.settings,
-                    )
+                solutions[
+                    values_to_solve
+                ] = inversion_util.reconstruction_positive_only_from(
+                    data_vector=data_vector_input,
+                    curvature_reg_matrix=curvature_reg_matrix_input,
+                    settings=self.settings,
                 )
                 return solutions
             else:
@@ -718,6 +734,9 @@ class AbstractInversion:
 
         if not self.has(cls=AbstractRegularization):
             return 0.0
+
+        if self.preloads.log_det_regularization_matrix_term is not None:
+            return self.preloads.log_det_regularization_matrix_term
 
         try:
             lu = splu(csc_matrix(self.regularization_matrix_reduced))

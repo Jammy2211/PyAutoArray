@@ -7,6 +7,7 @@ from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.preloads import Preloads
 
 
 class MockMesh(AbstractMesh):
@@ -23,6 +24,7 @@ class MockMesh(AbstractMesh):
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
+        preloads: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         return MapperGrids(
@@ -32,6 +34,7 @@ class MockMesh(AbstractMesh):
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=self.image_plane_mesh_grid,
             adapt_data=adapt_data,
+            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 

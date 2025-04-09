@@ -124,7 +124,7 @@ class LinearObj:
     def operated_mapping_matrix_override(self) -> Optional[np.ndarray]:
         """
         An `Inversion` takes the `mapping_matrix` of each linear object and combines it with the data's operators
-        (e.g. a PSF for `Imaging` data) to compute the `operated_mapping_matrix`.
+        (e.g. a `Convolver` for `Imaging` data) to compute the `operated_mapping_matrix`.
 
         If this property is overwritten this operation is not performed, with the `operated_mapping_matrix` output
         by this property automatically used instead.

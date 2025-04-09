@@ -18,12 +18,14 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.preloads import Preloads
 
 
 def inversion_from(
     dataset: Union[Imaging, Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = Preloads(),
     run_time_dict: Optional[Dict] = None,
 ):
     """
@@ -49,6 +51,9 @@ def inversion_from(
         input dataset's data and whose values are solved for via the inversion.
     settings
         Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+    preloads
+        Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+        for example certain matrices used by the linear algebra could be preloaded.
     run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
@@ -61,6 +66,7 @@ def inversion_from(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
@@ -76,6 +82,7 @@ def inversion_imaging_from(
     dataset,
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = Preloads(),
     run_time_dict: Optional[Dict] = None,
 ):
     """
@@ -105,6 +112,9 @@ def inversion_imaging_from(
         input dataset's data and whose values are solved for via the inversion.
     settings
         Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+    preloads
+        Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+        for example certain matrices used by the linear algebra could be preloaded.
     run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
@@ -117,6 +127,8 @@ def inversion_imaging_from(
         for linear_obj in linear_obj_list
     ):
         use_w_tilde = False
+    elif preloads.use_w_tilde is not None:
+        use_w_tilde = preloads.use_w_tilde
     else:
         use_w_tilde = settings.use_w_tilde
 
@@ -124,13 +136,17 @@ def inversion_imaging_from(
         use_w_tilde = False
 
     if use_w_tilde:
-        w_tilde = dataset.w_tilde
+        if preloads.w_tilde is not None:
+            w_tilde = preloads.w_tilde
+        else:
+            w_tilde = dataset.w_tilde
 
         return InversionImagingWTilde(
             dataset=dataset,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
@@ -138,6 +154,7 @@ def inversion_imaging_from(
         dataset=dataset,
         linear_obj_list=linear_obj_list,
         settings=settings,
+        preloads=preloads,
         run_time_dict=run_time_dict,
     )
 
@@ -146,6 +163,7 @@ def inversion_interferometer_from(
     dataset: Union[Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = Preloads(),
     run_time_dict: Optional[Dict] = None,
 ):
     """
@@ -172,12 +190,16 @@ def inversion_interferometer_from(
     dataset
         The dataset (e.g. `Interferometer`) whose data is reconstructed via the `Inversion`.
     w_tilde
-        Object which uses the `Imaging` dataset's PSF to perform the `Inversion` using the w-tilde formalism.
+        Object which uses the `Imaging` dataset's PSF / `Convolver` operateor to perform the `Inversion` using the
+        w-tilde formalism.
     linear_obj_list
         The list of linear objects (e.g. analytic functions, a mapper with a pixelized grid) which reconstruct the
         input dataset's data and whose values are solved for via the inversion.
     settings
         Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+    preloads
+        Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+        for example certain matrices used by the linear algebra could be preloaded.
     run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
@@ -195,13 +217,17 @@ def inversion_interferometer_from(
 
     if not settings.use_linear_operators:
         if use_w_tilde:
-            w_tilde = dataset.w_tilde
+            if preloads.w_tilde is not None:
+                w_tilde = preloads.w_tilde
+            else:
+                w_tilde = dataset.w_tilde
 
             return InversionInterferometerWTilde(
                 dataset=dataset,
                 w_tilde=w_tilde,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
+                preloads=preloads,
                 run_time_dict=run_time_dict,
             )
 
@@ -210,6 +236,7 @@ def inversion_interferometer_from(
                 dataset=dataset,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
+                preloads=preloads,
                 run_time_dict=run_time_dict,
             )
 
@@ -218,5 +245,6 @@ def inversion_interferometer_from(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
             run_time_dict=run_time_dict,
         )

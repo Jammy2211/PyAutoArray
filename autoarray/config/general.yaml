@@ -16,3 +16,6 @@ pixelization:
   voronoi_nn_max_interpolation_neighbors: 300
 structures:
   native_binned_only: false           # If True, data structures are only stored in their native and binned format. This is used to reduce memory usage in autocti.
+test:
+  preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit.
+

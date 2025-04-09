@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 import numpy as np
 
@@ -93,6 +93,7 @@ class AbstractMaker:
         if isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             return self.func(self.obj, grid, *self.args, **self.kwargs)
+
         return self.func(self.obj, self.grid, *self.args, **self.kwargs)
 
     @property

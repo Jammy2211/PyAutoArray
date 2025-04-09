@@ -130,7 +130,7 @@ class Mask(AbstractNDArray, ABC):
         """
         The total number of unmasked pixels (values are `False`) in the mask.
         """
-        return (np.size(self._array) - np.sum(self._array)).astype(int)
+        return int(np.size(self._array) - np.sum(self._array))
 
     @property
     def is_all_true(self) -> bool:

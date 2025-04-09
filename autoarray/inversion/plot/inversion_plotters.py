@@ -215,9 +215,10 @@ class InversionPlotter(Plotter):
                         "inversion"
                     ]["reconstruction_vmax_factor"]
 
-                    self.mat_plot_2d.cmap.kwargs["vmax"] = (
-                        reconstruction_vmax_factor
-                        * np.max(self.inversion.reconstruction)
+                    self.mat_plot_2d.cmap.kwargs[
+                        "vmax"
+                    ] = reconstruction_vmax_factor * np.max(
+                        self.inversion.reconstruction
                     )
                     vmax_custom = True
 

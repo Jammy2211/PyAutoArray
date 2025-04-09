@@ -1,16 +1,14 @@
 import numpy as np
-import jax.numpy as jnp
 from typing import Union
 
 from autoconf import conf
 from autoconf import cached_property
 
+from autoarray.numpy_wrapper import register_pytree_node_class
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.operators.over_sampling import over_sample_util
-
-from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 @register_pytree_node_class
@@ -147,22 +145,12 @@ class OverSampler:
             over_sample_size=sub_size, mask=mask
         )
 
-
-    @property
-    def sub_is_uniform(self) -> bool:
-        """
-        Returns True if the sub_size is uniform across all pixels in the mask.
-        """
-        return np.all(
-            np.isclose(self.sub_size.array, self.sub_size.array[0])
-        )
-
     def tree_flatten(self):
-        return (self.mask, self.sub_size), ()
+        return (self.mask,), ()
 
     @classmethod
     def tree_unflatten(cls, aux_data, children):
-        return cls(mask=children[0], sub_size=children[1])
+        return cls(mask=children[0])
 
     @property
     def sub_total(self):
@@ -231,24 +219,11 @@ class OverSampler:
         except AttributeError:
             pass
 
-        if self.sub_is_uniform:
-            binned_array_2d = array.reshape(
-                self.mask.shape_slim, self.sub_size[0] ** 2
-            ).mean(axis=1)
-        else:
-
-            # Define group sizes
-            group_sizes = jnp.array(self.sub_size.array.astype("int") ** 2)
-
-            # Compute the cumulative sum of group sizes to get split points
-            split_indices = jnp.cumsum(group_sizes)
-
-            # Ensure correct concatenation by making 0 a JAX array
-            start_indices = jnp.concatenate((jnp.array([0]), split_indices[:-1]))
-
-            # Compute the group means
-            binned_array_2d = jnp.array(
-                [array[start:end].mean() for start, end in zip(start_indices, split_indices)])
+        binned_array_2d = over_sample_util.binned_array_2d_from(
+            array_2d=np.array(array),
+            mask_2d=np.array(self.mask),
+            sub_size=np.array(self.sub_size).astype("int"),
+        )
 
         return Array2D(
             values=binned_array_2d,

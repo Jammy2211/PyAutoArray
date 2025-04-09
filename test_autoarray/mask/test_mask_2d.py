@@ -142,6 +142,44 @@ def test__circular_annular():
     assert mask.mask_centre == (0.0, 0.0)
 
 
+def test__circular_anti_annular():
+    mask_via_util = aa.util.mask_2d.mask_2d_circular_anti_annular_from(
+        shape_native=(9, 9),
+        pixel_scales=(1.2, 1.2),
+        inner_radius=0.8,
+        outer_radius=2.2,
+        outer_radius_2_scaled=3.0,
+        centre=(0.0, 0.0),
+    )
+
+    mask = aa.Mask2D.circular_anti_annular(
+        shape_native=(9, 9),
+        pixel_scales=(1.2, 1.2),
+        inner_radius=0.8,
+        outer_radius=2.2,
+        outer_radius_2=3.0,
+        centre=(0.0, 0.0),
+    )
+
+    assert (mask == mask_via_util).all()
+    assert mask.origin == (0.0, 0.0)
+    assert mask.mask_centre == (0.0, 0.0)
+
+    mask = aa.Mask2D.circular_anti_annular(
+        shape_native=(9, 9),
+        pixel_scales=(1.2, 1.2),
+        inner_radius=0.8,
+        outer_radius=2.2,
+        outer_radius_2=3.0,
+        centre=(0.0, 0.0),
+        invert=True,
+    )
+
+    assert (mask == np.invert(mask_via_util)).all()
+    assert mask.origin == (0.0, 0.0)
+    assert mask.mask_centre == (0.0, 0.0)
+
+
 def test__elliptical():
     mask_via_util = aa.util.mask_2d.mask_2d_elliptical_from(
         shape_native=(8, 5),
@@ -366,37 +404,37 @@ def test__mask__input_is_1d_mask__no_shape_native__raises_exception():
 def test__is_all_true():
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_true == False
+    assert mask.is_all_true is False
 
     mask = aa.Mask2D(mask=[[False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_true == False
+    assert mask.is_all_true is False
 
     mask = aa.Mask2D(mask=[[False, True], [False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_true == False
+    assert mask.is_all_true is False
 
     mask = aa.Mask2D(mask=[[True, True], [True, True]], pixel_scales=1.0)
 
-    assert mask.is_all_true == True
+    assert mask.is_all_true is True
 
 
 def test__is_all_false():
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_false == True
+    assert mask.is_all_false is True
 
     mask = aa.Mask2D(mask=[[False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_false == True
+    assert mask.is_all_false is True
 
     mask = aa.Mask2D(mask=[[False, True], [False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_false == False
+    assert mask.is_all_false is False
 
     mask = aa.Mask2D(mask=[[True, True], [False, False]], pixel_scales=1.0)
 
-    assert mask.is_all_false == False
+    assert mask.is_all_false is False
 
 
 def test__shape_native_masked_pixels():

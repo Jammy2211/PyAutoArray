@@ -130,9 +130,9 @@ class Colorbar(AbstractMatWrap):
             cb_unit = units.colorbar_label
 
         middle_index = (len(manual_tick_labels) - 1) // 2
-        manual_tick_labels[middle_index] = (
-            rf"{manual_tick_labels[middle_index]}{cb_unit}"
-        )
+        manual_tick_labels[
+            middle_index
+        ] = rf"{manual_tick_labels[middle_index]}{cb_unit}"
 
         return manual_tick_labels
 
