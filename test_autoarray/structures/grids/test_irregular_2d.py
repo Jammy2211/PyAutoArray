@@ -95,18 +95,18 @@ def test__furthest_distances_to_other_coordinates():
 def test__grid_of_closest_from():
     grid = aa.Grid2DIrregular(values=[(0.0, 0.0), (0.0, 1.0)])
 
-    grid_of_closest = grid.grid_of_closest_from(grid_pair=np.array([[0.0, 0.1]]))
+    grid_of_closest = grid.grid_of_closest_from(grid_pair=aa.Grid2DIrregular([[0.0, 0.1]]))
 
     assert (grid_of_closest == np.array([[0.0, 0.0]])).all()
 
     grid_of_closest = grid.grid_of_closest_from(
-        grid_pair=np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.3]])
+        grid_pair=aa.Grid2DIrregular(np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.3]]))
     )
 
     assert (grid_of_closest == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])).all()
 
     grid_of_closest = grid.grid_of_closest_from(
-        grid_pair=np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.9], [0.0, -0.1]])
+        grid_pair=aa.Grid2DIrregular(np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.9], [0.0, -0.1]]))
     )
 
     assert (
