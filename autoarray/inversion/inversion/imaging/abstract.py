@@ -22,7 +22,6 @@ class AbstractInversionImaging(AbstractInversion):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads=None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -33,8 +32,7 @@ class AbstractInversionImaging(AbstractInversion):
         of the linear object parameters that best reconstruct the dataset to be solved, via linear matrix algebra.
 
         This object contains matrices and vectors which perform an inversion for fits to an `Imaging` dataset. This
-        includes operations which use a PSF / `Convolver` in order to incorporate blurring into the solved for
-        linear object pixels.
+        includes operations which use a PSF in order to incorporate blurring into the solved for linear object pixels.
 
         The inversion may be regularized, whereby the parameters of the linear objects used to reconstruct the data
         are smoothed with one another such that their solved for values conform to certain properties (e.g. smoothness
@@ -65,28 +63,20 @@ class AbstractInversionImaging(AbstractInversion):
             input dataset's data and whose values are solved for via the inversion.
         settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        preloads
-            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
-            for example certain matrices used by the linear algebra could be preloaded.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
-
-        from autoarray.preloads import Preloads
-
-        preloads = preloads or Preloads()
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
     @property
-    def convolver(self):
-        return self.dataset.convolver
+    def psf(self):
+        return self.dataset.psf
 
     @property
     def operated_mapping_matrix_list(self) -> List[np.ndarray]:
@@ -97,18 +87,20 @@ class AbstractInversionImaging(AbstractInversion):
         This is used to construct the simultaneous linear equations which reconstruct the data.
 
         This property returns the a list of each linear object's blurred mapping matrix, which is computed by
-        blurring each linear object's `mapping_matrix` property with the `Convolver` operator.
+        blurring each linear object's `mapping_matrix` property with the `psf` operator.
 
         A linear object may have a `operated_mapping_matrix_override` property, which bypasses  the `mapping_matrix`
         computation and convolution operator and is directly placed in the `operated_mapping_matrix_list`.
         """
 
         return [
-            self.convolver.convolve_mapping_matrix(
-                mapping_matrix=linear_obj.mapping_matrix
+            (
+                self.psf.convolve_mapping_matrix(
+                    mapping_matrix=linear_obj.mapping_matrix
+                )
+                if linear_obj.operated_mapping_matrix_override is None
+                else self.linear_func_operated_mapping_matrix_dict[linear_obj]
             )
-            if linear_obj.operated_mapping_matrix_override is None
-            else self.linear_func_operated_mapping_matrix_dict[linear_obj]
             for linear_obj in self.linear_obj_list
         ]
 
@@ -140,25 +132,19 @@ class AbstractInversionImaging(AbstractInversion):
         A dictionary mapping every linear function object to its operated mapping matrix.
         """
 
-        if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
-            return self._updated_cls_key_dict_from(
-                cls=AbstractLinearObjFuncList,
-                preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict,
-            )
-
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
-                operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                operated_mapping_matrix = self.psf.convolve_mapping_matrix(
                     mapping_matrix=linear_func.mapping_matrix
                 )
 
-            linear_func_operated_mapping_matrix_dict[
-                linear_func
-            ] = operated_mapping_matrix
+            linear_func_operated_mapping_matrix_dict[linear_func] = (
+                operated_mapping_matrix
+            )
 
         return linear_func_operated_mapping_matrix_dict
 
@@ -192,12 +178,6 @@ class AbstractInversionImaging(AbstractInversion):
             A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum
             of the values of a linear object function convolved with the PSF kernel at the data pixel.
         """
-        if self.preloads.data_linear_func_matrix_dict is not None:
-            return self._updated_cls_key_dict_from(
-                cls=AbstractLinearObjFuncList,
-                preload_dict=self.preloads.data_linear_func_matrix_dict,
-            )
-
         linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
 
         data_linear_func_matrix_dict = {}
@@ -237,17 +217,10 @@ class AbstractInversionImaging(AbstractInversion):
         -------
         A dictionary mapping every mapper object to its operated mapping matrix.
         """
-
-        if self.preloads.mapper_operated_mapping_matrix_dict is not None:
-            return self._updated_cls_key_dict_from(
-                cls=AbstractMapper,
-                preload_dict=self.preloads.mapper_operated_mapping_matrix_dict,
-            )
-
         mapper_operated_mapping_matrix_dict = {}
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
                 mapping_matrix=mapper.mapping_matrix
             )
 

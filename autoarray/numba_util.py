@@ -33,7 +33,7 @@ except Exception:
 
 try:
     if os.environ.get("USE_JAX") == "1":
-        logger.warning("JAX and numba do not work together, so JAX is being used.")
+        1
     else:
         import numba
 

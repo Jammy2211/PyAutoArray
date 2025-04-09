@@ -48,7 +48,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     sub_mask_1d_indexes_for_mask_1d_index = sub_mask_1d_indexes_for_mask_1d_index_from(mask=mask, sub_size=2)
     """
 
-    total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d=mask_2d)
+    total_pixels = np.sum(~mask_2d)
 
     sub_slim_indexes_for_slim_index = [[] for _ in range(total_pixels)]
 
@@ -117,12 +117,12 @@ def sub_border_pixel_slim_indexes_from(
             int(border_pixel)
         ]
 
-        sub_border_pixels[
-            border_1d_index
-        ] = grid_2d_util.furthest_grid_2d_slim_index_from(
-            grid_2d_slim=sub_grid_2d_slim,
-            slim_indexes=sub_border_pixels_of_border_pixel,
-            coordinate=mask_centre,
+        sub_border_pixels[border_1d_index] = (
+            grid_2d_util.furthest_grid_2d_slim_index_from(
+                grid_2d_slim=sub_grid_2d_slim,
+                slim_indexes=sub_border_pixels_of_border_pixel,
+                coordinate=mask_centre,
+            )
         )
 
     return sub_border_pixels

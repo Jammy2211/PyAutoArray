@@ -19,4 +19,6 @@ class ArrayOverlay(AbstractMatWrap2D):
         aspect = figure.aspect_from(shape_native=array.shape_native)
         extent = array.extent_of_zoomed_array(buffer=0)
 
-        plt.imshow(X=array.native, aspect=aspect, extent=extent, **self.config_dict)
+        print(type(array))
+
+        plt.imshow(X=array.native._array, aspect=aspect, extent=extent, **self.config_dict)

@@ -116,7 +116,7 @@ class MockGrid2DLikeObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        return np.multiply(2.0, grid)
+        return np.multiply(2.0, grid.array)
 
     @decorators.to_vector_yx
     def ndarray_yx_2d_from(self, grid, *args, **kwargs):
@@ -146,7 +146,7 @@ class MockGrid2DLikeObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
+        return [np.multiply(1.0, grid.array), np.multiply(2.0, grid.array)]
 
     @decorators.to_vector_yx
     def ndarray_yx_2d_list_from(self, grid, *args, **kwargs):
@@ -156,7 +156,7 @@ class MockGrid2DLikeObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
+        return [np.multiply(1.0, grid.array), np.multiply(2.0, grid.array)]
 
 
 class MockGridRadialMinimum:
@@ -165,7 +165,3 @@ class MockGridRadialMinimum:
 
     def radial_grid_from(self, grid):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
-
-    @decorators.relocate_to_radial_minimum
-    def deflections_yx_2d_from(self, grid):
-        return grid

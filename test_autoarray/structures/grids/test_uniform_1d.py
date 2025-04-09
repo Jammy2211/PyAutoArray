@@ -129,7 +129,7 @@ def test__grid_2d_radial_projected_from():
     grid_2d = grid_1d.grid_2d_radial_projected_from(angle=90.0)
 
     assert grid_2d.slim == pytest.approx(
-        np.array([[-1.0, 0.0], [-2.0, 0.0], [-3.0, 0.0], [-4.0, 0.0]]), 1.0e-4
+        np.array([[-1.0, 0.0], [-2.0, 0.0], [-3.0, 0.0], [-4.0, 0.0]]), abs=1.0e-4
     )
 
     grid_2d = grid_1d.grid_2d_radial_projected_from(angle=45.0)

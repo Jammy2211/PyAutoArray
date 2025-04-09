@@ -5,7 +5,6 @@ from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
 
 
 class MockInversionImaging(InversionImagingMapping):
@@ -13,25 +12,23 @@ class MockInversionImaging(InversionImagingMapping):
         self,
         data=None,
         noise_map=None,
-        convolver=None,
+        psf=None,
         linear_obj_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
     ):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
-            convolver=convolver,
+            psf=psf,
         )
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
         )
 
         self._operated_mapping_matrix = operated_mapping_matrix
@@ -73,17 +70,16 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         self,
         data=None,
         noise_map=None,
-        convolver=None,
+        psf=None,
         w_tilde=None,
         linear_obj_list=None,
         curvature_matrix_mapper_diag=None,
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
     ):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
-            convolver=convolver,
+            psf=psf,
         )
 
         super().__init__(
@@ -91,7 +87,6 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
             w_tilde=w_tilde or MockWTildeImaging(),
             linear_obj_list=linear_obj_list,
             settings=settings,
-            preloads=preloads,
         )
 
         self.__curvature_matrix_mapper_diag = curvature_matrix_mapper_diag

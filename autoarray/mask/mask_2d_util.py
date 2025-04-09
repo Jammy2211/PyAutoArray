@@ -1,393 +1,268 @@
 import numpy as np
+import jax.numpy as jnp
+from scipy.ndimage import convolve
 from typing import Tuple
 import warnings
 
 from autoarray import exc
-from autoarray import numba_util
-from autoarray import type as ty
 
 
-@numba_util.jit()
-def mask_2d_centres_from(
-    shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
-    centre: Tuple[float, float],
-) -> Tuple[float, float]:
+def native_index_for_slim_index_2d_from(
+    mask_2d: np.ndarray,
+) -> np.ndarray:
     """
-    Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
+    Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
+    corresponding native 2D pixel using its (y,x) pixel indexes.
 
-    The coordinate system is defined such that the positive y axis is up and positive x axis is right.
+    For example, for the following ``Mask2D``:
 
-    Parameters
-    ----------
-    shape_native
-        The (y,x) shape of the 2D array the scaled centre is computed for.
-    pixel_scales
-        The (y,x) scaled units to pixel units conversion factor of the 2D array.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D mask.
+    ::
+        [[True,  True,  True, True]
+         [True, False, False, True],
+         [True, False,  True, True],
+         [True,  True,  True, True]]
 
-    Returns
-    -------
-    tuple (float, float)
-        The (y,x) scaled central coordinates of the input array.
+    This has three unmasked (``False`` values) which have the ``slim`` indexes:
 
-    Examples
-    --------
-    centres_scaled = centres_from(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
-    """
-    y_centre_scaled = (float(shape_native[0] - 1) / 2) - (centre[0] / pixel_scales[0])
-    x_centre_scaled = (float(shape_native[1] - 1) / 2) + (centre[1] / pixel_scales[1])
+    ::
+        [0, 1, 2]
 
-    return (y_centre_scaled, x_centre_scaled)
+    The array ``native_index_for_slim_index_2d`` is therefore:
 
-
-@numba_util.jit()
-def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
-    """
-    Returns the total number of unmasked pixels in a mask.
+    ::
+        [[1,1], [1,2], [2,1]]
 
     Parameters
     ----------
     mask_2d
-        A 2D array of bools, where `False` values are unmasked and included when counting pixels.
+        A 2D array of bools, where `False` values are unmasked.
 
     Returns
     -------
-    int
-        The total number of pixels that are unmasked.
+    ndarray
+        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels] to its native array
+        of shape [total_pixels, total_pixels].
 
     Examples
     --------
+    mask_2d = np.array([[True, True, True],
+                     [True, False, True]
+                     [True, True, True]])
 
-    mask = np.array([[True, False, True],
-                 [False, False, False]
-                 [True, False, True]])
+    native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
+    """
+    return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
 
-    total_regular_pixels = total_regular_pixels_from(mask=mask)
+
+def mask_2d_centres_from(
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    centre: Tuple[float, float],
+) -> Tuple[float, float]:
+    """
+    Compute the (y, x) scaled central coordinates of a mask given its shape, pixel-scales, and centre.
+
+    The coordinate system is defined such that the positive y-axis is up and the positive x-axis is right.
+
+    Parameters
+    ----------
+    shape_native
+        The shape of the 2D array in pixels.
+    pixel_scales
+        The conversion factors from pixels to scaled units.
+    centre
+        The central coordinate of the mask in scaled units.
+
+    Returns
+    -------
+    The (y, x) scaled central coordinates of the input array.
+
+    Examples
+    --------
+    >>> centres_scaled = mask_2d_centres_from(shape_native=(5, 5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
+    >>> print(centres_scaled)
+    (0.0, 0.0)
     """
 
-    total_regular_pixels = 0
+    # Calculate scaled y-coordinate by centering and adjusting for pixel scale
+    y_scaled = 0.5 * (shape_native[0] - 1) - (centre[0] / pixel_scales[0])
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                total_regular_pixels += 1
+    # Calculate scaled x-coordinate by centering and adjusting for pixel scale
+    x_scaled = 0.5 * (shape_native[1] - 1) + (centre[1] / pixel_scales[1])
 
-    return total_regular_pixels
+    # Return the scaled (y, x) coordinates
+    return (y_scaled, x_scaled)
 
 
-@numba_util.jit()
 def mask_2d_circular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    pixel_scales: Tuple[float, float],
     radius: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns a circular mask from the 2D mask array shape and radius of the circle.
+    Create a circular mask within a 2D array.
 
-    This creates a 2D array where all values within the mask radius are unmasked and therefore `False`.
+    This generates a 2D array where all values within the specified radius are unmasked (set to `False`).
 
     Parameters
     ----------
-    shape_native: Tuple[int, int]
-        The (y,x) shape of the mask in units of pixels.
+    shape_native
+        The shape of the mask array in pixels.
     pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
+        The conversion factors from pixels to scaled units.
     radius
-        The radius (in scaled units) of the circle within which pixels unmasked.
+        The radius of the circular mask in scaled units.
     centre
-            The centre of the circle used to mask pixels.
+        The central coordinate of the circle in scaled units.
 
     Returns
     -------
-    ndarray
-        The 2D mask array whose central pixels are masked as a circle.
+    The 2D mask array with the central region defined by the radius unmasked (False).
 
     Examples
     --------
-    mask = mask_circular_from(
-        shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
+    >>> mask = mask_2d_circular_from(shape_native=(10, 10), pixel_scales=(0.1, 0.1), radius=0.5, centre=(0.0, 0.0))
     """
 
-    mask_2d = np.full(shape_native, True)
+    # Get scaled coordinates of the mask center
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
-    )
+    # Create a grid of y, x indices for the mask
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+    # Scale the y and x indices based on pixel scales
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
+    # Compute squared distances from the center for each pixel
+    distances_squared = x_scaled**2 + y_scaled**2
 
-            if r_scaled <= radius:
-                mask_2d[y, x] = False
-
-    return mask_2d
+    # Return a mask with True for pixels outside the circle and False for inside
+    return distances_squared >= radius**2
 
 
-@numba_util.jit()
 def mask_2d_circular_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    pixel_scales: Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns an circular annular mask from an input inner and outer mask radius and shape.
+    Create a circular annular mask within a 2D array.
 
-    This creates a 2D array where all values within the inner and outer radii are unmasked and therefore `False`.
-
-    Parameters
-    ----------
-    shape_native
-        The (y,x) shape of the mask in units of pixels.
-    pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
-    inner_radius
-        The radius (in scaled units) of the inner circle outside of which pixels are unmasked.
-    outer_radius
-        The radius (in scaled units) of the outer circle within which pixels are unmasked.
-    centre
-            The centre of the annulus used to mask pixels.
-
-    Returns
-    -------
-    ndarray
-        The 2D mask array whose central pixels are masked as a annulus.
-
-    Examples
-    --------
-    mask = mask_annnular_from(
-        shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
-    """
-
-    mask_2d = np.full(shape_native, True)
-
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
-    )
-
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
-
-            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
-
-            if outer_radius >= r_scaled >= inner_radius:
-                mask_2d[y, x] = False
-
-    return mask_2d
-
-
-@numba_util.jit()
-def mask_2d_circular_anti_annular_from(
-    shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
-    inner_radius: float,
-    outer_radius: float,
-    outer_radius_2_scaled: float,
-    centre: Tuple[float, float] = (0.0, 0.0),
-) -> np.ndarray:
-    """
-    Returns an anti-annular mask from an input inner and outer mask radius and shape. The anti-annular is analogous to
-    the annular mask but inverted, whereby its unmasked values are those inside the annulus.
-
-    This creates a 2D array where all values outside the inner and outer radii are unmasked and therefore `False`.
+    This generates a 2D array where all values within the specified inner and outer radii are unmasked (set to `False`).
 
     Parameters
     ----------
     shape_native
-        The (y,x) shape of the mask in units of pixels.
+        The shape of the mask array in pixels.
     pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
+        The conversion factors from pixels to scaled units.
     inner_radius
-        The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
+        The inner radius of the annular mask in scaled units.
     outer_radius
-        The first outer radius in scaled units of the annulus within which pixels are `True` and masked.
-    outer_radius_2
-        The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
-        outside of which all entries are `True` and masked.
+        The outer radius of the annular mask in scaled units.
     centre
-            The centre of the annulus used to mask pixels.
+        The central coordinate of the annulus in scaled units.
 
     Returns
     -------
-    ndarray
-        The 2D mask array whose central pixels are masked as a annulus.
+    The 2D mask array with the region between the inner and outer radii unmasked (False).
 
     Examples
     --------
-    mask = mask_annnular_from(
-        shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
-
+    >>> mask = mask_2d_circular_annular_from(
+    >>>     shape_native=(10, 10), pixel_scales=(0.1, 0.1), inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0)
+    >>> )
     """
 
-    mask_2d = np.full(shape_native, True)
+    # Get scaled coordinates of the mask center
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
-    )
+    # Create grid of y, x indices for the mask
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+    # Scale the y and x indices based on pixel scales
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
+    # Compute squared distances from the center for each pixel
+    distances_squared = x_scaled**2 + y_scaled**2
 
-            if (
-                inner_radius >= r_scaled
-                or outer_radius_2_scaled >= r_scaled >= outer_radius
-            ):
-                mask_2d[y, x] = False
-
-    return mask_2d
-
-
-def mask_2d_via_pixel_coordinates_from(
-    shape_native: Tuple[int, int], pixel_coordinates: [list], buffer: int = 0
-) -> np.ndarray:
-    """
-    Returns a mask where all unmasked `False` entries are defined from an input list of list of pixel coordinates.
-
-    These may be buffed via an input ``buffer``, whereby all entries in all 8 neighboring directions by this
-    amount.
-
-    Parameters
-    ----------
-    shape_native (int, int)
-        The (y,x) shape of the mask in units of pixels.
-    pixel_coordinates : [[int, int]]
-        The input lists of 2D pixel coordinates where `False` entries are created.
-    buffer
-        All input ``pixel_coordinates`` are buffed with `False` entries in all 8 neighboring directions by this
-        amount.
-    """
-
-    mask_2d = np.full(shape=shape_native, fill_value=True)
-
-    for y, x in pixel_coordinates:
-        mask_2d[y, x] = False
-
-    if buffer == 0:
-        return mask_2d
-    else:
-        return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
-
-
-@numba_util.jit()
-def elliptical_radius_from(
-    y_scaled: float, x_scaled: float, angle: float, axis_ratio: float
-) -> float:
-    """
-    Returns the elliptical radius of an ellipse from its (y,x) scaled centre, rotation angle `angle` defined in degrees
-    counter-clockwise from the positive x-axis and its axis-ratio.
-
-    This is used by the function `mask_elliptical_from` to determine the radius of every (y,x) coordinate in elliptical
-    units when deciding if it is within the mask.
-
-    Parameters
-    ----------
-    y_scaled
-        The scaled y coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    x_scaled
-        The scaled x coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    angle
-            The rotation angle in degrees counter-clockwise from the positive x-axis
-    axis_ratio
-            The axis-ratio of the ellipse (minor axis / major axis).
-
-    Returns
-    -------
-    float
-        The radius of the input scaled (y,x) coordinate on the ellipse's ellipitcal coordinate system.
-    """
-    r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
-
-    theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
-
-    y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
-    x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
-
-    return np.sqrt(
-        x_scaled_elliptical**2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0
+    # Return the mask where pixels are unmasked between inner and outer radii
+    return ~(
+        (distances_squared >= inner_radius**2) & (distances_squared <= outer_radius**2)
     )
 
 
-@numba_util.jit()
 def mask_2d_elliptical_from(
     shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    pixel_scales: Tuple[float, float],
     major_axis_radius: float,
     axis_ratio: float,
     angle: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle, shape and
-    centre.
+    Create an elliptical mask within a 2D array.
 
-    This creates a 2D array where all values within the ellipse are unmasked and therefore `False`.
+    This generates a 2D array where all values within the specified ellipse are unmasked (set to `False`).
 
     Parameters
     ----------
-    shape_native: Tuple[int, int]
-        The (y,x) shape of the mask in units of pixels.
+    shape_native
+        The shape of the mask array in pixels.
     pixel_scales
-        The scaled units to pixel units conversion factor of each pixel.
+        The conversion factors from pixels to scaled units.
     major_axis_radius
-        The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
+        The major axis radius of the elliptical mask in scaled units.
     axis_ratio
-            The axis-ratio of the ellipse within which pixels are unmasked.
+        The axis ratio of the ellipse (minor axis / major axis).
     angle
-            The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
-         x-axis).
+        The rotation angle of the ellipse in degrees, counter-clockwise from the positive x-axis.
     centre
-            The centre of the ellipse used to mask pixels.
+        The central coordinate of the ellipse in scaled units.
 
     Returns
     -------
-    ndarray
-        The 2D mask array whose central pixels are masked as an ellipse.
+    np.ndarray
+        The 2D mask array with the elliptical region defined by the major axis radius unmasked (False).
 
     Examples
     --------
-    mask = mask_elliptical_from(
-        shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, ell_comps=(0.333333, 0.0), centre=(0.0, 0.0))
+    >>> mask = mask_2d_elliptical_from(
+    >>>     shape_native=(10, 10), pixel_scales=(0.1, 0.1), major_axis_radius=0.5, axis_ratio=0.5, angle=45.0, centre=(0.0, 0.0)
+    >>> )
     """
 
-    mask_2d = np.full(shape_native, True)
+    # Get scaled coordinates of the mask center
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+    # Create grid of y, x indices for the mask
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+
+    # Scale the y and x indices based on pixel scales
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+
+    # Compute the rotated coordinates and elliptical radius
+    r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
+    theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
+    y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
+    x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
+    r_scaled_elliptical = np.sqrt(
+        x_scaled_elliptical**2 + (y_scaled_elliptical / axis_ratio) ** 2
     )
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
-
-            r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, angle, axis_ratio
-            )
-
-            if r_scaled_elliptical <= major_axis_radius:
-                mask_2d[y, x] = False
-
-    return mask_2d
+    # Return the mask where pixels are outside the elliptical region
+    return ~(r_scaled_elliptical <= major_axis_radius)
 
 
-@numba_util.jit()
 def mask_2d_elliptical_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: ty.PixelScales,
+    pixel_scales: Tuple[float, float],
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
     inner_phi: float,
@@ -423,7 +298,7 @@ def mask_2d_elliptical_annular_from(
         The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
         positive x-axis).
     centre
-            The centre of the elliptical annuli used to mask pixels.
+        The centre of the elliptical annuli used to mask pixels.
 
     Returns
     -------
@@ -432,42 +307,162 @@ def mask_2d_elliptical_annular_from(
 
     Examples
     --------
-    mask = mask_elliptical_annuli_from(
-        shape=(10, 10), pixel_scales=0.1,
-         inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
-         outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
-         centre=(0.0, 0.0))
+    >>> mask = mask_elliptical_annuli_from(
+    >>>     shape=(10, 10), pixel_scales=(0.1, 0.1),
+    >>>     inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
+    >>>     outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
+    >>>     centre=(0.0, 0.0)
+    >>> )
     """
 
-    mask_2d = np.full(shape_native, True)
+    # Get scaled coordinates of the mask center
+    centres_scaled = mask_2d_centres_from(shape_native, pixel_scales, centre)
 
-    centres_scaled = mask_2d_centres_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+    # Create grid of y, x indices for the mask
+    y, x = np.ogrid[: shape_native[0], : shape_native[1]]
+
+    # Scale the y and x indices based on pixel scales
+    y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+    x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+
+    # Compute and rotate coordinates for inner annulus
+    r_scaled_inner = np.sqrt(x_scaled**2 + y_scaled**2)
+    theta_rotated_inner = np.arctan2(y_scaled, x_scaled) + np.radians(inner_phi)
+    y_scaled_elliptical_inner = r_scaled_inner * np.sin(theta_rotated_inner)
+    x_scaled_elliptical_inner = r_scaled_inner * np.cos(theta_rotated_inner)
+    r_scaled_elliptical_inner = np.sqrt(
+        x_scaled_elliptical_inner**2
+        + (y_scaled_elliptical_inner / inner_axis_ratio) ** 2
     )
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-            x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+    # Compute and rotate coordinates for outer annulus
+    r_scaled_outer = np.sqrt(x_scaled**2 + y_scaled**2)
+    theta_rotated_outer = np.arctan2(y_scaled, x_scaled) + np.radians(outer_phi)
+    y_scaled_elliptical_outer = r_scaled_outer * np.sin(theta_rotated_outer)
+    x_scaled_elliptical_outer = r_scaled_outer * np.cos(theta_rotated_outer)
+    r_scaled_elliptical_outer = np.sqrt(
+        x_scaled_elliptical_outer**2
+        + (y_scaled_elliptical_outer / outer_axis_ratio) ** 2
+    )
 
-            inner_r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, inner_phi, inner_axis_ratio
-            )
-
-            outer_r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, outer_phi, outer_axis_ratio
-            )
-
-            if (
-                inner_r_scaled_elliptical >= inner_major_axis_radius
-                and outer_r_scaled_elliptical <= outer_major_axis_radius
-            ):
-                mask_2d[y, x] = False
-
-    return mask_2d
+    # Return the mask where pixels are outside the inner and outer elliptical annuli
+    return ~(
+        (r_scaled_elliptical_inner >= inner_major_axis_radius)
+        & (r_scaled_elliptical_outer <= outer_major_axis_radius)
+    )
 
 
-@numba_util.jit()
+def mask_2d_via_pixel_coordinates_from(
+    shape_native: Tuple[int, int], pixel_coordinates: list, buffer: int = 0
+) -> np.ndarray:
+    """
+    Returns a mask where all unmasked `False` entries are defined from an input list of 2D pixel coordinates.
+
+    These may be buffed via an input `buffer`, whereby all entries in all 8 neighboring directions are buffed by this
+    amount.
+
+    Parameters
+    ----------
+    shape_native
+        The (y, x) shape of the mask in units of pixels.
+    pixel_coordinates
+        The input list of 2D pixel coordinates where `False` entries are created.
+    buffer
+        All input `pixel_coordinates` are buffed with `False` entries in all 8 neighboring directions by this
+        amount.
+
+    Returns
+    -------
+    np.ndarray
+        The 2D mask array where all entries in the input pixel coordinates are set to `False`, with optional buffering
+        applied to the neighboring entries.
+
+    Examples
+    --------
+    mask = mask_2d_via_pixel_coordinates_from(
+        shape_native=(10, 10),
+        pixel_coordinates=[[1, 2], [3, 4], [5, 6]],
+        buffer=1
+    )
+    """
+    mask_2d = np.full(
+        shape=shape_native, fill_value=True
+    )  # Initialize mask with all True values
+
+    for (
+        y,
+        x,
+    ) in (
+        pixel_coordinates
+    ):  # Loop over input coordinates to set corresponding mask entries to False
+        mask_2d[y, x] = False
+
+    if buffer == 0:  # If no buffer is specified, return the mask directly
+        return mask_2d
+    return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)  # Apply buf
+
+
+def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
+    """
+    Compute the minimum 1D distance in the y and x directions from any `False` value at the mask's extreme positions
+    (leftmost, rightmost, topmost, bottommost) to its closest edge.
+
+    Parameters
+    ----------
+    mask
+        A 2D boolean array where `False` represents the unmasked region.
+
+    Returns
+    -------
+    Tuple[int, int]
+        The smallest distances of any extreme `False` value to the nearest edge in the vertical (y) and horizontal (x)
+        directions.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...     [ True,  True,  True,  True],
+    ...     [ True, False, False,  True],
+    ...     [ True, False,  True,  True],
+    ...     [ True,  True,  True,  True]
+    ... ])
+    >>> min_false_distance_to_edge(mask)
+    (1, 1)
+    """
+    false_indices = np.column_stack(
+        np.where(mask == False)
+    )  # Find all coordinates where mask is False
+
+    if false_indices.size == 0:
+        raise ValueError(
+            "No False values found in the mask."
+        )  # Raise error if no False values
+
+    leftmost = false_indices[
+        np.argmin(false_indices[:, 1])
+    ]  # Find the leftmost False coordinate
+    rightmost = false_indices[
+        np.argmax(false_indices[:, 1])
+    ]  # Find the rightmost False coordinate
+    topmost = false_indices[
+        np.argmin(false_indices[:, 0])
+    ]  # Find the topmost False coordinate
+    bottommost = false_indices[
+        np.argmax(false_indices[:, 0])
+    ]  # Find the bottommost False coordinate
+
+    height, width = mask.shape  # Get the height and width of the mask
+
+    # Compute distances to respective edges
+    left_dist = leftmost[1]  # Distance to left edge (column index)
+    right_dist = width - 1 - rightmost[1]  # Distance to right edge
+    top_dist = topmost[0]  # Distance to top edge (row index)
+    bottom_dist = height - 1 - bottommost[0]  # Distance to bottom edge
+
+    # Return the minimum distance to both edges
+    return min(top_dist, bottom_dist), min(left_dist, right_dist)
+
+
 def blurring_mask_2d_from(
     mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
 ) -> np.ndarray:
@@ -503,78 +498,33 @@ def blurring_mask_2d_from(
 
     """
 
-    blurring_mask_2d = np.full(mask_2d.shape, True)
+    # Get the distance from False values to edges
+    y_distance, x_distance = min_false_distance_to_edge(mask_2d)
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                for y1 in range(
-                    (-kernel_shape_native[0] + 1) // 2,
-                    (kernel_shape_native[0] + 1) // 2,
-                ):
-                    for x1 in range(
-                        (-kernel_shape_native[1] + 1) // 2,
-                        (kernel_shape_native[1] + 1) // 2,
-                    ):
-                        if (
-                            0 <= x + x1 <= mask_2d.shape[1] - 1
-                            and 0 <= y + y1 <= mask_2d.shape[0] - 1
-                        ):
-                            if mask_2d[y + y1, x + x1]:
-                                blurring_mask_2d[y + y1, x + x1] = False
-                        else:
-                            raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the edge "
-                                "of the mask - pad the datas array before masking"
-                            )
+    # Compute kernel half-size in y and x direction
+    y_kernel_distance = (kernel_shape_native[0]) // 2
+    x_kernel_distance = (kernel_shape_native[1]) // 2
 
-    return blurring_mask_2d
+    # Check if mask is too small for the kernel size
+    if (y_distance < y_kernel_distance) or (x_distance < x_kernel_distance):
+        raise exc.MaskException(
+            "The input mask is too small for the kernel shape. "
+            "Please pad the mask before computing the blurring mask."
+        )
 
+    # Create a kernel with the given PSF shape
+    kernel = np.ones(kernel_shape_native, dtype=np.uint8)
 
-@numba_util.jit()
-def mask_2d_via_shape_native_and_native_for_slim(
-    shape_native: Tuple[int, int], native_for_slim: np.ndarray
-) -> np.ndarray:
-    """
-    For a slimmed set of data that was computed by mapping unmasked values from a native 2D array of shape
-    (total_y_pixels, total_x_pixels), map its slimmed indexes back to the original 2D array to create the
-    native 2D mask.
+    # Convolve mask with kernel producing non-zero values around mask False values
+    convolved_mask = convolve(mask_2d.astype(np.uint8), kernel, mode="reflect", cval=0)
 
-    This uses an array 'native_for_slim' of shape [total_masked_pixels[ where each index gives the native 2D pixel
-    indexes of the slimmed array's unmasked pixels, for example:
+    # Identify pixels that are non-zero and fully covered by kernel
+    result_mask = convolved_mask == np.prod(kernel_shape_native)
 
-    - If native_for_slim[0] = [0,0], the first value of the slimmed array maps to the pixel [0,0] of the native 2D array.
-    - If native_for_slim[1] = [0,1], the second value of the slimmed array maps to the pixel [0,1] of the native 2D array.
-    - If native_for_slim[4] = [1,1], the fifth value of the slimmed array maps to the pixel [1,1] of the native 2D array.
-
-    Parameters
-    ----------
-    shape_native
-        The shape of the 2D array which the pixels are defined on.
-    native_for_slim
-        An array describing the native 2D array index that every slimmed array index maps too.
-
-    Returns
-    -------
-    ndarray
-        A 2D mask array where unmasked values are `False`.
-
-    Examples
-    --------
-    native_for_slim = np.array([[0,1], [1,0], [1,1], [1,2], [2,1]])
-
-    mask = mask_from(shape=(3,3), native_for_slim=native_for_slim)
-    """
-
-    mask = np.ones(shape_native)
-
-    for index in range(len(native_for_slim)):
-        mask[native_for_slim[index, 0], native_for_slim[index, 1]] = False
-
-    return mask
+    # Create the blurring mask by removing False values in original mask
+    return ~mask_2d + result_mask
 
 
-@numba_util.jit()
 def mask_slim_indexes_from(
     mask_2d: np.ndarray, return_masked_indexes: bool = True
 ) -> np.ndarray:
@@ -584,12 +534,12 @@ def mask_slim_indexes_from(
     For example, for the following ``Mask2D``:
 
     ::
-        [[True,  True,  True, True]
+        [[True,  True,  True, True],
          [True, False, False, True],
          [True, False,  True, True],
          [True,  True,  True, True]]
 
-    This has three unmasked (``False`` values) which have the ``slim`` indexes, there ``unmasked_slim`` is:
+    This has three unmasked (``False`` values) which have the ``slim`` indexes, their ``unmasked_slim`` is:
 
     ::
         [0, 1, 2]
@@ -597,112 +547,37 @@ def mask_slim_indexes_from(
     Parameters
     ----------
     mask_2d
-        The mask for which the 1D unmasked pixel indexes are computed.
+        A 2D array representing the mask, where `True` indicates a masked pixel and `False` indicates an unmasked pixel.
     return_masked_indexes
-        Whether to return the masked index values (`value=True`) or the unmasked index values (`value=False`).
+        A boolean flag that determines whether to return indexes of masked (`True`) or unmasked (`False`) pixels.
 
     Returns
     -------
-    np.ndarray
-        The 1D indexes of all unmasked pixels on the mask.
+    A 1D array of indexes corresponding to either the masked or unmasked pixels in the mask.
+
+    Examples
+    --------
+    >>> mask = np.array([[True, True, True, True],
+    ...                  [True, False, False, True],
+    ...                  [True, False, True, True],
+    ...                  [True, True, True, True]])
+    >>> mask_slim_indexes_from(mask, return_masked_indexes=True)
+    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> mask_slim_indexes_from(mask, return_masked_indexes=False)
+    array([10, 11])
     """
+    # Flatten the mask and use np.where to get indexes of either True or False
+    mask_flat = mask_2d.flatten()
 
-    mask_pixel_total = 0
-
-    for y in range(0, mask_2d.shape[0]):
-        for x in range(0, mask_2d.shape[1]):
-            if mask_2d[y, x] == return_masked_indexes:
-                mask_pixel_total += 1
-
-    mask_pixels = np.zeros(mask_pixel_total)
-    mask_index = 0
-    regular_index = 0
-
-    for y in range(0, mask_2d.shape[0]):
-        for x in range(0, mask_2d.shape[1]):
-            if mask_2d[y, x] == return_masked_indexes:
-                mask_pixels[mask_index] = regular_index
-                mask_index += 1
-
-            regular_index += 1
-
-    return mask_pixels
+    # Get the indexes where the mask is equal to return_masked_indexes (True or False)
+    return np.where(mask_flat == return_masked_indexes)[0]
 
 
-@numba_util.jit()
-def check_if_edge_pixel(mask_2d: np.ndarray, y: int, x: int) -> bool:
-    """
-    Checks if an input [y,x] pixel on the input `mask` is an edge-pixel.
-
-    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
-    direct neighbors is masked (is `True`).
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the input pixel is checked if it is an edge pixel.
-    y
-        The y pixel coordinate on the mask that is checked for if it is an edge pixel.
-    x
-        The x pixel coordinate on the mask that is checked for if it is an edge pixel.
-
-    Returns
-    -------
-    bool
-        If `True` the pixel on the mask is an edge pixel, else a `False` is returned because it is not.
-    """
-
-    if (
-        mask_2d[y + 1, x]
-        or mask_2d[y - 1, x]
-        or mask_2d[y, x + 1]
-        or mask_2d[y, x - 1]
-        or mask_2d[y + 1, x + 1]
-        or mask_2d[y + 1, x - 1]
-        or mask_2d[y - 1, x + 1]
-        or mask_2d[y - 1, x - 1]
-    ):
-        return True
-    else:
-        return False
-
-
-@numba_util.jit()
-def total_edge_pixels_from(mask_2d: np.ndarray) -> int:
-    """
-    Returns the total number of edge-pixels in a mask.
-
-    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
-    direct neighbors is masked (is `True`).
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the total number of edge pixels is computed.
-
-    Returns
-    -------
-    int
-        The total number of edge pixels.
-    """
-
-    edge_pixel_total = 0
-
-    for y in range(1, mask_2d.shape[0] - 1):
-        for x in range(1, mask_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
-                if check_if_edge_pixel(mask_2d=mask_2d, y=y, x=x):
-                    edge_pixel_total += 1
-
-    return edge_pixel_total
-
-
-@numba_util.jit()
 def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
     Returns a 1D array listing all edge pixel indexes in the mask.
 
-    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
+    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least one of its 8
     direct neighbors is masked (is `True`).
 
     For example, for the following ``Mask2D``:
@@ -726,137 +601,57 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     Parameters
     ----------
     mask_2d
-        The mask for which the 1D edge pixel indexes are computed.
+        A 2D boolean array where `False` values indicate unmasked pixels.
 
     Returns
     -------
-    np.ndarray
-        The 1D indexes of all edge pixels on the mask.
+    A 1D array of indexes of all edge pixels on the mask.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...     [True, True, True, True, True],
+    ...     [True, False, False, False, True],
+    ...     [True, False, False, False, True],
+    ...     [True, False, False, False, True],
+    ...     [True, True, True, True, True]
+    ... ])
+    >>> edge_1d_indexes_from(mask)
+    array([0, 1, 2, 3, 5, 6, 7, 8])
     """
+    # Pad the mask to handle edge cases without index errors
+    padded_mask = np.pad(mask_2d, pad_width=1, mode="constant", constant_values=True)
 
-    edge_pixel_total = total_edge_pixels_from(mask_2d)
+    # Identify neighbors in 3x3 regions around each pixel
+    neighbors = (
+        padded_mask[:-2, 1:-1]
+        | padded_mask[2:, 1:-1]  # Up, Down
+        | padded_mask[1:-1, :-2]
+        | padded_mask[1:-1, 2:]  # Left, Right
+        | padded_mask[:-2, :-2]
+        | padded_mask[:-2, 2:]  # Top-left, Top-right
+        | padded_mask[2:, :-2]
+        | padded_mask[2:, 2:]  # Bottom-left, Bottom-right
+    )
 
-    edge_pixels = np.zeros(edge_pixel_total)
-    edge_index = 0
-    regular_index = 0
+    # Identify edge pixels: False values with at least one True neighbor
+    edge_mask = ~mask_2d & neighbors
 
-    for y in range(1, mask_2d.shape[0] - 1):
-        for x in range(1, mask_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
-                if (
-                    mask_2d[y + 1, x]
-                    or mask_2d[y - 1, x]
-                    or mask_2d[y, x + 1]
-                    or mask_2d[y, x - 1]
-                    or mask_2d[y + 1, x + 1]
-                    or mask_2d[y + 1, x - 1]
-                    or mask_2d[y - 1, x + 1]
-                    or mask_2d[y - 1, x - 1]
-                ):
-                    edge_pixels[edge_index] = regular_index
-                    edge_index += 1
+    # Create an index array where False entries get sequential 1D indices
+    index_array = np.full(mask_2d.shape, fill_value=-1, dtype=int)
+    false_indices = np.flatnonzero(~mask_2d)
+    index_array[~mask_2d] = np.arange(len(false_indices))
 
-                regular_index += 1
-
-    return edge_pixels
-
-
-@numba_util.jit()
-def check_if_border_pixel(
-    mask_2d: np.ndarray, edge_pixel_slim: int, native_to_slim: np.ndarray
-) -> bool:
-    """
-    Checks if an input [y,x] pixel on the input `mask` is a border-pixel.
-
-    A borders pixel is a pixel which:
-
-    1) is not fully surrounding by `False` mask values.
-    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-       left, right).
-
-    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
-    pixels in an annular mask are edge pixels but not borders pixels.
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the input pixel is checked if it is a border pixel.
-    edge_pixel_slim
-        The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `native_index_for_slim_index_2d`).
-    native_to_slim
-        An array describing the native 2D array index that every slimmed array index maps too.
-
-    Returns
-    -------
-    bool
-        If `True` the pixel on the mask is a border pixel, else a `False` is returned because it is not.
-    """
-    edge_pixel_index = int(edge_pixel_slim)
-
-    y = int(native_to_slim[edge_pixel_index, 0])
-    x = int(native_to_slim[edge_pixel_index, 1])
-
-    if (
-        np.sum(mask_2d[0:y, x]) == y
-        or np.sum(mask_2d[y, x : mask_2d.shape[1]]) == mask_2d.shape[1] - x - 1
-        or np.sum(mask_2d[y : mask_2d.shape[0], x]) == mask_2d.shape[0] - y - 1
-        or np.sum(mask_2d[y, 0:x]) == x
-    ):
-        return True
-    else:
-        return False
+    # Return the 1D indexes of the edge pixels
+    return index_array[edge_mask]
 
 
-@numba_util.jit()
-def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
-    """
-    Returns the total number of border-pixels in a mask.
-
-    A borders pixel is a pixel which:
-
-    1) is not fully surrounding by `False` mask values.
-    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-       left, right).
-
-    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
-    pixels in an annular mask are edge pixels but not borders pixels.
-
-    Parameters
-    ----------
-    mask_2d
-        The mask for which the total number of border pixels is computed.
-    edge_pixel_1d
-        The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `native_index_for_slim_index_2d`).
-    native_to_slim
-        An array describing the 2D array index that every 1D array index maps too.
-
-    Returns
-    -------
-    int
-        The total number of border pixels.
-    """
-
-    border_pixel_total = 0
-
-    for i in range(edge_pixels.shape[0]):
-        if check_if_border_pixel(mask_2d, edge_pixels[i], native_to_slim):
-            border_pixel_total += 1
-
-    return border_pixel_total
-
-
-@numba_util.jit()
 def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
-    Returns a slim array of shape [total_unmasked_border_pixels] listing all borders pixel indexes in the mask.
+    Returns a 1D array listing all border pixel indexes in the mask.
 
-    A borders pixel is a pixel which:
-
-    1) is not fully surrounding by `False` mask values.
-    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-       left, right).
+    A border pixel is an unmasked pixel (`False` value) that can reach the edge of the mask without encountering
+    a masked (`True`) pixel in any of the four cardinal directions (up, down, left, right).
 
     The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
     pixels in an annular mask are edge pixels but not borders pixels.
@@ -885,73 +680,112 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     Parameters
     ----------
     mask_2d
-        The mask for which the slimmed border pixel indexes are calculated.
+        A 2D boolean array where `False` values indicate unmasked pixels.
 
     Returns
     -------
-    np.ndarray
-        The slimmed indexes of all border pixels on the mask.
+    A 1D array of indexes of all border pixels on the mask.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...    [True,  True,  True,  True,  True,  True,  True,  True, True],
+    ...    [True, False, False, False, False, False, False, False, True],
+    ...    [True, False,  True,  True,  True,  True,  True, False, True],
+    ...    [True, False,  True, False, False, False,  True, False, True],
+    ...    [True, False,  True, False,  True, False,  True, False, True],
+    ...    [True, False,  True, False, False, False,  True, False, True],
+    ...    [True, False,  True,  True,  True,  True,  True, False, True],
+    ...    [True, False, False, False, False, False, False, False, True],
+    ...    [True,  True,  True,  True,  True,  True,  True,  True, True]
+    ... ])
+    >>> border_slim_indexes_from(mask)
+    array([0, 1, 2, 3, 5, 6, 7, 11, 12, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29])
     """
 
-    edge_pixels = edge_1d_indexes_from(mask_2d=mask_2d)
-    native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(
-        mask_2d=mask_2d,
-    )
+    # Compute cumulative sums along each direction
+    up_sums = np.cumsum(mask_2d, axis=0)
+    down_sums = np.cumsum(mask_2d[::-1, :], axis=0)[::-1, :]
+    left_sums = np.cumsum(mask_2d, axis=1)
+    right_sums = np.cumsum(mask_2d[:, ::-1], axis=1)[:, ::-1]
 
-    border_pixel_total = total_border_pixels_from(
-        mask_2d=mask_2d,
-        edge_pixels=edge_pixels,
-        native_to_slim=native_index_for_slim_index_2d,
-    )
+    # Get mask dimensions
+    height, width = mask_2d.shape
 
-    border_pixels = np.zeros(border_pixel_total)
+    # Identify border pixels: where the full length in any direction is True
+    border_mask = (
+        (up_sums == np.arange(height)[:, None])
+        | (down_sums == np.arange(height - 1, -1, -1)[:, None])
+        | (left_sums == np.arange(width)[None, :])
+        | (right_sums == np.arange(width - 1, -1, -1)[None, :])
+    ) & ~mask_2d
 
-    border_pixel_index = 0
+    # Create an index array where False entries get sequential 1D indices
+    index_array = np.full(mask_2d.shape, fill_value=-1, dtype=int)
+    false_indices = np.flatnonzero(~mask_2d)
+    index_array[~mask_2d] = np.arange(len(false_indices))
 
-    for edge_pixel_index in range(edge_pixels.shape[0]):
-        if check_if_border_pixel(
-            mask_2d=mask_2d,
-            edge_pixel_slim=edge_pixels[edge_pixel_index],
-            native_to_slim=native_index_for_slim_index_2d,
-        ):
-            border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]
-            border_pixel_index += 1
-
-    return border_pixels
+    # Return the 1D indexes of the border pixels
+    return index_array[border_mask]
 
 
-@numba_util.jit()
 def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:
     """
-    Returns a buffed mask from an input mask, where the buffed mask is the input mask but all `False` entries in the
-    mask are buffed by an integer amount in all 8 surrouning pixels.
+    Returns a buffed mask from an input mask, where all `False` entries in the mask are "buffed" (set to `False`)
+    within a specified buffer range in all 8 surrounding directions.
+
+    A "buffed" mask is created by marking all the pixels within a square of size `buffer` around each `False`
+    entry as `False`. This process simulates expanding the masked region around each `False` entry by the specified
+    buffer distance.
 
     Parameters
     ----------
     mask_2d
-        The mask whose `False` entries are buffed.
+        A 2D boolean array where `False` values indicate unmasked pixels.
     buffer
-        The number of pixels around each `False` entry that pixel are buffed in all 8 directions.
+        The number of pixels around each `False` entry that should be buffed in all 8 surrounding directions.
+        This controls how far the "buffed" region extends from each `False` value.
 
     Returns
     -------
-    np.ndarray
-        The buffed mask.
+    A new 2D boolean array where all `False` entries in the input mask are expanded by the specified buffer
+    distance, setting all pixels within the buffer range to `False`.
+
+    Examples
+    --------
+    >>> mask = np.array([
+    ...     [True, False, True],
+    ...     [False, False, False],
+    ...     [True, True, False]
+    ... ])
+    >>> buffed_mask_2d_from(mask, buffer=1)
+    array([[False, False, False],
+           [False, False, False],
+           [False, False, False]])
     """
+    # Initialize buffed mask as a copy of the input mask
     buffed_mask_2d = mask_2d.copy()
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                for y0 in range(y - buffer, y + 1 + buffer):
-                    for x0 in range(x - buffer, x + 1 + buffer):
-                        if (
-                            y0 >= 0
-                            and x0 >= 0
-                            and y0 <= mask_2d.shape[0] - 1
-                            and x0 <= mask_2d.shape[1] - 1
-                        ):
-                            buffed_mask_2d[y0, x0] = False
+    # Identify the coordinates of all False entries
+    false_coords = np.nonzero(~mask_2d)
+
+    # Create grid of offsets for the neighboring pixels (buffer range)
+    buffer_range = np.arange(-buffer, buffer + 1)
+
+    # Generate all possible neighbors for each False entry
+    dy, dx = np.meshgrid(buffer_range, buffer_range, indexing="ij")
+    neighbors = np.stack([dy.ravel(), dx.ravel()], axis=-1)
+
+    # Calculate all neighboring positions for all False coordinates
+    all_neighbors = np.add(np.array(false_coords).T[:, np.newaxis], neighbors)
+
+    # Clip the neighbors to stay within the bounds of the mask
+    valid_neighbors = np.clip(
+        all_neighbors, [0, 0], [mask_2d.shape[0] - 1, mask_2d.shape[1] - 1]
+    )
+
+    # Update the buffed mask: set all the neighbors to False
+    buffed_mask_2d[valid_neighbors[:, :, 0], valid_neighbors[:, :, 1]] = False
 
     return buffed_mask_2d
 
@@ -1007,62 +841,3 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
     rescaled_mask_2d[:, 0] = 1
     rescaled_mask_2d[:, rescaled_mask_2d.shape[1] - 1] = 1
     return np.isclose(rescaled_mask_2d, 1)
-
-
-@numba_util.jit()
-def native_index_for_slim_index_2d_from(
-    mask_2d: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
-    corresponding native 2D pixel using its (y,x) pixel indexes.
-
-    For example, for the following ``Mask2D``:
-
-    ::
-        [[True,  True,  True, True]
-         [True, False, False, True],
-         [True, False,  True, True],
-         [True,  True,  True, True]]
-
-    This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-    ::
-        [0, 1, 2]
-
-    The array ``native_index_for_slim_index_2d`` is therefore:
-
-    ::
-        [[1,1], [1,2], [2,1]]
-
-    Parameters
-    ----------
-    mask_2d
-        A 2D array of bools, where `False` values are unmasked.
-
-    Returns
-    -------
-    ndarray
-        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels] to its native array
-        of shape [total_pixels, total_pixels].
-
-    Examples
-    --------
-    mask_2d = np.array([[True, True, True],
-                     [True, False, True]
-                     [True, True, True]])
-
-    native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
-    """
-
-    total_pixels = total_pixels_2d_from(mask_2d=mask_2d)
-    native_index_for_slim_index_2d = np.zeros(shape=(total_pixels, 2))
-    slim_index = 0
-
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                native_index_for_slim_index_2d[slim_index, :] = y, x
-                slim_index += 1
-
-    return native_index_for_slim_index_2d

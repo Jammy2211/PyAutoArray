@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+import jax.numpy as jnp
 from skimage import measure
 from scipy.spatial import ConvexHull
 from scipy.spatial import QhullError
@@ -46,14 +47,17 @@ class Grid2DContour:
             pixel_scales=self.pixel_scales,
         ).astype("int")
 
-        arr = np.zeros(self.shape_native)
-        arr[tuple(np.array(pixel_centres).T)] = 1
+        arr = jnp.zeros(self.shape_native)
+        arr = arr.at[tuple(jnp.array(pixel_centres).T)].set(1)
 
         return arr
 
     @property
     def contour_list(self):
-        contour_indices_list = measure.find_contours(np.array(self.contour_array), 0)
+        # make sure to use base numpy to convert JAX array back to a normal array
+        contour_indices_list = measure.find_contours(
+            np.array(self.contour_array), 0
+        )
 
         if len(contour_indices_list) == 0:
             return []
@@ -67,8 +71,8 @@ class Grid2DContour:
                 pixel_scales=self.pixel_scales,
             )
 
-            grid_scaled_1d[:, 0] -= self.pixel_scales[0] / 2.0
-            grid_scaled_1d[:, 1] += self.pixel_scales[1] / 2.0
+            factor = 0.5 * np.array(self.pixel_scales) * np.array([-1.0, 1.0])
+            grid_scaled_1d += factor
 
             contour_list.append(Grid2DIrregular(values=grid_scaled_1d))
 
@@ -81,10 +85,11 @@ class Grid2DContour:
         if self.grid.shape[0] < 3:
             return None
 
+        # cast JAX arrays to base numpy arrays
         grid_convex = np.zeros((len(self.grid), 2))
 
-        grid_convex[:, 0] = self.grid[:, 1]
-        grid_convex[:, 1] = self.grid[:, 0]
+        grid_convex[:, 0] = np.array(self.grid[:, 1])
+        grid_convex[:, 1] = np.array(self.grid[:, 0])
 
         try:
             hull = ConvexHull(grid_convex)
@@ -96,7 +101,7 @@ class Grid2DContour:
         hull_x = grid_convex[hull_vertices, 0]
         hull_y = grid_convex[hull_vertices, 1]
 
-        grid_hull = np.zeros((len(hull_vertices), 2))
+        grid_hull = jnp.zeros((len(hull_vertices), 2))
 
         grid_hull[:, 1] = hull_x
         grid_hull[:, 0] = hull_y

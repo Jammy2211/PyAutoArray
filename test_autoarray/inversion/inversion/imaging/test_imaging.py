@@ -11,18 +11,18 @@ import pytest
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7_3x3):
+def test__operated_mapping_matrix_property(psf_7x7, rectangular_mapper_7x7_3x3):
     inversion = aa.m.MockInversionImaging(
-        convolver=convolver_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
+        psf=psf_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
     )
 
     assert inversion.operated_mapping_matrix_list[0][0, 0] == pytest.approx(1.0, 1e-4)
     assert inversion.operated_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
 
-    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
+    psf = aa.m.MockPSF(operated_mapping_matrix=np.ones((2, 2)))
 
     inversion = aa.m.MockInversionImaging(
-        convolver=convolver,
+        psf=psf,
         linear_obj_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
     )
 
@@ -42,9 +42,9 @@ def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7
 
 
 def test__operated_mapping_matrix_property__with_operated_mapping_matrix_override(
-    convolver_7x7, rectangular_mapper_7x7_3x3
+    psf_7x7, rectangular_mapper_7x7_3x3
 ):
-    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
+    psf = aa.m.MockPSF(operated_mapping_matrix=np.ones((2, 2)))
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
@@ -54,7 +54,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
     )
 
     inversion = aa.m.MockInversionImaging(
-        convolver=convolver, linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj]
+        psf=psf, linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj]
     )
 
     operated_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
@@ -73,7 +73,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     noise_map = np.ones(2)
-    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 10)))
+    psf = aa.m.MockPSF(operated_mapping_matrix=np.ones((2, 10)))
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
@@ -87,7 +87,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     dataset = aa.DatasetInterface(
         data=np.ones(2),
         noise_map=noise_map,
-        convolver=convolver,
+        psf=psf,
     )
 
     inversion = aa.InversionImagingMapping(
@@ -135,7 +135,7 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
         dataset = aa.DatasetInterface(
             data=np.ones(9),
             noise_map=np.ones(9),
-            convolver=aa.m.MockConvolver(matrix_shape),
+            psf=aa.m.MockPSF(matrix_shape),
         )
 
         # noinspection PyTypeChecker

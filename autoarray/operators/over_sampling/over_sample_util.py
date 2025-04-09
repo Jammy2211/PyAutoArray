@@ -1,6 +1,7 @@
 from __future__ import annotations
 import numpy as np
 from typing import TYPE_CHECKING, Union, List, Tuple
+from typing import List, Tuple
 
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -258,9 +259,9 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     for sub_mask_y in range(sub_mask_2d.shape[0]):
         for sub_mask_x in range(sub_mask_2d.shape[1]):
             if sub_mask_2d[sub_mask_y, sub_mask_x] == False:
-                sub_slim_index_for_sub_native_index[
-                    sub_mask_y, sub_mask_x
-                ] = sub_mask_1d_index
+                sub_slim_index_for_sub_native_index[sub_mask_y, sub_mask_x] = (
+                    sub_mask_1d_index
+                )
                 sub_mask_1d_index += 1
 
     return sub_slim_index_for_sub_native_index
@@ -361,6 +362,10 @@ def sub_size_radial_bins_from(
     for i in range(radial_grid.shape[0]):
         for j in range(len(radial_list)):
             if radial_grid[i] < radial_list[j]:
+                # if use_jax:
+                #     # while this makes it run, it is very, very slow
+                #     sub_size = sub_size.at[i].set(sub_size_list[j])
+                # else:
                 sub_size[i] = sub_size_list[j]
                 break
 
@@ -417,7 +422,7 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
     grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 
-    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_numba_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 
@@ -440,6 +445,23 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
+                        # if use_jax:
+                        #     # while this makes it run, it is very, very slow
+                        #     grid_slim = grid_slim.at[sub_index, 0].set(
+                        #         -(
+                        #             y_scaled
+                        #             - y_sub_half
+                        #             + y1 * y_sub_step
+                        #             + (y_sub_step / 2.0)
+                        #         )
+                        #     )
+                        #     grid_slim = grid_slim.at[sub_index, 1].set(
+                        #         x_scaled
+                        #         - x_sub_half
+                        #         + x1 * x_sub_step
+                        #         + (x_sub_step / 2.0)
+                        #     )
+                        # else:
                         grid_slim[sub_index, 0] = -(
                             y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )
@@ -498,9 +520,7 @@ def binned_array_2d_from(
     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    total_pixels = mask_2d_util.total_pixels_2d_from(
-        mask_2d=mask_2d,
-    )
+    total_pixels = np.sum(~mask_2d)
 
     sub_fraction = 1.0 / sub_size**2
 
@@ -516,6 +536,11 @@ def binned_array_2d_from(
 
                 for y1 in range(sub):
                     for x1 in range(sub):
+                        # if use_jax:
+                        #     binned_array_2d_slim = binned_array_2d_slim.at[index].add(
+                        #         array_2d[sub_index] * sub_fraction[index]
+                        #     )
+                        # else:
                         binned_array_2d_slim[index] += (
                             array_2d[sub_index] * sub_fraction[index]
                         )

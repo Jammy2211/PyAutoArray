@@ -4,7 +4,6 @@ from . import util
 from . import fixtures
 from . import mock as m
 from .numba_util import profile_func
-from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
@@ -55,8 +54,6 @@ from .mask.derive.grid_1d import DeriveGrid1D
 from .mask.derive.grid_2d import DeriveGrid2D
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
-from .operators.convolver import Convolver
-from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .operators.over_sampling.decorator import over_sample

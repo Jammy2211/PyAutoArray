@@ -70,7 +70,7 @@ def test__via_image_from__psf_off__noise_off_value_is_noise_value(
         == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
     ).all()
 
-    assert np.allclose(dataset.noise_map.native, 0.2 * np.ones((3, 3)))
+    assert np.allclose(dataset.noise_map.native.array, 0.2 * np.ones((3, 3)))
 
 
 def test__via_image_from__psf_off__background_sky_on(image_central_delta_3x3):

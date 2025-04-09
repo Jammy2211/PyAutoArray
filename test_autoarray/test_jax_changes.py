@@ -1,5 +1,10 @@
-import autoarray as aa
+import jax.numpy as jnp
 import pytest
+
+
+import autoarray as aa
+
+from autoarray import Grid2D, Mask2D
 
 
 @pytest.fixture(name="array")
@@ -23,3 +28,11 @@ def test_in_place_multiply(array):
     array[0] *= 2.0
 
     assert array[0] == 2.0
+
+
+def test_boolean_issue():
+    grid = Grid2D.from_mask(
+        mask=Mask2D.all_false((10, 10), pixel_scales=1.0),
+    )
+    values, keys = Grid2D.instance_flatten(grid)
+    jnp.array(Grid2D.instance_unflatten(keys, values))
