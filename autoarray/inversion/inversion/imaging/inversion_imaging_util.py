@@ -391,7 +391,7 @@ def data_vector_via_w_tilde_data_imaging_from(
     return data_vector
 
 
-@numba_util.jit()
+# '@numba_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
