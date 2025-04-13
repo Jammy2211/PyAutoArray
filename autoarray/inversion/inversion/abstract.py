@@ -1,3 +1,5 @@
+from astropy.table import Table
+from astropy.io import fits
 import copy
 
 import numpy as np
@@ -11,7 +13,6 @@ from autoarray.numba_util import profile_func
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
-from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
@@ -851,3 +852,34 @@ class AbstractInversion:
     @property
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         raise NotImplementedError
+
+    @property
+    def fits_table_mapper_dict(self) -> Dict[AbstractMapper, np.ndarray]:
+
+        fits_table_mapper_dict = {}
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+
+        for mapper in mapper_list:
+            reconstruction = np.stack(
+                [
+                    mapper.mapper_grids.source_plane_mesh_grid[:, 0],
+                    mapper.mapper_grids.source_plane_mesh_grid[:, 1],
+                    self.reconstruction_dict[mapper],
+                    self.reconstruction_noise_map_dict[mapper],
+                ],
+                axis=1,
+            )
+
+            pixels_table = Table(
+                data=reconstruction,
+                names=['x', 'y', 'reconstruction', 'noise_map'],
+            )
+
+            pixels_table.meta["MESH_TYPE"] = type(mapper.mapper_grids.source_plane_mesh_grid)
+
+            fits_table = fits.table_to_hdu(pixels_table)
+
+            fits_table_mapper_dict[mapper] = fits_table
+
+        return fits_table_mapper_dict
