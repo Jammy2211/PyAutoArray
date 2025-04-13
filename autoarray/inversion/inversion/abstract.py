@@ -854,13 +854,18 @@ class AbstractInversion:
         raise NotImplementedError
 
     @property
-    def fits_table_mapper_dict(self) -> Dict[AbstractMapper, np.ndarray]:
-
+    def fits_table_mapper_dict(self) -> Dict["AbstractMapper", fits.BinTableHDU]:
+        """
+        Creates a dictionary mapping each AbstractMapper to a FITS BinTableHDU,
+        where the table stores x, y, reconstruction, and noise_map columns.
+        """
         fits_table_mapper_dict = {}
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)
 
         for mapper in mapper_list:
+
+            # Stack data for table: x, y, reconstruction, noise
             reconstruction = np.stack(
                 [
                     mapper.mapper_grids.source_plane_mesh_grid[:, 0],
@@ -871,15 +876,19 @@ class AbstractInversion:
                 axis=1,
             )
 
+            # Create the Astropy Table
             pixels_table = Table(
                 data=reconstruction,
-                names=['x', 'y', 'reconstruction', 'noise_map'],
+                names=["x", "y", "reconstruction", "noise_map"],
             )
 
-            pixels_table.meta["MESH_TYPE"] = type(mapper.mapper_grids.source_plane_mesh_grid)
+            # Add metadata to table header
+            pixels_table.meta["MESH"] = str(type(mapper.mapper_grids.source_plane_mesh_grid))
 
+            # Convert Table to FITS HDU
             fits_table = fits.table_to_hdu(pixels_table)
 
+            # Store in dictionary
             fits_table_mapper_dict[mapper] = fits_table
 
         return fits_table_mapper_dict
