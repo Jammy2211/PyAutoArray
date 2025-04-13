@@ -1,7 +1,6 @@
 from astropy.table import Table
 from astropy.io import fits
 import copy
-
 import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
@@ -864,7 +863,6 @@ class AbstractInversion:
         mapper_list = self.cls_list_from(cls=AbstractMapper)
 
         for mapper in mapper_list:
-
             # Stack data for table: x, y, reconstruction, noise
             reconstruction = np.stack(
                 [
@@ -883,7 +881,9 @@ class AbstractInversion:
             )
 
             # Add metadata to table header
-            pixels_table.meta["MESH"] = str(type(mapper.mapper_grids.source_plane_mesh_grid))
+            pixels_table.meta["MESH"] = str(
+                type(mapper.mapper_grids.source_plane_mesh_grid)
+            )
 
             # Convert Table to FITS HDU
             fits_table = fits.table_to_hdu(pixels_table)
