@@ -1,7 +1,11 @@
 from __future__ import annotations
 import numpy as np
-from typing import List, Tuple, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
 
+if TYPE_CHECKING:
+    from autoarray.structures.arrays.uniform_2d import Array2D
+
+from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
 
 
@@ -50,6 +54,17 @@ class Zoom2D:
 
     @property
     def centre(self) -> Tuple[float, float]:
+        """
+        Returns the centre of the zoomed in region, which is the average of the maximum and minimum y and x pixel values
+        of the unmasked region.
+
+        The y and x pixel values are the pixel coordinates of the unmasked region, which are derived from the
+        `Mask2D` object. The pixel coordinates are in the same units as the pixel scales of the `Mask2D` object.
+
+        Returns
+        -------
+        The centre of the zoomed in region.
+        """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid = grid_2d_util.grid_2d_slim_via_mask_from(
@@ -73,6 +88,17 @@ class Zoom2D:
 
     @property
     def offset_pixels(self) -> Tuple[float, float]:
+        """
+        Returns the offset of the centred of the zoomed in region from the centre of the `Mask2D` object in pixel
+        units.
+
+        This is computed by subtracting the pixel coordinates of the `Mask2D` object from the pixel coordinates of
+        the zoomed in region.
+
+        Returns
+        -------
+        The offset of the zoomed in region from the centre of the `Mask2D` object in pixel units.
+        """
         if self.mask.pixel_scales is None:
             return self.mask.geometry.central_pixel_coordinates
 
@@ -83,6 +109,17 @@ class Zoom2D:
 
     @property
     def offset_scaled(self) -> Tuple[float, float]:
+        """
+        Returns the offset of the centred of the zoomed in region from the centre of the `Mask2D` object in scaled
+        units.
+
+        This is computed by subtracting the pixel coordinates of the `Mask2D` object from the pixel coordinates of
+        the zoomed in region.
+
+        Returns
+        -------
+        The offset of the zoomed in region from the centre of the `Mask2D` object in scaled units.
+        """
         return (
             -self.mask.pixel_scales[0] * self.offset_pixels[0],
             self.mask.pixel_scales[1] * self.offset_pixels[1],
@@ -91,10 +128,12 @@ class Zoom2D:
     @property
     def region(self) -> List[int]:
         """
-        The zoomed rectangular region corresponding to the square encompassing all unmasked values. This zoomed
-        extraction region is a squuare, even if the mask is rectangular.
+        The zoomed region corresponding to the square encompassing all unmasked values.
 
         This is used to zoom in on the region of an image that is used in an analysis for visualization.
+
+        This zoomed extraction region is a square, even if the mask is rectangular, so that extraction regions are
+        always squares which is important for ensuring visualization does not have aspect ratio issues.
         """
 
         where = np.array(np.where(np.invert(self.mask.astype("bool"))))
@@ -119,22 +158,48 @@ class Zoom2D:
 
     @property
     def shape_native(self) -> Tuple[int, int]:
+        """
+        The shape of the zoomed in region in pixels.
+
+        This is computed by subtracting the minimum and maximum y and x pixel values of the unmasked region.
+
+        Returns
+        -------
+        The shape of the zoomed in region in pixels.
+        """
         region = self.region
         return (region[1] - region[0], region[3] - region[2])
 
-    @property
-    def mask_unmasked(self) -> "Mask2D":
+    def array_2d_from(self, array : Array2D, buffer: int = 1) -> Array2D:
         """
-        The scaled-grid of (y,x) coordinates of every pixel.
+        Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
-        value y value in scaled units.
+        This is used to extract and visualize only the region of an image that is used in an analysis.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
         """
-
+        from autoarray.structures.arrays.uniform_2d import Array2D
         from autoarray.mask.mask_2d import Mask2D
 
-        return Mask2D.all_false(
-            shape_native=self.shape_native,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.offset_scaled,
+        extracted_array_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(array.native),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
         )
+
+        mask = Mask2D.all_false(
+            shape_native=extracted_array_2d.shape,
+            pixel_scales=array.pixel_scales,
+            origin=array.mask.mask_centre,
+        )
+
+        arr = array_2d_util.convert_array_2d(
+            array_2d=extracted_array_2d, mask_2d=mask
+        )
+
+        return Array2D(values=arr, mask=mask, header=array.header)

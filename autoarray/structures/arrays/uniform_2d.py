@@ -289,6 +289,31 @@ class AbstractArray2D(Structure):
         )
 
     @property
+    def native_for_fits(self) -> "Array2D":
+        """
+        Return a `Array2D` for output to a .fits file, where the data is stored in its `native` representation,
+        which is an ``ndarray`` of shape [total_y_pixels, total_x_pixels].
+
+        Depending on configuration files, this array could be zoomed in on such that only the unmasked region
+        of the image is included in the .fits file, to save hard-disk space. Alternatively, the original `shape_native`
+        of the data can be retained.
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Array2D`.
+        """
+        if conf.instance["visualize"]["plots"]["fits_are_zoomed"]:
+
+            zoom = Zoom2D(mask=self.mask)
+
+            buffer = 0 if self.mask.is_all_false else 1
+
+            return zoom.array_2d_from(array=self, buffer=buffer)
+
+        return Array2D(
+            values=self, mask=self.mask, header=self.header, store_native=True
+        )
+
+    @property
     def native_skip_mask(self) -> "Array2D":
         """
         Return a `Array2D` where the data is stored in its `native` representation, which is an ``ndarray`` of shape
@@ -446,40 +471,6 @@ class AbstractArray2D(Structure):
         return self.geometry.scaled_coordinates_2d_from(
             pixel_coordinates_2d=(subpixel_y, subpixel_x)
         )
-
-    def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
-        """
-        Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
-
-        This is used to extract and visualize only the region of an image that is used in an analysis.
-
-        Parameters
-        ----------
-        buffer
-            The number pixels around the extracted array used as a buffer.
-        """
-
-        zoom = Zoom2D(mask=self.mask)
-
-        extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native),
-            y0=zoom.region[0] - buffer,
-            y1=zoom.region[1] + buffer,
-            x0=zoom.region[2] - buffer,
-            x1=zoom.region[3] + buffer,
-        )
-
-        mask = Mask2D.all_false(
-            shape_native=extracted_array_2d.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.mask.mask_centre,
-        )
-
-        array = array_2d_util.convert_array_2d(
-            array_2d=extracted_array_2d, mask_2d=mask
-        )
-
-        return Array2D(values=array, mask=mask, header=self.header)
 
     def resized_from(
         self, new_shape: Tuple[int, int], mask_pad_value: int = 0.0

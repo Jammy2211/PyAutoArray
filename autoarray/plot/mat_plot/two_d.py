@@ -9,6 +9,7 @@ from autoarray.inversion.pixelization.mappers.rectangular import (
 )
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.visuals.two_d import Visuals2D
@@ -255,11 +256,15 @@ class MatPlot2D(AbstractMatPlot):
                 "a pixel scales attribute."
             )
 
-        if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
+        if conf.instance["visualize"]["general"]["general"][
+            "zoom_around_mask"
+        ]:
+
+            zoom = Zoom2D(mask=array.mask)
 
             buffer = 0 if array.mask.is_all_false else 1
 
-            array = array.zoomed_around_mask(buffer=buffer)
+            array = zoom.array_2d_from(array=array, buffer=buffer)
 
         extent = array.geometry.extent
 
