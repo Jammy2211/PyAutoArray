@@ -255,9 +255,7 @@ class MatPlot2D(AbstractMatPlot):
                 "a pixel scales attribute."
             )
 
-        if conf.instance["visualize"]["general"]["general"][
-            "zoom_around_mask"
-        ]:
+        if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
 
             buffer = 0 if array.mask.is_all_false else 1
 

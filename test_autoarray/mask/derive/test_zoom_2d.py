@@ -143,6 +143,6 @@ def test__mask_unmasked():
     mask_unmasked = zoom.mask_unmasked
 
     assert (
-            mask_unmasked == np.array([[False, False], [False, False], [False, False]])
+        mask_unmasked == np.array([[False, False], [False, False], [False, False]])
     ).all()
     assert mask_unmasked.origin == (0.0, -2.0)

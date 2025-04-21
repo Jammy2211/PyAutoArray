@@ -409,6 +409,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     """
     return (image / noise_map**2.0) @ blurred_mapping_matrix
 
+
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     curvature_preload: np.ndarray,

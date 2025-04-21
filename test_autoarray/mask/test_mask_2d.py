@@ -489,6 +489,7 @@ def test__resized_from():
 
     assert (mask_resized == mask_resized_manual).all()
 
+
 def test__mask_centre():
     mask = np.array(
         [

@@ -60,7 +60,9 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix
         The curvature matrix which is being constructed in order to solve a linear system of equations.
     """
-    return curvature_matrix.at[no_regularization_index_list, no_regularization_index_list].add(value)
+    return curvature_matrix.at[
+        no_regularization_index_list, no_regularization_index_list
+    ].add(value)
 
 
 @numba_util.jit()
