@@ -12,6 +12,7 @@ from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.visuals.two_d import Visuals2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.structures.arrays import array_2d_util
@@ -259,9 +260,11 @@ class MatPlot2D(AbstractMatPlot):
             "zoom_around_mask"
         ]:
 
+            zoom = Zoom2D(mask=array.mask)
+
             buffer = 0 if array.mask.is_all_false else 1
 
-            array = array.zoomed_around_mask(buffer=buffer)
+            array = zoom.array_2d_from(array=array, buffer=buffer)
 
         extent = array.geometry.extent
 

@@ -1,7 +1,11 @@
 from __future__ import annotations
 import numpy as np
-from typing import List, Tuple, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
 
+if TYPE_CHECKING:
+    from autoarray.structures.arrays.uniform_2d import Array2D
+
+from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
 
 
@@ -165,3 +169,37 @@ class Zoom2D:
         """
         region = self.region
         return (region[1] - region[0], region[3] - region[2])
+
+    def array_2d_from(self, array : Array2D, buffer: int = 1) -> Array2D:
+        """
+        Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to extract and visualize only the region of an image that is used in an analysis.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
+        """
+        from autoarray.structures.arrays.uniform_2d import Array2D
+        from autoarray.mask.mask_2d import Mask2D
+
+        extracted_array_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(array.native),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        mask = Mask2D.all_false(
+            shape_native=extracted_array_2d.shape,
+            pixel_scales=array.pixel_scales,
+            origin=array.mask.mask_centre,
+        )
+
+        arr = array_2d_util.convert_array_2d(
+            array_2d=extracted_array_2d, mask_2d=mask
+        )
+
+        return Array2D(values=arr, mask=mask, header=array.header)
