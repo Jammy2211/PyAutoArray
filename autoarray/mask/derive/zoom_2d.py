@@ -2,8 +2,6 @@ from __future__ import annotations
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoconf import conf
-
 from autoarray.structures.grids import grid_2d_util
 
 

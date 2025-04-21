@@ -268,14 +268,6 @@ class MatPlot2D(AbstractMatPlot):
 
             extent = array.geometry.extent
 
-        if (
-            self.output.format == "fits"
-            and conf.instance["visualize"]["general"]["general"][
-                "disable_zoom_for_fits"
-            ]
-        ):
-            zoom_around_mask = False
-
         ax = None
 
         if not self.is_for_subplot:
