@@ -63,8 +63,6 @@ class Grid2DContour:
 
         contour_indices_list = measure.find_contours(contour_array, 0)
 
-        print(contour_indices_list)
-
         if len(contour_indices_list) == 0:
             return []
 

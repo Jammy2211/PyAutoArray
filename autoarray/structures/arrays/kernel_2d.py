@@ -57,6 +57,8 @@ class Kernel2D(AbstractArray2D):
         if normalize:
             self._array = np.divide(self._array, np.sum(self._array))
 
+        self.stored_native = self.native
+
     @classmethod
     def no_mask(
         cls,
@@ -518,7 +520,7 @@ class Kernel2D(AbstractArray2D):
             blurring_image.array
         )
 
-        kernel = np.array(self.native.array)
+        kernel = np.array(self.stored_native.array)
 
         convolve_native = jax.scipy.signal.convolve(
             expanded_array_native, kernel, mode="same", method=jax_method
@@ -556,7 +558,7 @@ class Kernel2D(AbstractArray2D):
                 image.array
             )
 
-        kernel = np.array(self.native.array)
+        kernel = np.array(self.stored_native.array)
 
         convolve_native = jax.scipy.signal.convolve(
             expanded_array_native, kernel, mode="same", method=jax_method

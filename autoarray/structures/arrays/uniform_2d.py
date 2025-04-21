@@ -458,12 +458,14 @@ class AbstractArray2D(Structure):
             The number pixels around the extracted array used as a buffer.
         """
 
+        zoom = Zoom2D(mask=self.mask)
+
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native.array),
-            y0=self.mask.zoom_region[0] - buffer,
-            y1=self.mask.zoom_region[1] + buffer,
-            x0=self.mask.zoom_region[2] - buffer,
-            x1=self.mask.zoom_region[3] + buffer,
+            array_2d=np.array(self.native),
+            y0=zoom.region[0] - buffer,
+            y1=zoom.region[1] + buffer,
+            x0=zoom.region[2] - buffer,
+            x1=zoom.region[3] + buffer,
         )
 
         mask = Mask2D.all_false(
@@ -477,36 +479,6 @@ class AbstractArray2D(Structure):
         )
 
         return Array2D(values=array, mask=mask, header=self.header)
-
-    def extent_of_zoomed_array(self, buffer: int = 1) -> np.ndarray:
-        """
-        For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
-        coordinates.
-
-        The extent of the grid in scaled units returned as an ``ndarray`` of the form [x_min, x_max, y_min, y_max].
-
-        This is used visualize zoomed and extracted arrays via the imshow() method.
-
-        Parameters
-        ----------
-        buffer
-            The number pixels around the extracted array used as a buffer.
-        """
-        extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=np.array(self.native.array),
-            y0=self.mask.zoom_region[0] - buffer,
-            y1=self.mask.zoom_region[1] + buffer,
-            x0=self.mask.zoom_region[2] - buffer,
-            x1=self.mask.zoom_region[3] + buffer,
-        )
-
-        mask = Mask2D.all_false(
-            shape_native=extracted_array_2d.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.mask.mask_centre,
-        )
-
-        return mask.geometry.extent
 
     def resized_from(
         self, new_shape: Tuple[int, int], mask_pad_value: int = 0.0

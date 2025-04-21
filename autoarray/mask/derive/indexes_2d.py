@@ -2,6 +2,8 @@ from __future__ import annotations
 import logging
 import numpy as np
 
+from autoconf import cached_property
+
 from autoarray.numpy_wrapper import register_pytree_node_class
 from typing import TYPE_CHECKING
 
@@ -363,7 +365,7 @@ class DeriveIndexes2D:
         """
         return self.native_for_slim[self.border_slim].astype("int")
 
-    @property
+    @cached_property
     def native_for_slim(self) -> np.ndarray:
         """
         Derives a 1D ``ndarray`` which maps every 1D ``slim`` index of the ``Mask2D`` to its

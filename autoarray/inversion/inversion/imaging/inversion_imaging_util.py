@@ -391,7 +391,6 @@ def data_vector_via_w_tilde_data_imaging_from(
     return data_vector
 
 
-@numba_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
@@ -408,21 +407,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     noise_map
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
-
-    data_shape = blurred_mapping_matrix.shape
-
-    data_vector = np.zeros(data_shape[1])
-
-    for data_index in range(data_shape[0]):
-        for pix_index in range(data_shape[1]):
-            data_vector[pix_index] += (
-                image[data_index]
-                * blurred_mapping_matrix[data_index, pix_index]
-                / (noise_map[data_index] ** 2.0)
-            )
-
-    return data_vector
-
+    return (image / noise_map**2.0) @ blurred_mapping_matrix
 
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(

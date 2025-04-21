@@ -1,5 +1,5 @@
 import copy
-
+import jax.numpy as jnp
 import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
@@ -317,7 +317,7 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return np.hstack(self.operated_mapping_matrix_list)
+        return jnp.hstack(self.operated_mapping_matrix_list)
 
     @cached_property
     @profile_func
@@ -495,16 +495,17 @@ class AbstractInversion:
                     values_to_solve, :
                 ][:, values_to_solve]
 
-                solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
-
-                solutions[values_to_solve] = (
+                solutions = (
                     inversion_util.reconstruction_positive_only_from(
                         data_vector=data_vector_input,
                         curvature_reg_matrix=curvature_reg_matrix_input,
                         settings=self.settings,
                     )
                 )
-                return solutions
+
+                mask = values_to_solve.astype(bool)
+
+                return solutions[mask]
             else:
                 solutions = inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,

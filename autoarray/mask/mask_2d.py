@@ -5,6 +5,9 @@ import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
+
+from autoconf import cached_property
+
 from autoarray.structures.abstract_structure import Structure
 
 if TYPE_CHECKING:
@@ -214,6 +217,8 @@ class Mask2D(Mask):
             pixel_scales=pixel_scales,
         )
 
+        self.derive_indexes.native_for_slim
+
     __no_flatten__ = ("derive_indexes",)
 
     def __array_finalize__(self, obj):
@@ -238,7 +243,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    @property
+    @cached_property
     def derive_indexes(self) -> DeriveIndexes2D:
         return DeriveIndexes2D(mask=self)
 
