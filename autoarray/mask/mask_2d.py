@@ -5,6 +5,7 @@ import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.structures.abstract_structure import Structure
 
 if TYPE_CHECKING:
@@ -252,6 +253,10 @@ class Mask2D(Mask):
     @property
     def derive_grid(self) -> DeriveGrid2D:
         return DeriveGrid2D(mask=self)
+
+    @property
+    def zoom(self) -> Zoom2D:
+        return Zoom2D(mask=self)
 
     @classmethod
     def all_false(
