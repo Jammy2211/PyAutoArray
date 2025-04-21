@@ -5,9 +5,6 @@ import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
-
-from autoconf import cached_property
-
 from autoarray.structures.abstract_structure import Structure
 
 if TYPE_CHECKING:
@@ -24,6 +21,7 @@ from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.mask.derive.mask_2d import DeriveMask2D
 from autoarray.mask.derive.grid_2d import DeriveGrid2D
 from autoarray.mask.derive.indexes_2d import DeriveIndexes2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
@@ -254,6 +252,10 @@ class Mask2D(Mask):
     @property
     def derive_grid(self) -> DeriveGrid2D:
         return DeriveGrid2D(mask=self)
+
+    @property
+    def zoom(self) -> Zoom2D:
+        return Zoom2D(mask=self)
 
     @classmethod
     def all_false(
@@ -813,95 +815,6 @@ class Mask2D(Mask):
             mask=resized_mask,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
-        )
-
-    @property
-    def zoom_centre(self) -> Tuple[float, float]:
-        from autoarray.structures.grids.uniform_2d import Grid2D
-
-        grid = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self),
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-        grid = Grid2D(values=grid, mask=self)
-
-        extraction_grid_1d = self.geometry.grid_pixels_2d_from(grid_scaled_2d=grid)
-        y_pixels_max = np.max(extraction_grid_1d[:, 0])
-        y_pixels_min = np.min(extraction_grid_1d[:, 0])
-        x_pixels_max = np.max(extraction_grid_1d[:, 1])
-        x_pixels_min = np.min(extraction_grid_1d[:, 1])
-
-        return (
-            ((y_pixels_max + y_pixels_min - 1.0) / 2.0),
-            ((x_pixels_max + x_pixels_min - 1.0) / 2.0),
-        )
-
-    @property
-    def zoom_offset_pixels(self) -> Tuple[float, float]:
-        if self.pixel_scales is None:
-            return self.geometry.central_pixel_coordinates
-
-        return (
-            self.zoom_centre[0] - self.geometry.central_pixel_coordinates[0],
-            self.zoom_centre[1] - self.geometry.central_pixel_coordinates[1],
-        )
-
-    @property
-    def zoom_offset_scaled(self) -> Tuple[float, float]:
-        return (
-            -self.pixel_scales[0] * self.zoom_offset_pixels[0],
-            self.pixel_scales[1] * self.zoom_offset_pixels[1],
-        )
-
-    @property
-    def zoom_region(self) -> List[int]:
-        """
-        The zoomed rectangular region corresponding to the square encompassing all unmasked values. This zoomed
-        extraction region is a squuare, even if the mask is rectangular.
-
-        This is used to zoom in on the region of an image that is used in an analysis for visualization.
-        """
-
-        where = np.array(np.where(np.invert(self.astype("bool"))))
-        y0, x0 = np.amin(where, axis=1)
-        y1, x1 = np.amax(where, axis=1)
-
-        # Have to convert mask to bool for invert function to work.
-
-        ylength = y1 - y0
-        xlength = x1 - x0
-
-        if ylength > xlength:
-            length_difference = ylength - xlength
-            x1 += int(length_difference / 2.0)
-            x0 -= int(length_difference / 2.0)
-        elif xlength > ylength:
-            length_difference = xlength - ylength
-            y1 += int(length_difference / 2.0)
-            y0 -= int(length_difference / 2.0)
-
-        return [y0, y1 + 1, x0, x1 + 1]
-
-    @property
-    def zoom_shape_native(self) -> Tuple[int, int]:
-        region = self.zoom_region
-        return (region[1] - region[0], region[3] - region[2])
-
-    @property
-    def zoom_mask_unmasked(self) -> "Mask2D":
-        """
-        The scaled-grid of (y,x) coordinates of every pixel.
-
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
-        value y value in scaled units.
-        """
-
-        return Mask2D.all_false(
-            shape_native=self.zoom_shape_native,
-            pixel_scales=self.pixel_scales,
-            origin=self.zoom_offset_scaled,
         )
 
     @property
