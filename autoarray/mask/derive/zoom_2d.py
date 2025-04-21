@@ -8,7 +8,44 @@ from autoarray.structures.grids import grid_2d_util
 class Zoom2D:
 
     def __init__(self, mask: Union[np.ndarray, List]):
+        """
+        Derives a zoomed in `Mask2D` object from a `Mask2D` object, which is typically used to visualize 2D arrays
+        zoomed in to only the unmasked region an analysis is performed on.
 
+        A `Mask2D` masks values which are associated with a uniform 2D rectangular grid of pixels, where unmasked
+        entries (which are `False`) are used in subsequent calculations and masked values (which are `True`) are
+        omitted (for a full description see the :meth:`Mask2D` class API 
+        documentation <autoarray.mask.mask_2d.Mask2D.__new__>`).
+
+        The `Zoom2D` object calculations many different zoomed in qu
+
+        Parameters
+        ----------
+        mask
+            The `Mask2D` from which zoomed in `Mask2D` objects are derived.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D(
+                mask=[
+                    [True,  True,  True,  True, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True,  True,  True,  True, True],
+                ],
+                pixel_scales=1.0,
+            )
+
+            zoom_2d = aa.Zoom2D(mask=mask_2d)
+
+            print(zoom_2d.centre)
+        """
         self.mask = mask
 
     @property
