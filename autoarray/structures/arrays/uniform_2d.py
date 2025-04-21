@@ -7,6 +7,7 @@ from autoconf import conf
 from autoconf.fitsable import ndarray_via_fits_from, header_obj_from
 
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.header import Header
 from autoarray.structures.arrays.uniform_1d import Array1D
