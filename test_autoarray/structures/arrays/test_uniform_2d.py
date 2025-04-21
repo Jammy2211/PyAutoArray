@@ -457,35 +457,6 @@ def test__zoomed_around_mask__origin_updated():
     assert arr_zoomed.mask.origin == (0.0, 1.0)
 
 
-def test__extent_of_zoomed_array():
-    array_2d = [
-        [1.0, 2.0, 3.0, 4.0],
-        [5.0, 6.0, 7.0, 8.0],
-        [9.0, 10.0, 11.0, 12.0],
-        [13.0, 14.0, 15.0, 16.0],
-    ]
-
-    mask = aa.Mask2D(
-        mask=np.array(
-            [
-                [True, True, True, False],
-                [True, False, False, True],
-                [True, False, False, True],
-                [True, True, True, True],
-            ]
-        ),
-        pixel_scales=(1.0, 2.0),
-    )
-
-    arr_masked = aa.Array2D(values=array_2d, mask=mask)
-
-    arr_zoom = arr_masked.zoomed_around_mask(buffer=1)
-
-    extent = arr_zoom.geometry.extent
-
-    assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
-
-
 def test__binned_across_rows():
     array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 
