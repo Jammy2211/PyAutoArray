@@ -294,6 +294,25 @@ class AbstractArray2D(Structure):
         )
 
     @property
+    def native_for_fits(self) -> "Array2D":
+        """
+        Return a `Array2D` for output to a .fits file, where the data is stored in its `native` representation,
+        which is an ``ndarray`` of shape [total_y_pixels, total_x_pixels].
+
+        Depending on configuration files, this array could be zoomed in on such that only the unmasked region
+        of the image is included in the .fits file, to save hard-disk space. Alternatively, the original `shape_native`
+        of the data can be retained.
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Array2D`.
+        """
+
+
+        return Array2D(
+            values=self, mask=self.mask, header=self.header, store_native=True
+        )
+
+    @property
     def native_skip_mask(self) -> "Array2D":
         """
         Return a `Array2D` where the data is stored in its `native` representation, which is an ``ndarray`` of shape
