@@ -262,11 +262,8 @@ class MatPlot2D(AbstractMatPlot):
             buffer = 0 if array.mask.is_all_false else 1
 
             array = array.zoomed_around_mask(buffer=buffer)
-            extent = array.extent_of_zoomed_array(buffer=buffer)
 
-        else:
-
-            extent = array.geometry.extent
+        extent = array.geometry.extent
 
         ax = None
 

@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 
 
 class ArrayOverlay(AbstractMatWrap2D):
@@ -17,6 +18,8 @@ class ArrayOverlay(AbstractMatWrap2D):
 
     def overlay_array(self, array, figure):
         aspect = figure.aspect_from(shape_native=array.shape_native)
-        extent = array.extent_of_zoomed_array(buffer=0)
+
+        array_zoom = array.zoomed_around_mask(buffer=0)
+        extent = array_zoom.geometry.extent
 
         plt.imshow(X=array.native, aspect=aspect, extent=extent, **self.config_dict)

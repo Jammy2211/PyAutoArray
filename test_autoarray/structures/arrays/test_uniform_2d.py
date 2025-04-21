@@ -479,7 +479,9 @@ def test__extent_of_zoomed_array():
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
 
-    extent = arr_masked.extent_of_zoomed_array(buffer=1)
+    arr_zoom = arr_masked.zoomed_around_mask(buffer=1)
+
+    extent = arr_zoom.geometry.extent
 
     assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
