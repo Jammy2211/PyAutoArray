@@ -7,6 +7,7 @@ from autoconf import conf
 from autoconf.fitsable import ndarray_via_fits_from, header_obj_from
 
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.header import Header
 from autoarray.structures.arrays.uniform_1d import Array1D
@@ -463,12 +464,14 @@ class AbstractArray2D(Structure):
             The number pixels around the extracted array used as a buffer.
         """
 
+        zoom = Zoom2D(mask=self.mask)
+
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
             array_2d=np.array(self.native),
-            y0=self.mask.zoom_region[0] - buffer,
-            y1=self.mask.zoom_region[1] + buffer,
-            x0=self.mask.zoom_region[2] - buffer,
-            x1=self.mask.zoom_region[3] + buffer,
+            y0=zoom.region[0] - buffer,
+            y1=zoom.region[1] + buffer,
+            x0=zoom.region[2] - buffer,
+            x1=zoom.region[3] + buffer,
         )
 
         mask = Mask2D.all_false(
