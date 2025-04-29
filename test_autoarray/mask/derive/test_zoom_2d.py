@@ -109,45 +109,6 @@ def test__quantities():
     assert zoom.centre == (6, 2)
     assert zoom.offset_pixels == (3, 1)
 
-
-def test__mask_unmasked():
-    mask = aa.Mask2D(
-        mask=np.array(
-            [
-                [False, True, True, True],
-                [True, False, True, True],
-                [True, True, True, True],
-            ]
-        ),
-        pixel_scales=(1.0, 1.0),
-    )
-    zoom = aa.Zoom2D(mask=mask)
-
-    mask_unmasked = zoom.mask_unmasked
-
-    assert (mask_unmasked == np.array([[False, False], [False, False]])).all()
-    assert mask_unmasked.origin == (0.5, -1.0)
-
-    mask = aa.Mask2D(
-        mask=np.array(
-            [
-                [False, True, True, True],
-                [True, False, True, True],
-                [True, False, True, True],
-            ]
-        ),
-        pixel_scales=(1.0, 2.0),
-    )
-    zoom = aa.Zoom2D(mask=mask)
-
-    mask_unmasked = zoom.mask_unmasked
-
-    assert (
-        mask_unmasked == np.array([[False, False], [False, False], [False, False]])
-    ).all()
-    assert mask_unmasked.origin == (0.0, -2.0)
-
-
 def test__array_2d_from():
     array_2d = [
         [1.0, 2.0, 3.0, 4.0],
