@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Optional, List, Tuple, Union
+from typing import Optional, List, Union
 
 from autoconf import conf
 
@@ -12,6 +12,7 @@ from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.visuals.two_d import Visuals2D
+from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.structures.arrays import array_2d_util
@@ -220,52 +221,6 @@ class MatPlot2D(AbstractMatPlot):
 
         self.is_for_subplot = False
 
-    def zoomed_array_and_extent_from(self, array) -> Tuple[np.ndarray, Tuple]:
-        """
-        Returns the array and extent of the array, zoomed around the mask of the array, if the config file is set to
-        do this.
-
-        Many plots zoom in around the mask of an array, to emphasize the signal of the data and not waste
-        plotting space on empty pixels. This function computes the zoomed array and extent of this array, given the
-        array.
-
-        If the mask is all false, the array is returned without zooming by disabling the buffer.
-
-        Parameters
-        ----------
-        array
-
-        Returns
-        -------
-
-        """
-
-        if array.mask.is_all_false:
-            buffer = 0
-        else:
-            buffer = 1
-
-        zoom_around_mask = conf.instance["visualize"]["general"]["general"][
-            "zoom_around_mask"
-        ]
-
-        if (
-            self.output.format == "fits"
-            and conf.instance["visualize"]["general"]["general"][
-                "disable_zoom_for_fits"
-            ]
-        ):
-            zoom_around_mask = False
-
-        if zoom_around_mask:
-            extent = array.extent_of_zoomed_array(buffer=buffer)
-            array = array.zoomed_around_mask(buffer=buffer)
-
-        else:
-            extent = array.geometry.extent
-
-        return array, extent
-
     def plot_array(
         self,
         array: Array2D,
@@ -301,7 +256,15 @@ class MatPlot2D(AbstractMatPlot):
                 "a pixel scales attribute."
             )
 
-        array, extent = self.zoomed_array_and_extent_from(array=array)
+        if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
+
+            zoom = Zoom2D(mask=array.mask)
+
+            buffer = 0 if array.mask.is_all_false else 1
+
+            array = zoom.array_2d_from(array=array, buffer=buffer)
+
+        extent = array.geometry.extent
 
         ax = None
 

@@ -182,7 +182,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
 
 @numba_util.jit()
 def central_pixel_coordinates_2d_from(
-    shape_native: Tuple[int, int]
+    shape_native: Tuple[int, int],
 ) -> Tuple[float, float]:
     """
     Returns the central pixel coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
@@ -737,7 +737,7 @@ def grid_pixel_centres_2d_from(
 
 
 def extent_symmetric_from(
-    extent: Tuple[float, float, float, float]
+    extent: Tuple[float, float, float, float],
 ) -> Tuple[float, float, float, float]:
     """
     Given an input extent of the form (x_min, x_max, y_min, y_max), this function returns an extent which is

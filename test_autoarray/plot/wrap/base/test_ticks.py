@@ -60,7 +60,9 @@ def test__yticks__set():
     units = aplt.Units(use_scaled=True, ticks_convert_factor=None)
 
     yticks = aplt.YTicks(fontsize=34)
-    extent = array.extent_of_zoomed_array(buffer=1)
+    zoom = aa.Zoom2D(mask=array.mask)
+    array_zoom = zoom.array_2d_from(array=array, buffer=0)
+    extent = array_zoom.geometry.extent
     yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
     yticks = aplt.YTicks(fontsize=34)
@@ -105,7 +107,9 @@ def test__xticks__set():
     array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
     units = aplt.Units(use_scaled=True, ticks_convert_factor=None)
     xticks = aplt.XTicks(fontsize=34)
-    extent = array.extent_of_zoomed_array(buffer=1)
+    zoom = aa.Zoom2D(mask=array.mask)
+    array_zoom = zoom.array_2d_from(array=array, buffer=0)
+    extent = array_zoom.geometry.extent
     xticks.set(min_value=extent[0], max_value=extent[1], units=units)
 
     xticks = aplt.XTicks(fontsize=34)

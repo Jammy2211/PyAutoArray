@@ -509,12 +509,12 @@ class AbstractInversion:
 
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
 
-                solutions[
-                    values_to_solve
-                ] = inversion_util.reconstruction_positive_only_from(
-                    data_vector=data_vector_input,
-                    curvature_reg_matrix=curvature_reg_matrix_input,
-                    settings=self.settings,
+                solutions[values_to_solve] = (
+                    inversion_util.reconstruction_positive_only_from(
+                        data_vector=data_vector_input,
+                        curvature_reg_matrix=curvature_reg_matrix_input,
+                        settings=self.settings,
+                    )
                 )
                 return solutions
             else:

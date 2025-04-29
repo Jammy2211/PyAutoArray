@@ -53,6 +53,7 @@ from .mask.derive.mask_1d import DeriveMask1D
 from .mask.derive.mask_2d import DeriveMask2D
 from .mask.derive.grid_1d import DeriveGrid1D
 from .mask.derive.grid_2d import DeriveGrid2D
+from .mask.derive.zoom_2d import Zoom2D
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .operators.convolver import Convolver

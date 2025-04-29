@@ -3,7 +3,6 @@ general:
     backend: default
     imshow_origin: upper
     zoom_around_mask: true
-    disable_zoom_for_fits: true           # If True, the zoom-in around the masked region is disabled when outputting .fits files, which is useful to retain the same dimensions as the input data.
   include_2d:
     border: true
     mapper_image_plane_mesh_grid: false
