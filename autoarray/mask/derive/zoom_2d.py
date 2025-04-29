@@ -170,6 +170,65 @@ class Zoom2D:
         region = self.region
         return (region[1] - region[0], region[3] - region[2])
 
+    def extent_from(self, buffer: int = 1) -> np.ndarray:
+        """
+        For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
+        coordinates.
+
+        The extent of the grid in scaled units returned as an ``ndarray`` of the form [x_min, x_max, y_min, y_max].
+
+        This is used visualize zoomed and extracted arrays via the imshow() method.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
+        """
+        from autoarray.mask.mask_2d import Mask2D
+
+        extracted_array_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(self.mask),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        mask = Mask2D.all_false(
+            shape_native=extracted_array_2d.shape,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.centre,
+        )
+
+        return mask.geometry.extent
+
+    def mask_2d_from(self, buffer: int = 1) -> "Mask2D":
+        """
+        Extract the 2D region of a mask corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to extract and visualize only the region of an image that is used in an analysis.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
+        """
+        from autoarray.mask.mask_2d import Mask2D
+
+        extracted_mask_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(self.mask),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        return Mask2D(
+            mask=extracted_mask_2d,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
     def array_2d_from(self, array : Array2D, buffer: int = 1) -> Array2D:
         """
         Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
