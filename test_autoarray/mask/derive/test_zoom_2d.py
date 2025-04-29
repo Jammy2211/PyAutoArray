@@ -7,24 +7,24 @@ def test__quantities():
 
     mask = aa.Mask2D.all_false(shape_native=(4, 6), pixel_scales=(1.0, 1.0))
     zoom = aa.Zoom2D(mask=mask)
-    
+
     assert zoom.centre == (1.5, 2.5)
     assert zoom.offset_pixels == (0, 0)
     assert zoom.shape_native == (6, 6)
 
     mask = aa.Mask2D.all_false(shape_native=(6, 4), pixel_scales=(1.0, 1.0))
     zoom = aa.Zoom2D(mask=mask)
-    
+
     assert zoom.centre == (2.5, 1.5)
     assert zoom.offset_pixels == (0, 0)
     assert zoom.shape_native == (6, 6)
-  
+
     mask = aa.Mask2D(
         mask=np.array([[True, True, True], [True, True, False], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
     zoom = aa.Zoom2D(mask=mask)
-    
+
     assert zoom.centre == (1, 2)
     assert zoom.offset_pixels == (0, 1)
     assert zoom.shape_native == (1, 1)
@@ -34,7 +34,7 @@ def test__quantities():
         pixel_scales=(1.0, 1.0),
     )
     zoom = aa.Zoom2D(mask=mask)
-    
+
     assert zoom.centre == (2, 1)
     assert zoom.offset_pixels == (1, 0)
     assert zoom.shape_native == (1, 1)
@@ -44,7 +44,7 @@ def test__quantities():
         pixel_scales=(1.0, 1.0),
     )
     zoom = aa.Zoom2D(mask=mask)
-    
+
     assert zoom.centre == (0, 1)
     assert zoom.offset_pixels == (-1, 0)
     assert zoom.shape_native == (3, 3)
@@ -54,7 +54,7 @@ def test__quantities():
         pixel_scales=(1.0, 1.0),
     )
     zoom = aa.Zoom2D(mask=mask)
-    
+
     assert zoom.centre == (0, 0.5)
     assert zoom.offset_pixels == (-1, -0.5)
     assert zoom.shape_native == (1, 2)

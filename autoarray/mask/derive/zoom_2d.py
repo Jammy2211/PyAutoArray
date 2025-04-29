@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
+    from autoarray.mask.mask_2d import Mask2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
@@ -18,7 +19,7 @@ class Zoom2D:
 
         A `Mask2D` masks values which are associated with a uniform 2D rectangular grid of pixels, where unmasked
         entries (which are `False`) are used in subsequent calculations and masked values (which are `True`) are
-        omitted (for a full description see the :meth:`Mask2D` class API 
+        omitted (for a full description see the :meth:`Mask2D` class API
         documentation <autoarray.mask.mask_2d.Mask2D.__new__>`).
 
         The `Zoom2D` object calculations many different zoomed in qu
@@ -170,7 +171,66 @@ class Zoom2D:
         region = self.region
         return (region[1] - region[0], region[3] - region[2])
 
-    def array_2d_from(self, array : Array2D, buffer: int = 1) -> Array2D:
+    def extent_from(self, buffer: int = 1) -> np.ndarray:
+        """
+        For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
+        coordinates.
+
+        The extent of the grid in scaled units returned as an ``ndarray`` of the form [x_min, x_max, y_min, y_max].
+
+        This is used visualize zoomed and extracted arrays via the imshow() method.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
+        """
+        from autoarray.mask.mask_2d import Mask2D
+
+        extracted_array_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(self.mask),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        mask = Mask2D.all_false(
+            shape_native=extracted_array_2d.shape,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.centre,
+        )
+
+        return mask.geometry.extent
+
+    def mask_2d_from(self, buffer: int = 1) -> "Mask2D":
+        """
+        Extract the 2D region of a mask corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to extract and visualize only the region of an image that is used in an analysis.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
+        """
+        from autoarray.mask.mask_2d import Mask2D
+
+        extracted_mask_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(self.mask),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        return Mask2D(
+            mask=extracted_mask_2d,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
+    def array_2d_from(self, array: Array2D, buffer: int = 1) -> Array2D:
         """
         Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
@@ -192,14 +252,20 @@ class Zoom2D:
             x1=self.region[3] + buffer,
         )
 
-        mask = Mask2D.all_false(
-            shape_native=extracted_array_2d.shape,
+        extracted_mask_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(self.mask),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        mask = Mask2D(
+            mask=extracted_mask_2d,
             pixel_scales=array.pixel_scales,
             origin=array.mask.mask_centre,
         )
 
-        arr = array_2d_util.convert_array_2d(
-            array_2d=extracted_array_2d, mask_2d=mask
-        )
+        arr = array_2d_util.convert_array_2d(array_2d=extracted_array_2d, mask_2d=mask)
 
         return Array2D(values=arr, mask=mask, header=array.header)

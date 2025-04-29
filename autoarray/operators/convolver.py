@@ -215,12 +215,12 @@ class Convolver:
                         mask_index_array=self.mask_index_array,
                         kernel_2d=np.array(self.kernel.native[:, :]),
                     )
-                    self.image_frame_1d_indexes[
-                        mask_1d_index, :
-                    ] = image_frame_1d_indexes
-                    self.image_frame_1d_kernels[
-                        mask_1d_index, :
-                    ] = image_frame_1d_kernels
+                    self.image_frame_1d_indexes[mask_1d_index, :] = (
+                        image_frame_1d_indexes
+                    )
+                    self.image_frame_1d_kernels[mask_1d_index, :] = (
+                        image_frame_1d_kernels
+                    )
                     self.image_frame_1d_lengths[mask_1d_index] = image_frame_1d_indexes[
                         image_frame_1d_indexes >= 0
                     ].shape[0]
@@ -257,15 +257,15 @@ class Convolver:
                         mask_index_array=np.array(self.mask_index_array),
                         kernel_2d=np.array(self.kernel.native),
                     )
-                    self.blurring_frame_1d_indexes[
-                        mask_1d_index, :
-                    ] = image_frame_1d_indexes
-                    self.blurring_frame_1d_kernels[
-                        mask_1d_index, :
-                    ] = image_frame_1d_kernels
-                    self.blurring_frame_1d_lengths[
-                        mask_1d_index
-                    ] = image_frame_1d_indexes[image_frame_1d_indexes >= 0].shape[0]
+                    self.blurring_frame_1d_indexes[mask_1d_index, :] = (
+                        image_frame_1d_indexes
+                    )
+                    self.blurring_frame_1d_kernels[mask_1d_index, :] = (
+                        image_frame_1d_kernels
+                    )
+                    self.blurring_frame_1d_lengths[mask_1d_index] = (
+                        image_frame_1d_indexes[image_frame_1d_indexes >= 0].shape[0]
+                    )
                     mask_1d_index += 1
 
     @staticmethod

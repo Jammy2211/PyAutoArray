@@ -316,9 +316,7 @@ def elliptical_radius_from(
     y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
     x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
 
-    return np.sqrt(
-        x_scaled_elliptical**2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0
-    )
+    return np.sqrt(x_scaled_elliptical**2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0)
 
 
 @numba_util.jit()

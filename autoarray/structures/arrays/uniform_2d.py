@@ -312,7 +312,7 @@ class AbstractArray2D(Structure):
 
             buffer = 0 if self.mask.is_all_false else 1
 
-            return zoom.array_2d_from(array=self, buffer=buffer)
+            return zoom.array_2d_from(array=self, buffer=buffer).native
 
         return Array2D(
             values=self, mask=self.mask, header=self.header, store_native=True

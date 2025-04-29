@@ -750,9 +750,7 @@ def grid_2d_slim_upscaled_from(
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    grid_2d_slim_upscaled = np.zeros(
-        shape=(grid_slim.shape[0] * upscale_factor**2, 2)
-    )
+    grid_2d_slim_upscaled = np.zeros(shape=(grid_slim.shape[0] * upscale_factor**2, 2))
 
     upscale_index = 0
 

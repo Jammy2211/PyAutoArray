@@ -7,7 +7,7 @@ from autoarray import numba_util
 
 @numba_util.jit()
 def rectangular_neighbors_from(
-    shape_native: Tuple[int, int]
+    shape_native: Tuple[int, int],
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Returns the 4 (or less) adjacent neighbors of every pixel on a rectangular pixelization as an ndarray of shape
