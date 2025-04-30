@@ -167,3 +167,20 @@ def test__grid(
     grid_2d_plotter.figure_2d(color_array=color_array)
 
     assert path.join(plot_path, "grid3.png") in plot_patch.paths
+
+
+def test__array_rgb(
+    array_2d_rgb_7x7,
+    plot_path,
+    plot_patch,
+):
+    array_plotter = aplt.Array2DPlotter(
+        array=array_2d_rgb_7x7,
+        mat_plot_2d=aplt.MatPlot2D(
+            output=aplt.Output(path=plot_path, filename="array_rgb", format="png")
+        ),
+    )
+
+    array_plotter.figure_2d()
+
+    assert path.join(plot_path, "array_rgb.png") in plot_patch.paths

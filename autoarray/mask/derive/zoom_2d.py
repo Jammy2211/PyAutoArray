@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
+    from autoarray.structures.arrays.rgb import Array2DRGB
     from autoarray.mask.mask_2d import Mask2D
+
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
@@ -242,7 +244,11 @@ class Zoom2D:
             The number pixels around the extracted array used as a buffer.
         """
         from autoarray.structures.arrays.uniform_2d import Array2D
+        from autoarray.structures.arrays.rgb import Array2DRGB
         from autoarray.mask.mask_2d import Mask2D
+
+        if isinstance(array, Array2DRGB):
+            return self.array_2d_rgb_from(array=array, buffer=buffer)
 
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
             array_2d=np.array(array.native),
@@ -269,3 +275,51 @@ class Zoom2D:
         arr = array_2d_util.convert_array_2d(array_2d=extracted_array_2d, mask_2d=mask)
 
         return Array2D(values=arr, mask=mask, header=array.header)
+
+    def array_2d_rgb_from(self, array: Array2DRGB, buffer: int = 1) -> Array2DRGB:
+        """
+        Extract the 2D region of an RGB array corresponding to the rectangle encompassing all unmasked values.
+
+        This works the same as the `array_2d_from` method, but for RGB arrays, meaning that it iterates over the three
+        channels of the RGB array and extracts the region for each channel separately.
+
+        This is used to extract and visualize only the region of an RGB image that is used in an analysis.
+
+        Parameters
+        ----------
+        buffer
+            The number pixels around the extracted array used as a buffer.
+        """
+        from autoarray.structures.arrays.rgb import Array2DRGB
+        from autoarray.mask.mask_2d import Mask2D
+
+        for i in range(3):
+
+            extracted_array_2d = array_2d_util.extracted_array_2d_from(
+                array_2d=np.array(array.native[:,:,i]),
+                y0=self.region[0] - buffer,
+                y1=self.region[1] + buffer,
+                x0=self.region[2] - buffer,
+                x1=self.region[3] + buffer,
+            )
+
+            if i == 0:
+                array_2d_rgb = np.zeros((extracted_array_2d.shape[0], extracted_array_2d.shape[1], 3))
+
+            array_2d_rgb[:,:,i] = extracted_array_2d
+
+        extracted_mask_2d = array_2d_util.extracted_array_2d_from(
+            array_2d=np.array(self.mask),
+            y0=self.region[0] - buffer,
+            y1=self.region[1] + buffer,
+            x0=self.region[2] - buffer,
+            x1=self.region[3] + buffer,
+        )
+
+        mask = Mask2D(
+            mask=extracted_mask_2d,
+            pixel_scales=array.pixel_scales,
+            origin=array.mask.mask_centre,
+        )
+
+        return Array2DRGB(values=array_2d_rgb.astype("int"), mask=mask)
