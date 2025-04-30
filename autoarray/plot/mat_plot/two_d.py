@@ -14,6 +14,7 @@ from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.arrays.rgb import Array2DRGB
 
 from autoarray.structures.arrays import array_2d_util
 
@@ -243,7 +244,6 @@ class MatPlot2D(AbstractMatPlot):
         bypass
             If `True`, `plt.close` is omitted and the matplotlib figure remains open. This is used when making subplots.
         """
-
         if array is None or np.all(array == 0):
             return
 
@@ -280,14 +280,25 @@ class MatPlot2D(AbstractMatPlot):
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
-        plt.imshow(
-            X=array.native.array,
-            aspect=aspect,
-            cmap=self.cmap.cmap,
-            norm=norm,
-            extent=extent,
-            origin=origin,
-        )
+        if isinstance(array, Array2DRGB):
+
+            plt.imshow(
+                X=array.native.array,
+                aspect=aspect,
+                extent=extent,
+                origin=origin,
+            )
+
+        else:
+
+            plt.imshow(
+                X=array.native.array,
+                aspect=aspect,
+                cmap=self.cmap.cmap,
+                norm=norm,
+                extent=extent,
+                origin=origin,
+            )
 
         if visuals_2d.array_overlay is not None:
             self.array_overlay.overlay_array(
@@ -317,7 +328,12 @@ class MatPlot2D(AbstractMatPlot):
             pixels=array.shape_native[1],
         )
 
-        self.title.set(auto_title=auto_labels.title, use_log10=self.use_log10)
+        if isinstance(array, Array2DRGB):
+            title = "RGB"
+        else:
+            title = auto_labels.title
+
+        self.title.set(auto_title=title, use_log10=self.use_log10)
         self.ylabel.set()
         self.xlabel.set()
 
@@ -332,6 +348,7 @@ class MatPlot2D(AbstractMatPlot):
             [annotate.set() for annotate in self.annotate]
 
         if self.colorbar is not False:
+
             cb = self.colorbar.set(
                 units=self.units,
                 ax=ax,
