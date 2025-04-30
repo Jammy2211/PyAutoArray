@@ -67,6 +67,7 @@ def make_array_1d_7():
 def make_array_2d_7x7():
     return aa.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
+
 def make_array_2d_rgb_7x7():
     return aa.Array2DRGB(values=np.ones((7, 7, 3)), mask=make_mask_2d_7x7())
 

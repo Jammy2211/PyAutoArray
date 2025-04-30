@@ -296,7 +296,7 @@ class Zoom2D:
         for i in range(3):
 
             extracted_array_2d = array_2d_util.extracted_array_2d_from(
-                array_2d=np.array(array.native[:,:,i]),
+                array_2d=np.array(array.native[:, :, i]),
                 y0=self.region[0] - buffer,
                 y1=self.region[1] + buffer,
                 x0=self.region[2] - buffer,
@@ -304,9 +304,11 @@ class Zoom2D:
             )
 
             if i == 0:
-                array_2d_rgb = np.zeros((extracted_array_2d.shape[0], extracted_array_2d.shape[1], 3))
+                array_2d_rgb = np.zeros(
+                    (extracted_array_2d.shape[0], extracted_array_2d.shape[1], 3)
+                )
 
-            array_2d_rgb[:,:,i] = extracted_array_2d
+            array_2d_rgb[:, :, i] = extracted_array_2d
 
         extracted_mask_2d = array_2d_util.extracted_array_2d_from(
             array_2d=np.array(self.mask),
