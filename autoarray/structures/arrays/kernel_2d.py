@@ -2,7 +2,7 @@ from astropy import units
 import numpy as np
 import scipy.signal
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from autoconf.fitsable import header_obj_from
 
@@ -62,6 +62,7 @@ class Kernel2D(AbstractArray2D):
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
+        header: Optional[Header] = None,
         normalize: bool = False,
     ):
         """
@@ -90,7 +91,7 @@ class Kernel2D(AbstractArray2D):
             pixel_scales=pixel_scales,
             origin=origin,
         )
-        return Kernel2D(values=values, mask=values.mask, normalize=normalize)
+        return Kernel2D(values=values, mask=values.mask, header=header, normalize=normalize)
 
     @classmethod
     def full(
