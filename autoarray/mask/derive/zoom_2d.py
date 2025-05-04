@@ -272,7 +272,7 @@ class Zoom2D:
 
         arr = array_2d_util.convert_array_2d(array_2d=extracted_array_2d, mask_2d=mask)
 
-        return Array2D(values=arr, mask=mask, header=array.header)
+        return Array2D(values=arr, mask=mask, header=array.header).native
 
     def array_2d_rgb_from(self, array: Array2DRGB, buffer: int = 1) -> Array2DRGB:
         """
