@@ -41,6 +41,7 @@ def curvature_matrix_via_w_tilde_from(
     return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
 
 
+@numba_util.jit()
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix: np.ndarray,
     value: float,
@@ -60,9 +61,35 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix
         The curvature matrix which is being constructed in order to solve a linear system of equations.
     """
-    return curvature_matrix.at[
-        no_regularization_index_list, no_regularization_index_list
-    ].add(value)
+
+    for i in no_regularization_index_list:
+        curvature_matrix[i, i] += value
+
+    return curvature_matrix
+
+
+# def curvature_matrix_with_added_to_diag_from(
+#     curvature_matrix: np.ndarray,
+#     value: float,
+#     no_regularization_index_list: Optional[List] = None,
+# ) -> np.ndarray:
+#     """
+#     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
+#     via `np.linalg.solve` to fail and raise a `LinAlgError`.
+#
+#     In many circumstances, adding a small numerical value of `1.0e-8` to the diagonal of the `curvature_matrix`
+#     makes it positive definite, such that the inversion is performed without raising an error.
+#
+#     This function adds this numerical value to the diagonal of the curvature matrix.
+#
+#     Parameters
+#     ----------
+#     curvature_matrix
+#         The curvature matrix which is being constructed in order to solve a linear system of equations.
+#     """
+#     return curvature_matrix.at[
+#         no_regularization_index_list, no_regularization_index_list
+#     ].add(value)
 
 
 @numba_util.jit()
@@ -105,7 +132,7 @@ def curvature_matrix_via_mapping_matrix_from(
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
     array = mapping_matrix / noise_map[:, None]
-    curvature_matrix = jnp.dot(array.T, array)
+    curvature_matrix = np.dot(array.T, array)
 
     if add_to_curvature_diag and len(no_regularization_index_list) > 0:
         curvature_matrix = curvature_matrix_with_added_to_diag_from(
@@ -161,7 +188,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    return jnp.dot(mapping_matrix, reconstruction)
+    return np.dot(mapping_matrix, reconstruction)
 
 
 def reconstruction_positive_negative_from(
@@ -272,31 +299,31 @@ def reconstruction_positive_only_from(
     Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
 
-    try:
-        return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
-    except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
-        raise exc.InversionException() from e
+    # try:
+    #     return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
+    # except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
+    #     raise exc.InversionException() from e
 
-    # if len(data_vector):
-    #     try:
-    #         if settings.positive_only_uses_p_initial:
-    #             P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
-    #         else:
-    #             P_initial = np.zeros(0, dtype=int)
-    #
-    #         reconstruction = fnnls_cholesky(
-    #             curvature_reg_matrix,
-    #             (data_vector).T,
-    #             P_initial=P_initial,
-    #         )
-    #
-    #     except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
-    #         raise exc.InversionException() from e
-    #
-    # else:
-    #     raise exc.InversionException()
-    #
-    # return reconstruction
+    if len(data_vector):
+        try:
+            if settings.positive_only_uses_p_initial:
+                P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
+            else:
+                P_initial = np.zeros(0, dtype=int)
+
+            reconstruction = fnnls_cholesky(
+                curvature_reg_matrix,
+                (data_vector).T,
+                P_initial=P_initial,
+            )
+
+        except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
+            raise exc.InversionException() from e
+
+    else:
+        raise exc.InversionException()
+
+    return reconstruction
 
 
 def preconditioner_matrix_via_mapping_matrix_from(

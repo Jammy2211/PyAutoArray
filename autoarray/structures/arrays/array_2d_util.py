@@ -212,8 +212,6 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
         mask_2d=mask_2d,
     )
 
-
-@numba_util.jit()
 def extracted_array_2d_from(
     array_2d: np.ndarray, y0: int, y1: int, x0: int, x1: int
 ) -> np.ndarray:
@@ -251,20 +249,22 @@ def extracted_array_2d_from(
     array_2d = np.ones((5,5))
     extracted_array = extract_array_2d(array_2d=array_2d, y0=1, y1=4, x0=1, x1=4)
     """
-
     new_shape = (y1 - y0, x1 - x0)
+    resized_array = np.zeros(new_shape, dtype=array_2d.dtype)
 
-    resized_array = np.zeros(shape=new_shape)
+    # Compute valid slice ranges
+    y_start = max(y0, 0)
+    y_end = min(y1, array_2d.shape[0])
+    x_start = max(x0, 0)
+    x_end = min(x1, array_2d.shape[1])
 
-    for y_resized, y in enumerate(range(y0, y1)):
-        for x_resized, x in enumerate(range(x0, x1)):
-            if (
-                y >= 0
-                and x >= 0
-                and y <= array_2d.shape[0] - 1
-                and x <= array_2d.shape[1] - 1
-            ):
-                resized_array[y_resized, x_resized] = array_2d[y, x]
+    # Target insertion indices
+    y_insert_start = y_start - y0
+    y_insert_end = y_insert_start + (y_end - y_start)
+    x_insert_start = x_start - x0
+    x_insert_end = x_insert_start + (x_end - x_start)
+
+    resized_array[y_insert_start:y_insert_end, x_insert_start:x_insert_end] = array_2d[y_start:y_end, x_start:x_end]
 
     return resized_array
 

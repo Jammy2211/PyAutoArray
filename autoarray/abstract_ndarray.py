@@ -282,7 +282,7 @@ class AbstractNDArray(ABC):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         output_to_fits(
-            values=self.native.array,
+            values=self.native.array.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
             header_dict=self.mask.header_dict,
