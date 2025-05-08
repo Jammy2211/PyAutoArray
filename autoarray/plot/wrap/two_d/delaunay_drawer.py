@@ -62,11 +62,6 @@ class DelaunayDrawer(AbstractMatWrap2D):
             If `True`, the colorbar is plotted using a log10 scale.
         """
 
-        if pixel_values is None:
-            raise ValueError(
-                "pixel_values input to DelaunayPlotter are None and thus cannot be plotted."
-            )
-
         if ax is None:
             ax = plt.gca()
 
@@ -74,34 +69,42 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         simplices = mapper.delaunay.simplices
 
-        facecolors = facecolors_from(values=pixel_values, simplices=simplices)
+        if pixel_values is not None:
+            facecolors = facecolors_from(values=pixel_values, simplices=simplices)
 
-        norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)
+            norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)
 
-        if use_log10:
-            pixel_values[pixel_values < 1e-4] = 1e-4
-            pixel_values = np.log10(pixel_values)
+            if use_log10 and pixel_values is not None:
+                pixel_values[pixel_values < 1e-4] = 1e-4
+                pixel_values = np.log10(pixel_values)
 
-        vmin = cmap.vmin_from(array=pixel_values, use_log10=use_log10)
-        vmax = cmap.vmax_from(array=pixel_values, use_log10=use_log10)
+            vmin = cmap.vmin_from(array=pixel_values, use_log10=use_log10)
+            vmax = cmap.vmax_from(array=pixel_values, use_log10=use_log10)
 
-        color_values = np.where(pixel_values > vmax, vmax, pixel_values)
-        color_values = np.where(pixel_values < vmin, vmin, color_values)
+            color_values = np.where(pixel_values > vmax, vmax, pixel_values)
+            color_values = np.where(pixel_values < vmin, vmin, color_values)
 
-        cmap = plt.get_cmap(cmap.cmap)
+            cmap = plt.get_cmap(cmap.cmap)
 
-        if colorbar is not None:
-            cb = colorbar.set_with_color_values(
-                units=units,
-                norm=norm,
-                cmap=cmap,
-                color_values=color_values,
-                ax=ax,
-                use_log10=use_log10,
-            )
+            if colorbar is not None:
+                cb = colorbar.set_with_color_values(
+                    units=units,
+                    norm=norm,
+                    cmap=cmap,
+                    color_values=color_values,
+                    ax=ax,
+                    use_log10=use_log10,
+                )
 
-            if cb is not None and colorbar_tickparams is not None:
-                colorbar_tickparams.set(cb=cb)
+                if cb is not None and colorbar_tickparams is not None:
+                    colorbar_tickparams.set(cb=cb)
+
+        else:
+
+            cmap = plt.get_cmap(cmap.cmap)
+            facecolors = np.zeros(shape=simplices.shape[0])
+            vmin = 0.0
+            vmax = 0.0
 
         ax.tripcolor(
             source_pixelization_grid[:, 1],
