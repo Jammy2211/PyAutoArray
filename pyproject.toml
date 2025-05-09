@@ -7,7 +7,6 @@ name = "autoarray"
 dynamic = ["version", "dependencies"]
   description="PyAuto Data Structures"
 readme = { file = "README.rst", content-type = "text/x-rst" }
-license = "MIT"
 license-files = [
     "LICENSE",
 ]
