@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "autoarray"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
   description="PyAuto Data Structures"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license-files = [
@@ -26,6 +26,16 @@ classifiers = [
   "Programming Language :: Python :: 3.12"
 ]
 keywords = ["cli"]
+dependencies = [
+    "autofit",
+    "astropy>=5.0,<=6.1.2",
+    "decorator>=4.0.0",
+    "dill>=0.3.1.1",
+    "matplotlib>=3.7.0",
+    "scipy<=1.14.0",
+    "scikit-image<=0.24.0",
+    "scikit-learn<=1.5.1"
+]
 
 [project.urls]
 Homepage = "https://github.com/Jammy2211/PyAutoArray"
