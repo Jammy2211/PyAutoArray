@@ -37,7 +37,6 @@ jobs:
         pip3 install wheel
         pip3 install pytest coverage pytest-cov
         pip install ./PyAutoConf
-        pip install ./PyAutoFit
         pip install ./PyAutoArray
         pip install ./PyAutoArray[optional]
 
