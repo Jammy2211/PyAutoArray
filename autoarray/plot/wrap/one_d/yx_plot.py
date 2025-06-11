@@ -72,7 +72,7 @@ class YXPlot(AbstractMatWrap1D):
                 #     marker="o",
                 fmt="o",
                 # ls=ls_errorbar,
-                **self.config_dict
+                **self.config_dict,
             )
             if plot_axis_type == "errorbar_logy":
                 plt.yscale("log")

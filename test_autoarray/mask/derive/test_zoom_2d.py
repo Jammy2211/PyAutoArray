@@ -109,6 +109,7 @@ def test__quantities():
     assert zoom.centre == (6, 2)
     assert zoom.offset_pixels == (3, 1)
 
+
 def test__array_2d_from():
     array_2d = [
         [1.0, 2.0, 3.0, 4.0],
@@ -210,4 +211,3 @@ def test__array_2d_from():
     arr_zoomed = zoom.array_2d_from(array=arr, buffer=0)
 
     assert arr_zoomed.mask.origin == (0.0, 1.0)
-

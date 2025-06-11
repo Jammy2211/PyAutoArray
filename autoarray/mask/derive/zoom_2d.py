@@ -302,7 +302,9 @@ class Zoom2D:
             )
 
             if i == 0:
-                array_2d_rgb = np.zeros((extracted_array_2d.shape[0], extracted_array_2d.shape[1], 3))
+                array_2d_rgb = np.zeros(
+                    (extracted_array_2d.shape[0], extracted_array_2d.shape[1], 3)
+                )
 
             array_2d_rgb[:, :, i] = extracted_array_2d
 

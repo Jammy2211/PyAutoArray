@@ -1,6 +1,7 @@
 from autoarray.abstract_ndarray import AbstractNDArray
 from autoarray.structures.arrays.uniform_2d import Array2D
 
+
 class Array2DRGB(Array2D):
 
     def __init__(self, values, mask):

@@ -446,7 +446,6 @@ class AbstractInversion:
                 )
         return mapper_zero_pixel_list
 
-
     @cached_property
     @profile_func
     def reconstruction(self) -> np.ndarray:

@@ -354,6 +354,7 @@ def test__trimmed_after_convolution_from():
     ).all()
     assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
+
 def test__binned_across_rows():
     array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 

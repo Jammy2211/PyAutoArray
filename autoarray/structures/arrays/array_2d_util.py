@@ -212,6 +212,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
         mask_2d=mask_2d,
     )
 
+
 def extracted_array_2d_from(
     array_2d: np.ndarray, y0: int, y1: int, x0: int, x1: int
 ) -> np.ndarray:
@@ -264,7 +265,9 @@ def extracted_array_2d_from(
     x_insert_start = x_start - x0
     x_insert_end = x_insert_start + (x_end - x_start)
 
-    resized_array[y_insert_start:y_insert_end, x_insert_start:x_insert_end] = array_2d[y_start:y_end, x_start:x_end]
+    resized_array[y_insert_start:y_insert_end, x_insert_start:x_insert_end] = array_2d[
+        y_start:y_end, x_start:x_end
+    ]
 
     return resized_array
 

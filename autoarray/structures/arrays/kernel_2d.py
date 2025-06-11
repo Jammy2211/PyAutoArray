@@ -28,7 +28,7 @@ class Kernel2D(AbstractArray2D):
         normalize: bool = False,
         store_native: bool = False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels. Each entry
@@ -509,7 +509,9 @@ class Kernel2D(AbstractArray2D):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
-        convolved_array_2d = scipy.signal.convolve2d(array.array, self.native.array, mode="same")
+        convolved_array_2d = scipy.signal.convolve2d(
+            array.array, self.native.array, mode="same"
+        )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
             mask_2d=np.array(mask),

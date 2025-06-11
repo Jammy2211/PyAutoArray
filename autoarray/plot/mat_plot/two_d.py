@@ -257,9 +257,7 @@ class MatPlot2D(AbstractMatPlot):
                 "a pixel scales attribute."
             )
 
-        if conf.instance["visualize"]["general"]["general"][
-            "zoom_around_mask"
-        ]:
+        if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
 
             zoom = Zoom2D(mask=array.mask)
 
@@ -302,7 +300,6 @@ class MatPlot2D(AbstractMatPlot):
                 extent=extent,
                 origin=origin,
             )
-
 
         if visuals_2d.array_overlay is not None:
             self.array_overlay.overlay_array(

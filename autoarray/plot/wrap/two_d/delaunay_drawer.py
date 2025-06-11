@@ -112,5 +112,5 @@ class DelaunayDrawer(AbstractMatWrap2D):
             cmap=cmap,
             vmin=vmin,
             vmax=vmax,
-            **self.config_dict
+            **self.config_dict,
         )

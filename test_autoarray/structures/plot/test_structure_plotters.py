@@ -169,7 +169,6 @@ def test__grid(
     assert path.join(plot_path, "grid3.png") in plot_patch.paths
 
 
-
 def test__array_rgb(
     array_2d_rgb_7x7,
     plot_path,
