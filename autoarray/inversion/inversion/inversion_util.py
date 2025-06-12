@@ -233,7 +233,9 @@ def reconstruction_positive_negative_from(
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
     try:
-        reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
+        # print(curvature_reg_matrix)
+        # print(data_vector)
+        reconstruction = jnp.linalg.solve(curvature_reg_matrix, data_vector)
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
 
@@ -299,32 +301,10 @@ def reconstruction_positive_only_from(
     Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
 
-    # try:
-    #     return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
-    # except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
-    #     raise exc.InversionException() from e
-
-    if len(data_vector):
-        try:
-            if settings.positive_only_uses_p_initial:
-                P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
-            else:
-                P_initial = np.zeros(0, dtype=int)
-
-            reconstruction = fnnls_cholesky(
-                curvature_reg_matrix,
-                (data_vector).T,
-                P_initial=P_initial,
-            )
-
-        except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
-            raise exc.InversionException() from e
-
-    else:
-        raise exc.InversionException()
-
-    return reconstruction
-
+    try:
+        return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
+    except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
+        raise exc.InversionException() from e
 
 def preconditioner_matrix_via_mapping_matrix_from(
     mapping_matrix: np.ndarray,
