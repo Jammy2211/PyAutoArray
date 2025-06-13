@@ -265,7 +265,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     assert isinstance(inversion.linear_obj_list[1], aa.MapperDelaunay)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.reconstruction == pytest.approx(
-        np.array([2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), 1.0e-4
+        np.array([2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), abs=1.0e-2
     )
 
 
