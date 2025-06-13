@@ -41,7 +41,6 @@ def curvature_matrix_via_w_tilde_from(
     return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
 
 
-@numba_util.jit()
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix: np.ndarray,
     value: float,
@@ -61,55 +60,22 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix
         The curvature matrix which is being constructed in order to solve a linear system of equations.
     """
-
-    for i in no_regularization_index_list:
-        curvature_matrix[i, i] += value
-
-    return curvature_matrix
+    return curvature_matrix.at[
+        no_regularization_index_list, no_regularization_index_list
+    ].add(value)
 
 
-# def curvature_matrix_with_added_to_diag_from(
-#     curvature_matrix: np.ndarray,
-#     value: float,
-#     no_regularization_index_list: Optional[List] = None,
-# ) -> np.ndarray:
-#     """
-#     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
-#     via `np.linalg.solve` to fail and raise a `LinAlgError`.
-#
-#     In many circumstances, adding a small numerical value of `1.0e-8` to the diagonal of the `curvature_matrix`
-#     makes it positive definite, such that the inversion is performed without raising an error.
-#
-#     This function adds this numerical value to the diagonal of the curvature matrix.
-#
-#     Parameters
-#     ----------
-#     curvature_matrix
-#         The curvature matrix which is being constructed in order to solve a linear system of equations.
-#     """
-#     return curvature_matrix.at[
-#         no_regularization_index_list, no_regularization_index_list
-#     ].add(value)
-
-
-@numba_util.jit()
 def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray,
 ) -> np.ndarray:
-    curvature_matrix_mirrored = np.zeros(
-        (curvature_matrix.shape[0], curvature_matrix.shape[1])
-    )
+    # Copy the original matrix and its transpose
+    m1 = curvature_matrix
+    m2 = curvature_matrix.T
 
-    for i in range(curvature_matrix.shape[0]):
-        for j in range(curvature_matrix.shape[1]):
-            if curvature_matrix[i, j] != 0:
-                curvature_matrix_mirrored[i, j] = curvature_matrix[i, j]
-                curvature_matrix_mirrored[j, i] = curvature_matrix[i, j]
-            if curvature_matrix[j, i] != 0:
-                curvature_matrix_mirrored[i, j] = curvature_matrix[j, i]
-                curvature_matrix_mirrored[j, i] = curvature_matrix[j, i]
+    # For each entry, prefer the non-zero value from either the matrix or its transpose
+    mirrored = jnp.where(m1 != 0, m1, m2)
 
-    return curvature_matrix_mirrored
+    return mirrored
 
 
 def curvature_matrix_via_mapping_matrix_from(
@@ -188,7 +154,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    return np.dot(mapping_matrix, reconstruction)
+    return jnp.dot(mapping_matrix, reconstruction)
 
 
 def reconstruction_positive_negative_from(
@@ -306,6 +272,7 @@ def reconstruction_positive_only_from(
         return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
     except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
         raise exc.InversionException() from e
+
 
 def preconditioner_matrix_via_mapping_matrix_from(
     mapping_matrix: np.ndarray,

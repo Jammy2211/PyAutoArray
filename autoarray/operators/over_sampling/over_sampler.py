@@ -150,7 +150,7 @@ class OverSampler:
         # Used for JAX based adaptive over sampling.
 
         # Define group sizes
-        group_sizes = np.array(self.sub_size.array ** 2)
+        group_sizes = np.array(self.sub_size.array**2)
 
         # Compute the cumulative sum of group sizes to get split points
         self.split_indices = np.cumsum(group_sizes)
