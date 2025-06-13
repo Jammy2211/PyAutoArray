@@ -1,6 +1,7 @@
 import copy
 import numpy as np
 import pytest
+from dill import settings
 
 import autoarray as aa
 
@@ -310,13 +311,13 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2)),
     )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
@@ -328,7 +329,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion_no_linear_func = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     assert inversion.regularization_term == pytest.approx(
