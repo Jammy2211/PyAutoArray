@@ -248,13 +248,13 @@ def test__identical_inversion_values_for_two_methods():
     inversion_w_tilde = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True),
+        settings=aa.SettingsInversion(use_w_tilde=True, use_positive_only_solver=True),
     )
 
     inversion_mapping_matrices = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     assert (inversion_w_tilde.data == inversion_mapping_matrices.data).all()
