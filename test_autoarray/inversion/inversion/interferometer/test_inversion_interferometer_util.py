@@ -347,13 +347,13 @@ def test__identical_inversion_source_and_image_loops():
     inversion_image_loop = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True, use_source_loop=False),
+        settings=aa.SettingsInversion(use_w_tilde=True, use_source_loop=False, use_positive_only_solver=True),
     )
 
     inversion_source_loop = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True, use_source_loop=True),
+        settings=aa.SettingsInversion(use_w_tilde=True, use_source_loop=True, use_positive_only_solver=True),
     )
 
     assert (inversion_image_loop.data == inversion_source_loop.data).all()
