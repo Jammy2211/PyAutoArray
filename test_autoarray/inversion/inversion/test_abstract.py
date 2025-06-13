@@ -6,7 +6,6 @@ import autoarray as aa
 
 from autoarray import exc
 
-
 directory = path.dirname(path.realpath(__file__))
 
 
@@ -455,7 +454,8 @@ def test__data_subtracted_dict():
 def test__reconstruction_raises_exception_for_linalg_error():
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        data_vector=np.ones(3), curvature_reg_matrix=np.ones((3, 3))
+        data_vector=np.ones(3),
+        curvature_reg_matrix=np.ones((3, 3))
     )
 
     with pytest.raises(exc.InversionException):

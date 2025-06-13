@@ -233,11 +233,12 @@ def reconstruction_positive_negative_from(
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
     try:
-        # print(curvature_reg_matrix)
-        # print(data_vector)
         reconstruction = jnp.linalg.solve(curvature_reg_matrix, data_vector)
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
+
+    if jnp.isnan(reconstruction).any():
+        raise exc.InversionException
 
     if (
         conf.instance["general"]["inversion"]["check_reconstruction"]
