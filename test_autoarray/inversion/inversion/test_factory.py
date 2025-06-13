@@ -369,13 +369,13 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=True),
+        settings=aa.SettingsInversion(use_w_tilde=True, use_positive_only_solver=True),
     )
 
     assert inversion_mapping.data_vector == pytest.approx(

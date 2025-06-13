@@ -132,7 +132,7 @@ def curvature_matrix_via_mapping_matrix_from(
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
     array = mapping_matrix / noise_map[:, None]
-    curvature_matrix = np.dot(array.T, array)
+    curvature_matrix = jnp.dot(array.T, array)
 
     if add_to_curvature_diag and len(no_regularization_index_list) > 0:
         curvature_matrix = curvature_matrix_with_added_to_diag_from(
