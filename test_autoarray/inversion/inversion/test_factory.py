@@ -389,8 +389,8 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     assert inversion_mapping.reconstruction == pytest.approx(
         inversion_w_tilde.reconstruction, 1.0e-4
     )
-    assert inversion_mapping.mapped_reconstructed_image == pytest.approx(
-        inversion_w_tilde.mapped_reconstructed_image, 1.0e-4
+    assert inversion_mapping.mapped_reconstructed_image.array == pytest.approx(
+        inversion_w_tilde.mapped_reconstructed_image.array, 1.0e-4
     )
 
     linear_obj_1 = aa.m.MockLinearObjFuncList(
