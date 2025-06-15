@@ -1,5 +1,7 @@
 import jax.numpy as jnp
 import jaxnnls
+import jax
+import jax.lax as lax
 import numpy as np
 
 from typing import List, Optional, Tuple
@@ -10,7 +12,6 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
 from autoarray import exc
-from autoarray.util.fnnls import fnnls_cholesky
 
 
 def curvature_matrix_via_w_tilde_from(
@@ -269,9 +270,20 @@ def reconstruction_positive_only_from(
     """
 
     try:
-        return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
+        reconstruction = jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
     except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
         raise exc.InversionException() from e
+
+    def handle_nan(reconstruction):
+        return jnp.zeros_like(reconstruction)
+
+    def handle_valid(reconstruction):
+        return reconstruction
+
+    has_nan = jnp.isnan(reconstruction).any()
+    reconstruction = lax.cond(has_nan, handle_nan, handle_valid, reconstruction)
+
+    return reconstruction
 
 
 def preconditioner_matrix_via_mapping_matrix_from(
