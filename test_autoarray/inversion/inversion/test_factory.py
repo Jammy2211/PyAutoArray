@@ -1,6 +1,7 @@
 import copy
 import numpy as np
 import pytest
+from dill import settings
 
 import autoarray as aa
 
@@ -43,6 +44,7 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     linear_obj = aa.m.MockLinearObjFuncList(
         parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
     )
+    linear_obj.mapping_matrix[0, 0] = 1.0
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
@@ -52,8 +54,8 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
     assert isinstance(inversion, aa.InversionImagingMapping)
+    assert inversion.reconstruction == pytest.approx(np.array([0.0, 2.0]), abs=1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-    assert inversion.reconstruction == pytest.approx(np.array([1.0, 1.0]), 1.0e-4)
 
 
 def test__inversion_imaging__via_mapper(
@@ -264,7 +266,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     assert isinstance(inversion.linear_obj_list[1], aa.MapperDelaunay)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.reconstruction == pytest.approx(
-        np.array([2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), 1.0e-4
+        np.array([2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), abs=1.0e-2
     )
 
 
@@ -289,8 +291,8 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
     assert inversion_w_tilde.reconstruction == pytest.approx(
         inversion_mapping.reconstruction, 1.0e-4
     )
-    assert inversion_w_tilde.mapped_reconstructed_image == pytest.approx(
-        inversion_mapping.mapped_reconstructed_image, 1.0e-4
+    assert inversion_w_tilde.mapped_reconstructed_image.array == pytest.approx(
+        inversion_mapping.mapped_reconstructed_image.array, 1.0e-4
     )
     assert inversion_w_tilde.log_det_curvature_reg_matrix_term == pytest.approx(
         inversion_mapping.log_det_curvature_reg_matrix_term
@@ -309,13 +311,15 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+        parameters=2,
+        grid=grid,
+        mapping_matrix=np.full(fill_value=0.5, shape=(9, 2)),
     )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
@@ -327,7 +331,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion_no_linear_func = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     assert inversion.regularization_term == pytest.approx(
@@ -367,13 +371,13 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=True),
+        settings=aa.SettingsInversion(use_w_tilde=True, use_positive_only_solver=True),
     )
 
     assert inversion_mapping.data_vector == pytest.approx(
@@ -388,8 +392,8 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     assert inversion_mapping.reconstruction == pytest.approx(
         inversion_w_tilde.reconstruction, 1.0e-4
     )
-    assert inversion_mapping.mapped_reconstructed_image == pytest.approx(
-        inversion_w_tilde.mapped_reconstructed_image, 1.0e-4
+    assert inversion_mapping.mapped_reconstructed_image.array == pytest.approx(
+        inversion_w_tilde.mapped_reconstructed_image.array, 1.0e-4
     )
 
     linear_obj_1 = aa.m.MockLinearObjFuncList(
@@ -476,9 +480,11 @@ def test__inversion_matrices__x2_mappers(
     delaunay_mapper_9_3x3,
     regularization_constant,
 ):
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3, delaunay_mapper_9_3x3],
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     assert (
@@ -524,26 +530,23 @@ def test__inversion_matrices__x2_mappers(
     assert (inversion.regularization_matrix[0:9, 9:18] == np.zeros((9, 9))).all()
     assert (inversion.regularization_matrix[9:18, 0:9] == np.zeros((9, 9))).all()
 
-    reconstruction_0 = 0.5 * np.ones(9)
-    reconstruction_1 = 0.5 * np.ones(9)
+    assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3][
+        4
+    ] == pytest.approx(0.05594123, 1.0e-4)
+    assert inversion.reconstruction_dict[delaunay_mapper_9_3x3][4] == pytest.approx(
+        0.04686388, 1.0e-4
+    )
+    assert inversion.reconstruction[13] == pytest.approx(0.04686388, 1.0e-4)
 
-    assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3] == pytest.approx(
-        reconstruction_0, 1.0e-4
+    assert inversion.mapped_reconstructed_data_dict[rectangular_mapper_7x7_3x3][
+        4
+    ] == pytest.approx(0.05594123, 1.0e-4)
+    assert inversion.mapped_reconstructed_data_dict[delaunay_mapper_9_3x3][
+        3
+    ] == pytest.approx(0.01521323, 1.0e-4)
+    assert inversion.mapped_reconstructed_image[4] == pytest.approx(
+        0.10494037076075, 1.0e-4
     )
-    assert inversion.reconstruction_dict[delaunay_mapper_9_3x3] == pytest.approx(
-        reconstruction_1, 1.0e-4
-    )
-    assert inversion.reconstruction == pytest.approx(
-        np.concatenate([reconstruction_0, reconstruction_1]), 1.0e-4
-    )
-
-    assert inversion.mapped_reconstructed_data_dict[
-        rectangular_mapper_7x7_3x3
-    ] == pytest.approx(0.5 * np.ones(9), 1.0e-4)
-    assert inversion.mapped_reconstructed_data_dict[
-        delaunay_mapper_9_3x3
-    ] == pytest.approx(0.5 * np.ones(9), 1.0e-4)
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
 
 def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):

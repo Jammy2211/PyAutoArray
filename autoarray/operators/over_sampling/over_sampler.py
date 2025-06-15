@@ -147,6 +147,17 @@ class OverSampler:
             over_sample_size=sub_size, mask=mask
         )
 
+        # Used for JAX based adaptive over sampling.
+
+        # Define group sizes
+        group_sizes = np.array(self.sub_size.array**2)
+
+        # Compute the cumulative sum of group sizes to get split points
+        self.split_indices = np.cumsum(group_sizes)
+
+        # Ensure correct concatenation by making 0 a JAX array
+        self.start_indices = np.concatenate((np.array([0]), self.split_indices[:-1]))
+
     @property
     def sub_is_uniform(self) -> bool:
         """
@@ -234,20 +245,11 @@ class OverSampler:
             ).mean(axis=1)
         else:
 
-            # Define group sizes
-            group_sizes = jnp.array(self.sub_size.array**2)
-
-            # Compute the cumulative sum of group sizes to get split points
-            split_indices = jnp.cumsum(group_sizes)
-
-            # Ensure correct concatenation by making 0 a JAX array
-            start_indices = jnp.concatenate((jnp.array([0]), split_indices[:-1]))
-
             # Compute the group means
             binned_array_2d = jnp.array(
                 [
                     array[start:end].mean()
-                    for start, end in zip(start_indices, split_indices)
+                    for start, end in zip(self.start_indices, self.split_indices)
                 ]
             )
 

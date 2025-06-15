@@ -6,7 +6,6 @@ import autoarray as aa
 
 from autoarray import exc
 
-
 directory = path.dirname(path.realpath(__file__))
 
 

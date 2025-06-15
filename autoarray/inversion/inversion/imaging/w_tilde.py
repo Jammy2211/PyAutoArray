@@ -440,7 +440,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     data_weights=mapper.unique_mappings.data_weights,
                     pix_lengths=mapper.unique_mappings.pix_lengths,
                     pix_pixels=mapper.params,
-                    curvature_weights=curvature_weights,
+                    curvature_weights=np.array(curvature_weights),
                     image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
                     image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
                     image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,

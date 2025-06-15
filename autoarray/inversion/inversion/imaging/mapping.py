@@ -109,7 +109,6 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         The calculation is described in more detail in `inversion_util.data_vector_via_blurred_mapping_matrix_from`.
         """
-
         return inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=self.operated_mapping_matrix,
             image=self.data.array,

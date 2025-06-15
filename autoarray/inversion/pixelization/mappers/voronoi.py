@@ -172,5 +172,8 @@ class MapperVoronoi(AbstractMapper):
             is input.
         """
         return self.source_plane_mesh_grid.interpolated_array_from(
-            values=values, shape_native=shape_native, extent=extent, use_nn=True
+            values=np.array(values),
+            shape_native=shape_native,
+            extent=extent,
+            use_nn=True,
         )

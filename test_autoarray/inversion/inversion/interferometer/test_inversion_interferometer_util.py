@@ -248,13 +248,13 @@ def test__identical_inversion_values_for_two_methods():
     inversion_w_tilde = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True),
+        settings=aa.SettingsInversion(use_w_tilde=True, use_positive_only_solver=True),
     )
 
     inversion_mapping_matrices = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
     assert (inversion_w_tilde.data == inversion_mapping_matrices.data).all()
@@ -285,8 +285,8 @@ def test__identical_inversion_values_for_two_methods():
     assert inversion_w_tilde.reconstruction == pytest.approx(
         inversion_mapping_matrices.reconstruction, abs=1.0e-1
     )
-    assert inversion_w_tilde.mapped_reconstructed_image == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_image, abs=1.0e-1
+    assert inversion_w_tilde.mapped_reconstructed_image.array == pytest.approx(
+        inversion_mapping_matrices.mapped_reconstructed_image.array, abs=1.0e-1
     )
     assert inversion_w_tilde.mapped_reconstructed_data == pytest.approx(
         inversion_mapping_matrices.mapped_reconstructed_data, abs=1.0e-1
@@ -347,13 +347,17 @@ def test__identical_inversion_source_and_image_loops():
     inversion_image_loop = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True, use_source_loop=False),
+        settings=aa.SettingsInversion(
+            use_w_tilde=True, use_source_loop=False, use_positive_only_solver=True
+        ),
     )
 
     inversion_source_loop = aa.Inversion(
         dataset=dataset,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True, use_source_loop=True),
+        settings=aa.SettingsInversion(
+            use_w_tilde=True, use_source_loop=True, use_positive_only_solver=True
+        ),
     )
 
     assert (inversion_image_loop.data == inversion_source_loop.data).all()
@@ -380,8 +384,8 @@ def test__identical_inversion_source_and_image_loops():
     assert inversion_image_loop.reconstruction == pytest.approx(
         inversion_source_loop.reconstruction, 1.0e-2
     )
-    assert inversion_image_loop.mapped_reconstructed_image == pytest.approx(
-        inversion_source_loop.mapped_reconstructed_image, 1.0e-2
+    assert inversion_image_loop.mapped_reconstructed_image.array == pytest.approx(
+        inversion_source_loop.mapped_reconstructed_image.array, 1.0e-2
     )
     assert inversion_image_loop.mapped_reconstructed_data == pytest.approx(
         inversion_source_loop.mapped_reconstructed_data, 1.0e-2
