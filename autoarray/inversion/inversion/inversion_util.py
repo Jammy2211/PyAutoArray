@@ -61,9 +61,42 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix
         The curvature matrix which is being constructed in order to solve a linear system of equations.
     """
-    return curvature_matrix.at[
-        no_regularization_index_list, no_regularization_index_list
-    ].add(value)
+    try:
+        return curvature_matrix.at[
+            no_regularization_index_list, no_regularization_index_list
+        ].add(value)
+    except AttributeError:
+        return curvature_matrix_with_added_to_diag_from_numba(
+            curvature_matrix=curvature_matrix,
+            value=value,
+            no_regularization_index_list=no_regularization_index_list,
+        )
+
+@numba_util.jit()
+def curvature_matrix_with_added_to_diag_from_numba(
+        curvature_matrix: np.ndarray,
+        value: float,
+        no_regularization_index_list: Optional[List] = None,
+) -> np.ndarray:
+    """
+    It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
+    via `np.linalg.solve` to fail and raise a `LinAlgError`.
+
+    In many circumstances, adding a small numerical value of `1.0e-8` to the diagonal of the `curvature_matrix`
+    makes it positive definite, such that the inversion is performed without raising an error.
+
+    This function adds this numerical value to the diagonal of the curvature matrix.
+
+    Parameters
+    ----------
+    curvature_matrix
+        The curvature matrix which is being constructed in order to solve a linear system of equations.
+    """
+
+    for i in no_regularization_index_list:
+        curvature_matrix[i, i] += value
+
+    return curvature_matrix
 
 
 def curvature_matrix_mirrored_from(
