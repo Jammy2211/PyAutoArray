@@ -72,11 +72,12 @@ def curvature_matrix_with_added_to_diag_from(
             no_regularization_index_list=no_regularization_index_list,
         )
 
+
 @numba_util.jit()
 def curvature_matrix_with_added_to_diag_from_numba(
-        curvature_matrix: np.ndarray,
-        value: float,
-        no_regularization_index_list: Optional[List] = None,
+    curvature_matrix: np.ndarray,
+    value: float,
+    no_regularization_index_list: Optional[List] = None,
 ) -> np.ndarray:
     """
     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion

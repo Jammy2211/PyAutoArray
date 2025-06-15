@@ -464,7 +464,10 @@ class AbstractInversion:
             And the data_vector = ZTx, so the corresponding row is also taken out.
             """
 
-            if self.has(cls=AbstractMapper) and self.settings.force_edge_pixels_to_zeros:
+            if (
+                self.has(cls=AbstractMapper)
+                and self.settings.force_edge_pixels_to_zeros
+            ):
 
                 ids_zeros = jnp.array(self.mapper_edge_pixel_list, dtype=int)
 

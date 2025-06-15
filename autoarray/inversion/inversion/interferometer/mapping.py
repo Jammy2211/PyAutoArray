@@ -152,7 +152,9 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
             visibilities = (
                 inversion_interferometer_util.mapped_reconstructed_visibilities_from(
-                    transformed_mapping_matrix=np.array(operated_mapping_matrix_list[index]),
+                    transformed_mapping_matrix=np.array(
+                        operated_mapping_matrix_list[index]
+                    ),
                     reconstruction=np.array(reconstruction),
                 )
             )
