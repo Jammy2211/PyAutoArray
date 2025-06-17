@@ -3,15 +3,14 @@ import pytest
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
+from autoarray.structures.triangles.coordinate_array import JAXCoordinateArrayTriangles as CoordinateArrayTriangles
 from autoarray.structures.triangles.shape import Point
 
 
 def test_two(two_triangles):
+
     assert np.all(two_triangles.centres == np.array([[0, 0], [0.5, 0]]))
-    assert np.all(
-        two_triangles.triangles
-        == [
+    assert  two_triangles.triangles == pytest.approx(np.array([
             [
                 [0.0, HEIGHT_FACTOR / 2],
                 [0.5, -HEIGHT_FACTOR / 2],
@@ -22,8 +21,7 @@ def test_two(two_triangles):
                 [0.0, HEIGHT_FACTOR / 2],
                 [1.0, HEIGHT_FACTOR / 2],
             ],
-        ]
-    )
+        ]), 1.0e-4)
 
 
 def test_trivial_triangles(one_triangle):
