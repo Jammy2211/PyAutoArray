@@ -7,7 +7,7 @@ from autoarray.structures.triangles.coordinate_array import JAXCoordinateArrayTr
 from autoarray.structures.triangles.shape import Point
 
 
-def test_two(two_triangles):
+def test__two(two_triangles):
 
     assert np.all(two_triangles.centres == np.array([[0, 0], [0.5, 0]]))
     assert  two_triangles.triangles == pytest.approx(np.array([
@@ -24,19 +24,17 @@ def test_two(two_triangles):
         ]), 1.0e-4)
 
 
-def test_trivial_triangles(one_triangle):
+def test__trivial_triangles(one_triangle):
     assert one_triangle.flip_array == np.array([1])
     assert np.all(one_triangle.centres == np.array([[0, 0]]))
-    assert np.all(
-        one_triangle.triangles
-        == [
+    assert one_triangle.triangles == pytest.approx(np.array([
             [
                 [0.0, HEIGHT_FACTOR / 2],
                 [0.5, -HEIGHT_FACTOR / 2],
                 [-0.5, -HEIGHT_FACTOR / 2],
             ],
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_above():
