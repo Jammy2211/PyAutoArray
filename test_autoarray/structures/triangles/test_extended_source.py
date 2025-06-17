@@ -49,7 +49,7 @@ def test_small_point(triangles, point, indices):
             radius=0.001,
         )
     )
-    assert containing_triangles.tolist() == indices
+    assert [i for i in containing_triangles.tolist() if i != -1] == indices
 
 
 @pytest.mark.parametrize(
@@ -72,4 +72,4 @@ def test_large_circle(
             radius=radius,
         )
     )
-    assert containing_triangles.tolist() == indices
+    assert [i for i in containing_triangles.tolist() if i != -1] == indices
