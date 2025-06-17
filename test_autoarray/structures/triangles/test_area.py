@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autoarray.structures.triangles.array import JAXArrayTriangles as ArrayTriangles
+from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.structures.triangles.shape import Triangle, Circle, Square, Polygon
 
 

@@ -1,1 +1,0 @@
-from .jax_array import ArrayTriangles as JAXArrayTriangles

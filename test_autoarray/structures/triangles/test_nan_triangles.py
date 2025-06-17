@@ -2,10 +2,10 @@ import pytest
 
 try:
     from jax import numpy as np
-    from autoarray.structures.triangles.array.jax_array import ArrayTriangles
+    from autoarray.structures.triangles.array import ArrayTriangles
 except ImportError:
     import numpy as np
-    from autoarray.structures.triangles.array import JAXArrayTriangles as ArrayTriangles
+    from autoarray.structures.triangles.array import ArrayTriangles
 
 
 pytest.importorskip("jax")

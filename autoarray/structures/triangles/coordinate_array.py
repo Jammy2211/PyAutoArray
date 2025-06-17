@@ -3,7 +3,7 @@ import jax.numpy as jnp
 import jax
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.array.jax_array import ArrayTriangles
+from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.numpy_wrapper import register_pytree_node_class
 from autoconf import cached_property
 
