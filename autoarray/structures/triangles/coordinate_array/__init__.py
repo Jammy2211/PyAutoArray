@@ -1,1 +1,0 @@
-from .jax_coordinate_array import CoordinateArrayTriangles as JAXCoordinateArrayTriangles

@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.coordinate_array import JAXCoordinateArrayTriangles as CoordinateArrayTriangles
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 from autoarray.structures.triangles.shape import Point
 
 

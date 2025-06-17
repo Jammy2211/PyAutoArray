@@ -2,7 +2,7 @@ import pytest
 
 import numpy as np
 
-from autoarray.structures.triangles.coordinate_array import JAXCoordinateArrayTriangles as CoordinateArrayTriangles
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 
 @pytest.fixture
