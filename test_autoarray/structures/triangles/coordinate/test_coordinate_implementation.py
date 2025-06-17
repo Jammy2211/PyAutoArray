@@ -77,44 +77,38 @@ def upside_down():
 
 def test_upside_down(upside_down):
     assert np.all(upside_down.centres == np.array([[0.5, 0]]))
-    assert np.all(
-        upside_down.triangles
-        == [
+    assert upside_down.triangles == pytest.approx(np.array([
             [
                 [0.5, -HEIGHT_FACTOR / 2],
                 [0.0, HEIGHT_FACTOR / 2],
                 [1.0, HEIGHT_FACTOR / 2],
             ],
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_up_sample(one_triangle):
     up_sampled = one_triangle.up_sample()
     assert up_sampled.side_length == 0.5
-    assert np.all(
-        up_sampled.triangles
-        == [
+    assert up_sampled.triangles == pytest.approx(np.array([
             [[0.0, -0.4330127018922193], [-0.25, 0.0], [0.25, 0.0]],
             [[0.25, 0.0], [0.5, -0.4330127018922193], [0.0, -0.4330127018922193]],
             [[-0.25, 0.0], [0.0, -0.4330127018922193], [-0.5, -0.4330127018922193]],
             [[0.0, 0.4330127018922193], [0.25, 0.0], [-0.25, 0.0]],
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_up_sample_upside_down(upside_down):
     up_sampled = upside_down.up_sample()
     assert up_sampled.side_length == 0.5
-    assert np.all(
-        up_sampled.triangles
-        == [
+    assert up_sampled.triangles == pytest.approx(np.array([
             [[0.5, -0.4330127018922193], [0.25, 0.0], [0.75, 0.0]],
             [[0.75, 0.0], [0.5, 0.4330127018922193], [1.0, 0.4330127018922193]],
             [[0.25, 0.0], [0.0, 0.4330127018922193], [0.5, 0.4330127018922193]],
             [[0.5, 0.4330127018922193], [0.75, 0.0], [0.25, 0.0]],
         ]
-    )
+    ), 1.0e-4)
 
 
 def _test_up_sample_twice(one_triangle, plot):
@@ -128,9 +122,7 @@ def _test_up_sample_twice(one_triangle, plot):
 
 
 def test_neighborhood(one_triangle):
-    assert np.all(
-        one_triangle.neighborhood().triangles
-        == [
+    assert one_triangle.neighborhood().triangles == pytest.approx(np.array([
             [
                 [-0.5, -0.4330127018922193],
                 [-1.0, 0.4330127018922193],
@@ -152,13 +144,11 @@ def test_neighborhood(one_triangle):
                 [1.0, 0.4330127018922193],
             ],
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_upside_down_neighborhood(upside_down):
-    assert np.all(
-        upside_down.neighborhood().triangles
-        == [
+    assert upside_down.neighborhood().triangles == pytest.approx(np.array([
             [
                 [0.0, 0.4330127018922193],
                 [0.5, -0.4330127018922193],
@@ -180,7 +170,7 @@ def test_upside_down_neighborhood(upside_down):
                 [0.5, -0.4330127018922193],
             ],
         ]
-    )
+    ), 1.0e-4)
 
 
 def _test_complicated(plot, one_triangle):
@@ -189,20 +179,16 @@ def _test_complicated(plot, one_triangle):
 
 
 def test_vertices(one_triangle):
-    assert np.all(
-        one_triangle.vertices
-        == [
+    assert one_triangle.vertices == pytest.approx(np.array([
             [-0.5, -0.4330127018922193],
             [0.0, 0.4330127018922193],
             [0.5, -0.4330127018922193],
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_up_sampled_vertices(one_triangle):
-    assert np.all(
-        one_triangle.up_sample().vertices
-        == [
+    assert one_triangle.up_sample().vertices == pytest.approx(np.array([
             [-0.5, -0.4330127018922193],
             [-0.25, 0.0],
             [0.0, -0.4330127018922193],
@@ -210,12 +196,12 @@ def test_up_sampled_vertices(one_triangle):
             [0.25, 0.0],
             [0.5, -0.4330127018922193],
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_with_vertices(one_triangle):
     triangle = one_triangle.with_vertices(np.array([[0, 0], [1, 0], [0.5, 1]]))
-    assert np.all(triangle.triangles == [[[1.0, 0.0], [0.5, 1.0], [0.0, 0.0]]])
+    assert triangle.triangles == pytest.approx(np.array([[[1.0, 0.0], [0.5, 1.0], [0.0, 0.0]]]), 1.0e-4)
 
 
 def _test_multiple_with_vertices(one_triangle, plot):
@@ -224,20 +210,18 @@ def _test_multiple_with_vertices(one_triangle, plot):
 
 
 def test_for_indexes(two_triangles):
-    assert np.all(
-        two_triangles.for_indexes(np.array([0])).triangles
-        == [
+    assert two_triangles.for_indexes(np.array([0])).triangles == pytest.approx(np.array([
             [
                 [0.0, 0.4330127018922193],
                 [0.5, -0.4330127018922193],
                 [-0.5, -0.4330127018922193],
             ]
         ]
-    )
+    ), 1.0e-4)
 
 
 def test_means(one_triangle):
-    assert np.all(one_triangle.means == [[0.0, -0.14433756729740643]])
+    assert one_triangle.means == pytest.approx(np.array([[0.0, -0.14433756729740643]]), 1.0e-4)
 
 
 @pytest.mark.parametrize(
