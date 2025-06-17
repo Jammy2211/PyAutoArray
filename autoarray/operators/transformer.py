@@ -94,11 +94,10 @@ class TransformerDFT:
         return Visibilities(visibilities=visibilities)
 
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
-        image_slim = transformer_util.image_via_jit_from(
-            n_pixels=self.grid.shape[0],
+        image_slim = transformer_util.image_direct_from(
+            visibilities=visibilities.in_array,
             grid_radians=np.array(self.grid.array),
             uv_wavelengths=self.uv_wavelengths,
-            visibilities=visibilities.in_array,
         )
 
         image_native = array_2d_util.array_2d_native_from(
@@ -249,61 +248,3 @@ class TransformerNUFFT(NUFFT_cpu):
             transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities
 
         return transformed_mapping_matrix
-
-    def forward_lop(self, x):
-        """
-        Forward NUFFT on CPU
-        :param x: The input numpy array, with the size of Nd or Nd + (batch,)
-        :type: numpy array with the dtype of numpy.complex64
-        :return: y: The output numpy array, with the size of (M,) or (M, batch)
-        :rtype: numpy array with the dtype of numpy.complex64
-        """
-
-        warnings.filterwarnings("ignore")
-
-        x2d = array_2d_util.array_2d_native_complex_via_indexes_from(
-            array_2d_slim=x,
-            shape_native=self.real_space_mask.shape_native,
-            native_index_for_slim_index_2d=self.native_index_for_slim_index,
-        )[::-1, :]
-
-        y = self.k2y(self.xx2k(self.x2xx(x2d)))
-        return np.concatenate((y.real, y.imag), axis=0)
-
-    def adjoint_lop(self, y):
-        """
-        Adjoint NUFFT on CPU
-        :param y: The input numpy array, with the size of (M,) or (M, batch)
-        :type: numpy array with the dtype of numpy.complex64
-        :return: x: The output numpy array,
-                    with the size of Nd or Nd + (batch, )
-        :rtype: numpy array with the dtype of numpy.complex64
-        """
-
-        warnings.filterwarnings("ignore")
-
-        def a_complex_from(a_real, a_imag):
-            return a_real + 1j * a_imag
-
-        y = a_complex_from(
-            a_real=y[: int(self.shape[0] / 2.0)], a_imag=y[int(self.shape[0] / 2.0) :]
-        )
-
-        x2d = np.real(self.xx2x(self.k2xx(self.y2k(y))))
-
-        x = array_2d_util.array_2d_slim_complex_from(
-            array_2d_native=x2d[::-1, :],
-            mask=np.array(self.real_space_mask),
-        )
-        x = x.real  # NOTE:
-
-        # NOTE:
-        x *= self.adjoint_scaling
-
-        return x
-
-    def _matvec(self, x):
-        return self.forward_lop(x)
-
-    def _rmatvec(self, x):
-        return self.adjoint_lop(x)

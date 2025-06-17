@@ -27,8 +27,6 @@ def test__dft__visibilities_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7
 
     visibilities = transformer.visibilities_from(image=image)
 
-    print(visibilities)
-
     assert visibilities[0:3] == pytest.approx(
         np.array(
             [
@@ -162,7 +160,7 @@ def test__nufft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
 
     image = transformer.image_from(visibilities=visibilities_7)
 
-    assert image[0:3] == pytest.approx([0.00726546,  0.01149121,  0.01421022], 1.0e-4)
+    assert image[0:3] == pytest.approx([0.00726546, 0.01149121, 0.01421022], 1.0e-4)
 
 
 def test__nufft__transform_mapping_matrix():

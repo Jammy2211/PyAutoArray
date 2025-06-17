@@ -88,7 +88,9 @@ def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags
     return visibilities
 
 
-def visibilities_direct_from(image_1d : np.ndarray, grid_radians : np.ndarray, uv_wavelengths : np.ndarray) -> np.ndarray:
+def visibilities_direct_from(
+    image_1d: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+) -> np.ndarray:
     """
     Compute complex visibilities from an input sky image using the Fourier transform,
     simulating the response of an astronomical radio interferometer.
@@ -116,9 +118,13 @@ def visibilities_direct_from(image_1d : np.ndarray, grid_radians : np.ndarray, u
         (u, v) coordinate, representing the interferometer’s measurement.
     """
     # Compute the dot product for each pixel-uv pair
-    phase = -2.0 * np.pi * (
-        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +
-        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+    phase = (
+        -2.0
+        * np.pi
+        * (
+            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])
+            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+        )
     )  # shape (n_pixels, n_vis)
 
     # Multiply image values with phase terms
@@ -131,14 +137,40 @@ def visibilities_direct_from(image_1d : np.ndarray, grid_radians : np.ndarray, u
     return visibilities
 
 
-def image_via_jit_from(n_pixels, grid_radians, uv_wavelengths, visibilities):
+def image_direct_from(
+    visibilities: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+) -> np.ndarray:
+    """
+    Reconstruct a real-valued sky image from complex interferometric visibilities
+    using an inverse Fourier transform approximation.
 
-    aaaa
+    This function simulates the synthesis imaging equation of a radio interferometer
+    by summing sinusoidal components across all (u, v) spatial frequencies.
 
+    Parameters
+    ----------
+    visibilities
+        The real and imaginary parts of the complex visibilities for each (u, v) point.
+
+    grid_radians
+        The angular (y, x) coordinates of each pixel in radians.
+
+    uv_wavelengths
+        The (u, v) spatial frequencies in units of wavelengths for each baseline.
+
+    Returns
+    -------
+    image_1d
+        The reconstructed real-valued image in sky coordinates.
+    """
     # Compute the phase term for each (pixel, visibility) pair
-    phase = 2.0 * np.pi * (
-        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +
-        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+    phase = (
+        2.0
+        * np.pi
+        * (
+            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])
+            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+        )
     )
 
     real_part = np.dot(np.cos(phase), visibilities[:, 0])
@@ -147,7 +179,6 @@ def image_via_jit_from(n_pixels, grid_radians, uv_wavelengths, visibilities):
     image_1d = real_part - imag_part
 
     return image_1d
-
 
 
 @numba_util.jit()
