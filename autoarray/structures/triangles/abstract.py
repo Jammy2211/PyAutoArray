@@ -123,21 +123,6 @@ class AbstractTriangles(ABC):
         """
 
     @abstractmethod
-    def containing_indices(self, shape: Shape) -> np.ndarray:
-        """
-        Find the triangles that insect with a given shape.
-
-        Parameters
-        ----------
-        shape
-            The shape
-
-        Returns
-        -------
-        The indices of triangles that intersect the shape.
-        """
-
-    @abstractmethod
     def neighborhood(self) -> "AbstractTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
