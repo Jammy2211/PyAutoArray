@@ -3,7 +3,6 @@ from abc import abstractmethod, ABC
 import numpy as np
 
 from autoarray import Grid2D
-from autoarray.structures.triangles.shape import Shape
 
 HEIGHT_FACTOR = 3**0.5 / 2
 

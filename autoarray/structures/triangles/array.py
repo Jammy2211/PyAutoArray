@@ -12,7 +12,7 @@ MAX_CONTAINING_SIZE = 15
 
 
 @register_pytree_node_class
-class ArrayTriangles:
+class ArrayTriangles(AbstractTriangles):
     def __init__(
         self,
         indices,
@@ -116,44 +116,6 @@ class ArrayTriangles:
             indices=jnp.array(indices),
             vertices=jnp.array(vertices),
             max_containing_size=max_containing_size,
-        )
-
-    @classmethod
-    def for_grid(
-        cls,
-        grid: Grid2D,
-        **kwargs,
-    ) -> "AbstractTriangles":
-        """
-        Create a grid of equilateral triangles from a regular grid.
-
-        Parameters
-        ----------
-        grid
-            The regular grid to convert to a grid of triangles.
-
-        Returns
-        -------
-        The grid of triangles.
-        """
-
-        scale = grid.pixel_scale
-
-        y = grid[:, 0]
-        x = grid[:, 1]
-
-        y_min = y.min()
-        y_max = y.max()
-        x_min = x.min()
-        x_max = x.max()
-
-        return cls.for_limits_and_scale(
-            y_min,
-            y_max,
-            x_min,
-            x_max,
-            scale,
-            **kwargs,
         )
 
     @property
