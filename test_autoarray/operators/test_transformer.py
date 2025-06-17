@@ -153,6 +153,18 @@ def test__nufft__visibilities_from():
     assert visibilities_nufft[0] == pytest.approx(25.02317617953263 + 0.0j, 1.0e-7)
 
 
+def test__nufft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
+
+    transformer = aa.TransformerNUFFT(
+        uv_wavelengths=uv_wavelengths_7x2,
+        real_space_mask=mask_2d_7x7,
+    )
+
+    image = transformer.image_from(visibilities=visibilities_7)
+
+    assert image[0:3] == pytest.approx([0.00726546, 0.01149121, 0.01421022], 1.0e-4)
+
+
 def test__nufft__transform_mapping_matrix():
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
