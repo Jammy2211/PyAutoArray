@@ -27,8 +27,6 @@ def test__dft__visibilities_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7
 
     visibilities = transformer.visibilities_from(image=image)
 
-    print(visibilities)
-
     assert visibilities[0:3] == pytest.approx(
         np.array(
             [

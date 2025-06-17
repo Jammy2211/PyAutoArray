@@ -115,7 +115,7 @@ def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
     return visibilities
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def image_via_jit_from(n_pixels, grid_radians, uv_wavelengths, visibilities):
     image_1d = np.zeros(n_pixels)
 
