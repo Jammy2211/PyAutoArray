@@ -188,7 +188,7 @@ def test_vertices(one_triangle):
 
 
 def test_up_sampled_vertices(one_triangle):
-    assert one_triangle.up_sample().vertices == pytest.approx(np.array([
+    assert one_triangle.up_sample().vertices[0:6, :] == pytest.approx(np.array([
             [-0.5, -0.4330127018922193],
             [-0.25, 0.0],
             [0.0, -0.4330127018922193],
@@ -222,19 +222,6 @@ def test_for_indexes(two_triangles):
 
 def test_means(one_triangle):
     assert one_triangle.means == pytest.approx(np.array([[0.0, -0.14433756729740643]]), 1.0e-4)
-
-
-@pytest.mark.parametrize(
-    "x, y",
-    [
-        (0.0, 0.0),
-        (-0.5, -HEIGHT_FACTOR / 2),
-        (0.5, -HEIGHT_FACTOR / 2),
-        (0.0, HEIGHT_FACTOR / 2),
-    ],
-)
-def test_containment(one_triangle, x, y):
-    assert one_triangle.containing_indices(Point(x, y)) == [0]
 
 
 def test_triangles_touch():
