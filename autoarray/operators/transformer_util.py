@@ -117,6 +117,7 @@ def visibilities_direct_from(
         The complex visibilities (Fourier components) corresponding to each
         (u, v) coordinate, representing the interferometer’s measurement.
     """
+
     # Compute the dot product for each pixel-uv pair
     phase = (
         -2.0
