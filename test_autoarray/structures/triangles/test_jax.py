@@ -1,19 +1,13 @@
-from autoarray.structures.triangles.shape import Point
+from jax import numpy as np
+import jax
 
-try:
-    from jax import numpy as np
-    import jax
-
-    jax.config.update("jax_log_compiles", True)
-    from autoarray.structures.triangles.array import ArrayTriangles
-except ImportError:
-    import numpy as np
-    from autoarray.structures.triangles.array import ArrayTriangles
+jax.config.update("jax_log_compiles", True)
 
 import pytest
 
 
-pytest.importorskip("jax")
+from autoarray.structures.triangles.shape import Point
+from autoarray.structures.triangles.array import ArrayTriangles
 
 
 @pytest.fixture
