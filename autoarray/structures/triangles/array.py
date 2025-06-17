@@ -49,13 +49,13 @@ class ArrayTriangles:
 
     @classmethod
     def for_limits_and_scale(
-            cls,
-            y_min: float,
-            y_max: float,
-            x_min: float,
-            x_max: float,
-            scale: float,
-            max_containing_size=MAX_CONTAINING_SIZE,
+        cls,
+        y_min: float,
+        y_max: float,
+        x_min: float,
+        x_max: float,
+        scale: float,
+        max_containing_size=MAX_CONTAINING_SIZE,
     ) -> "AbstractTriangles":
         height = scale * HEIGHT_FACTOR
 
@@ -120,9 +120,9 @@ class ArrayTriangles:
 
     @classmethod
     def for_grid(
-            cls,
-            grid: Grid2D,
-            **kwargs,
+        cls,
+        grid: Grid2D,
+        **kwargs,
     ) -> "AbstractTriangles":
         """
         Create a grid of equilateral triangles from a regular grid.
@@ -382,7 +382,6 @@ class ArrayTriangles:
             vertices=children[1],
             max_containing_size=aux_data[0],
         )
-
 
 
 def select_and_handle_invalid(

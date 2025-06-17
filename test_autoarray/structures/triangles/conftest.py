@@ -56,6 +56,7 @@ def triangles():
         ),
     )
 
+
 @pytest.fixture
 def one_triangle():
     return CoordinateArrayTriangles(

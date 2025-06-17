@@ -1,14 +1,7 @@
+from jax import numpy as np
 import pytest
 
-try:
-    from jax import numpy as np
-    from autoarray.structures.triangles.array import ArrayTriangles
-except ImportError:
-    import numpy as np
-    from autoarray.structures.triangles.array import ArrayTriangles
-
-
-pytest.importorskip("jax")
+from autoarray.structures.triangles.array import ArrayTriangles
 
 
 @pytest.fixture
