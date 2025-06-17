@@ -26,7 +26,7 @@ class Kernel2D(AbstractArray2D):
         normalize: bool = False,
         store_native: bool = False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels. Each entry
@@ -91,7 +91,9 @@ class Kernel2D(AbstractArray2D):
             pixel_scales=pixel_scales,
             origin=origin,
         )
-        return Kernel2D(values=values, mask=values.mask, header=header, normalize=normalize)
+        return Kernel2D(
+            values=values, mask=values.mask, header=header, normalize=normalize
+        )
 
     @classmethod
     def full(

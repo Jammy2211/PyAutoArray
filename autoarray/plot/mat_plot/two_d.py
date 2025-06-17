@@ -333,7 +333,9 @@ class MatPlot2D(AbstractMatPlot):
         else:
             title = auto_labels.title
 
-        self.title.set(auto_title=title, use_log10=self.use_log10)
+        if self.title is not False:
+            self.title.set(auto_title=title, use_log10=self.use_log10)
+
         self.ylabel.set()
         self.xlabel.set()
 
@@ -439,7 +441,8 @@ class MatPlot2D(AbstractMatPlot):
                 if colorbar is not None and self.colorbar_tickparams is not None:
                     self.colorbar_tickparams.set(cb=colorbar)
 
-        self.title.set(auto_title=auto_labels.title)
+        if self.title is not False:
+            self.title.set(auto_title=auto_labels.title)
         self.ylabel.set()
         self.xlabel.set()
 
@@ -583,7 +586,8 @@ class MatPlot2D(AbstractMatPlot):
             shape_native=mapper.shape_native,
         )
 
-        self.title.set(auto_title=auto_labels.title)
+        if self.title is not False:
+            self.title.set(auto_title=auto_labels.title)
         self.tickparams.set()
         self.ylabel.set()
         self.xlabel.set()
@@ -668,7 +672,8 @@ class MatPlot2D(AbstractMatPlot):
                 use_log10=self.use_log10,
             )
 
-        self.title.set(auto_title=auto_labels.title)
+        if self.title is not False:
+            self.title.set(auto_title=auto_labels.title)
         self.ylabel.set()
         self.xlabel.set()
 
@@ -751,7 +756,8 @@ class MatPlot2D(AbstractMatPlot):
                 use_log10=self.use_log10,
             )
 
-        self.title.set(auto_title=auto_labels.title)
+        if self.title is not False:
+            self.title.set(auto_title=auto_labels.title)
         self.ylabel.set()
         self.xlabel.set()
 

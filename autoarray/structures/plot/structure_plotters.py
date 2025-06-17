@@ -210,5 +210,5 @@ class YX1DPlotter(Plotter):
             should_plot_grid=self.should_plot_grid,
             should_plot_zero=self.should_plot_zero,
             plot_axis_type_override=self.plot_axis_type,
-            **self.plot_yx_dict
+            **self.plot_yx_dict,
         )

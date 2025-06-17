@@ -397,6 +397,9 @@ class AbstractMapper(LinearObj):
         zoom_to_brightest: bool = True,
         zoom_percent: Optional[float] = None,
     ) -> Tuple[float, float, float, float]:
+
+        from autoarray.geometry import geometry_util
+
         if zoom_to_brightest and values is not None:
             if zoom_percent is None:
                 zoom_percent = conf.instance["visualize"]["general"]["zoom"][
@@ -408,8 +411,6 @@ class AbstractMapper(LinearObj):
             true_indices = np.argwhere(fractional_bool)
             true_grid = self.source_plane_mesh_grid[true_indices]
 
-            from autoarray.geometry import geometry_util
-
             try:
                 return geometry_util.extent_symmetric_from(
                     extent=(
@@ -420,9 +421,13 @@ class AbstractMapper(LinearObj):
                     )
                 )
             except ValueError:
-                return self.source_plane_mesh_grid.geometry.extent
+                return geometry_util.extent_symmetric_from(
+                    extent=self.source_plane_mesh_grid.geometry.extent
+                )
 
-        return self.source_plane_mesh_grid.geometry.extent
+        return geometry_util.extent_symmetric_from(
+            extent=self.source_plane_mesh_grid.geometry.extent
+        )
 
     def interpolated_array_from(
         self,

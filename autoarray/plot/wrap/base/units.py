@@ -15,7 +15,7 @@ class Units:
         ticks_label: Optional[str] = None,
         colorbar_convert_factor: Optional[float] = None,
         colorbar_label: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:

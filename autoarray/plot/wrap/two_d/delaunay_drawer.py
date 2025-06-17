@@ -87,17 +87,18 @@ class DelaunayDrawer(AbstractMatWrap2D):
             cmap = plt.get_cmap(cmap.cmap)
 
             if colorbar is not None:
-                cb = colorbar.set_with_color_values(
-                    units=units,
-                    norm=norm,
-                    cmap=cmap,
-                    color_values=color_values,
-                    ax=ax,
-                    use_log10=use_log10,
-                )
+                if colorbar is not False:
+                    cb = colorbar.set_with_color_values(
+                        units=units,
+                        norm=norm,
+                        cmap=cmap,
+                        color_values=color_values,
+                        ax=ax,
+                        use_log10=use_log10,
+                    )
 
-                if cb is not None and colorbar_tickparams is not None:
-                    colorbar_tickparams.set(cb=cb)
+                    if cb is not None and colorbar_tickparams is not None:
+                        colorbar_tickparams.set(cb=cb)
 
         else:
 
@@ -115,5 +116,5 @@ class DelaunayDrawer(AbstractMatWrap2D):
             cmap=cmap,
             vmin=vmin,
             vmax=vmax,
-            **self.config_dict
+            **self.config_dict,
         )

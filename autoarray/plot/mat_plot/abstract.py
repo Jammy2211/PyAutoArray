@@ -108,7 +108,10 @@ class AbstractMatPlot:
         self.yticks = yticks or wb.YTicks(is_default=True)
         self.xticks = xticks or wb.XTicks(is_default=True)
 
-        self.title = title or wb.Title(is_default=True)
+        if title is not False:
+            self.title = title or wb.Title(is_default=True)
+        else:
+            self.title = False
         self.ylabel = ylabel or wb.YLabel(is_default=True)
         self.xlabel = xlabel or wb.XLabel(is_default=True)
 

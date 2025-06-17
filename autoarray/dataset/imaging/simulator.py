@@ -33,7 +33,7 @@ class SimulatorImaging:
         The simulation of an `Imaging` dataset uses the following steps:
 
         1) Receive as input a raw image of what the data looks like before any simulaiton process is applied.
-        2) Include dirrection due to the telescope optics by convolve the image with an input Point Spread
+        2) Include direction due to the telescope optics by convolve the image with an input Point Spread
            Function (PSF).
         3) Use input values of the background sky level in every pixel of the image to add the background sky to
            the PSF convolved image.
