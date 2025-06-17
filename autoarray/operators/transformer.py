@@ -85,7 +85,7 @@ class TransformerDFT:
             )
 
         else:
-            visibilities = transformer_util.visibilities_jit(
+            visibilities = transformer_util.visibilities_direct_from(
                 image_1d=np.array(image.slim.array),
                 grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,

@@ -88,58 +88,66 @@ def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags
     return visibilities
 
 
-@numba_util.jit()
-def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
-    visibilities = 0 + 0j * np.zeros(shape=(uv_wavelengths.shape[0]))
+def visibilities_direct_from(image_1d : np.ndarray, grid_radians : np.ndarray, uv_wavelengths : np.ndarray) -> np.ndarray:
+    """
+    Compute complex visibilities from an input sky image using the Fourier transform,
+    simulating the response of an astronomical radio interferometer.
 
-    for image_1d_index in range(image_1d.shape[0]):
-        for vis_1d_index in range(uv_wavelengths.shape[0]):
-            vis_real = image_1d[image_1d_index] * np.cos(
-                -2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
-            vis_imag = image_1d[image_1d_index] * np.sin(
-                -2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
-            visibilities[vis_1d_index] += vis_real + 1j * vis_imag
+    This function converts an image defined on a sky coordinate grid into its
+    visibility-space representation, given a set of (u,v) spatial frequency
+    coordinates (in wavelengths), as sampled by a radio interferometer.
+
+    Parameters
+    ----------
+    image_1d
+        The 1D flattened sky brightness values corresponding to each pixel in the grid.
+
+    grid_radians
+        The angular (y, x) positions of each image pixel in radians, matching image_1d.
+
+    uv_wavelengths
+        The (u, v) spatial frequencies in units of wavelengths, for each baseline
+        of the interferometer.
+
+    Returns
+    -------
+    visibilities
+        The complex visibilities (Fourier components) corresponding to each
+        (u, v) coordinate, representing the interferometer’s measurement.
+    """
+    # Compute the dot product for each pixel-uv pair
+    phase = -2.0 * np.pi * (
+        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +
+        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+    )  # shape (n_pixels, n_vis)
+
+    # Multiply image values with phase terms
+    vis_real = image_1d[:, None] * np.cos(phase)
+    vis_imag = image_1d[:, None] * np.sin(phase)
+
+    # Sum over all pixels for each visibility
+    visibilities = np.sum(vis_real + 1j * vis_imag, axis=0)
 
     return visibilities
 
 
-@numba_util.jit()
 def image_via_jit_from(n_pixels, grid_radians, uv_wavelengths, visibilities):
-    image_1d = np.zeros(n_pixels)
 
-    for image_1d_index in range(image_1d.shape[0]):
-        for vis_1d_index in range(uv_wavelengths.shape[0]):
-            image_1d[image_1d_index] += visibilities[vis_1d_index, 0] * np.cos(
-                2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
+    aaaa
 
-            image_1d[image_1d_index] -= visibilities[vis_1d_index, 1] * np.sin(
-                2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
+    # Compute the phase term for each (pixel, visibility) pair
+    phase = 2.0 * np.pi * (
+        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +
+        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+    )
+
+    real_part = np.dot(np.cos(phase), visibilities[:, 0])
+    imag_part = np.dot(np.sin(phase), visibilities[:, 1])
+
+    image_1d = real_part - imag_part
 
     return image_1d
+
 
 
 @numba_util.jit()
