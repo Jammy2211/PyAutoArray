@@ -37,14 +37,12 @@ def test__trivial_triangles(one_triangle):
     ), 1.0e-4)
 
 
-def test_above():
+def test__above():
     triangles = CoordinateArrayTriangles(
         coordinates=np.array([[0, 1]]),
         side_length=1.0,
     )
-    assert np.all(
-        triangles.up_sample().triangles
-        == [
+    assert triangles.up_sample().triangles == pytest.approx(np.array([
             [
                 [0.0, 0.43301270189221935],
                 [-0.25, 0.8660254037844386],
@@ -66,7 +64,7 @@ def test_above():
                 [-0.25, 0.8660254037844388],
             ],
         ]
-    )
+    ), 1.0e-4)
 
 
 @pytest.fixture
