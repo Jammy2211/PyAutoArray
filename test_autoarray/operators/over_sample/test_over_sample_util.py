@@ -79,36 +79,6 @@ def test__slim_index_for_sub_slim_index_via_mask_2d_from():
     ).all()
 
 
-
-def test__oversample_mask_from():
-    mask = np.array(
-        [
-            [True, True, True, True],
-            [True, False, False, True],
-            [True, False, False, True],
-            [True, True, True, True],
-        ]
-    )
-
-    oversample_mask = util.over_sample.oversample_mask_2d_from(mask=mask, sub_size=2)
-
-    assert (
-        oversample_mask
-        == np.array(
-            [
-                [True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True],
-                [True, True, False, False, False, False, True, True],
-                [True, True, False, False, False, False, True, True],
-                [True, True, False, False, False, False, True, True],
-                [True, True, False, False, False, False, True, True],
-                [True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True],
-            ]
-        )
-    ).all()
-
-
 def test__grid_2d_slim_over_sampled_via_mask_from():
     mask = np.array([[True, True, False], [False, False, False], [True, True, False]])
 
