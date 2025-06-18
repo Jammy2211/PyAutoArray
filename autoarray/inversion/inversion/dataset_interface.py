@@ -36,6 +36,9 @@ class DatasetInterface:
         noise_map
             An array describing the RMS standard deviation error in each pixel used for computing quantities like the
             chi-squared in a fit (in PyAutoGalaxy and PyAutoLens the recommended units are electrons per second).
+        grids
+            The grids of (y,x) Cartesian coordinates that the image data is paired with, which are used for evaluting
+            light profiles and calculations associated with a pixelization.
         over_sampler
             Performs over-sampling whereby the masked image pixels are split into sub-pixels, which are all
             mapped via the mapper with sub-fractional values of flux.
@@ -50,9 +53,6 @@ class DatasetInterface:
         w_tilde
             The w_tilde matrix used by the w-tilde formalism to construct the data vector and
             curvature matrix during an inversion efficiently..
-        grids
-            The grids of (y,x) Cartesian coordinates that the image data is paired with, which are used for evaluting
-            light profiles and calculations associated with a pixelization.
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.

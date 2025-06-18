@@ -85,9 +85,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         The calculation is described in more detail in `inversion_util.w_tilde_data_interferometer_from`.
         """
-        return np.dot(
-            self.linear_obj_list[0].mapping_matrix.T, self.w_tilde.dirty_image
-        )
+        return np.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
 
     @cached_property
     @profile_func

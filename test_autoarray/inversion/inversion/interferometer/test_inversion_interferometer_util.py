@@ -288,8 +288,8 @@ def test__identical_inversion_values_for_two_methods():
     assert inversion_w_tilde.mapped_reconstructed_image.array == pytest.approx(
         inversion_mapping_matrices.mapped_reconstructed_image.array, abs=1.0e-1
     )
-    assert inversion_w_tilde.mapped_reconstructed_data == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_data, abs=1.0e-1
+    assert inversion_w_tilde.mapped_reconstructed_data.array == pytest.approx(
+        inversion_mapping_matrices.mapped_reconstructed_data.array, abs=1.0e-1
     )
 
 
@@ -387,6 +387,6 @@ def test__identical_inversion_source_and_image_loops():
     assert inversion_image_loop.mapped_reconstructed_image.array == pytest.approx(
         inversion_source_loop.mapped_reconstructed_image.array, 1.0e-2
     )
-    assert inversion_image_loop.mapped_reconstructed_data == pytest.approx(
-        inversion_source_loop.mapped_reconstructed_data, 1.0e-2
+    assert inversion_image_loop.mapped_reconstructed_data.array == pytest.approx(
+        inversion_source_loop.mapped_reconstructed_data.array, 1.0e-2
     )

@@ -387,7 +387,6 @@ def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
     return w_tilde_via_preload
 
 
-@numba_util.jit()
 def data_vector_via_transformed_mapping_matrix_from(
     transformed_mapping_matrix: np.ndarray,
     visibilities: np.ndarray,
@@ -406,31 +405,24 @@ def data_vector_via_transformed_mapping_matrix_from(
     noise_map
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
+    # Extract components
+    vis_real = visibilities.real
+    vis_imag = visibilities.imag
+    f_real = transformed_mapping_matrix.real
+    f_imag = transformed_mapping_matrix.imag
+    noise_real = noise_map.real
+    noise_imag = noise_map.imag
 
-    data_vector = np.zeros(transformed_mapping_matrix.shape[1])
+    # Square noise components
+    inv_var_real = 1.0 / (noise_real**2)
+    inv_var_imag = 1.0 / (noise_imag**2)
 
-    visibilities_real = visibilities.real
-    visibilities_imag = visibilities.imag
-    transformed_mapping_matrix_real = transformed_mapping_matrix.real
-    transformed_mapping_matrix_imag = transformed_mapping_matrix.imag
-    noise_map_real = noise_map.real
-    noise_map_imag = noise_map.imag
+    # Real and imaginary contributions
+    weighted_real = (vis_real * inv_var_real)[:, None] * f_real
+    weighted_imag = (vis_imag * inv_var_imag)[:, None] * f_imag
 
-    for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
-        for pix_1d_index in range(transformed_mapping_matrix.shape[1]):
-            real_value = (
-                visibilities_real[vis_1d_index]
-                * transformed_mapping_matrix_real[vis_1d_index, pix_1d_index]
-                / (noise_map_real[vis_1d_index] ** 2.0)
-            )
-            imag_value = (
-                visibilities_imag[vis_1d_index]
-                * transformed_mapping_matrix_imag[vis_1d_index, pix_1d_index]
-                / (noise_map_imag[vis_1d_index] ** 2.0)
-            )
-            data_vector[pix_1d_index] += real_value + imag_value
-
-    return data_vector
+    # Sum over visibilities
+    return np.sum(weighted_real + weighted_imag, axis=0)
 
 
 @numba_util.jit()
@@ -512,7 +504,6 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     return curvature_matrix
 
 
-@numba_util.jit()
 def mapped_reconstructed_visibilities_from(
     transformed_mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
@@ -525,20 +516,7 @@ def mapped_reconstructed_visibilities_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    mapped_reconstructed_visibilities = (0.0 + 0.0j) * np.zeros(
-        transformed_mapping_matrix.shape[0]
-    )
-
-    transformed_mapping_matrix_real = transformed_mapping_matrix.real
-    transformed_mapping_matrix_imag = transformed_mapping_matrix.imag
-
-    for i in range(transformed_mapping_matrix.shape[0]):
-        for j in range(reconstruction.shape[0]):
-            mapped_reconstructed_visibilities[i] += (
-                reconstruction[j] * transformed_mapping_matrix_real[i, j]
-            ) + 1.0j * (reconstruction[j] * transformed_mapping_matrix_imag[i, j])
-
-    return mapped_reconstructed_visibilities
+    return transformed_mapping_matrix @ reconstruction
 
 
 """

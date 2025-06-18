@@ -30,7 +30,7 @@ def test__from_image__setup_with_all_features_off(
 
     visibilities = transformer.visibilities_from(image=image)
 
-    assert dataset.data == pytest.approx(visibilities, 1.0e-4)
+    assert dataset.data == pytest.approx(visibilities.array, 1.0e-4)
 
 
 def test__setup_with_noise(uv_wavelengths_7x2, transformer_7x7_7):

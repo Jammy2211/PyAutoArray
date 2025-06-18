@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import numpy as np
 from typing import Dict, List, Optional, Union
 
@@ -76,8 +77,8 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         """
 
         return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=np.array(self.operated_mapping_matrix),
-            visibilities=np.array(self.data),
+            transformed_mapping_matrix=self.operated_mapping_matrix,
+            visibilities=self.data,
             noise_map=np.array(self.noise_map),
         )
 
@@ -106,13 +107,13 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             noise_map=self.noise_map.imag,
         )
 
-        curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
+        curvature_matrix = jnp.add(real_curvature_matrix, imag_curvature_matrix)
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
-                no_regularization_index_list=self.no_regularization_index_list,
                 value=self.settings.no_regularization_add_to_curvature_diag_value,
+                no_regularization_index_list=self.no_regularization_index_list,
             )
 
         return curvature_matrix
@@ -152,10 +153,8 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
             visibilities = (
                 inversion_interferometer_util.mapped_reconstructed_visibilities_from(
-                    transformed_mapping_matrix=np.array(
-                        operated_mapping_matrix_list[index]
-                    ),
-                    reconstruction=np.array(reconstruction),
+                    transformed_mapping_matrix=operated_mapping_matrix_list[index],
+                    reconstruction=reconstruction,
                 )
             )
 

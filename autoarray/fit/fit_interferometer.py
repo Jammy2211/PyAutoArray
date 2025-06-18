@@ -113,7 +113,7 @@ class FitInterferometer(FitDataset):
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
         return fit_util.chi_squared_complex_from(
-            chi_squared_map=self.chi_squared_map,
+            chi_squared_map=self.chi_squared_map.array,
         )
 
     @property

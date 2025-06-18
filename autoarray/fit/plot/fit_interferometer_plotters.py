@@ -183,7 +183,7 @@ class FitInterferometerPlotterMeta(Plotter):
                 auto_labels=AutoLabels(
                     title="Model Visibilities", filename="model_data"
                 ),
-                color_array=np.real(self.fit.model_data),
+                color_array=np.real(self.fit.model_data.array),
             )
 
         if residual_map_real:
