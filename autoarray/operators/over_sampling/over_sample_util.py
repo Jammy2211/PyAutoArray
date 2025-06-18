@@ -123,7 +123,6 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
 
     return slim_index_for_sub_slim_index
 
-@numba_util.jit()
 def sub_size_radial_bins_from(
     radial_grid: np.ndarray,
     sub_size_list: np.ndarray,
@@ -161,19 +160,13 @@ def sub_size_radial_bins_from(
     the centre of the mask.
     """
 
-    sub_size = sub_size_list[-1] * np.ones(radial_grid.shape)
+    # Use np.searchsorted to find the first index where radial_grid[i] < radial_list[j]
+    bin_indices = np.searchsorted(radial_list, radial_grid, side="left")
 
-    for i in range(radial_grid.shape[0]):
-        for j in range(len(radial_list)):
-            if radial_grid[i] < radial_list[j]:
-                # if use_jax:
-                #     # while this makes it run, it is very, very slow
-                #     sub_size = sub_size.at[i].set(sub_size_list[j])
-                # else:
-                sub_size[i] = sub_size_list[j]
-                break
+    # Clip indices to stay within bounds of sub_size_list
+    bin_indices = np.clip(bin_indices, 0, len(sub_size_list) - 1)
 
-    return sub_size
+    return sub_size_list[bin_indices]
 
 
 @numba_util.jit()
