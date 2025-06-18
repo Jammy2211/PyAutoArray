@@ -387,6 +387,44 @@ def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
     return w_tilde_via_preload
 
 
+def data_vector_via_transformed_mapping_matrix_from(
+    transformed_mapping_matrix: np.ndarray,
+    visibilities: np.ndarray,
+    noise_map: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the data vector `D` from a transformed mapping matrix `f` and the 1D image `d` and 1D noise-map `sigma`
+    (see Warren & Dye 2003).
+
+    Parameters
+    ----------
+    transformed_mapping_matrix
+        The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
+    image
+        Flattened 1D array of the observed image the inversion is fitting.
+    noise_map
+        Flattened 1D array of the noise-map used by the inversion during the fit.
+    """
+    # Extract components
+    vis_real = visibilities.real
+    vis_imag = visibilities.imag
+    f_real = transformed_mapping_matrix.real
+    f_imag = transformed_mapping_matrix.imag
+    noise_real = noise_map.real
+    noise_imag = noise_map.imag
+
+    # Square noise components
+    inv_var_real = 1.0 / (noise_real**2)
+    inv_var_imag = 1.0 / (noise_imag**2)
+
+    # Real and imaginary contributions
+    weighted_real = (vis_real * inv_var_real)[:, None] * f_real
+    weighted_imag = (vis_imag * inv_var_imag)[:, None] * f_imag
+
+    # Sum over visibilities
+    return np.sum(weighted_real + weighted_imag, axis=0)
+
+
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     curvature_preload: np.ndarray,
@@ -466,7 +504,6 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     return curvature_matrix
 
 
-@numba_util.jit()
 def mapped_reconstructed_visibilities_from(
     transformed_mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
@@ -479,20 +516,7 @@ def mapped_reconstructed_visibilities_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    mapped_reconstructed_visibilities = (0.0 + 0.0j) * np.zeros(
-        transformed_mapping_matrix.shape[0]
-    )
-
-    transformed_mapping_matrix_real = transformed_mapping_matrix.real
-    transformed_mapping_matrix_imag = transformed_mapping_matrix.imag
-
-    for i in range(transformed_mapping_matrix.shape[0]):
-        for j in range(reconstruction.shape[0]):
-            mapped_reconstructed_visibilities[i] += (
-                reconstruction[j] * transformed_mapping_matrix_real[i, j]
-            ) + 1.0j * (reconstruction[j] * transformed_mapping_matrix_imag[i, j])
-
-    return mapped_reconstructed_visibilities
+    return transformed_mapping_matrix @ reconstruction
 
 
 """

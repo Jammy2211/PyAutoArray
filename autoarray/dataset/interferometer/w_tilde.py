@@ -9,6 +9,7 @@ class WTildeInterferometer(AbstractWTilde):
         self,
         w_matrix: np.ndarray,
         curvature_preload: np.ndarray,
+        dirty_image: np.ndarray,
         real_space_mask: Mask2D,
         noise_map_value: float,
     ):
@@ -42,6 +43,7 @@ class WTildeInterferometer(AbstractWTilde):
             curvature_preload=curvature_preload, noise_map_value=noise_map_value
         )
 
+        self.dirty_image = dirty_image
         self.real_space_mask = real_space_mask
 
         self.w_matrix = w_matrix

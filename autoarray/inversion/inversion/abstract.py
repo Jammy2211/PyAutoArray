@@ -287,7 +287,7 @@ class AbstractInversion:
         If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
         equations are solved simultaneously. This property returns the stacked mapping matrix.
         """
-        return np.hstack(
+        return jnp.hstack(
             [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
         )
 

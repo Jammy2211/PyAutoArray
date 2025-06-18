@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import numpy as np
 from typing import Dict, List, Optional, Union
 
@@ -61,6 +62,28 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
     @cached_property
     @profile_func
+    def data_vector(self) -> np.ndarray:
+        """
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
+
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `data_vector` values are solved for simultaneously.
+
+        The calculation is described in more detail in `inversion_util.data_vector_via_transformed_mapping_matrix_from`.
+        """
+
+        return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
+            transformed_mapping_matrix=self.operated_mapping_matrix,
+            visibilities=self.data,
+            noise_map=np.array(self.noise_map),
+        )
+
+    @cached_property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -84,13 +107,13 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             noise_map=self.noise_map.imag,
         )
 
-        curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
+        curvature_matrix = jnp.add(real_curvature_matrix, imag_curvature_matrix)
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
-                no_regularization_index_list=self.no_regularization_index_list,
                 value=self.settings.no_regularization_add_to_curvature_diag_value,
+                no_regularization_index_list=self.no_regularization_index_list,
             )
 
         return curvature_matrix
@@ -130,10 +153,8 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
             visibilities = (
                 inversion_interferometer_util.mapped_reconstructed_visibilities_from(
-                    transformed_mapping_matrix=np.array(
-                        operated_mapping_matrix_list[index]
-                    ),
-                    reconstruction=np.array(reconstruction),
+                    transformed_mapping_matrix=operated_mapping_matrix_list[index],
+                    reconstruction=reconstruction,
                 )
             )
 

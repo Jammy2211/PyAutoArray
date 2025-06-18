@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.abstract import AbstractInversion
@@ -78,23 +76,6 @@ class AbstractInversionInterferometer(AbstractInversion):
             )
             for linear_obj in self.linear_obj_list
         ]
-
-    @cached_property
-    @profile_func
-    def data_vector(self) -> np.ndarray:
-        """
-        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
-        by this object.
-
-        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
-        data vector is given by equation (4) and the letter D.
-
-        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
-        for simultaneously.
-
-        The calculation is described in more detail in `inversion_util.w_tilde_data_interferometer_from`.
-        """
-        return self.dataset.dirty_image_for_inversion.array @ self.mapping_matrix
 
     @property
     @profile_func

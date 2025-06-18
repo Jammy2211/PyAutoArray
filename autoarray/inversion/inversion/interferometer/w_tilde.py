@@ -72,6 +72,23 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
     @cached_property
     @profile_func
+    def data_vector(self) -> np.ndarray:
+        """
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
+
+        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
+        for simultaneously.
+
+        The calculation is described in more detail in `inversion_util.w_tilde_data_interferometer_from`.
+        """
+        return np.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
+
+    @cached_property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to

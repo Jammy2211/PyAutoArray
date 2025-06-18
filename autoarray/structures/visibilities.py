@@ -66,7 +66,7 @@ class AbstractVisibilities(Structure, ABC):
         Returns the 1D complex NumPy array of values with shape [total_visibilities] as a NumPy float array of
         shape [total_visibilities, 2].
         """
-        return np.stack((np.real(self), np.imag(self)), axis=-1)
+        return np.stack((np.real(self.array), np.imag(self.array)), axis=-1)
 
     @property
     def in_grid(self) -> Grid2DIrregular:
