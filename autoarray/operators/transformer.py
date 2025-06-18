@@ -63,22 +63,10 @@ class TransformerDFT:
 
         self.real_space_pixels = self.real_space_mask.pixels_in_mask
 
-        self.shape = (
-            int(np.prod(self.total_visibilities)),
-            int(np.prod(self.real_space_pixels)),
-        )
-        self.dtype = "complex128"
-        self.explicit = False
-
         # NOTE: This is the scaling factor that needs to be applied to the adjoint operator
         self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
             2.0 * self.grid.shape_native[1]
         )
-
-        self.matvec_count = 0
-        self.rmatvec_count = 0
-        self.matmat_count = 0
-        self.rmatmat_count = 0
 
     def visibilities_from(self, image):
         if self.preload_transform:
@@ -167,25 +155,10 @@ class TransformerNUFFT(NUFFT_cpu):
         # NOTE: If reshaped the shape of the operator is (2 x Nvis, Np) else it is (Nvis, Np)
         self.total_visibilities = int(uv_wavelengths.shape[0] * uv_wavelengths.shape[1])
 
-        self.shape = (
-            int(np.prod(self.total_visibilities)),
-            int(np.prod(self.real_space_pixels)),
-        )
-
-        # NOTE: If the operator is reshaped then the output is real.
-        self.dtype = "float64"
-
-        self.explicit = False
-
         # NOTE: This is the scaling factor that needs to be applied to the adjoint operator
         self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
             2.0 * self.grid.shape_native[1]
         )
-
-        self.matvec_count = 0
-        self.rmatvec_count = 0
-        self.matmat_count = 0
-        self.rmatmat_count = 0
 
     def initialize_plan(self, ratio=2, interp_kernel=(6, 6)):
         if not isinstance(ratio, int):
