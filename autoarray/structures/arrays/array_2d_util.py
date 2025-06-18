@@ -344,51 +344,6 @@ def resized_array_2d_from(
 
 
 @numba_util.jit()
-def replace_noise_map_2d_values_where_image_2d_values_are_negative(
-    image_2d: np.ndarray, noise_map_2d: np.ndarray, target_signal_to_noise: float = 2.0
-) -> np.ndarray:
-    """
-    If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array
-    values to meet a specified target to noise value.
-
-    This routine is necessary because of anomolous values in images which come from our HST ACS data_type-reduction
-    pipeline, where image-pixels with negative values (e.g. due to the background sky subtraction) have extremely
-    small noise values, which inflate their signal-to-noise values and chi-squared contributions in the modeling.
-
-    Parameters
-    ----------
-    image_2d
-        The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
-    noise_map_2d
-        The 2D noise-map array whose values are replaced.
-    target_signal_to_noise
-        The target signal-to-noise the noise-map valueus are changed to.
-
-    Returns
-    -------
-    ndarray
-        The 2D noise-map with values changed.
-
-    Examples
-    --------
-    image_2d = np.ones((5,5))
-    image_2d[2,2] = -1.0
-    noise_map_2d = np.ones((5,5))
-
-    noise_map_2d_replaced = replace_noise_map_2d_values_where_image_2d_values_are_negative(
-        image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0):
-    """
-    for y in range(image_2d.shape[0]):
-        for x in range(image_2d.shape[1]):
-            if image_2d[y, x] < 0.0:
-                absolute_signal_to_noise = np.abs(image_2d[y, x]) / noise_map_2d[y, x]
-                if absolute_signal_to_noise >= target_signal_to_noise:
-                    noise_map_2d[y, x] = np.abs(image_2d[y, x]) / target_signal_to_noise
-
-    return noise_map_2d
-
-
-@numba_util.jit()
 def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the slimmed 1D pixel
