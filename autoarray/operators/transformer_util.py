@@ -210,30 +210,44 @@ def image_direct_from(
     return image_1d
 
 
-@numba_util.jit()
-def transformed_mapping_matrix_via_preload_jit_from(
-    mapping_matrix, preloaded_reals, preloaded_imags
-):
-    transfomed_mapping_matrix = 0 + 0j * np.zeros(
-        (preloaded_reals.shape[1], mapping_matrix.shape[1])
-    )
+def transformed_mapping_matrix_via_preload_from(
+    mapping_matrix: np.ndarray, preloaded_reals: np.ndarray, preloaded_imags: np.ndarray
+) -> np.ndarray:
+    """
+    Computes the Fourier-transformed mapping matrix using preloaded sine and cosine terms for efficiency.
 
-    for pixel_1d_index in range(mapping_matrix.shape[1]):
-        for image_1d_index in range(mapping_matrix.shape[0]):
-            value = mapping_matrix[image_1d_index, pixel_1d_index]
+    This function transforms each source pixel's mapping to visibilities by using precomputed
+    real (cosine) and imaginary (sine) terms from the direct Fourier transform.
+    It is used in radio interferometric imaging where source-to-image mappings are projected
+    into the visibility space.
 
-            if value > 0:
-                for vis_1d_index in range(preloaded_reals.shape[1]):
-                    vis_real = value * preloaded_reals[image_1d_index, vis_1d_index]
-                    vis_imag = value * preloaded_imags[image_1d_index, vis_1d_index]
-                    transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
-                        vis_real + 1j * vis_imag
-                    )
+    Parameters
+    ----------
+    mapping_matrix
+        The mapping matrix from image-plane pixels to source-plane pixels.
+    preloaded_reals
+        Precomputed cosine terms for each pixel-vis pair: cos(-2π(yu + xv)).
+    preloaded_imags
+        Precomputed sine terms for each pixel-vis pair: sin(-2π(yu + xv)).
 
-    return transfomed_mapping_matrix
+    Returns
+    -------
+    Complex-valued matrix mapping source pixels to visibilities.
+    """
+
+    # Broadcasted multiplication and matrix multiplication over non-zero entries
+
+    vis_real = preloaded_reals.T @ mapping_matrix  # (n_visibilities, n_source_pixels)
+    vis_imag = preloaded_imags.T @ mapping_matrix
+
+    transformed_matrix = vis_real + 1j * vis_imag
+
+    return transformed_matrix
 
 
-def transformed_mapping_matrix_from(mapping_matrix: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray) -> np.ndarray:
+def transformed_mapping_matrix_from(
+    mapping_matrix: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+) -> np.ndarray:
     """
     Computes the Fourier-transformed mapping matrix used in radio interferometric imaging.
 
@@ -256,9 +270,13 @@ def transformed_mapping_matrix_from(mapping_matrix: np.ndarray, grid_radians: np
         The transformed mapping matrix in the visibility domain (complex-valued).
     """
     # Compute phase term: (n_image_pixels, n_visibilities)
-    phase = -2.0 * np.pi * (
-        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +  # y * u
-        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])    # x * v
+    phase = (
+        -2.0
+        * np.pi
+        * (
+            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
+            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
+        )
     )
 
     # Compute real and imaginary Fourier matrices

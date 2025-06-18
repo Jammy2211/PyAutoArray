@@ -47,14 +47,18 @@ class TransformerDFT:
         self.preload_transform = preload_transform
 
         if preload_transform:
-            self.preload_real_transforms = transformer_util.preload_real_transforms_from(
-                grid_radians=np.array(self.grid.array),
-                uv_wavelengths=self.uv_wavelengths,
+            self.preload_real_transforms = (
+                transformer_util.preload_real_transforms_from(
+                    grid_radians=np.array(self.grid.array),
+                    uv_wavelengths=self.uv_wavelengths,
+                )
             )
 
-            self.preload_imag_transforms = transformer_util.preload_imag_transforms_from(
-                grid_radians=np.array(self.grid.array),
-                uv_wavelengths=self.uv_wavelengths,
+            self.preload_imag_transforms = (
+                transformer_util.preload_imag_transforms_from(
+                    grid_radians=np.array(self.grid.array),
+                    uv_wavelengths=self.uv_wavelengths,
+                )
             )
 
         self.real_space_pixels = self.real_space_mask.pixels_in_mask
@@ -80,8 +84,8 @@ class TransformerDFT:
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_from(
                 image_1d=np.array(image.array),
-                preloaded_reals=self.preload_real_transforms_from,
-                preloaded_imags=self.preload_imag_transforms_from,
+                preloaded_reals=self.preload_real_transforms,
+                preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
@@ -109,7 +113,7 @@ class TransformerDFT:
 
     def transform_mapping_matrix(self, mapping_matrix):
         if self.preload_transform:
-            return transformer_util.transformed_mapping_matrix_via_preload_jit_from(
+            return transformer_util.transformed_mapping_matrix_via_preload_from(
                 mapping_matrix=mapping_matrix,
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,

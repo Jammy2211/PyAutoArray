@@ -105,9 +105,9 @@ def test__dft__transform_mapping_matrix(
     assert transformed_mapping_matrix[0:3, :] == pytest.approx(
         np.array(
             [
-                [1.48496084+0.00000000e+00j],
-                [3.02988906+4.44089210e-16],
-                [0.86395556+0.00000000e+00],
+                [1.48496084 + 0.00000000e00j],
+                [3.02988906 + 4.44089210e-16],
+                [0.86395556 + 0.00000000e00],
             ]
         ),
         abs=1.0e-4,
@@ -130,7 +130,7 @@ def test__dft__transformed_mapping_matrix__preload_and_non_preload_give_same_ans
         preload_transform=False,
     )
 
-    mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
+    mapping_matrix = np.ones(shape=(9, 1))
 
     transformed_mapping_matrix_preload = transformer_preload.transform_mapping_matrix(
         mapping_matrix=mapping_matrix
