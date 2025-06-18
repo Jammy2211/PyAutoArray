@@ -431,24 +431,6 @@ def test__array_2d_slim_from():
     assert (array_2d_slim == np.array([2, 4, 5, 6, 8])).all()
 
 
-def test__array_2d_slim_from__complex_array():
-    array_2d = np.array(
-        [
-            [1 + 1j, 2 + 2j, 3 + 3],
-            [4 + 4j, 5 + 5j, 6 + 6j],
-            [7 + 7j, 8 + 8j, 9 + 9j],
-        ]
-    )
-
-    mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
-
-    array_2d_slim = util.array_2d.array_2d_slim_complex_from(
-        mask=mask,
-        array_2d_native=array_2d,
-    )
-
-    assert (array_2d_slim == np.array([5 + 5j])).all()
-
 
 def test__array_2d_native_from():
     array_2d_slim = np.array([1.0, 2.0, 3.0, 4.0])

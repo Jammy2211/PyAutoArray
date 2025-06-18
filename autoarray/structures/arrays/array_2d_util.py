@@ -558,51 +558,6 @@ def array_2d_via_indexes_from(
     )
 
 
-@numba_util.jit()
-def array_2d_slim_complex_from(
-    array_2d_native: np.ndarray,
-    mask: np.ndarray,
-) -> np.ndarray:
-    """
-    For a 2D array and mask, map the values of all unmasked pixels to a 1D array.
-
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards.
-
-    For example, for an array of shape (3,3) and where all pixels are unmasked:
-
-    - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
-    - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 3 of the 1D array.
-    - pixel [2,0] of the 2D array will correspond to index 6 of the 1D array.
-
-    Parameters
-    ----------
-    array_2d_native
-        A 2D array of values on the dimensions of the grid.
-    mask
-        A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    array_2d
-        The 2D array of values which are mapped to a 1D array.
-
-    Returns
-    -------
-    ndarray
-        A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
-    """
-
-    total_pixels = np.sum(~mask)
-
-    array_1d = 0 + 0j * np.zeros(shape=total_pixels)
-    index = 0
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                array_1d[index] = array_2d_native[y, x]
-                index += 1
-
-    return array_1d
-
 
 @numba_util.jit()
 def array_2d_native_complex_via_indexes_from(
