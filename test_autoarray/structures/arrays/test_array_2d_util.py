@@ -477,18 +477,3 @@ def test__array_2d_native_from():
         )
     ).all()
 
-
-def test__array_2d_native_from__compelx_array():
-    array_2d_slim = np.array(
-        [1.0 + 1j, 2.0 + 2j, 3.0 + 3j, 4.0 + 4j], dtype="complex128"
-    )
-
-    array_2d = util.array_2d.array_2d_native_complex_via_indexes_from(
-        array_2d_slim=array_2d_slim,
-        shape_native=(2, 2),
-        native_index_for_slim_index_2d=np.array(
-            [[0, 0], [0, 1], [1, 0], [1, 1]], dtype="int"
-        ),
-    )
-
-    assert (array_2d == np.array([[1.0 + 1j, 2.0 + 2j], [3.0 + 3j, 4.0 + 4j]])).all()

@@ -556,21 +556,3 @@ def array_2d_via_indexes_from(
     return (
         jnp.zeros(shape).at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
     )
-
-
-
-@numba_util.jit()
-def array_2d_native_complex_via_indexes_from(
-    array_2d_slim: np.ndarray,
-    shape_native: Tuple[int, int],
-    native_index_for_slim_index_2d: np.ndarray,
-) -> np.ndarray:
-    array_2d = 0 + 0j * np.zeros(shape_native)
-
-    for slim_index in range(len(native_index_for_slim_index_2d)):
-        array_2d[
-            native_index_for_slim_index_2d[slim_index, 0],
-            native_index_for_slim_index_2d[slim_index, 1],
-        ] = array_2d_slim[slim_index]
-
-    return array_2d
