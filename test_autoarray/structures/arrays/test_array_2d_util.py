@@ -247,7 +247,6 @@ def test__resized_array_2d_from__padding():
         )
     ).all()
 
-
 def test__resized_array_2d_from__padding_with_new_origin():
     array = np.ones((3, 3))
     array[2, 2] = 2.0

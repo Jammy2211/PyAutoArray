@@ -272,11 +272,10 @@ def extracted_array_2d_from(
     return resized_array
 
 
-@numba_util.jit()
 def resized_array_2d_from(
     array_2d: np.ndarray,
     resized_shape: Tuple[int, int],
-    origin: Tuple[int, int] = (-1, -1),
+    origin: Tuple[int, int] = None,
     pad_value: int = 0.0,
 ) -> np.ndarray:
     """
@@ -312,56 +311,34 @@ def resized_array_2d_from(
     resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
     """
 
-    y_is_even = int(array_2d.shape[0]) % 2 == 0
-    x_is_even = int(array_2d.shape[1]) % 2 == 0
-
-    if origin == (-1, -1):
-        if y_is_even:
-            y_centre = int(array_2d.shape[0] / 2)
-        elif not y_is_even:
-            y_centre = int(array_2d.shape[0] / 2)
-
-        if x_is_even:
-            x_centre = int(array_2d.shape[1] / 2)
-        elif not x_is_even:
-            x_centre = int(array_2d.shape[1] / 2)
-
+    if origin is None:
+        y_centre = array_2d.shape[0] // 2
+        x_centre = array_2d.shape[1] // 2
         origin = (y_centre, x_centre)
 
-    resized_array = np.zeros(shape=resized_shape)
+    # Define window edges so that length == resized_shape dimension exactly
+    y_min = origin[0] - resized_shape[0] // 2
+    y_max = y_min + resized_shape[0]
 
-    if y_is_even:
-        y_min = origin[0] - int(resized_shape[0] / 2)
-        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
-    elif not y_is_even:
-        y_min = origin[0] - int(resized_shape[0] / 2)
-        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
+    x_min = origin[1] - resized_shape[1] // 2
+    x_max = x_min + resized_shape[1]
 
-    if x_is_even:
-        x_min = origin[1] - int(resized_shape[1] / 2)
-        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
-    elif not x_is_even:
-        x_min = origin[1] - int(resized_shape[1] / 2)
-        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
+    resized_array = np.full(resized_shape, pad_value, dtype=array_2d.dtype)
 
-    for y_resized, y in enumerate(range(y_min, y_max)):
-        for x_resized, x in enumerate(range(x_min, x_max)):
-            if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
-                if (
-                    y_resized >= 0
-                    and y_resized < resized_shape[0]
-                    and x_resized >= 0
-                    and x_resized < resized_shape[1]
-                ):
-                    resized_array[y_resized, x_resized] = array_2d[y, x]
-            else:
-                if (
-                    y_resized >= 0
-                    and y_resized < resized_shape[0]
-                    and x_resized >= 0
-                    and x_resized < resized_shape[1]
-                ):
-                    resized_array[y_resized, x_resized] = pad_value
+    # Calculate source indices clipped to array bounds
+    src_y_start = max(y_min, 0)
+    src_y_end = min(y_max, array_2d.shape[0])
+    src_x_start = max(x_min, 0)
+    src_x_end = min(x_max, array_2d.shape[1])
+
+    # Calculate destination indices corresponding to source indices
+    dst_y_start = max(0, -y_min)
+    dst_y_end = dst_y_start + (src_y_end - src_y_start)
+    dst_x_start = max(0, -x_min)
+    dst_x_end = dst_x_start + (src_x_end - src_x_start)
+
+    # Copy overlapping region from source to destination
+    resized_array[dst_y_start:dst_y_end, dst_x_start:dst_x_end] = array_2d[src_y_start:src_y_end, src_x_start:src_x_end]
 
     return resized_array
 

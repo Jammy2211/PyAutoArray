@@ -422,13 +422,13 @@ class TransformerNUFFT(NUFFT_cpu):
 
         Parameters
         ----------
-        mapping_matrix : np.ndarray
+        mapping_matrix
             A 2D array where each column corresponds to a source-plane pixel intensity distribution flattened into image space.
 
         Returns
-        -------
-        np.ndarray
-            A complex-valued 2D array where each column contains the visibilities corresponding to the respective column in the input mapping matrix.
+    -------
+        A complex-valued 2D array where each column contains the visibilities corresponding to the respective column
+        in the input mapping matrix.
 
         Notes
         -----
