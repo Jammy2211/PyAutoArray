@@ -376,11 +376,14 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
     indexes_slim = np.array([0, 1, 2, 5])
     indexes_2d = index_2d_for_index_slim_from(indexes_slim=indexes_slim, shape=(3,3))
     """
-    index_2d_for_index_slim = np.zeros((indexes_slim.shape[0], 2))
+    # Calculate row indices by integer division by number of columns
+    rows = indexes_slim // shape_native[1]
 
-    for i, index_slim in enumerate(indexes_slim):
-        index_2d_for_index_slim[i, 0] = int(index_slim / shape_native[1])
-        index_2d_for_index_slim[i, 1] = int(index_slim % shape_native[1])
+    # Calculate column indices by modulo number of columns
+    cols = indexes_slim % shape_native[1]
+
+    # Stack rows and cols horizontally into shape (N, 2)
+    index_2d_for_index_slim = np.vstack((rows, cols)).T
 
     return index_2d_for_index_slim
 
