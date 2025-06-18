@@ -342,8 +342,6 @@ def resized_array_2d_from(
 
     return resized_array
 
-
-@numba_util.jit()
 def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the slimmed 1D pixel
@@ -387,8 +385,6 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
 
     return index_2d_for_index_slim
 
-
-@numba_util.jit()
 def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 2D pixel indexes to
@@ -421,12 +417,8 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
     indexes_2d = np.array([[0,0], [1,0], [2,0], [2,2]])
     indexes_flat = index_flat_for_index_2d_from(indexes_2d=indexes_2d, shape=(3,3))
     """
-    index_slim_for_index_native_2d = np.zeros(indexes_2d.shape[0])
-
-    for i in range(indexes_2d.shape[0]):
-        index_slim_for_index_native_2d[i] = int(
-            (indexes_2d[i, 0]) * shape_native[1] + indexes_2d[i, 1]
-        )
+    # Calculate 1D indexes as row_index * number_of_columns + col_index
+    index_slim_for_index_native_2d = indexes_2d[:, 0] * shape_native[1] + indexes_2d[:, 1]
 
     return index_slim_for_index_native_2d
 
