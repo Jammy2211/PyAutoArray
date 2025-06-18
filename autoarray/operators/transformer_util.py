@@ -1,6 +1,5 @@
+import jax.numpy as jnp
 import numpy as np
-
-from autoarray import numba_util
 
 
 def preload_real_transforms_from(
