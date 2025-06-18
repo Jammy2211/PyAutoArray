@@ -110,23 +110,16 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
     slim_index_for_sub_slim_index = slim_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=2)
     """
 
-    total_sub_pixels = total_sub_pixels_2d_from(sub_size=sub_size)
+    # Step 1: Identify unmasked (False) pixels
+    unmasked_indices = np.argwhere(~mask_2d)
+    n_unmasked = unmasked_indices.shape[0]
 
-    slim_index_for_sub_slim_index = np.zeros(shape=total_sub_pixels)
-    slim_index = 0
-    sub_slim_index = 0
+    # Step 2: Compute total number of sub-pixels
+    sub_pixels_per_pixel = sub_size ** 2
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                sub = sub_size[slim_index]
-
-                for y1 in range(sub):
-                    for x1 in range(sub):
-                        slim_index_for_sub_slim_index[sub_slim_index] = slim_index
-                        sub_slim_index += 1
-
-                slim_index += 1
+    # Step 3: Repeat slim indices for each sub-pixel
+    slim_indices = np.arange(n_unmasked)
+    slim_index_for_sub_slim_index = np.repeat(slim_indices, sub_pixels_per_pixel)
 
     return slim_index_for_sub_slim_index
 
