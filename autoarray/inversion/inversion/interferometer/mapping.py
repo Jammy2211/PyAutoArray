@@ -61,28 +61,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
     @cached_property
     @profile_func
-    def data_vector(self) -> np.ndarray:
-        """
-        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
-        by this object.
-
-        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
-        data vector is given by equation (4) and the letter D.
-
-        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
-        concatenated ensuring their `data_vector` values are solved for simultaneously.
-
-        The calculation is described in more detail in `inversion_util.data_vector_via_transformed_mapping_matrix_from`.
-        """
-
-        return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=np.array(self.operated_mapping_matrix),
-            visibilities=np.array(self.data),
-            noise_map=np.array(self.noise_map),
-        )
-
-    @cached_property
-    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to

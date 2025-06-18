@@ -388,52 +388,6 @@ def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
 
 
 @numba_util.jit()
-def data_vector_via_transformed_mapping_matrix_from(
-    transformed_mapping_matrix: np.ndarray,
-    visibilities: np.ndarray,
-    noise_map: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns the data vector `D` from a transformed mapping matrix `f` and the 1D image `d` and 1D noise-map `sigma`
-    (see Warren & Dye 2003).
-
-    Parameters
-    ----------
-    transformed_mapping_matrix
-        The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
-    image
-        Flattened 1D array of the observed image the inversion is fitting.
-    noise_map
-        Flattened 1D array of the noise-map used by the inversion during the fit.
-    """
-
-    data_vector = np.zeros(transformed_mapping_matrix.shape[1])
-
-    visibilities_real = visibilities.real
-    visibilities_imag = visibilities.imag
-    transformed_mapping_matrix_real = transformed_mapping_matrix.real
-    transformed_mapping_matrix_imag = transformed_mapping_matrix.imag
-    noise_map_real = noise_map.real
-    noise_map_imag = noise_map.imag
-
-    for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
-        for pix_1d_index in range(transformed_mapping_matrix.shape[1]):
-            real_value = (
-                visibilities_real[vis_1d_index]
-                * transformed_mapping_matrix_real[vis_1d_index, pix_1d_index]
-                / (noise_map_real[vis_1d_index] ** 2.0)
-            )
-            imag_value = (
-                visibilities_imag[vis_1d_index]
-                * transformed_mapping_matrix_imag[vis_1d_index, pix_1d_index]
-                / (noise_map_imag[vis_1d_index] ** 2.0)
-            )
-            data_vector[pix_1d_index] += real_value + imag_value
-
-    return data_vector
-
-
-@numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     curvature_preload: np.ndarray,
     pix_indexes_for_sub_slim_index: np.ndarray,

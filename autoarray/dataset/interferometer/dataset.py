@@ -167,6 +167,21 @@ class Interferometer(AbstractDataset):
                 fits.writeto(filename, data=curvature_preload)
 
     @cached_property
+    def dirty_image_for_inversion(self) -> np.ndarray:
+        """
+        Returns a dirty image with scaling applied to the visibilities, which is used in the inversion
+        linear algebra.
+
+        In particular, it enables fast computation of the `data_vector` in the linear algebra equations.
+        """
+
+        return self.transformer.image_from(
+            visibilities=self.data.real * self.noise_map.real**-2.0
+            + 1j * self.data.imag * self.noise_map.imag**-2.0,
+            use_adjoint_scaling=True,
+        )
+
+    @cached_property
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
@@ -206,16 +221,9 @@ class Interferometer(AbstractDataset):
             ).astype("int"),
         )
 
-        dirty_image = self.transformer.image_from(
-            visibilities=self.data.real * self.noise_map.real**-2.0
-            + 1j * self.data.imag * self.noise_map.imag**-2.0,
-            use_adjoint_scaling=True,
-        )
-
         return WTildeInterferometer(
             w_matrix=w_matrix,
             curvature_preload=curvature_preload,
-            dirty_image=np.array(dirty_image.array),
             real_space_mask=self.real_space_mask,
             noise_map_value=self.noise_map[0],
         )
