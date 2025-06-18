@@ -111,12 +111,12 @@ class TransformerDFT:
         if self.preload_transform:
             return transformer_util.transformed_mapping_matrix_via_preload_jit_from(
                 mapping_matrix=mapping_matrix,
-                preloaded_reals=self.preload_real_transforms_from,
-                preloaded_imags=self.preload_imag_transforms_from,
+                preloaded_reals=self.preload_real_transforms,
+                preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
-            return transformer_util.transformed_mapping_matrix_jit(
+            return transformer_util.transformed_mapping_matrix_from(
                 mapping_matrix=mapping_matrix,
                 grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,

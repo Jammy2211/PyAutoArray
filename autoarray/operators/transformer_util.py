@@ -233,42 +233,43 @@ def transformed_mapping_matrix_via_preload_jit_from(
     return transfomed_mapping_matrix
 
 
-@numba_util.jit()
-def transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelengths):
-    transfomed_mapping_matrix = 0 + 0j * np.zeros(
-        (uv_wavelengths.shape[0], mapping_matrix.shape[1])
+def transformed_mapping_matrix_from(mapping_matrix: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray) -> np.ndarray:
+    """
+    Computes the Fourier-transformed mapping matrix used in radio interferometric imaging.
+
+    This function applies a direct Fourier transform to each pixel column of the mapping matrix using the
+    uv-wavelength coordinates. The result is a matrix that maps source pixel intensities to complex visibilities,
+    which represent how a model image would appear to an interferometer.
+
+    Parameters
+    ----------
+    mapping_matrix : ndarray of shape (n_image_pixels, n_source_pixels)
+        The mapping matrix from image-plane pixels to source-plane pixels.
+    grid_radians : ndarray of shape (n_image_pixels, 2)
+        The (y,x) positions of each image pixel in radians.
+    uv_wavelengths : ndarray of shape (n_visibilities, 2)
+        The (u,v) coordinates of the sampled Fourier modes in units of wavelength.
+
+    Returns
+    -------
+    transformed_matrix : ndarray of shape (n_visibilities, n_source_pixels)
+        The transformed mapping matrix in the visibility domain (complex-valued).
+    """
+    # Compute phase term: (n_image_pixels, n_visibilities)
+    phase = -2.0 * np.pi * (
+        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +  # y * u
+        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])    # x * v
     )
 
-    for pixel_1d_index in range(mapping_matrix.shape[1]):
-        for image_1d_index in range(mapping_matrix.shape[0]):
-            value = mapping_matrix[image_1d_index, pixel_1d_index]
+    # Compute real and imaginary Fourier matrices
+    fourier_real = np.cos(phase)
+    fourier_imag = np.sin(phase)
 
-            if value > 0:
-                for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    vis_real = value * np.cos(
-                        -2.0
-                        * np.pi
-                        * (
-                            grid_radians[image_1d_index, 1]
-                            * uv_wavelengths[vis_1d_index, 0]
-                            + grid_radians[image_1d_index, 0]
-                            * uv_wavelengths[vis_1d_index, 1]
-                        )
-                    )
+    # Only compute contributions from non-zero mapping entries
+    # This matrix multiplication is: (n_visibilities x n_image_pixels) dot (n_image_pixels x n_source_pixels)
+    vis_real = fourier_real.T @ mapping_matrix  # (n_vis, n_src)
+    vis_imag = fourier_imag.T @ mapping_matrix  # (n_vis, n_src)
 
-                    vis_imag = value * np.sin(
-                        -2.0
-                        * np.pi
-                        * (
-                            grid_radians[image_1d_index, 1]
-                            * uv_wavelengths[vis_1d_index, 0]
-                            + grid_radians[image_1d_index, 0]
-                            * uv_wavelengths[vis_1d_index, 1]
-                        )
-                    )
+    transformed_matrix = vis_real + 1j * vis_imag
 
-                    transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
-                        vis_real + 1j * vis_imag
-                    )
-
-    return transfomed_mapping_matrix
+    return transformed_matrix
