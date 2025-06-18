@@ -14,6 +14,7 @@ except ModuleNotFoundError:
     NUFFT_cpu = NUFFTPlaceholder
 
 
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.visibilities import Visibilities
@@ -33,8 +34,44 @@ def pynufft_exception():
 
 
 class TransformerDFT:
-    def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
+    def __init__(self, uv_wavelengths : np.ndarray, real_space_mask : Mask2D, preload_transform : bool = True):
+        """
+         A direct Fourier transform (DFT) operator for radio interferometric imaging.
 
+         This class performs the forward and inverse mapping between real-space images and
+         complex visibilities measured by an interferometer. It uses a direct implementation
+         of the Fourier transform (not FFT-based), making it suitable for irregular uv-coverage.
+
+         Optionally, it precomputes and stores the sine and cosine terms used in the transform,
+         which can significantly improve performance for repeated operations but at the cost of memory.
+
+         Parameters
+         ----------
+         uv_wavelengths
+             The (u, v) coordinates in wavelengths of the measured visibilities.
+         real_space_mask
+             The real-space mask that defines the image grid and which pixels are valid.
+         preload_transform
+             If True, precomputes and stores the cosine and sine terms for the Fourier transform.
+             This accelerates repeated transforms but consumes additional memory (~1GB+ for large datasets).
+
+         Attributes
+         ----------
+         grid : ndarray
+             The unmasked real-space grid in radians.
+         total_visibilities : int
+             The number of measured visibilities.
+         total_image_pixels : int
+             The number of unmasked pixels in the real-space image grid.
+         preload_real_transforms : ndarray, optional
+             The precomputed cosine terms used in the real part of the DFT.
+         preload_imag_transforms : ndarray, optional
+             The precomputed sine terms used in the imaginary part of the DFT.
+         real_space_pixels : int
+             Alias for `total_image_pixels`.
+         adjoint_scaling : float
+             Scaling factor applied to the adjoint operator to normalize the inverse transform.
+         """
         super().__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
@@ -68,7 +105,7 @@ class TransformerDFT:
             2.0 * self.grid.shape_native[1]
         )
 
-    def visibilities_from(self, image):
+    def visibilities_from(self, image : Array2D) -> Visibilities:
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_from(
                 image_1d=np.array(image.array),
@@ -85,7 +122,7 @@ class TransformerDFT:
 
         return Visibilities(visibilities=visibilities)
 
-    def image_from(self, visibilities, use_adjoint_scaling: bool = False):
+    def image_from(self, visibilities : Visibilities, use_adjoint_scaling: bool = False) -> Array2D:
         image_slim = transformer_util.image_direct_from(
             visibilities=visibilities.in_array,
             grid_radians=np.array(self.grid.array),
@@ -99,7 +136,7 @@ class TransformerDFT:
 
         return Array2D(values=image_native, mask=self.real_space_mask)
 
-    def transform_mapping_matrix(self, mapping_matrix):
+    def transform_mapping_matrix(self, mapping_matrix : np.ndarray) -> np.ndarray:
         if self.preload_transform:
             return transformer_util.transformed_mapping_matrix_via_preload_from(
                 mapping_matrix=mapping_matrix,
