@@ -78,7 +78,6 @@ def total_sub_pixels_2d_from(sub_size: np.ndarray) -> int:
     return int(np.sum(sub_size**2))
 
 
-@numba_util.jit()
 def slim_index_for_sub_slim_index_via_mask_2d_from(
     mask_2d: np.ndarray, sub_size: np.ndarray
 ) -> np.ndarray:
