@@ -3,8 +3,9 @@ import numpy as np
 from autoarray import numba_util
 
 
-
-def preload_real_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray) -> np.ndarray:
+def preload_real_transforms_from(
+    grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+) -> np.ndarray:
     """
     Sets up the real preloaded values used by the direct Fourier transform (`TransformerDFT`) to speed up
     the Fourier transform calculations.
@@ -29,9 +30,13 @@ def preload_real_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray
     The preloaded values of the cosine terms in the calculation of real entries of the direct Fourier transform.
     """
     # Compute the phase matrix: shape (n_pixels, n_visibilities)
-    phase = -2.0 * np.pi * (
-        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +  # y * u
-        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])    # x * v
+    phase = (
+        -2.0
+        * np.pi
+        * (
+            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
+            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
+        )
     )
 
     # Compute cosine of the phase matrix
@@ -40,7 +45,9 @@ def preload_real_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray
     return preloaded_real_transforms
 
 
-def preload_imag_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray) -> np.ndarray:
+def preload_imag_transforms_from(
+    grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+) -> np.ndarray:
     """
     Sets up the imaginary preloaded values used by the direct Fourier transform (`TransformerDFT`) to speed up
     the Fourier transform calculations in interferometric imaging.
@@ -63,9 +70,13 @@ def preload_imag_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray
     The sine term preloads used in imaginary-part DFT calculations.
     """
     # Compute the phase matrix: shape (n_pixels, n_visibilities)
-    phase = -2.0 * np.pi * (
-        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +  # y * u
-        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])    # x * v
+    phase = (
+        -2.0
+        * np.pi
+        * (
+            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
+            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
+        )
     )
 
     # Compute sine of the phase matrix
@@ -74,25 +85,40 @@ def preload_imag_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray
     return preloaded_imag_transforms
 
 
+def visibilities_via_preload_from(
+    image_1d: np.ndarray, preloaded_reals: np.ndarray, preloaded_imags: np.ndarray
+) -> np.ndarray:
+    """
+    Computes interferometric visibilities using preloaded real and imaginary DFT transform components.
 
-@numba_util.jit()
-def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags):
-    visibilities = 0 + 0j * np.zeros(shape=(preloaded_reals.shape[1]))
+    This function performs a direct Fourier transform (DFT) using precomputed cosine (real) and sine (imaginary)
+    terms. It is used in radio astronomy to compute visibilities from an image for a given interferometric
+    observation setup.
 
-    for image_1d_index in range(image_1d.shape[0]):
-        for vis_1d_index in range(preloaded_reals.shape[1]):
-            vis_real = (
-                image_1d[image_1d_index] * preloaded_reals[image_1d_index, vis_1d_index]
-            )
-            vis_imag = (
-                image_1d[image_1d_index] * preloaded_imags[image_1d_index, vis_1d_index]
-            )
-            visibilities[vis_1d_index] += vis_real + 1j * vis_imag
+    Parameters
+    ----------
+    image_1d : ndarray of shape (n_pixels,)
+        The 1D image vector (real-space brightness values).
+    preloaded_reals : ndarray of shape (n_pixels, n_visibilities)
+        The preloaded cosine terms (real part of DFT matrix).
+    preloaded_imags : ndarray of shape (n_pixels, n_visibilities)
+        The preloaded sine terms (imaginary part of DFT matrix).
+
+    Returns
+    -------
+    visibilities : ndarray of shape (n_visibilities,)
+        The complex visibilities computed by summing over all pixels.
+    """
+    # Perform the dot product between the image and preloaded transform matrices
+    vis_real = np.dot(image_1d, preloaded_reals)  # shape (n_visibilities,)
+    vis_imag = np.dot(image_1d, preloaded_imags)  # shape (n_visibilities,)
+
+    visibilities = vis_real + 1j * vis_imag
 
     return visibilities
 
 
-def visibilities_direct_from(
+def visibilities_from(
     image_1d: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray
 ) -> np.ndarray:
     """
@@ -107,10 +133,8 @@ def visibilities_direct_from(
     ----------
     image_1d
         The 1D flattened sky brightness values corresponding to each pixel in the grid.
-
     grid_radians
         The angular (y, x) positions of each image pixel in radians, matching image_1d.
-
     uv_wavelengths
         The (u, v) spatial frequencies in units of wavelengths, for each baseline
         of the interferometer.
