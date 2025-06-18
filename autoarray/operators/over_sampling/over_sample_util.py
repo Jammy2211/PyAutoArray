@@ -125,57 +125,6 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
 
 
 @numba_util.jit()
-def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
-    """
-    Returns a 2D array which maps every `False` entry of a 2D mask to its sub slim mask array. Every
-    True entry is given a value -1.
-
-    This is used as a convenience tool for creating structures util between different grids and structures.
-
-    For example, if we had a 3x4 mask:
-
-    [[False, True, False, False],
-     [False, True, False, False],
-     [False, False, False, True]]]
-
-    The sub_slim_index_for_sub_native_index array would be:
-
-    [[0, -1, 2, 3],
-     [4, -1, 5, 6],
-     [7, 8, 9, -1]]
-
-    Parameters
-    ----------
-    sub_mask_2d
-        The 2D mask that the util array is created for.
-
-    Returns
-    -------
-    ndarray
-        The 2D array mapping 2D mask entries to their 1D masked array indexes.
-
-    Examples
-    --------
-    mask = np.full(fill_value=False, shape=(9,9))
-    sub_two_to_one = mask_to_mask_1d_index_from(mask=mask)
-    """
-
-    sub_slim_index_for_sub_native_index = -1 * np.ones(shape=sub_mask_2d.shape)
-
-    sub_mask_1d_index = 0
-
-    for sub_mask_y in range(sub_mask_2d.shape[0]):
-        for sub_mask_x in range(sub_mask_2d.shape[1]):
-            if sub_mask_2d[sub_mask_y, sub_mask_x] == False:
-                sub_slim_index_for_sub_native_index[sub_mask_y, sub_mask_x] = (
-                    sub_mask_1d_index
-                )
-                sub_mask_1d_index += 1
-
-    return sub_slim_index_for_sub_native_index
-
-
-@numba_util.jit()
 def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     """
     Returns a new mask of shape (mask.shape[0] * sub_size, mask.shape[1] * sub_size) where all boolean values are
