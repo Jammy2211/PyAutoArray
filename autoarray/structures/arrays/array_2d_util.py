@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, List, Tuple, Union
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
 
-from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
 from autoarray import exc

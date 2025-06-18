@@ -128,7 +128,7 @@ class OverSampler:
         based on the sub-grid sizes.
 
         The over sampling class has functions dedicated to mapping between the sub-grid and pixel-grid, for example
-        `sub_mask_native_for_sub_mask_slim` and `slim_for_sub_slim`.
+        `slim_for_sub_slim`.
 
          The class `OverSampling` is used for the high level API, whereby this is where users input their
          preferred over-sampling configuration. This class, `OverSampler`, contains the functionality
@@ -258,63 +258,6 @@ class OverSampler:
             mask=self.mask,
         )
 
-    @cached_property
-    def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
-        """
-        Derives a 1D ``ndarray`` which maps every subgridded 1D ``slim`` index of the ``Mask2D`` to its
-        subgridded 2D ``native`` index.
-
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
-
-        ::
-            [[True,  True,  True, True]
-             [True, False, False, True],
-             [True, False,  True, True],
-             [True,  True,  True, True]]
-
-        This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-        ::
-            [0, 1, 2]
-
-        The array ``sub_mask_native_for_sub_mask_slim`` is therefore:
-
-        ::
-            [[1,1], [1,2], [2,1]]
-
-        For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2 and
-        there are therefore 12 ``slim`` indexes:
-
-        ::
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-        The array ``native_for_slim`` is therefore:
-
-        ::
-            [[2,2], [2,3], [2,4], [2,5], [3,2], [3,3], [3,4], [3,5], [4,2], [4,3], [5,2], [5,3]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True, True]
-                      [True, False, False, True],
-                      [True, False,  True, True],
-                      [True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
-        """
-        return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=self.sub_size.array
-        ).astype("int")
 
     @cached_property
     def slim_for_sub_slim(self) -> np.ndarray:
