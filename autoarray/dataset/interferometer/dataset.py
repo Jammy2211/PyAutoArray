@@ -10,7 +10,7 @@ from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
 from autoarray.operators.transformer import TransformerNUFFT
-
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -25,8 +25,9 @@ class Interferometer(AbstractDataset):
         data: Visibilities,
         noise_map: VisibilitiesNoiseMap,
         uv_wavelengths: np.ndarray,
-        real_space_mask,
+        real_space_mask : Mask2D,
         transformer_class=TransformerNUFFT,
+        dft_preload_transform : bool = True,
         preprocessing_directory=None,
     ):
         """
@@ -73,6 +74,9 @@ class Interferometer(AbstractDataset):
         transformer_class
             The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
             the uv-plane.
+        dft_preload_transform
+            If True, precomputes and stores the cosine and sine terms for the Fourier transform.
+            This accelerates repeated transforms but consumes additional memory (~1GB+ for large datasets).
         """
         self.real_space_mask = real_space_mask
 
@@ -86,7 +90,9 @@ class Interferometer(AbstractDataset):
         self.uv_wavelengths = uv_wavelengths
 
         self.transformer = transformer_class(
-            uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
+            uv_wavelengths=uv_wavelengths,
+            real_space_mask=real_space_mask,
+            dft_preload_transform=dft_preload_transform,
         )
 
         self.preprocessing_directory = (
@@ -114,6 +120,7 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
+        dft_preload_transform: bool = True,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
@@ -139,6 +146,7 @@ class Interferometer(AbstractDataset):
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
+            dft_preload_transform=dft_preload_transform,
         )
 
     def w_tilde_preprocessing(self):

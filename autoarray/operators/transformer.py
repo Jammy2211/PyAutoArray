@@ -218,7 +218,7 @@ class TransformerDFT:
 
 
 class TransformerNUFFT(NUFFT_cpu):
-    def __init__(self, uv_wavelengths: np.ndarray, real_space_mask: Mask2D):
+    def __init__(self, uv_wavelengths: np.ndarray, real_space_mask: Mask2D, **kwargs):
         """
         Performs the Non-Uniform Fast Fourier Transform (NUFFT) for interferometric image reconstruction.
 
