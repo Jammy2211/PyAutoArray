@@ -16,7 +16,6 @@ def test__manual__makes_visibilities_without_other_inputs():
     assert type(visibilities) == vis.Visibilities
     assert (visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
     assert (visibilities.in_array == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-    assert (visibilities.ordered_1d == np.array([1.0, 3.0, 2.0, 4.0])).all()
     assert (visibilities.amplitudes == np.array([np.sqrt(5), 5.0])).all()
     assert visibilities.phases == pytest.approx(
         np.array([1.10714872, 0.92729522]), 1.0e-4
@@ -29,7 +28,6 @@ def test__manual__makes_visibilities_without_other_inputs():
     assert (
         visibilities.in_array == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
     ).all()
-    assert (visibilities.ordered_1d == np.array([1.0, 3.0, 5.0, 2.0, 4.0, 6.0])).all()
 
 
 def test__manual__makes_visibilities_with_converted_input_as_list():
@@ -121,7 +119,3 @@ def test__visibilities_noise_has_attributes():
     assert (noise_map.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
     assert (noise_map.amplitudes == np.array([np.sqrt(5), 5.0])).all()
     assert noise_map.phases == pytest.approx(np.array([1.10714872, 0.92729522]), 1.0e-4)
-    assert (noise_map.ordered_1d == np.array([1.0, 3.0, 2.0, 4.0])).all()
-    assert (
-        noise_map.weight_list_ordered_1d == np.array([1.0, 1.0 / 9.0, 0.25, 0.0625])
-    ).all()

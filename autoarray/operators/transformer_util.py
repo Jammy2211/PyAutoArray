@@ -109,8 +109,8 @@ def visibilities_via_preload_from(
         The complex visibilities computed by summing over all pixels.
     """
     # Perform the dot product between the image and preloaded transform matrices
-    vis_real = np.dot(image_1d, preloaded_reals)  # shape (n_visibilities,)
-    vis_imag = np.dot(image_1d, preloaded_imags)  # shape (n_visibilities,)
+    vis_real = jnp.dot(image_1d, preloaded_reals)  # shape (n_visibilities,)
+    vis_imag = jnp.dot(image_1d, preloaded_imags)  # shape (n_visibilities,)
 
     visibilities = vis_real + 1j * vis_imag
 

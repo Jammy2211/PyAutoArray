@@ -50,15 +50,7 @@ class AbstractVisibilities(Structure, ABC):
                     .ravel()
                 )
 
-        self.ordered_1d = np.concatenate(
-            (np.real(visibilities), np.imag(visibilities)), axis=0
-        )
-
         super().__init__(array=visibilities)
-
-    def __array_finalize__(self, obj):
-        if hasattr(obj, "ordered_1d"):
-            self.ordered_1d = obj.ordered_1d
 
     @property
     def slim(self) -> "AbstractVisibilities":
@@ -232,20 +224,4 @@ class VisibilitiesNoiseMap(Visibilities):
                     .ravel()
                 )
 
-        self.ordered_1d = np.concatenate(
-            (np.real(visibilities), np.imag(visibilities)), axis=0
-        )
         super().__init__(visibilities=visibilities)
-
-        weight_list = 1.0 / self.in_array**2.0
-
-        self.weight_list_ordered_1d = np.concatenate(
-            (weight_list[:, 0], weight_list[:, 1]), axis=0
-        )
-
-    def __array_finalize__(self, obj):
-        if hasattr(obj, "ordered_1d"):
-            self.ordered_1d = obj.ordered_1d
-
-        if hasattr(obj, "weight_list_ordered_1d"):
-            self.weight_list_ordered_1d = obj.weight_list_ordered_1d

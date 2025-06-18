@@ -1,5 +1,6 @@
 from astropy import units
 import copy
+import jax.numpy as jnp
 import numpy as np
 import warnings
 from typing import Tuple
@@ -144,7 +145,7 @@ class TransformerDFT:
                 uv_wavelengths=self.uv_wavelengths,
             )
 
-        return Visibilities(visibilities=visibilities)
+        return Visibilities(visibilities=jnp.array(visibilities))
 
     def image_from(
         self, visibilities: Visibilities, use_adjoint_scaling: bool = False
