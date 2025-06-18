@@ -3,18 +3,16 @@ import numpy as np
 from autoarray import numba_util
 
 
-@numba_util.jit()
-def preload_real_transforms(
-    grid_radians: np.ndarray, uv_wavelengths: np.ndarray
-) -> np.ndarray:
+
+def preload_real_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray) -> np.ndarray:
     """
-    Sets up the real preloaded values used by the direct fourier transform (`TransformerDFT`) to speed up
+    Sets up the real preloaded values used by the direct Fourier transform (`TransformerDFT`) to speed up
     the Fourier transform calculations.
 
     The preloaded values are the cosine terms of every (y,x) radian coordinate on the real-space grid multiplied by
-    everu `uv_wavelength` value.
+    every `uv_wavelength` value.
 
-    For large numbers of visibilities (> 100000) this array requires large amounts of memory ( > 1 GB) and it is
+    For large numbers of visibilities (> 100000) this array requires large amounts of memory (> 1 GB) and it is
     recommended this preloading is not used.
 
     Parameters
@@ -28,25 +26,16 @@ def preload_real_transforms(
 
     Returns
     -------
-    np.ndarray
-        The preloaded values of the cosine terms in the calculation of real entries of the direct Fourier transform.
-
+    The preloaded values of the cosine terms in the calculation of real entries of the direct Fourier transform.
     """
-
-    preloaded_real_transforms = np.zeros(
-        shape=(grid_radians.shape[0], uv_wavelengths.shape[0])
+    # Compute the phase matrix: shape (n_pixels, n_visibilities)
+    phase = -2.0 * np.pi * (
+        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +  # y * u
+        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])    # x * v
     )
 
-    for image_1d_index in range(grid_radians.shape[0]):
-        for vis_1d_index in range(uv_wavelengths.shape[0]):
-            preloaded_real_transforms[image_1d_index, vis_1d_index] += np.cos(
-                -2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
+    # Compute cosine of the phase matrix
+    preloaded_real_transforms = np.cos(phase)
 
     return preloaded_real_transforms
 
