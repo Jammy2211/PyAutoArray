@@ -40,24 +40,39 @@ def preload_real_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray
     return preloaded_real_transforms
 
 
-@numba_util.jit()
-def preload_imag_transforms(grid_radians, uv_wavelengths):
-    preloaded_imag_transforms = np.zeros(
-        shape=(grid_radians.shape[0], uv_wavelengths.shape[0])
+def preload_imag_transforms(grid_radians: np.ndarray, uv_wavelengths: np.ndarray) -> np.ndarray:
+    """
+    Sets up the imaginary preloaded values used by the direct Fourier transform (`TransformerDFT`) to speed up
+    the Fourier transform calculations in interferometric imaging.
+
+    The preloaded values are the sine terms of every (y,x) radian coordinate on the real-space grid multiplied by
+    every `uv_wavelength` value. These are used to compute the imaginary components of visibilities.
+
+    For large numbers of visibilities (> 100000), this array can require significant memory (> 1 GB), so preloading
+    should be used with care.
+
+    Parameters
+    ----------
+    grid_radians
+        The grid in radians corresponding to the (y,x) coordinates in real space.
+    uv_wavelengths
+        The (u,v) coordinates in the Fourier plane (in units of wavelengths).
+
+    Returns
+    -------
+    The sine term preloads used in imaginary-part DFT calculations.
+    """
+    # Compute the phase matrix: shape (n_pixels, n_visibilities)
+    phase = -2.0 * np.pi * (
+        np.outer(grid_radians[:, 1], uv_wavelengths[:, 0]) +  # y * u
+        np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])    # x * v
     )
 
-    for image_1d_index in range(grid_radians.shape[0]):
-        for vis_1d_index in range(uv_wavelengths.shape[0]):
-            preloaded_imag_transforms[image_1d_index, vis_1d_index] += np.sin(
-                -2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
+    # Compute sine of the phase matrix
+    preloaded_imag_transforms = np.sin(phase)
 
     return preloaded_imag_transforms
+
 
 
 @numba_util.jit()
