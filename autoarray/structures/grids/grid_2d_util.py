@@ -395,8 +395,6 @@ def grid_2d_via_shape_native_from(
         origin=origin,
     )
 
-
-@numba_util.jit()
 def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -471,7 +469,6 @@ def _radial_projected_shape_slim_from(
     return int((scaled_distance / pixel_scale)) + 1
 
 
-@numba_util.jit()
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -562,9 +559,11 @@ def grid_scaled_2d_slim_radial_projected_from(
 
     radii = centre[1]
 
-    for slim_index in range(shape_slim):
-        grid_scaled_2d_slim_radii[slim_index, 1] = radii
-        radii += pixel_scale
+    # Create an array of radii values spaced by pixel_scale
+    radii_array = radii + pixel_scale * np.arange(shape_slim)
+
+    # Assign all values at once to the second column (index 1)
+    grid_scaled_2d_slim_radii[:, 1] = radii_array
 
     return grid_scaled_2d_slim_radii + 1e-6
 
