@@ -91,6 +91,7 @@ class TransformerDFT:
         self.preload_transform = preload_transform
 
         if preload_transform:
+
             self.preload_real_transforms = (
                 transformer_util.preload_real_transforms_from(
                     grid_radians=np.array(self.grid.array),
@@ -137,7 +138,6 @@ class TransformerDFT:
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
-
         else:
             visibilities = transformer_util.visibilities_from(
                 image_1d=image.slim.array,
@@ -209,12 +209,11 @@ class TransformerDFT:
                 preloaded_imags=self.preload_imag_transforms,
             )
 
-        else:
-            return transformer_util.transformed_mapping_matrix_from(
-                mapping_matrix=mapping_matrix,
-                grid_radians=np.array(self.grid),
-                uv_wavelengths=self.uv_wavelengths,
-            )
+        return transformer_util.transformed_mapping_matrix_from(
+            mapping_matrix=mapping_matrix,
+            grid_radians=np.array(self.grid),
+            uv_wavelengths=self.uv_wavelengths,
+        )
 
 
 class TransformerNUFFT(NUFFT_cpu):

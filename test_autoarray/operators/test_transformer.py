@@ -83,7 +83,7 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer(
     visibilities_via_preload = transformer_preload.visibilities_from(image=image)
     visibilities = transformer.visibilities_from(image=image)
 
-    assert visibilities_via_preload == pytest.approx(visibilities, 1.0e-4)
+    assert visibilities_via_preload == pytest.approx(visibilities.array, 1.0e-4)
 
 
 def test__dft__transform_mapping_matrix(

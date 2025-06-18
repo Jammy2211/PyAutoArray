@@ -25,9 +25,9 @@ class Interferometer(AbstractDataset):
         data: Visibilities,
         noise_map: VisibilitiesNoiseMap,
         uv_wavelengths: np.ndarray,
-        real_space_mask : Mask2D,
+        real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        dft_preload_transform : bool = True,
+        dft_preload_transform: bool = True,
         preprocessing_directory=None,
     ):
         """
@@ -92,7 +92,7 @@ class Interferometer(AbstractDataset):
         self.transformer = transformer_class(
             uv_wavelengths=uv_wavelengths,
             real_space_mask=real_space_mask,
-            dft_preload_transform=dft_preload_transform,
+            preload_transform=dft_preload_transform,
         )
 
         self.preprocessing_directory = (
