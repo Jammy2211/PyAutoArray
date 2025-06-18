@@ -1,5 +1,6 @@
 from autoarray.numpy_wrapper import np
 from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 
 from matplotlib import pyplot as plt
 
@@ -53,4 +54,20 @@ def triangles():
                 [1.0, 1.0],
             ]
         ),
+    )
+
+
+@pytest.fixture
+def one_triangle():
+    return CoordinateArrayTriangles(
+        coordinates=np.array([[0, 0]]),
+        side_length=1.0,
+    )
+
+
+@pytest.fixture
+def two_triangles():
+    return CoordinateArrayTriangles(
+        coordinates=np.array([[0, 0], [1, 0]]),
+        side_length=1.0,
     )

@@ -1,11 +1,12 @@
-from jax import numpy as np
+from abc import ABC
+
+import numpy as np
+import jax.numpy as jnp
 import jax
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.coordinate_array.abstract_coordinate_array import (
-    AbstractCoordinateArray,
-)
-from autoarray.structures.triangles.array.jax_array import ArrayTriangles
+from autoarray.structures.triangles.abstract import AbstractTriangles
+from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.numpy_wrapper import register_pytree_node_class
 from autoconf import cached_property
 
@@ -13,10 +14,39 @@ jax.config.update("jax_enable_x64", True)
 
 
 @register_pytree_node_class
-class CoordinateArrayTriangles(AbstractCoordinateArray):
-    @property
-    def numpy(self):
-        return jax.numpy
+class CoordinateArrayTriangles(AbstractTriangles, ABC):
+
+    def __init__(
+        self,
+        coordinates: np.ndarray,
+        side_length: float = 1.0,
+        x_offset: float = 0.0,
+        y_offset: float = 0.0,
+        flipped: bool = False,
+    ):
+        """
+        Represents a set of triangles by integer coordinates.
+
+        Parameters
+        ----------
+        coordinates
+            Integer x y coordinates for each triangle.
+        side_length
+            The side length of the triangles.
+        flipped
+            Whether the triangles are flipped upside down.
+        y_offset
+            An y_offset to apply to the y coordinates so that up-sampled triangles align.
+        """
+        self.coordinates = coordinates
+        self.side_length = side_length
+        self.flipped = flipped
+
+        self.scaling_factors = jnp.array(
+            [0.5 * side_length, HEIGHT_FACTOR * side_length]
+        )
+        self.x_offset = x_offset
+        self.y_offset = y_offset
 
     @classmethod
     def for_limits_and_scale(
@@ -38,7 +68,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
                 coordinates.append([x, y])
 
         return cls(
-            coordinates=np.array(coordinates),
+            coordinates=jnp.array(coordinates),
             side_length=scale,
         )
 
@@ -69,18 +99,66 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         """
         return cls(*children, flipped=aux_data[0])
 
+    def __len__(self):
+        return jnp.count_nonzero(~jnp.isnan(self.coordinates).any(axis=1))
+
+    def __iter__(self):
+        return iter(self.triangles)
+
     @property
-    def centres(self) -> np.ndarray:
+    def centres(self) -> jnp.ndarray:
         """
         The centres of the triangles.
         """
-        centres = self.scaling_factors * self.coordinates + np.array(
+        centres = self.scaling_factors * self.coordinates + jnp.array(
             [self.x_offset, self.y_offset]
         )
         return centres
 
     @cached_property
-    def flip_mask(self) -> np.ndarray:
+    def vertex_coordinates(self) -> np.ndarray:
+        """
+        The vertices of the triangles as an Nx3x2 array.
+        """
+        coordinates = self.coordinates
+        return jnp.concatenate(
+            [
+                coordinates + self.flip_array * np.array([0, 1], dtype=np.int32),
+                coordinates + self.flip_array * np.array([1, -1], dtype=np.int32),
+                coordinates + self.flip_array * np.array([-1, -1], dtype=np.int32),
+            ],
+            dtype=np.int32,
+        )
+
+    @cached_property
+    def triangles(self) -> np.ndarray:
+        """
+        The vertices of the triangles as an Nx3x2 array.
+        """
+        centres = self.centres
+        return jnp.stack(
+            (
+                centres
+                + self.flip_array
+                * jnp.array(
+                    [0.0, 0.5 * self.side_length * HEIGHT_FACTOR],
+                ),
+                centres
+                + self.flip_array
+                * jnp.array(
+                    [0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
+                ),
+                centres
+                + self.flip_array
+                * jnp.array(
+                    [-0.5 * self.side_length, -0.5 * self.side_length * HEIGHT_FACTOR]
+                ),
+            ),
+            axis=1,
+        )
+
+    @cached_property
+    def flip_mask(self) -> jnp.ndarray:
         """
         A mask for the triangles that are flipped.
 
@@ -92,15 +170,12 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         return mask
 
     @cached_property
-    def flip_array(self) -> np.ndarray:
+    def flip_array(self) -> jnp.ndarray:
         """
         An array of 1s and -1s to flip the triangles.
         """
-        array = np.where(self.flip_mask, -1, 1)
+        array = jnp.where(self.flip_mask, -1, 1)
         return array[:, None]
-
-    def __iter__(self):
-        return iter(self.triangles)
 
     def up_sample(self) -> "CoordinateArrayTriangles":
         """
@@ -113,11 +188,11 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
 
         n = coordinates.shape[0]
 
-        shift0 = np.zeros((n, 2))
-        shift3 = np.tile(np.array([0, 1]), (n, 1))
-        shift1 = np.stack([np.ones(n), np.where(flip_mask, 1, 0)], axis=1)
-        shift2 = np.stack([-np.ones(n), np.where(flip_mask, 1, 0)], axis=1)
-        shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
+        shift0 = jnp.zeros((n, 2))
+        shift3 = jnp.tile(jnp.array([0, 1]), (n, 1))
+        shift1 = jnp.stack([jnp.ones(n), jnp.where(flip_mask, 1, 0)], axis=1)
+        shift2 = jnp.stack([-jnp.ones(n), jnp.where(flip_mask, 1, 0)], axis=1)
+        shifts = jnp.stack([shift0, shift1, shift2, shift3], axis=1)
 
         coordinates_expanded = coordinates[:, None, :]
         new_coordinates = coordinates_expanded + shifts
@@ -140,27 +215,27 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         coordinates = self.coordinates
         flip_mask = self.flip_mask
 
-        shift0 = np.zeros((coordinates.shape[0], 2))
-        shift1 = np.tile(np.array([1, 0]), (coordinates.shape[0], 1))
-        shift2 = np.tile(np.array([-1, 0]), (coordinates.shape[0], 1))
-        shift3 = np.where(
+        shift0 = jnp.zeros((coordinates.shape[0], 2))
+        shift1 = jnp.tile(jnp.array([1, 0]), (coordinates.shape[0], 1))
+        shift2 = jnp.tile(jnp.array([-1, 0]), (coordinates.shape[0], 1))
+        shift3 = jnp.where(
             flip_mask[:, None],
-            np.tile(np.array([0, 1]), (coordinates.shape[0], 1)),
-            np.tile(np.array([0, -1]), (coordinates.shape[0], 1)),
+            jnp.tile(jnp.array([0, 1]), (coordinates.shape[0], 1)),
+            jnp.tile(jnp.array([0, -1]), (coordinates.shape[0], 1)),
         )
 
-        shifts = np.stack([shift0, shift1, shift2, shift3], axis=1)
+        shifts = jnp.stack([shift0, shift1, shift2, shift3], axis=1)
 
         coordinates_expanded = coordinates[:, None, :]
         new_coordinates = coordinates_expanded + shifts
         new_coordinates = new_coordinates.reshape(-1, 2)
 
         expected_size = 4 * coordinates.shape[0]
-        unique_coords, indices = np.unique(
+        unique_coords, indices = jnp.unique(
             new_coordinates,
             axis=0,
             size=expected_size,
-            fill_value=np.nan,
+            fill_value=jnp.nan,
             return_index=True,
         )
 
@@ -175,22 +250,22 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
     @cached_property
     def _vertices_and_indices(self):
         flat_triangles = self.triangles.reshape(-1, 2)
-        vertices, inverse_indices = np.unique(
+        vertices, inverse_indices = jnp.unique(
             flat_triangles,
             axis=0,
             return_inverse=True,
             size=3 * self.coordinates.shape[0],
             equal_nan=True,
-            fill_value=np.nan,
+            fill_value=jnp.nan,
         )
 
-        nan_mask = np.isnan(vertices).any(axis=1)
-        inverse_indices = np.where(nan_mask[inverse_indices], -1, inverse_indices)
+        nan_mask = jnp.isnan(vertices).any(axis=1)
+        inverse_indices = jnp.where(nan_mask[inverse_indices], -1, inverse_indices)
 
         indices = inverse_indices.reshape(-1, 3)
         return vertices, indices
 
-    def with_vertices(self, vertices: np.ndarray) -> ArrayTriangles:
+    def with_vertices(self, vertices: jnp.ndarray) -> ArrayTriangles:
         """
         Create a new set of triangles with the vertices replaced.
 
@@ -208,7 +283,7 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             vertices=vertices,
         )
 
-    def for_indexes(self, indexes: np.ndarray) -> "CoordinateArrayTriangles":
+    def for_indexes(self, indexes: jnp.ndarray) -> "CoordinateArrayTriangles":
         """
         Create a new CoordinateArrayTriangles containing triangles corresponding to the given indexes
 
@@ -222,9 +297,9 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
         The new CoordinateArrayTriangles instance.
         """
         mask = indexes == -1
-        safe_indexes = np.where(mask, 0, indexes)
-        coordinates = np.take(self.coordinates, safe_indexes, axis=0)
-        coordinates = np.where(mask[:, None], np.nan, coordinates)
+        safe_indexes = jnp.where(mask, 0, indexes)
+        coordinates = jnp.take(self.coordinates, safe_indexes, axis=0)
+        coordinates = jnp.where(mask[:, None], jnp.nan, coordinates)
 
         return CoordinateArrayTriangles(
             coordinates=coordinates,
@@ -234,5 +309,24 @@ class CoordinateArrayTriangles(AbstractCoordinateArray):
             flipped=self.flipped,
         )
 
-    def containing_indices(self, shape: np.ndarray) -> np.ndarray:
-        raise NotImplementedError("JAX ArrayTriangles are used for this method.")
+    @property
+    def vertices(self) -> np.ndarray:
+        """
+        The unique vertices of the triangles.
+        """
+        return self._vertices_and_indices[0]
+
+    @property
+    def indices(self) -> np.ndarray:
+        """
+        The indices of the vertices of the triangles.
+        """
+        return self._vertices_and_indices[1]
+
+    @property
+    def means(self):
+        return jnp.mean(self.triangles, axis=1)
+
+    @property
+    def area(self):
+        return (3**0.5 / 4 * self.side_length**2) * len(self)

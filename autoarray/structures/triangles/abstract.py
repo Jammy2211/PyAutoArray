@@ -3,7 +3,6 @@ from abc import abstractmethod, ABC
 import numpy as np
 
 from autoarray import Grid2D
-from autoarray.structures.triangles.shape import Shape
 
 HEIGHT_FACTOR = 3**0.5 / 2
 
@@ -120,21 +119,6 @@ class AbstractTriangles(ABC):
         Returns
         -------
         The new ArrayTriangles instance.
-        """
-
-    @abstractmethod
-    def containing_indices(self, shape: Shape) -> np.ndarray:
-        """
-        Find the triangles that insect with a given shape.
-
-        Parameters
-        ----------
-        shape
-            The shape
-
-        Returns
-        -------
-        The indices of triangles that intersect the shape.
         """
 
     @abstractmethod
