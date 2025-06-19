@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import defaultdict
 import numpy as np
 from typing import TYPE_CHECKING, Union
 from typing import List, Tuple
@@ -169,7 +170,6 @@ def sub_size_radial_bins_from(
     return sub_size_list[bin_indices]
 
 
-@numba_util.jit()
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -215,121 +215,58 @@ def grid_2d_slim_over_sampled_via_mask_from(
     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = np.sum(sub_size**2)
+    H, W = mask_2d.shape
+    sy, sx = pixel_scales
+    oy, ox = origin
 
-    grid_slim = np.zeros(shape=(total_sub_pixels, 2))
+    # 1) Find unmasked pixels in row-major order
+    rows, cols = np.nonzero(~mask_2d)
+    Npix = rows.size
 
-    centres_scaled = geometry_util.central_scaled_coordinate_2d_numba_from(
-        shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
-    )
+    # 2) Normalize sub_size input
+    sub_arr = np.asarray(sub_size)
+    sub_arr = np.full(Npix, sub_arr, dtype=int) if sub_arr.size == 1 else sub_arr
 
-    index = 0
-    sub_index = 0
+    # 3) Pixel centers in physical coords, y↑up
+    cy = (H - 1) / 2.0
+    cx = (W - 1) / 2.0
+    y_pix = (cy - rows) * sy + oy
+    x_pix = (cols - cx) * sx + ox
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                sub = sub_size[index]
+    # Pre‐group pixel indices by sub_size
+    groups = defaultdict(list)
+    for i, s in enumerate(sub_arr):
+        groups[s].append(i)
 
-                y_sub_half = pixel_scales[0] / 2
-                y_sub_step = pixel_scales[0] / (sub)
+    # Prepare output
+    total = np.sum(sub_arr * sub_arr)
+    coords = np.empty((total, 2), float)
+    idx = 0
 
-                x_sub_half = pixel_scales[1] / 2
-                x_sub_step = pixel_scales[1] / (sub)
+    for s, pix_indices in groups.items():
+        # Compute offsets once for this sub_size
+        dy, dx = sy/s, sx/s
+        y_off = np.linspace(+sy/2 - dy/2, -sy/2 + dy/2, s)
+        x_off = np.linspace(-sx/2 + dx/2, +sx/2 - dx/2, s)
+        y_sub, x_sub = np.meshgrid(y_off, x_off, indexing="ij")
+        y_sub = y_sub.ravel()
+        x_sub = x_sub.ravel()
+        n_sub = s*s
 
-                y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-                x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+        # Now vectorize over all pixels in this group
+        pix_idx = np.array(pix_indices)
+        y_centers = y_pix[pix_idx]
+        x_centers = x_pix[pix_idx]
 
-                for y1 in range(sub):
-                    for x1 in range(sub):
-                        grid_slim[sub_index, 0] = -(
-                            y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
-                        )
-                        grid_slim[sub_index, 1] = (
-                            x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
-                        )
-                        sub_index += 1
+        # Repeat‐tile to shape (len(pix_idx)*n_sub,)
+        all_y = np.repeat(y_centers, n_sub) + np.tile(y_sub, len(pix_idx))
+        all_x = np.repeat(x_centers, n_sub) + np.tile(x_sub, len(pix_idx))
 
-                index += 1
+        coords[idx:idx + all_y.size, 0] = all_y
+        coords[idx:idx + all_x.size, 1] = all_x
+        idx += all_y.size
 
-    return grid_slim
-
-
-@numba_util.jit()
-def binned_array_2d_from(
-    array_2d: np.ndarray,
-    mask_2d: np.ndarray,
-    sub_size: np.ndarray,
-) -> np.ndarray:
-    """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
-    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
-    scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
-
-    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
-    stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
-    removed and not included in the slimmed grid.
-
-    Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
-    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
-    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
-
-    Parameters
-    ----------
-    mask_2d
-        A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
-        sub-grid.
-    pixel_scales
-        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin
-        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
-
-    Returns
-    -------
-    ndarray
-        A slimmed sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
-
-    Examples
-    --------
-    mask = np.array([[True, False, True],
-                     [False, False, False]
-                     [True, False, True]])
-    grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
-    """
-
-    total_pixels = np.sum(~mask_2d)
-
-    sub_fraction = 1.0 / sub_size**2
-
-    binned_array_2d_slim = np.zeros(shape=total_pixels)
-
-    index = 0
-    sub_index = 0
-
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                sub = sub_size[index]
-
-                for y1 in range(sub):
-                    for x1 in range(sub):
-                        # if use_jax:
-                        #     binned_array_2d_slim = binned_array_2d_slim.at[index].add(
-                        #         array_2d[sub_index] * sub_fraction[index]
-                        #     )
-                        # else:
-                        binned_array_2d_slim[index] += (
-                            array_2d[sub_index] * sub_fraction[index]
-                        )
-                        sub_index += 1
-
-                index += 1
-
-    return binned_array_2d_slim
-
+    return coords
 
 def over_sample_size_via_radial_bins_from(
     grid: Grid2D,

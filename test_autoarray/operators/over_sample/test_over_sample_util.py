@@ -83,7 +83,7 @@ def test__grid_2d_slim_over_sampled_via_mask_from():
     mask = np.array([[True, True, False], [False, False, False], [True, True, False]])
 
     grid = aa.util.over_sample.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=np.array([2, 2, 2, 2, 2])
+        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
     )
 
     assert (

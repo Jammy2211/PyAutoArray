@@ -230,6 +230,20 @@ class OverSampler:
         In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
         Significant memory can be saved by only store this format, thus the `native_binned_only` config override
         can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
+
+        Old docstring:
+
+        For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+        a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+        scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+
+        The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
+        stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
+        removed and not included in the slimmed grid.
+
+        Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
+        Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+        sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
         """
         if conf.instance["general"]["structures"]["native_binned_only"]:
             return self
