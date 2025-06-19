@@ -337,9 +337,12 @@ def resized_array_2d_from(
     dst_x_end = dst_x_start + (src_x_end - src_x_start)
 
     # Copy overlapping region from source to destination
-    resized_array[dst_y_start:dst_y_end, dst_x_start:dst_x_end] = array_2d[src_y_start:src_y_end, src_x_start:src_x_end]
+    resized_array[dst_y_start:dst_y_end, dst_x_start:dst_x_end] = array_2d[
+        src_y_start:src_y_end, src_x_start:src_x_end
+    ]
 
     return resized_array
+
 
 def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
@@ -384,6 +387,7 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
 
     return index_2d_for_index_slim
 
+
 def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 2D pixel indexes to
@@ -417,7 +421,9 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
     indexes_flat = index_flat_for_index_2d_from(indexes_2d=indexes_2d, shape=(3,3))
     """
     # Calculate 1D indexes as row_index * number_of_columns + col_index
-    index_slim_for_index_native_2d = indexes_2d[:, 0] * shape_native[1] + indexes_2d[:, 1]
+    index_slim_for_index_native_2d = (
+        indexes_2d[:, 0] * shape_native[1] + indexes_2d[:, 1]
+    )
 
     return index_slim_for_index_native_2d
 

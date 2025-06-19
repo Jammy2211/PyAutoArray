@@ -38,14 +38,13 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
             for x in range(mask.shape[1]):
                 if not mask[y, x]:
                     oversample_mask[
-                    y * sub_size: (y + 1) * sub_size, x * sub_size: (x + 1) * sub_size
+                        y * sub_size : (y + 1) * sub_size,
+                        x * sub_size : (x + 1) * sub_size,
                     ] = False
 
         return oversample_mask
 
-    mask_sub_2 = oversample_mask_2d_from(
-        mask=np.array(mask), sub_size=2
-    )
+    mask_sub_2 = oversample_mask_2d_from(mask=np.array(mask), sub_size=2)
 
     mask_sub_2 = aa.Mask2D(mask=mask_sub_2, pixel_scales=(0.5, 0.5))
 

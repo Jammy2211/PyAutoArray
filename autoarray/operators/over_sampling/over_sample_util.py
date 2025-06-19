@@ -9,7 +9,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.geometry import geometry_util
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import numba_util
@@ -50,7 +49,6 @@ def over_sample_size_convert_to_array_2d_from(
     return Array2D(values=np.array(over_sample_size).astype("int"), mask=mask)
 
 
-@numba_util.jit()
 def total_sub_pixels_2d_from(sub_size: np.ndarray) -> int:
     """
     Returns the total number of sub-pixels in unmasked pixels in a mask.
@@ -116,13 +114,14 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
     n_unmasked = unmasked_indices.shape[0]
 
     # Step 2: Compute total number of sub-pixels
-    sub_pixels_per_pixel = sub_size ** 2
+    sub_pixels_per_pixel = sub_size**2
 
     # Step 3: Repeat slim indices for each sub-pixel
     slim_indices = np.arange(n_unmasked)
     slim_index_for_sub_slim_index = np.repeat(slim_indices, sub_pixels_per_pixel)
 
     return slim_index_for_sub_slim_index
+
 
 def sub_size_radial_bins_from(
     radial_grid: np.ndarray,
@@ -245,13 +244,13 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
     for s, pix_indices in groups.items():
         # Compute offsets once for this sub_size
-        dy, dx = sy/s, sx/s
-        y_off = np.linspace(+sy/2 - dy/2, -sy/2 + dy/2, s)
-        x_off = np.linspace(-sx/2 + dx/2, +sx/2 - dx/2, s)
+        dy, dx = sy / s, sx / s
+        y_off = np.linspace(+sy / 2 - dy / 2, -sy / 2 + dy / 2, s)
+        x_off = np.linspace(-sx / 2 + dx / 2, +sx / 2 - dx / 2, s)
         y_sub, x_sub = np.meshgrid(y_off, x_off, indexing="ij")
         y_sub = y_sub.ravel()
         x_sub = x_sub.ravel()
-        n_sub = s*s
+        n_sub = s * s
 
         # Now vectorize over all pixels in this group
         pix_idx = np.array(pix_indices)
@@ -262,11 +261,12 @@ def grid_2d_slim_over_sampled_via_mask_from(
         all_y = np.repeat(y_centers, n_sub) + np.tile(y_sub, len(pix_idx))
         all_x = np.repeat(x_centers, n_sub) + np.tile(x_sub, len(pix_idx))
 
-        coords[idx:idx + all_y.size, 0] = all_y
-        coords[idx:idx + all_x.size, 1] = all_x
+        coords[idx : idx + all_y.size, 0] = all_y
+        coords[idx : idx + all_x.size, 1] = all_x
         idx += all_y.size
 
     return coords
+
 
 def over_sample_size_via_radial_bins_from(
     grid: Grid2D,

@@ -395,6 +395,7 @@ def grid_2d_via_shape_native_from(
         origin=origin,
     )
 
+
 def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],

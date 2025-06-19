@@ -247,6 +247,7 @@ def test__resized_array_2d_from__padding():
         )
     ).all()
 
+
 def test__resized_array_2d_from__padding_with_new_origin():
     array = np.ones((3, 3))
     array[2, 2] = 2.0
@@ -284,7 +285,6 @@ def test__resized_array_2d_from__padding_with_new_origin():
             ]
         )
     ).all()
-
 
 
 def test__index_2d_for_index_slim_from():
@@ -431,7 +431,6 @@ def test__array_2d_slim_from():
     assert (array_2d_slim == np.array([2, 4, 5, 6, 8])).all()
 
 
-
 def test__array_2d_native_from():
     array_2d_slim = np.array([1.0, 2.0, 3.0, 4.0])
 
@@ -476,4 +475,3 @@ def test__array_2d_native_from():
             [[1.0, 2.0, 0.0, 0.0], [3.0, 0.0, 0.0, 0.0], [-1.0, -2.0, 0.0, -3.0]]
         )
     ).all()
-

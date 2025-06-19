@@ -272,7 +272,6 @@ class OverSampler:
             mask=self.mask,
         )
 
-
     @cached_property
     def slim_for_sub_slim(self) -> np.ndarray:
         """
