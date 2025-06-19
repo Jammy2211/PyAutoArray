@@ -166,11 +166,13 @@ def sub_size_radial_bins_from(
 
     return sub_size_list[bin_indices]
 
+from autoarray.geometry import geometry_util
+
 def grid_2d_slim_over_sampled_via_mask_from(
-    mask_2d: np.ndarray,
-    pixel_scales: ty.PixelScales,
-    sub_size: np.ndarray,
-    origin: Tuple[float, float] = (0.0, 0.0),
+        mask_2d: np.ndarray,
+        pixel_scales: ty.PixelScales,
+        sub_size: np.ndarray,
+        origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
@@ -211,55 +213,144 @@ def grid_2d_slim_over_sampled_via_mask_from(
     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    H, W = mask_2d.shape
-    sy, sx = pixel_scales
-    oy, ox = origin
+    pixels_in_mask = (np.size(mask_2d) - np.sum(mask_2d)).astype(int)
 
-    # 1) Find unmasked pixel indices in row-major order
-    rows, cols = np.nonzero(~mask_2d)
-    Npix = rows.size
+    if isinstance(sub_size, int):
+        sub_size = np.full(
+            fill_value=sub_size, shape=pixels_in_mask
+        )
 
-    # 2) Broadcast or validate sub_size array
-    sub_arr = np.asarray(sub_size)
-    if sub_arr.ndim == 0:
-        sub_arr = np.full(Npix, int(sub_arr), int)
-    elif sub_arr.ndim == 1 and sub_arr.size == Npix:
-        sub_arr = sub_arr.astype(int)
-    else:
-        raise ValueError(f"sub_size must be scalar or length-{Npix} array, got shape {sub_arr.shape}")
+    total_sub_pixels = np.sum(sub_size ** 2)
 
-    # 3) Compute pixel centers (y ↑ up, x → right)
-    cy = (H - 1) / 2.0
-    cx = (W - 1) / 2.0
-    y_pix = (cy - rows) * sy + oy
-    x_pix = (cols - cx) * sx + ox
+    grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 
-    # 4) For each pixel, generate its sub-pixel coords and collect
-    coords_list = []
-    for i in range(Npix):
-        s = sub_arr[i]
-        dy = sy / s
-        dx = sx / s
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
+        shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
+    )
 
-        # y offsets: from top (+sy/2 - dy/2) down to bottom (-sy/2 + dy/2)
-        y_off = np.linspace(+sy/2 - dy/2, -sy/2 + dy/2, s)
-        # x offsets: left to right
-        x_off = np.linspace(-sx/2 + dx/2, +sx/2 - dx/2, s)
+    index = 0
+    sub_index = 0
 
-        # build subgrid
-        y_sub, x_sub = np.meshgrid(y_off, x_off, indexing="ij")
-        y_sub = y_sub.ravel()
-        x_sub = x_sub.ravel()
+    for y in range(mask_2d.shape[0]):
+        for x in range(mask_2d.shape[1]):
+            if not mask_2d[y, x]:
+                sub = sub_size[index]
 
-        # center + offsets
-        y_center = y_pix[i]
-        x_center = x_pix[i]
-        coords = np.stack([y_center + y_sub, x_center + x_sub], axis=1)
+                y_sub_half = pixel_scales[0] / 2
+                y_sub_step = pixel_scales[0] / (sub)
 
-        coords_list.append(coords)
+                x_sub_half = pixel_scales[1] / 2
+                x_sub_step = pixel_scales[1] / (sub)
 
-    # 5) Concatenate all sub-pixel blocks in row-major pixel order
-    return np.vstack(coords_list)
+                y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
+                x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
+
+                for y1 in range(sub):
+                    for x1 in range(sub):
+                        grid_slim[sub_index, 0] = -(
+                                y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
+                        )
+                        grid_slim[sub_index, 1] = (
+                                x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
+                        )
+                        sub_index += 1
+
+                index += 1
+
+    return grid_slim
+
+
+#
+
+# def grid_2d_slim_over_sampled_via_mask_from(
+#     mask_2d: np.ndarray,
+#     pixel_scales: ty.PixelScales,
+#     sub_size: np.ndarray,
+#     origin: Tuple[float, float] = (0.0, 0.0),
+# ) -> np.ndarray:
+#     """
+#     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+#     a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+#     scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
+#
+#     The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
+#     stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
+#     removed and not included in the slimmed grid.
+#
+#     Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
+#     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+#     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+#
+#     Parameters
+#     ----------
+#     mask_2d
+#         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
+#         sub-grid.
+#     pixel_scales
+#         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+#     sub_size
+#         The size of the sub-grid that each pixel of the 2D mask array is divided into.
+#     origin
+#         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+#
+#     Returns
+#     -------
+#     ndarray
+#         A slimmed sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+#         array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
+#
+#     Examples
+#     --------
+#     mask = np.array([[True, False, True],
+#                      [False, False, False]
+#                      [True, False, True]])
+#     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
+#     """
+#
+#     H, W = mask_2d.shape
+#     sy, sx = pixel_scales
+#     oy, ox = origin
+#
+#     # 1) Find unmasked pixel indices in row-major order
+#     rows, cols = np.nonzero(~mask_2d)
+#     Npix = rows.size
+#
+#     # 2) Broadcast or validate sub_size array
+#     sub_arr = np.asarray(sub_size)
+#     sub_arr = np.full(Npix, sub_arr, dtype=int) if sub_arr.size == 1 else sub_arr
+#
+#     # 3) Compute pixel centers (y ↑ up, x → right)
+#     cy = (H - 1) / 2.0
+#     cx = (W - 1) / 2.0
+#     y_pix = (cy - rows) * sy + oy
+#     x_pix = (cols - cx) * sx + ox
+#
+#     # 4) For each pixel, generate its sub-pixel coords and collect
+#     coords_list = []
+#     for i in range(Npix):
+#         s = sub_arr[i]
+#         dy = sy / s
+#         dx = sx / s
+#
+#         # y offsets: from top (+sy/2 - dy/2) down to bottom (-sy/2 + dy/2)
+#         y_off = np.linspace(+sy/2 - dy/2, -sy/2 + dy/2, s)
+#         # x offsets: left to right
+#         x_off = np.linspace(-sx/2 + dx/2, +sx/2 - dx/2, s)
+#
+#         # build subgrid
+#         y_sub, x_sub = np.meshgrid(y_off, x_off, indexing="ij")
+#         y_sub = y_sub.ravel()
+#         x_sub = x_sub.ravel()
+#
+#         # center + offsets
+#         y_center = y_pix[i]
+#         x_center = x_pix[i]
+#         coords = np.stack([y_center + y_sub, x_center + x_sub], axis=1)
+#
+#         coords_list.append(coords)
+#
+#     # 5) Concatenate all sub-pixel blocks in row-major pixel order
+#     return np.vstack(coords_list)
 
 
 def over_sample_size_via_radial_bins_from(

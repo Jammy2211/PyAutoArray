@@ -180,18 +180,25 @@ class Grid2D(Structure):
 
         self.over_sampler = OverSampler(sub_size=over_sample_size, mask=mask)
 
-        if over_sampled is None:
-            over_sampled = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+        self._over_sampled = over_sampled
+
+    @property
+    def over_sampled(self):
+
+        if self._over_sampled is not None:
+            return self._over_sampled
+
+        over_sampled = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
                 mask_2d=np.array(self.mask),
                 pixel_scales=self.mask.pixel_scales,
                 sub_size=self.over_sampler.sub_size.array.astype("int"),
                 origin=self.mask.origin,
             )
 
-            self.over_sampled = Grid2DIrregular(values=over_sampled)
+        self._over_sampled = Grid2DIrregular(values=over_sampled)
 
-        else:
-            self.over_sampled = over_sampled
+        return self._over_sampled
+
 
     @classmethod
     def no_mask(
@@ -696,6 +703,7 @@ class Grid2D(Structure):
             values=self - np.array(offset),
             mask=mask,
             over_sample_size=self.over_sample_size,
+            over_sampled=self.over_sampled - np.array(offset)
         )
 
     @property

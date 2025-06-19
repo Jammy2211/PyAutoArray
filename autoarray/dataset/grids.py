@@ -9,6 +9,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
+from autoarray import exc
 
 class GridsDataset:
     def __init__(
@@ -24,7 +25,7 @@ class GridsDataset:
 
         The following grids are contained:
 
-        - `uniform`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data,
+        - `lp`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data,
         which is used for most normal calculations (e.g. evaluating the amount of light that falls in an pixel
         from a light profile).
 
@@ -60,75 +61,32 @@ class GridsDataset:
         self.over_sample_size_pixelization = over_sample_size_pixelization
         self.psf = psf
 
-    @cached_property
-    def lp(self) -> Union[Grid1D, Grid2D]:
-        """
-        Returns the grid of (y,x) Cartesian coordinates at the centre of every pixel in the masked data, which is used
-        to perform most normal calculations (e.g. evaluating the amount of light that falls in an pixel from a light
-        profile).
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data.
-        """
-        return Grid2D.from_mask(
+        self.lp = Grid2D.from_mask(
             mask=self.mask,
             over_sample_size=self.over_sample_size_lp,
         )
+        self.lp.over_sampled
 
-    @cached_property
-    def pixelization(self) -> Grid2D:
-        """
-        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data which is used
-        specifically for calculations associated with a pixelization.
-
-        The `pixelization` grid is identical to the `uniform` grid but often uses a different over sampling scheme
-        when performing calculations. For example, the pixelization may benefit from using a a higher `sub_size` than
-        the `uniform` grid, in order to better prevent aliasing effects.
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data, used for pixelization / inversion calculations.
-        """
-        return Grid2D.from_mask(
+        self.pixelization = Grid2D.from_mask(
             mask=self.mask,
             over_sample_size=self.over_sample_size_pixelization,
         )
-
-    @cached_property
-    def blurring(self) -> Optional[Grid2D]:
-        """
-        Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
-
-        A blurring grid consists of all pixels that are masked (and therefore have their values set to (0.0, 0.0)),
-        but are close enough to the unmasked pixels that their values will be convolved into the unmasked those pixels.
-        This when computing images from light profile objects.
-
-        This uses lazy allocation such that the calculation is only performed when the blurring grid is used, ensuring
-        efficient set up of the `Imaging` class.
-
-        Returns
-        -------
-        The blurring grid given the mask of the imaging data.
-        """
+        self.pixelization.over_sampled
 
         if self.psf is None:
-            return None
+            self.blurring = None
+        else:
+            try:
+                self.blurring = self.lp.blurring_grid_via_kernel_shape_from(
+                    kernel_shape_native=self.psf.shape_native,
+                )
+                self.blurring.over_sampled
+            except exc.MaskException:
+                self.blurring = None
 
-        return self.lp.blurring_grid_via_kernel_shape_from(
-            kernel_shape_native=self.psf.shape_native,
-        )
-
-    @cached_property
-    def border_relocator(self) -> BorderRelocator:
-        return BorderRelocator(
+        self.border_relocator = BorderRelocator(
             mask=self.mask, sub_size=self.over_sample_size_pixelization
         )
-
 
 class GridsInterface:
     def __init__(
