@@ -128,7 +128,7 @@ class OverSampler:
         based on the sub-grid sizes.
 
         The over sampling class has functions dedicated to mapping between the sub-grid and pixel-grid, for example
-        `sub_mask_native_for_sub_mask_slim` and `slim_for_sub_slim`.
+        `slim_for_sub_slim`.
 
          The class `OverSampling` is used for the high level API, whereby this is where users input their
          preferred over-sampling configuration. This class, `OverSampler`, contains the functionality
@@ -230,6 +230,20 @@ class OverSampler:
         In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
         Significant memory can be saved by only store this format, thus the `native_binned_only` config override
         can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
+
+        Old docstring:
+
+        For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+        a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+        scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+
+        The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
+        stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
+        removed and not included in the slimmed grid.
+
+        Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
+        Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+        sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
         """
         if conf.instance["general"]["structures"]["native_binned_only"]:
             return self
@@ -257,64 +271,6 @@ class OverSampler:
             values=binned_array_2d,
             mask=self.mask,
         )
-
-    @cached_property
-    def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
-        """
-        Derives a 1D ``ndarray`` which maps every subgridded 1D ``slim`` index of the ``Mask2D`` to its
-        subgridded 2D ``native`` index.
-
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
-
-        ::
-            [[True,  True,  True, True]
-             [True, False, False, True],
-             [True, False,  True, True],
-             [True,  True,  True, True]]
-
-        This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-        ::
-            [0, 1, 2]
-
-        The array ``sub_mask_native_for_sub_mask_slim`` is therefore:
-
-        ::
-            [[1,1], [1,2], [2,1]]
-
-        For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2 and
-        there are therefore 12 ``slim`` indexes:
-
-        ::
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-        The array ``native_for_slim`` is therefore:
-
-        ::
-            [[2,2], [2,3], [2,4], [2,5], [3,2], [3,3], [3,4], [3,5], [4,2], [4,3], [5,2], [5,3]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True, True]
-                      [True, False, False, True],
-                      [True, False,  True, True],
-                      [True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
-        """
-        return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=self.sub_size.array
-        ).astype("int")
 
     @cached_property
     def slim_for_sub_slim(self) -> np.ndarray:

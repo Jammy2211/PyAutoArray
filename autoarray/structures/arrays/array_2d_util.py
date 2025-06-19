@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, List, Tuple, Union
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
 
-from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
 from autoarray import exc
@@ -272,11 +271,10 @@ def extracted_array_2d_from(
     return resized_array
 
 
-@numba_util.jit()
 def resized_array_2d_from(
     array_2d: np.ndarray,
     resized_shape: Tuple[int, int],
-    origin: Tuple[int, int] = (-1, -1),
+    origin: Tuple[int, int] = None,
     pad_value: int = 0.0,
 ) -> np.ndarray:
     """
@@ -312,106 +310,40 @@ def resized_array_2d_from(
     resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
     """
 
-    y_is_even = int(array_2d.shape[0]) % 2 == 0
-    x_is_even = int(array_2d.shape[1]) % 2 == 0
-
-    if origin == (-1, -1):
-        if y_is_even:
-            y_centre = int(array_2d.shape[0] / 2)
-        elif not y_is_even:
-            y_centre = int(array_2d.shape[0] / 2)
-
-        if x_is_even:
-            x_centre = int(array_2d.shape[1] / 2)
-        elif not x_is_even:
-            x_centre = int(array_2d.shape[1] / 2)
-
+    if origin is None:
+        y_centre = array_2d.shape[0] // 2
+        x_centre = array_2d.shape[1] // 2
         origin = (y_centre, x_centre)
 
-    resized_array = np.zeros(shape=resized_shape)
+    # Define window edges so that length == resized_shape dimension exactly
+    y_min = origin[0] - resized_shape[0] // 2
+    y_max = y_min + resized_shape[0]
 
-    if y_is_even:
-        y_min = origin[0] - int(resized_shape[0] / 2)
-        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
-    elif not y_is_even:
-        y_min = origin[0] - int(resized_shape[0] / 2)
-        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
+    x_min = origin[1] - resized_shape[1] // 2
+    x_max = x_min + resized_shape[1]
 
-    if x_is_even:
-        x_min = origin[1] - int(resized_shape[1] / 2)
-        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
-    elif not x_is_even:
-        x_min = origin[1] - int(resized_shape[1] / 2)
-        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
+    resized_array = np.full(resized_shape, pad_value, dtype=array_2d.dtype)
 
-    for y_resized, y in enumerate(range(y_min, y_max)):
-        for x_resized, x in enumerate(range(x_min, x_max)):
-            if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
-                if (
-                    y_resized >= 0
-                    and y_resized < resized_shape[0]
-                    and x_resized >= 0
-                    and x_resized < resized_shape[1]
-                ):
-                    resized_array[y_resized, x_resized] = array_2d[y, x]
-            else:
-                if (
-                    y_resized >= 0
-                    and y_resized < resized_shape[0]
-                    and x_resized >= 0
-                    and x_resized < resized_shape[1]
-                ):
-                    resized_array[y_resized, x_resized] = pad_value
+    # Calculate source indices clipped to array bounds
+    src_y_start = max(y_min, 0)
+    src_y_end = min(y_max, array_2d.shape[0])
+    src_x_start = max(x_min, 0)
+    src_x_end = min(x_max, array_2d.shape[1])
+
+    # Calculate destination indices corresponding to source indices
+    dst_y_start = max(0, -y_min)
+    dst_y_end = dst_y_start + (src_y_end - src_y_start)
+    dst_x_start = max(0, -x_min)
+    dst_x_end = dst_x_start + (src_x_end - src_x_start)
+
+    # Copy overlapping region from source to destination
+    resized_array[dst_y_start:dst_y_end, dst_x_start:dst_x_end] = array_2d[
+        src_y_start:src_y_end, src_x_start:src_x_end
+    ]
 
     return resized_array
 
 
-@numba_util.jit()
-def replace_noise_map_2d_values_where_image_2d_values_are_negative(
-    image_2d: np.ndarray, noise_map_2d: np.ndarray, target_signal_to_noise: float = 2.0
-) -> np.ndarray:
-    """
-    If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array
-    values to meet a specified target to noise value.
-
-    This routine is necessary because of anomolous values in images which come from our HST ACS data_type-reduction
-    pipeline, where image-pixels with negative values (e.g. due to the background sky subtraction) have extremely
-    small noise values, which inflate their signal-to-noise values and chi-squared contributions in the modeling.
-
-    Parameters
-    ----------
-    image_2d
-        The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
-    noise_map_2d
-        The 2D noise-map array whose values are replaced.
-    target_signal_to_noise
-        The target signal-to-noise the noise-map valueus are changed to.
-
-    Returns
-    -------
-    ndarray
-        The 2D noise-map with values changed.
-
-    Examples
-    --------
-    image_2d = np.ones((5,5))
-    image_2d[2,2] = -1.0
-    noise_map_2d = np.ones((5,5))
-
-    noise_map_2d_replaced = replace_noise_map_2d_values_where_image_2d_values_are_negative(
-        image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0):
-    """
-    for y in range(image_2d.shape[0]):
-        for x in range(image_2d.shape[1]):
-            if image_2d[y, x] < 0.0:
-                absolute_signal_to_noise = np.abs(image_2d[y, x]) / noise_map_2d[y, x]
-                if absolute_signal_to_noise >= target_signal_to_noise:
-                    noise_map_2d[y, x] = np.abs(image_2d[y, x]) / target_signal_to_noise
-
-    return noise_map_2d
-
-
-@numba_util.jit()
 def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the slimmed 1D pixel
@@ -444,16 +376,18 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
     indexes_slim = np.array([0, 1, 2, 5])
     indexes_2d = index_2d_for_index_slim_from(indexes_slim=indexes_slim, shape=(3,3))
     """
-    index_2d_for_index_slim = np.zeros((indexes_slim.shape[0], 2))
+    # Calculate row indices by integer division by number of columns
+    rows = indexes_slim // shape_native[1]
 
-    for i, index_slim in enumerate(indexes_slim):
-        index_2d_for_index_slim[i, 0] = int(index_slim / shape_native[1])
-        index_2d_for_index_slim[i, 1] = int(index_slim % shape_native[1])
+    # Calculate column indices by modulo number of columns
+    cols = indexes_slim % shape_native[1]
+
+    # Stack rows and cols horizontally into shape (N, 2)
+    index_2d_for_index_slim = np.vstack((rows, cols)).T
 
     return index_2d_for_index_slim
 
 
-@numba_util.jit()
 def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 2D pixel indexes to
@@ -486,12 +420,10 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
     indexes_2d = np.array([[0,0], [1,0], [2,0], [2,2]])
     indexes_flat = index_flat_for_index_2d_from(indexes_2d=indexes_2d, shape=(3,3))
     """
-    index_slim_for_index_native_2d = np.zeros(indexes_2d.shape[0])
-
-    for i in range(indexes_2d.shape[0]):
-        index_slim_for_index_native_2d[i] = int(
-            (indexes_2d[i, 0]) * shape_native[1] + indexes_2d[i, 1]
-        )
+    # Calculate 1D indexes as row_index * number_of_columns + col_index
+    index_slim_for_index_native_2d = (
+        indexes_2d[:, 0] * shape_native[1] + indexes_2d[:, 1]
+    )
 
     return index_slim_for_index_native_2d
 
@@ -629,66 +561,3 @@ def array_2d_via_indexes_from(
     return (
         jnp.zeros(shape).at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
     )
-
-
-@numba_util.jit()
-def array_2d_slim_complex_from(
-    array_2d_native: np.ndarray,
-    mask: np.ndarray,
-) -> np.ndarray:
-    """
-    For a 2D array and mask, map the values of all unmasked pixels to a 1D array.
-
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards.
-
-    For example, for an array of shape (3,3) and where all pixels are unmasked:
-
-    - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
-    - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 3 of the 1D array.
-    - pixel [2,0] of the 2D array will correspond to index 6 of the 1D array.
-
-    Parameters
-    ----------
-    array_2d_native
-        A 2D array of values on the dimensions of the grid.
-    mask
-        A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    array_2d
-        The 2D array of values which are mapped to a 1D array.
-
-    Returns
-    -------
-    ndarray
-        A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
-    """
-
-    total_pixels = np.sum(~mask)
-
-    array_1d = 0 + 0j * np.zeros(shape=total_pixels)
-    index = 0
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                array_1d[index] = array_2d_native[y, x]
-                index += 1
-
-    return array_1d
-
-
-@numba_util.jit()
-def array_2d_native_complex_via_indexes_from(
-    array_2d_slim: np.ndarray,
-    shape_native: Tuple[int, int],
-    native_index_for_slim_index_2d: np.ndarray,
-) -> np.ndarray:
-    array_2d = 0 + 0j * np.zeros(shape_native)
-
-    for slim_index in range(len(native_index_for_slim_index_2d)):
-        array_2d[
-            native_index_for_slim_index_2d[slim_index, 0],
-            native_index_for_slim_index_2d[slim_index, 1],
-        ] = array_2d_slim[slim_index]
-
-    return array_2d

@@ -91,26 +91,6 @@ def test__binned_array_2d_from():
     assert binned_array_2d.slim == pytest.approx(np.array([1.0, 8.0]), 1.0e-4)
 
 
-def test__sub_mask_index_for_sub_mask_1d_index():
-    mask = aa.Mask2D(
-        mask=[[True, True, True], [True, False, False], [True, True, False]],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    over_sampling = aa.OverSampler(mask=mask, sub_size=2)
-
-    sub_mask_index_for_sub_mask_1d_index = (
-        aa.util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=np.array(mask), sub_size=np.array([2, 2, 2])
-        )
-    )
-
-    assert over_sampling.sub_mask_native_for_sub_mask_slim == pytest.approx(
-        sub_mask_index_for_sub_mask_1d_index, 1e-4
-    )
-
-
 def test__slim_index_for_sub_slim_index():
     mask = aa.Mask2D(
         mask=[[True, False, True], [False, False, False], [True, False, False]],

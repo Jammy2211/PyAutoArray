@@ -396,7 +396,6 @@ def grid_2d_via_shape_native_from(
     )
 
 
-@numba_util.jit()
 def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -471,7 +470,6 @@ def _radial_projected_shape_slim_from(
     return int((scaled_distance / pixel_scale)) + 1
 
 
-@numba_util.jit()
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -562,9 +560,11 @@ def grid_scaled_2d_slim_radial_projected_from(
 
     radii = centre[1]
 
-    for slim_index in range(shape_slim):
-        grid_scaled_2d_slim_radii[slim_index, 1] = radii
-        radii += pixel_scale
+    # Create an array of radii values spaced by pixel_scale
+    radii_array = radii + pixel_scale * np.arange(shape_slim)
+
+    # Assign all values at once to the second column (index 1)
+    grid_scaled_2d_slim_radii[:, 1] = radii_array
 
     return grid_scaled_2d_slim_radii + 1e-6
 
@@ -737,58 +737,6 @@ def grid_2d_native_from(
     )
 
     return jnp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
-
-
-@numba_util.jit()
-def grid_2d_slim_upscaled_from(
-    grid_slim: np.ndarray, upscale_factor: int, pixel_scales: ty.PixelScales
-) -> np.ndarray:
-    """
-    From an input slimmed 2D grid, return an upscaled slimmed 2D grid where (y,x) coordinates are added at an
-    upscaled resolution to each grid coordinate.
-
-    Parameters
-    ----------
-    grid_slim
-        The slimmed grid of (y,x) coordinates over which a square uniform grid is overlaid.
-    upscale_factor
-        The upscaled resolution at which the new grid coordinates are computed.
-    pixel_scales
-        The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
-    """
-
-    grid_2d_slim_upscaled = np.zeros(shape=(grid_slim.shape[0] * upscale_factor**2, 2))
-
-    upscale_index = 0
-
-    y_upscale_half = pixel_scales[0] / 2
-    y_upscale_step = pixel_scales[0] / upscale_factor
-
-    x_upscale_half = pixel_scales[1] / 2
-    x_upscale_step = pixel_scales[1] / upscale_factor
-
-    for slim_index in range(grid_slim.shape[0]):
-        y_grid = grid_slim[slim_index, 0]
-        x_grid = grid_slim[slim_index, 1]
-
-        for y in range(upscale_factor):
-            for x in range(upscale_factor):
-                grid_2d_slim_upscaled[upscale_index, 0] = (
-                    y_grid
-                    + y_upscale_half
-                    - y * y_upscale_step
-                    - (y_upscale_step / 2.0)
-                )
-                grid_2d_slim_upscaled[upscale_index, 1] = (
-                    x_grid
-                    - x_upscale_half
-                    + x * x_upscale_step
-                    + (x_upscale_step / 2.0)
-                )
-
-                upscale_index += 1
-
-    return grid_2d_slim_upscaled
 
 
 def grid_2d_of_points_within_radius(

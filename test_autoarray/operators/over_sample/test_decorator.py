@@ -28,9 +28,23 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     over_sample_uniform = aa.OverSampler(mask=mask, sub_size=2)
 
-    mask_sub_2 = aa.util.over_sample.oversample_mask_2d_from(
-        mask=np.array(mask), sub_size=2
-    )
+    def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
+
+        oversample_mask = np.full(
+            (mask.shape[0] * sub_size, mask.shape[1] * sub_size), True
+        )
+
+        for y in range(mask.shape[0]):
+            for x in range(mask.shape[1]):
+                if not mask[y, x]:
+                    oversample_mask[
+                        y * sub_size : (y + 1) * sub_size,
+                        x * sub_size : (x + 1) * sub_size,
+                    ] = False
+
+        return oversample_mask
+
+    mask_sub_2 = oversample_mask_2d_from(mask=np.array(mask), sub_size=2)
 
     mask_sub_2 = aa.Mask2D(mask=mask_sub_2, pixel_scales=(0.5, 0.5))
 
