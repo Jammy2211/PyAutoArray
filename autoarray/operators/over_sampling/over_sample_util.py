@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections import defaultdict
 import numpy as np
 from typing import TYPE_CHECKING, Union
 from typing import List, Tuple
@@ -11,7 +10,6 @@ if TYPE_CHECKING:
 
 from autoarray.mask.mask_2d import Mask2D
 
-from autoarray import numba_util
 
 from autoarray import type as ty
 
@@ -168,7 +166,6 @@ def sub_size_radial_bins_from(
 
     return sub_size_list[bin_indices]
 
-
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -218,54 +215,51 @@ def grid_2d_slim_over_sampled_via_mask_from(
     sy, sx = pixel_scales
     oy, ox = origin
 
-    # 1) Find unmasked pixels in row-major order
+    # 1) Find unmasked pixel indices in row-major order
     rows, cols = np.nonzero(~mask_2d)
     Npix = rows.size
 
-    # 2) Normalize sub_size input
+    # 2) Broadcast or validate sub_size array
     sub_arr = np.asarray(sub_size)
-    sub_arr = np.full(Npix, sub_arr, dtype=int) if sub_arr.size == 1 else sub_arr
+    if sub_arr.ndim == 0:
+        sub_arr = np.full(Npix, int(sub_arr), int)
+    elif sub_arr.ndim == 1 and sub_arr.size == Npix:
+        sub_arr = sub_arr.astype(int)
+    else:
+        raise ValueError(f"sub_size must be scalar or length-{Npix} array, got shape {sub_arr.shape}")
 
-    # 3) Pixel centers in physical coords, y↑up
+    # 3) Compute pixel centers (y ↑ up, x → right)
     cy = (H - 1) / 2.0
     cx = (W - 1) / 2.0
     y_pix = (cy - rows) * sy + oy
     x_pix = (cols - cx) * sx + ox
 
-    # Pre‐group pixel indices by sub_size
-    groups = defaultdict(list)
-    for i, s in enumerate(sub_arr):
-        groups[s].append(i)
+    # 4) For each pixel, generate its sub-pixel coords and collect
+    coords_list = []
+    for i in range(Npix):
+        s = sub_arr[i]
+        dy = sy / s
+        dx = sx / s
 
-    # Prepare output
-    total = np.sum(sub_arr * sub_arr)
-    coords = np.empty((total, 2), float)
-    idx = 0
+        # y offsets: from top (+sy/2 - dy/2) down to bottom (-sy/2 + dy/2)
+        y_off = np.linspace(+sy/2 - dy/2, -sy/2 + dy/2, s)
+        # x offsets: left to right
+        x_off = np.linspace(-sx/2 + dx/2, +sx/2 - dx/2, s)
 
-    for s, pix_indices in groups.items():
-        # Compute offsets once for this sub_size
-        dy, dx = sy / s, sx / s
-        y_off = np.linspace(+sy / 2 - dy / 2, -sy / 2 + dy / 2, s)
-        x_off = np.linspace(-sx / 2 + dx / 2, +sx / 2 - dx / 2, s)
+        # build subgrid
         y_sub, x_sub = np.meshgrid(y_off, x_off, indexing="ij")
         y_sub = y_sub.ravel()
         x_sub = x_sub.ravel()
-        n_sub = s * s
 
-        # Now vectorize over all pixels in this group
-        pix_idx = np.array(pix_indices)
-        y_centers = y_pix[pix_idx]
-        x_centers = x_pix[pix_idx]
+        # center + offsets
+        y_center = y_pix[i]
+        x_center = x_pix[i]
+        coords = np.stack([y_center + y_sub, x_center + x_sub], axis=1)
 
-        # Repeat‐tile to shape (len(pix_idx)*n_sub,)
-        all_y = np.repeat(y_centers, n_sub) + np.tile(y_sub, len(pix_idx))
-        all_x = np.repeat(x_centers, n_sub) + np.tile(x_sub, len(pix_idx))
+        coords_list.append(coords)
 
-        coords[idx : idx + all_y.size, 0] = all_y
-        coords[idx : idx + all_x.size, 1] = all_x
-        idx += all_y.size
-
-    return coords
+    # 5) Concatenate all sub-pixel blocks in row-major pixel order
+    return np.vstack(coords_list)
 
 
 def over_sample_size_via_radial_bins_from(
