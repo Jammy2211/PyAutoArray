@@ -169,7 +169,7 @@ def sub_size_radial_bins_from(
     return sub_size_list[bin_indices]
 
 
-@numba_util.jit()
+# @numba_util.jit()
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
