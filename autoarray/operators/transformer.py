@@ -418,22 +418,22 @@ class TransformerNUFFT(NUFFT_cpu):
 
     def transform_mapping_matrix(self, mapping_matrix: np.ndarray) -> np.ndarray:
         """
-        Applies the NUFFT forward transform to each column of a mapping matrix, producing transformed visibilities.
+            Applies the NUFFT forward transform to each column of a mapping matrix, producing transformed visibilities.
 
-        Parameters
-        ----------
-        mapping_matrix
-            A 2D array where each column corresponds to a source-plane pixel intensity distribution flattened into image space.
+            Parameters
+            ----------
+            mapping_matrix
+                A 2D array where each column corresponds to a source-plane pixel intensity distribution flattened into image space.
 
-        Returns
-    -------
-        A complex-valued 2D array where each column contains the visibilities corresponding to the respective column
-        in the input mapping matrix.
+            Returns
+        -------
+            A complex-valued 2D array where each column contains the visibilities corresponding to the respective column
+            in the input mapping matrix.
 
-        Notes
-        -----
-        - Each column of the input mapping matrix is reshaped into the native 2D image grid before transformation.
-        - This method repeatedly calls `visibilities_from` for each column, which may be computationally intensive.
+            Notes
+            -----
+            - Each column of the input mapping matrix is reshaped into the native 2D image grid before transformation.
+            - This method repeatedly calls `visibilities_from` for each column, which may be computationally intensive.
         """
         transformed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])

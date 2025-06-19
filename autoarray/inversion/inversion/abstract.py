@@ -74,6 +74,18 @@ class AbstractInversion:
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
+        try:
+            import numba
+        except ModuleNotFoundError:
+            raise exc.InversionException(
+                "Inversion functionality (linear light profiles, pixelized reconstructions) is "
+                "disabled if numba is not installed.\n\n"
+                "This is because the run-times without numba are too slow.\n\n"
+                "Please install numba, which is described at the following web page:\n\n"
+                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            )
+
+
         self.dataset = dataset
 
         self.linear_obj_list = linear_obj_list
