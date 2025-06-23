@@ -30,8 +30,6 @@ class LinearObj:
         ----------
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         self.regularization = regularization
 
