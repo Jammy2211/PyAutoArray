@@ -31,7 +31,6 @@ class AbstractInversion:
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -69,8 +68,6 @@ class AbstractInversion:
             input dataset's data and whose values are solved for via the inversion.
         settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         try:
@@ -90,8 +87,6 @@ class AbstractInversion:
         self.linear_obj_list = linear_obj_list
 
         self.settings = settings
-
-        self.run_time_dict = run_time_dict
 
     @property
     def data(self):

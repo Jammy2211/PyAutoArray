@@ -23,7 +23,6 @@ class MockMesh(AbstractMesh):
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
-        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         return MapperGrids(
             mask=mask,
@@ -32,7 +31,6 @@ class MockMesh(AbstractMesh):
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=self.image_plane_mesh_grid,
             adapt_data=adapt_data,
-            run_time_dict=run_time_dict,
         )
 
     def image_plane_mesh_grid_from(

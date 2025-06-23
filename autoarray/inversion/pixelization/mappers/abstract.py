@@ -24,7 +24,6 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -81,11 +80,9 @@ class AbstractMapper(LinearObj):
         border_relocator
            The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
            edge.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(regularization=regularization, run_time_dict=run_time_dict)
+        super().__init__(regularization=regularization)
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids

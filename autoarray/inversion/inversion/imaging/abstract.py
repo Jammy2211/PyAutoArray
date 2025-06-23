@@ -20,7 +20,6 @@ class AbstractInversionImaging(AbstractInversion):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -69,7 +68,6 @@ class AbstractInversionImaging(AbstractInversion):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
     @property

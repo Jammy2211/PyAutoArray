@@ -7,7 +7,6 @@ class MockClass:
         self.run_time_dict = run_time_dict
 
     @property
-    @aa.profile_func
     def value(self):
         return self._value
 

@@ -11,7 +11,6 @@ class LinearObj:
     def __init__(
         self,
         regularization: Optional[AbstractRegularization],
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -35,7 +34,6 @@ class LinearObj:
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         self.regularization = regularization
-        self.run_time_dict = run_time_dict
 
     @property
     def params(self) -> int:

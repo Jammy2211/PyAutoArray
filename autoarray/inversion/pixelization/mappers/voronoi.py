@@ -56,8 +56,6 @@ class MapperVoronoi(AbstractMapper):
     regularization
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
-    run_time_dict
-        A dictionary which contains timing of certain functions calls which is used for profiling.
     """
 
     @property

@@ -25,7 +25,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -48,15 +47,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
         if self.settings.use_w_tilde:
@@ -351,7 +347,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return self._curvature_matrix_mapper_diag
 
     @property
-    @profile_func
     def _curvature_matrix_multi_mapper(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to

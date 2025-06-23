@@ -115,7 +115,6 @@ class FitDataset(AbstractFit):
         dataset,
         use_mask_in_fit: bool = False,
         dataset_model: DatasetModel = None,
-        run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -148,7 +147,6 @@ class FitDataset(AbstractFit):
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
         self.dataset_model = dataset_model or DatasetModel()
-        self.run_time_dict = run_time_dict
 
     @property
     def mask(self) -> Mask2D:

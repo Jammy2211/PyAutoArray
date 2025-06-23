@@ -91,7 +91,6 @@ class AbstractMesh:
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: np.ndarray = None,
-        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         raise NotImplementedError
 
