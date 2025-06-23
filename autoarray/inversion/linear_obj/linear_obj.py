@@ -6,8 +6,6 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray.numba_util import profile_func
-
 
 class LinearObj:
     def __init__(
@@ -75,7 +73,6 @@ class LinearObj:
         raise NotImplementedError
 
     @cached_property
-    @profile_func
     def unique_mappings(self):
         """
         An object describing the unique mappings between data points / pixels in the data and the parameters of the

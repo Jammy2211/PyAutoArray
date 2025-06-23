@@ -9,9 +9,6 @@ from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.type import Grid1D2DLike
 
-from autoarray.numba_util import profile_func
-
-
 class AbstractLinearObjFuncList(LinearObj):
     def __init__(
         self,
@@ -83,7 +80,6 @@ class AbstractLinearObjFuncList(LinearObj):
         )
 
     @cached_property
-    @profile_func
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)

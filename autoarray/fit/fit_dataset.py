@@ -13,7 +13,6 @@ from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
 
-from autoarray.numba_util import profile_func
 from autoarray import type as ty
 
 
@@ -320,7 +319,6 @@ class FitDataset(AbstractFit):
             )
 
     @property
-    @profile_func
     def figure_of_merit(self) -> float:
         if self.inversion is not None:
             return self.log_evidence

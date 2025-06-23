@@ -2,7 +2,9 @@ import logging
 
 from os import environ
 
-use_jax = environ.get("USE_JAX", "0") == "1"
+from autoconf import conf
+
+use_jax = conf.instance["general"]["jax"]["use_jax"]
 
 if use_jax:
     try:

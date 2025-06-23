@@ -6,14 +6,11 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
-from autoarray.numba_util import profile_func
-
 
 class AbstractMesh:
     def __eq__(self, other):
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
 
-    @profile_func
     def relocated_grid_from(
         self,
         border_relocator: BorderRelocator,
@@ -46,7 +43,6 @@ class AbstractMesh:
             return border_relocator.relocated_grid_from(grid=source_plane_data_grid)
         return source_plane_data_grid
 
-    @profile_func
     def relocated_mesh_grid_from(
         self,
         border_relocator: Optional[BorderRelocator],

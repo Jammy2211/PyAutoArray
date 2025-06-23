@@ -3,8 +3,6 @@ from typing import Dict, List, Optional, Union, Type
 
 from autoconf import cached_property
 
-from autoarray.numba_util import profile_func
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
@@ -116,7 +114,6 @@ class AbstractInversionImaging(AbstractInversion):
         return cls_dict
 
     @cached_property
-    @profile_func
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -202,7 +199,6 @@ class AbstractInversionImaging(AbstractInversion):
         return data_linear_func_matrix_dict
 
     @cached_property
-    @profile_func
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values

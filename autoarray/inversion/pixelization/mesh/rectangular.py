@@ -10,7 +10,6 @@ from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 from autoarray import exc
-from autoarray.numba_util import profile_func
 
 
 class Rectangular(AbstractMesh):
@@ -116,7 +115,6 @@ class Rectangular(AbstractMesh):
             run_time_dict=run_time_dict,
         )
 
-    @profile_func
     def mesh_grid_from(
         self,
         source_plane_data_grid: Optional[Grid2D] = None,

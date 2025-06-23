@@ -16,8 +16,6 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 from autoarray.inversion.inversion import inversion_util
 
-from autoarray.numba_util import profile_func
-
 
 class InversionInterferometerMapping(AbstractInversionInterferometer):
     def __init__(
@@ -61,7 +59,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         )
 
     @cached_property
-    @profile_func
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -83,7 +80,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         )
 
     @cached_property
-    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -119,7 +115,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         return curvature_matrix
 
     @property
-    @profile_func
     def mapped_reconstructed_data_dict(
         self,
     ) -> Dict[LinearObj, Visibilities]:

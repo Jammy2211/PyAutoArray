@@ -11,8 +11,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.inversion import inversion_util
 
-from autoarray.numba_util import profile_func
-
 
 class AbstractInversionInterferometer(AbstractInversion):
     def __init__(
@@ -78,7 +76,6 @@ class AbstractInversionInterferometer(AbstractInversion):
         ]
 
     @property
-    @profile_func
     def mapped_reconstructed_image_dict(
         self,
     ) -> Dict[LinearObj, Array2D]:

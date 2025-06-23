@@ -8,7 +8,6 @@ from scipy.sparse.linalg import splu
 from typing import Dict, List, Optional, Type, Union
 
 from autoconf import cached_property
-from autoarray.numba_util import profile_func
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
@@ -283,7 +282,6 @@ class AbstractInversion:
         return self.data.mask
 
     @cached_property
-    @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
@@ -308,7 +306,6 @@ class AbstractInversion:
         raise NotImplementedError
 
     @cached_property
-    @profile_func
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -322,17 +319,14 @@ class AbstractInversion:
         return jnp.hstack(self.operated_mapping_matrix_list)
 
     @cached_property
-    @profile_func
     def data_vector(self) -> np.ndarray:
         raise NotImplementedError
 
     @cached_property
-    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
     @cached_property
-    @profile_func
     def regularization_matrix(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -354,7 +348,6 @@ class AbstractInversion:
         )
 
     @cached_property
-    @profile_func
     def regularization_matrix_reduced(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -384,7 +377,6 @@ class AbstractInversion:
         return regularization_matrix
 
     @cached_property
-    @profile_func
     def curvature_reg_matrix(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
@@ -408,7 +400,6 @@ class AbstractInversion:
         return np.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property
-    @profile_func
     def curvature_reg_matrix_reduced(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
@@ -449,7 +440,6 @@ class AbstractInversion:
         return mapper_zero_pixel_list
 
     @cached_property
-    @profile_func
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -529,7 +519,6 @@ class AbstractInversion:
         )
 
     @cached_property
-    @profile_func
     def reconstruction_reduced(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -586,7 +575,6 @@ class AbstractInversion:
         return source_quantity_dict
 
     @property
-    @profile_func
     def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
         raise NotImplementedError
 
@@ -607,7 +595,6 @@ class AbstractInversion:
         return self.mapped_reconstructed_data_dict
 
     @cached_property
-    @profile_func
     def mapped_reconstructed_data(self) -> Union[Array2D, Visibilities]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -668,7 +655,6 @@ class AbstractInversion:
         return data_subtracted_dict
 
     @cached_property
-    @profile_func
     def regularization_term(self) -> float:
         """
         Returns the regularization term of an inversion. This term represents the sum of the difference in flux
@@ -693,7 +679,6 @@ class AbstractInversion:
         )
 
     @cached_property
-    @profile_func
     def log_det_curvature_reg_matrix_term(self) -> float:
         """
         The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
@@ -711,7 +696,6 @@ class AbstractInversion:
             raise exc.InversionException() from e
 
     @cached_property
-    @profile_func
     def log_det_regularization_matrix_term(self) -> float:
         """
         The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
@@ -822,12 +806,10 @@ class AbstractInversion:
         return regularization_weights_dict
 
     @property
-    @profile_func
     def _data_vector_mapper(self) -> np.ndarray:
         raise NotImplementedError
 
     @property
-    @profile_func
     def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         raise NotImplementedError
 

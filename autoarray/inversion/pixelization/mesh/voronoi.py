@@ -1,8 +1,6 @@
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 
-from autoarray.numba_util import profile_func
-
 
 class Voronoi(Triangulation):
     def __init__(self):
@@ -33,7 +31,6 @@ class Voronoi(Triangulation):
         """
         super().__init__()
 
-    @profile_func
     def mesh_grid_from(
         self,
         source_plane_data_grid=None,
