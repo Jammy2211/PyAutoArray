@@ -425,7 +425,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     curvature_weights=np.array(curvature_weights),
                     image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
                     image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
-                    image_frame_1d_kernels=self.psf.image_frame_1d_kernels,
+                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
                 )
 
                 curvature_matrix[

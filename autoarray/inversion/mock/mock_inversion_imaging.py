@@ -10,6 +10,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 class MockInversionImaging(InversionImagingMapping):
     def __init__(
         self,
+        mask=None,
         data=None,
         noise_map=None,
         psf=None,
@@ -33,12 +34,20 @@ class MockInversionImaging(InversionImagingMapping):
             settings=settings,
         )
 
+        self._mask = mask
         self._operated_mapping_matrix = operated_mapping_matrix
 
         self._linear_func_operated_mapping_matrix_dict = (
             linear_func_operated_mapping_matrix_dict
         )
         self._data_linear_func_matrix_dict = data_linear_func_matrix_dict
+
+    @property
+    def mask(self) -> np.ndarray:
+        if self._mask is None:
+            return super().mask
+
+        return self._mask
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
