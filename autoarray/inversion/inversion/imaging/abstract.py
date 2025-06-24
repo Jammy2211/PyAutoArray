@@ -89,8 +89,9 @@ class AbstractInversionImaging(AbstractInversion):
 
         return [
             (
-                self.convolver.convolve_mapping_matrix(
-                    mapping_matrix=linear_obj.mapping_matrix
+                self.psf.convolve_mapping_matrix(
+                    mapping_matrix=linear_obj.mapping_matrix,
+                    mask=self.mask
                 )
                 if linear_obj.operated_mapping_matrix_override is None
                 else self.linear_func_operated_mapping_matrix_dict[linear_obj]
@@ -131,8 +132,9 @@ class AbstractInversionImaging(AbstractInversion):
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
-                operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
-                    mapping_matrix=linear_func.mapping_matrix
+                operated_mapping_matrix = self.psf.convolve_mapping_matrix(
+                    mapping_matrix=linear_func.mapping_matrix,
+                    mask=self.mask,
                 )
 
             linear_func_operated_mapping_matrix_dict[linear_func] = (
@@ -212,8 +214,9 @@ class AbstractInversionImaging(AbstractInversion):
         mapper_operated_mapping_matrix_dict = {}
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
-                mapping_matrix=mapper.mapping_matrix
+            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix,
+                mask=self.mask,
             )
 
             mapper_operated_mapping_matrix_dict[mapper] = operated_mapping_matrix

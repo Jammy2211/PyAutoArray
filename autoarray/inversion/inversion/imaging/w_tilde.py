@@ -425,7 +425,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     curvature_weights=np.array(curvature_weights),
                     image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
                     image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
-                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                    image_frame_1d_kernels=self.psf.image_frame_1d_kernels,
                 )
 
                 curvature_matrix[
@@ -504,20 +504,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     reconstruction=reconstruction,
                 )
 
-                # mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
-                #     image=mapped_reconstructed_image, mask=self.mask
-                # ).array
+                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
+                    image=mapped_reconstructed_image, mask=self.mask
+                ).array
 
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
-                )
-
-                mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
-                    image=mapped_reconstructed_image
-                )
-
-                mapped_reconstructed_image = Array2D(
-                    values=np.array(mapped_reconstructed_image), mask=self.mask
                 )
 
             else:
