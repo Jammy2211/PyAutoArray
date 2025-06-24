@@ -92,7 +92,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     )
 
     dataset = aa.DatasetInterface(
-        data=np.ones(2),
+        data=aa.Array2D.ones(shape_native=(2, 10), pixel_scales=1.0),
         noise_map=noise_map,
         psf=psf,
     )
