@@ -509,7 +509,7 @@ class Imaging(AbstractDataset):
             passed into the calculations performed in the `inversion` module.
         """
 
-        return Imaging(
+        dataset = Imaging(
             data=self.data,
             noise_map=self.noise_map,
             psf=self.psf,
@@ -519,6 +519,8 @@ class Imaging(AbstractDataset):
             pad_for_psf=False,
             check_noise_map=False,
         )
+
+        return dataset
 
     def output_to_fits(
         self,
