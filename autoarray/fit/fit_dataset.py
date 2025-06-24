@@ -13,7 +13,6 @@ from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
 
-from autoarray.numba_util import profile_func
 from autoarray import type as ty
 
 
@@ -116,7 +115,6 @@ class FitDataset(AbstractFit):
         dataset,
         use_mask_in_fit: bool = False,
         dataset_model: DatasetModel = None,
-        run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -149,7 +147,6 @@ class FitDataset(AbstractFit):
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
         self.dataset_model = dataset_model or DatasetModel()
-        self.run_time_dict = run_time_dict
 
     @property
     def mask(self) -> Mask2D:
@@ -320,7 +317,6 @@ class FitDataset(AbstractFit):
             )
 
     @property
-    @profile_func
     def figure_of_merit(self) -> float:
         if self.inversion is not None:
             return self.log_evidence

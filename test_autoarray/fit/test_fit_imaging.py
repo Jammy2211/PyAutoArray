@@ -102,28 +102,3 @@ def test__data_and_model_are_identical__inversion_included__changes_certain_prop
         fit.chi_squared + 2.0 + 3.0 - 4.0 + fit.noise_normalization
     )
     assert fit.figure_of_merit == fit.log_evidence
-
-
-def test__run_time_dict__profiles_appropriate_functions():
-    mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
-
-    data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
-    noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
-
-    dataset = aa.Imaging(data=data, noise_map=noise_map)
-
-    dataset = dataset.apply_mask(mask=mask)
-
-    model_data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
-
-    run_time_dict = {}
-
-    fit = aa.m.MockFitImaging(
-        dataset=dataset,
-        use_mask_in_fit=False,
-        model_data=model_data,
-        run_time_dict=run_time_dict,
-    )
-    fit.figure_of_merit
-
-    assert "figure_of_merit_0" in fit.run_time_dict

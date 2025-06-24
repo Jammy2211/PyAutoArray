@@ -17,7 +17,6 @@ class Triangulation(AbstractMesh):
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: np.ndarray = None,
-        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
@@ -59,11 +58,7 @@ class Triangulation(AbstractMesh):
             transformation applied to it to create the `source_plane_mesh_grid`.
         adapt_data
             Not used for a rectangular mesh.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
-
-        self.run_time_dict = run_time_dict
 
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
@@ -90,5 +85,4 @@ class Triangulation(AbstractMesh):
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
-            run_time_dict=run_time_dict,
         )

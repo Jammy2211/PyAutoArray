@@ -19,7 +19,6 @@ class MapperGrids:
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Groups the different grids used by `Mesh` objects, the `mesh` package and the `pixelization` package, which
@@ -55,8 +54,6 @@ class MapperGrids:
         adapt_data
             An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         self.mask = mask
@@ -64,7 +61,6 @@ class MapperGrids:
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid
         self.adapt_data = adapt_data
-        self.run_time_dict = run_time_dict
 
     @property
     def image_plane_data_grid(self):

@@ -15,8 +15,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
-
-from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
 
 
@@ -26,7 +24,6 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -83,11 +80,9 @@ class AbstractMapper(LinearObj):
         border_relocator
            The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
            edge.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(regularization=regularization, run_time_dict=run_time_dict)
+        super().__init__(regularization=regularization)
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
@@ -213,7 +208,6 @@ class AbstractMapper(LinearObj):
         return sub_slim_indexes_for_pix_index
 
     @property
-    @profile_func
     def sub_slim_indexes_for_pix_index_arr(
         self,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -236,7 +230,6 @@ class AbstractMapper(LinearObj):
         )
 
     @cached_property
-    @profile_func
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
@@ -270,7 +263,6 @@ class AbstractMapper(LinearObj):
         )
 
     @cached_property
-    @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels

@@ -1,8 +1,6 @@
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 
-from autoarray.numba_util import profile_func
-
 
 class Delaunay(Triangulation):
     def __init__(self):
@@ -31,7 +29,6 @@ class Delaunay(Triangulation):
         """
         super().__init__()
 
-    @profile_func
     def mesh_grid_from(
         self,
         source_plane_data_grid=None,

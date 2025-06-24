@@ -3,8 +3,6 @@ from typing import Dict, List, Optional, Union, Type
 
 from autoconf import cached_property
 
-from autoarray.numba_util import profile_func
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
@@ -22,7 +20,6 @@ class AbstractInversionImaging(AbstractInversion):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -63,15 +60,12 @@ class AbstractInversionImaging(AbstractInversion):
             input dataset's data and whose values are solved for via the inversion.
         settings
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
     @property
@@ -116,7 +110,6 @@ class AbstractInversionImaging(AbstractInversion):
         return cls_dict
 
     @cached_property
-    @profile_func
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -202,7 +195,6 @@ class AbstractInversionImaging(AbstractInversion):
         return data_linear_func_matrix_dict
 
     @cached_property
-    @profile_func
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values

@@ -21,7 +21,6 @@ def inversion_from(
     dataset: Union[Imaging, Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
-    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
@@ -46,8 +45,6 @@ def inversion_from(
         input dataset's data and whose values are solved for via the inversion.
     settings
         Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-    run_time_dict
-        A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
     -------
@@ -58,14 +55,12 @@ def inversion_from(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
     return inversion_interferometer_from(
         dataset=dataset,
         linear_obj_list=linear_obj_list,
         settings=settings,
-        run_time_dict=run_time_dict,
     )
 
 
@@ -73,7 +68,6 @@ def inversion_imaging_from(
     dataset,
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
-    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input `Imaging` dataset and list of linear objects, creates an `InversionImaging`.
@@ -102,8 +96,6 @@ def inversion_imaging_from(
         input dataset's data and whose values are solved for via the inversion.
     settings
         Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-    run_time_dict
-        A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
     -------
@@ -128,14 +120,12 @@ def inversion_imaging_from(
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
     return InversionImagingMapping(
         dataset=dataset,
         linear_obj_list=linear_obj_list,
         settings=settings,
-        run_time_dict=run_time_dict,
     )
 
 
@@ -143,7 +133,6 @@ def inversion_interferometer_from(
     dataset: Union[Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
-    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input `Interferometer` dataset and list of linear objects, creates
@@ -175,8 +164,6 @@ def inversion_interferometer_from(
         input dataset's data and whose values are solved for via the inversion.
     settings
         Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
-    run_time_dict
-        A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
     -------
@@ -199,7 +186,6 @@ def inversion_interferometer_from(
                 w_tilde=w_tilde,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
-                run_time_dict=run_time_dict,
             )
 
         else:
@@ -207,5 +193,4 @@ def inversion_interferometer_from(
                 dataset=dataset,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
-                run_time_dict=run_time_dict,
             )

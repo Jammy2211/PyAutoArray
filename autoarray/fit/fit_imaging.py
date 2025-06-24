@@ -14,7 +14,6 @@ class FitImaging(FitDataset):
         dataset: Imaging,
         use_mask_in_fit: bool = False,
         dataset_model: DatasetModel = None,
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Class to fit a masked imaging dataset.
@@ -50,7 +49,6 @@ class FitImaging(FitDataset):
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
             dataset_model=dataset_model,
-            run_time_dict=run_time_dict,
         )
 
     @property

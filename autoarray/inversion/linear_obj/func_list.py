@@ -9,15 +9,12 @@ from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.type import Grid1D2DLike
 
-from autoarray.numba_util import profile_func
-
 
 class AbstractLinearObjFuncList(LinearObj):
     def __init__(
         self,
         grid: Grid1D2DLike,
         regularization: Optional[AbstractRegularization],
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -42,11 +39,9 @@ class AbstractLinearObjFuncList(LinearObj):
             is evaluated.
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(regularization=regularization, run_time_dict=run_time_dict)
+        super().__init__(regularization=regularization)
 
         self.grid = grid
 
@@ -83,7 +78,6 @@ class AbstractLinearObjFuncList(LinearObj):
         )
 
     @cached_property
-    @profile_func
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)

@@ -8,10 +8,8 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.geometry import geometry_util
 from autoarray.mask.mask_2d import Mask2D
 
-from autoarray import numba_util
 
 from autoarray import type as ty
 
@@ -49,7 +47,6 @@ def over_sample_size_convert_to_array_2d_from(
     return Array2D(values=np.array(over_sample_size).astype("int"), mask=mask)
 
 
-@numba_util.jit()
 def total_sub_pixels_2d_from(sub_size: np.ndarray) -> int:
     """
     Returns the total number of sub-pixels in unmasked pixels in a mask.
@@ -78,90 +75,6 @@ def total_sub_pixels_2d_from(sub_size: np.ndarray) -> int:
     return int(np.sum(sub_size**2))
 
 
-@numba_util.jit()
-def native_sub_index_for_slim_sub_index_2d_from(
-    mask_2d: np.ndarray, sub_size: np.ndarray
-) -> np.ndarray:
-    """
-    Returns an array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its
-    corresponding native 2D pixel using its (y,x) pixel indexes.
-
-    For example, for the following ``Mask2D`` for ``sub_size=1``:
-
-    ::
-        [[True,  True,  True, True]
-         [True, False, False, True],
-         [True, False,  True, True],
-         [True,  True,  True, True]]
-
-    This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-    ::
-        [0, 1, 2]
-
-    The array ``native_index_for_slim_index_2d`` is therefore:
-
-    ::
-        [[1,1], [1,2], [2,1]]
-
-    For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2 and
-    there are therefore 12 ``slim`` indexes:
-
-    ::
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-    The array ``native_index_for_slim_index_2d`` is therefore:
-
-    ::
-        [[2,2], [2,3], [2,4], [2,5], [3,2], [3,3], [3,4], [3,5], [4,2], [4,3], [5,2], [5,3]]
-
-    Parameters
-    ----------
-    mask_2d
-        A 2D array of bools, where `False` values are unmasked.
-    sub_size
-        The size of the sub-grid in each mask pixel.
-
-    Returns
-    -------
-    ndarray
-        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels*sub_size] to its native array
-        of shape [total_pixels*sub_size, total_pixels*sub_size].
-
-    Examples
-    --------
-    mask_2d = np.array([[True, True, True],
-                     [True, False, True]
-                     [True, True, True]])
-
-    sub_native_index_for_sub_slim_index_2d = sub_native_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=1)
-    """
-
-    total_sub_pixels = total_sub_pixels_2d_from(sub_size=sub_size)
-    sub_native_index_for_sub_slim_index_2d = np.zeros(shape=(total_sub_pixels, 2))
-
-    slim_index = 0
-    sub_slim_index = 0
-
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                sub = sub_size[slim_index]
-
-                for y1 in range(sub):
-                    for x1 in range(sub):
-                        sub_native_index_for_sub_slim_index_2d[sub_slim_index, :] = (
-                            (y * sub) + y1,
-                            (x * sub) + x1,
-                        )
-                        sub_slim_index += 1
-
-                slim_index += 1
-
-    return sub_native_index_for_sub_slim_index_2d
-
-
-@numba_util.jit()
 def slim_index_for_sub_slim_index_via_mask_2d_from(
     mask_2d: np.ndarray, sub_size: np.ndarray
 ) -> np.ndarray:
@@ -194,131 +107,20 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
     slim_index_for_sub_slim_index = slim_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=2)
     """
 
-    total_sub_pixels = total_sub_pixels_2d_from(sub_size=sub_size)
+    # Step 1: Identify unmasked (False) pixels
+    unmasked_indices = np.argwhere(~mask_2d)
+    n_unmasked = unmasked_indices.shape[0]
 
-    slim_index_for_sub_slim_index = np.zeros(shape=total_sub_pixels)
-    slim_index = 0
-    sub_slim_index = 0
+    # Step 2: Compute total number of sub-pixels
+    sub_pixels_per_pixel = sub_size**2
 
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                sub = sub_size[slim_index]
-
-                for y1 in range(sub):
-                    for x1 in range(sub):
-                        slim_index_for_sub_slim_index[sub_slim_index] = slim_index
-                        sub_slim_index += 1
-
-                slim_index += 1
+    # Step 3: Repeat slim indices for each sub-pixel
+    slim_indices = np.arange(n_unmasked)
+    slim_index_for_sub_slim_index = np.repeat(slim_indices, sub_pixels_per_pixel)
 
     return slim_index_for_sub_slim_index
 
 
-@numba_util.jit()
-def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
-    """
-    Returns a 2D array which maps every `False` entry of a 2D mask to its sub slim mask array. Every
-    True entry is given a value -1.
-
-    This is used as a convenience tool for creating structures util between different grids and structures.
-
-    For example, if we had a 3x4 mask:
-
-    [[False, True, False, False],
-     [False, True, False, False],
-     [False, False, False, True]]]
-
-    The sub_slim_index_for_sub_native_index array would be:
-
-    [[0, -1, 2, 3],
-     [4, -1, 5, 6],
-     [7, 8, 9, -1]]
-
-    Parameters
-    ----------
-    sub_mask_2d
-        The 2D mask that the util array is created for.
-
-    Returns
-    -------
-    ndarray
-        The 2D array mapping 2D mask entries to their 1D masked array indexes.
-
-    Examples
-    --------
-    mask = np.full(fill_value=False, shape=(9,9))
-    sub_two_to_one = mask_to_mask_1d_index_from(mask=mask)
-    """
-
-    sub_slim_index_for_sub_native_index = -1 * np.ones(shape=sub_mask_2d.shape)
-
-    sub_mask_1d_index = 0
-
-    for sub_mask_y in range(sub_mask_2d.shape[0]):
-        for sub_mask_x in range(sub_mask_2d.shape[1]):
-            if sub_mask_2d[sub_mask_y, sub_mask_x] == False:
-                sub_slim_index_for_sub_native_index[sub_mask_y, sub_mask_x] = (
-                    sub_mask_1d_index
-                )
-                sub_mask_1d_index += 1
-
-    return sub_slim_index_for_sub_native_index
-
-
-@numba_util.jit()
-def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
-    """
-    Returns a new mask of shape (mask.shape[0] * sub_size, mask.shape[1] * sub_size) where all boolean values are
-    expanded according to the `sub_size`.
-
-    For example, if the input mask is:
-
-    mask = np.array([
-        [True, True, True],
-        [True, False, True],
-        [True, True, True]
-    ])
-
-    and the sub_size is 2, the output mask would be:
-
-    expanded_mask = np.array([
-        [True, True, True, True, True, True],
-        [True, True, True, True, True, True],
-        [True, True, False, False, True, True],
-        [True, True, False, False, True, True],
-        [True, True, True, True, True, True],
-        [True, True, True, True, True, True]
-    ])
-
-    This is used throughout the code to handle uniform oversampling calculations.
-
-    Parameters
-    ----------
-    mask
-        The mask from which the over sample mask is computed.
-    sub_size
-        The factor by which the mask is oversampled.
-
-    Returns
-    -------
-    The mask oversampled by the input sub_size.
-    """
-    oversample_mask = np.full(
-        (mask.shape[0] * sub_size, mask.shape[1] * sub_size), True
-    )
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                oversample_mask[
-                    y * sub_size : (y + 1) * sub_size, x * sub_size : (x + 1) * sub_size
-                ] = False
-
-    return oversample_mask
-
-
-@numba_util.jit()
 def sub_size_radial_bins_from(
     radial_grid: np.ndarray,
     sub_size_list: np.ndarray,
@@ -356,22 +158,18 @@ def sub_size_radial_bins_from(
     the centre of the mask.
     """
 
-    sub_size = sub_size_list[-1] * np.ones(radial_grid.shape)
+    # Use np.searchsorted to find the first index where radial_grid[i] < radial_list[j]
+    bin_indices = np.searchsorted(radial_list, radial_grid, side="left")
 
-    for i in range(radial_grid.shape[0]):
-        for j in range(len(radial_list)):
-            if radial_grid[i] < radial_list[j]:
-                # if use_jax:
-                #     # while this makes it run, it is very, very slow
-                #     sub_size = sub_size.at[i].set(sub_size_list[j])
-                # else:
-                sub_size[i] = sub_size_list[j]
-                break
+    # Clip indices to stay within bounds of sub_size_list
+    bin_indices = np.clip(bin_indices, 0, len(sub_size_list) - 1)
 
-    return sub_size
+    return sub_size_list[bin_indices]
 
 
-@numba_util.jit()
+from autoarray.geometry import geometry_util
+
+
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -417,11 +215,16 @@ def grid_2d_slim_over_sampled_via_mask_from(
     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
+    pixels_in_mask = (np.size(mask_2d) - np.sum(mask_2d)).astype(int)
+
+    if isinstance(sub_size, int):
+        sub_size = np.full(fill_value=sub_size, shape=pixels_in_mask)
+
     total_sub_pixels = np.sum(sub_size**2)
 
     grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 
-    centres_scaled = geometry_util.central_scaled_coordinate_2d_numba_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 
@@ -457,80 +260,97 @@ def grid_2d_slim_over_sampled_via_mask_from(
     return grid_slim
 
 
-@numba_util.jit()
-def binned_array_2d_from(
-    array_2d: np.ndarray,
-    mask_2d: np.ndarray,
-    sub_size: np.ndarray,
-) -> np.ndarray:
-    """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
-    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
-    scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+#
 
-    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
-    stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
-    removed and not included in the slimmed grid.
-
-    Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
-    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
-    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
-
-    Parameters
-    ----------
-    mask_2d
-        A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
-        sub-grid.
-    pixel_scales
-        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin
-        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
-
-    Returns
-    -------
-    ndarray
-        A slimmed sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
-
-    Examples
-    --------
-    mask = np.array([[True, False, True],
-                     [False, False, False]
-                     [True, False, True]])
-    grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
-    """
-
-    total_pixels = np.sum(~mask_2d)
-
-    sub_fraction = 1.0 / sub_size**2
-
-    binned_array_2d_slim = np.zeros(shape=total_pixels)
-
-    index = 0
-    sub_index = 0
-
-    for y in range(mask_2d.shape[0]):
-        for x in range(mask_2d.shape[1]):
-            if not mask_2d[y, x]:
-                sub = sub_size[index]
-
-                for y1 in range(sub):
-                    for x1 in range(sub):
-                        # if use_jax:
-                        #     binned_array_2d_slim = binned_array_2d_slim.at[index].add(
-                        #         array_2d[sub_index] * sub_fraction[index]
-                        #     )
-                        # else:
-                        binned_array_2d_slim[index] += (
-                            array_2d[sub_index] * sub_fraction[index]
-                        )
-                        sub_index += 1
-
-                index += 1
-
-    return binned_array_2d_slim
+# def grid_2d_slim_over_sampled_via_mask_from(
+#     mask_2d: np.ndarray,
+#     pixel_scales: ty.PixelScales,
+#     sub_size: np.ndarray,
+#     origin: Tuple[float, float] = (0.0, 0.0),
+# ) -> np.ndarray:
+#     """
+#     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+#     a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+#     scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
+#
+#     The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
+#     stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
+#     removed and not included in the slimmed grid.
+#
+#     Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
+#     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+#     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+#
+#     Parameters
+#     ----------
+#     mask_2d
+#         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
+#         sub-grid.
+#     pixel_scales
+#         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+#     sub_size
+#         The size of the sub-grid that each pixel of the 2D mask array is divided into.
+#     origin
+#         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+#
+#     Returns
+#     -------
+#     ndarray
+#         A slimmed sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+#         array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
+#
+#     Examples
+#     --------
+#     mask = np.array([[True, False, True],
+#                      [False, False, False]
+#                      [True, False, True]])
+#     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
+#     """
+#
+#     H, W = mask_2d.shape
+#     sy, sx = pixel_scales
+#     oy, ox = origin
+#
+#     # 1) Find unmasked pixel indices in row-major order
+#     rows, cols = np.nonzero(~mask_2d)
+#     Npix = rows.size
+#
+#     # 2) Broadcast or validate sub_size array
+#     sub_arr = np.asarray(sub_size)
+#     sub_arr = np.full(Npix, sub_arr, dtype=int) if sub_arr.size == 1 else sub_arr
+#
+#     # 3) Compute pixel centers (y ↑ up, x → right)
+#     cy = (H - 1) / 2.0
+#     cx = (W - 1) / 2.0
+#     y_pix = (cy - rows) * sy + oy
+#     x_pix = (cols - cx) * sx + ox
+#
+#     # 4) For each pixel, generate its sub-pixel coords and collect
+#     coords_list = []
+#     for i in range(Npix):
+#         s = sub_arr[i]
+#         dy = sy / s
+#         dx = sx / s
+#
+#         # y offsets: from top (+sy/2 - dy/2) down to bottom (-sy/2 + dy/2)
+#         y_off = np.linspace(+sy/2 - dy/2, -sy/2 + dy/2, s)
+#         # x offsets: left to right
+#         x_off = np.linspace(-sx/2 + dx/2, +sx/2 - dx/2, s)
+#
+#         # build subgrid
+#         y_sub, x_sub = np.meshgrid(y_off, x_off, indexing="ij")
+#         y_sub = y_sub.ravel()
+#         x_sub = x_sub.ravel()
+#
+#         # center + offsets
+#         y_center = y_pix[i]
+#         x_center = x_pix[i]
+#         coords = np.stack([y_center + y_sub, x_center + x_sub], axis=1)
+#
+#         coords_list.append(coords)
+#
+#     # 5) Concatenate all sub-pixel blocks in row-major pixel order
+#     return np.vstack(coords_list)
 
 
 def over_sample_size_via_radial_bins_from(

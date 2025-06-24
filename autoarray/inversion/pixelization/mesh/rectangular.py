@@ -10,7 +10,6 @@ from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 from autoarray import exc
-from autoarray.numba_util import profile_func
 
 
 class Rectangular(AbstractMesh):
@@ -52,8 +51,6 @@ class Rectangular(AbstractMesh):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
-        self.run_time_dict = {}
-
     def mapper_grids_from(
         self,
         mask,
@@ -62,7 +59,6 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,
-        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
@@ -94,11 +90,7 @@ class Rectangular(AbstractMesh):
             Not used for a rectangular pixelization.
         adapt_data
             Not used for a rectangular pixelization.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
-
-        self.run_time_dict = run_time_dict
 
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
@@ -113,10 +105,8 @@ class Rectangular(AbstractMesh):
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
-            run_time_dict=run_time_dict,
         )
 
-    @profile_func
     def mesh_grid_from(
         self,
         source_plane_data_grid: Optional[Grid2D] = None,

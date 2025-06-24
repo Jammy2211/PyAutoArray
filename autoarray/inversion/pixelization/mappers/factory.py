@@ -12,7 +12,6 @@ def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
     border_relocator: Optional[BorderRelocator] = None,
-    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given input `MapperGrids` and `Regularization` objects creates a `Mapper`.
@@ -32,8 +31,6 @@ def mapper_from(
     regularization
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
-    run_time_dict
-        A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
     -------
@@ -50,19 +47,16 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            run_time_dict=run_time_dict,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
         return MapperDelaunay(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            run_time_dict=run_time_dict,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DVoronoi):
         return MapperVoronoi(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            run_time_dict=run_time_dict,
         )

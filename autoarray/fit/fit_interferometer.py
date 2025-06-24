@@ -18,7 +18,6 @@ class FitInterferometer(FitDataset):
         dataset: Interferometer,
         dataset_model: DatasetModel = None,
         use_mask_in_fit: bool = False,
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Class to fit a masked interferometer dataset.
@@ -59,7 +58,6 @@ class FitInterferometer(FitDataset):
             dataset=dataset,
             dataset_model=dataset_model,
             use_mask_in_fit=use_mask_in_fit,
-            run_time_dict=run_time_dict,
         )
 
     @property

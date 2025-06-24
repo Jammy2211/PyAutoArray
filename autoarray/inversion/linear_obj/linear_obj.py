@@ -6,14 +6,11 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray.numba_util import profile_func
-
 
 class LinearObj:
     def __init__(
         self,
         regularization: Optional[AbstractRegularization],
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -33,11 +30,8 @@ class LinearObj:
         ----------
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         self.regularization = regularization
-        self.run_time_dict = run_time_dict
 
     @property
     def params(self) -> int:
@@ -75,7 +69,6 @@ class LinearObj:
         raise NotImplementedError
 
     @cached_property
-    @profile_func
     def unique_mappings(self):
         """
         An object describing the unique mappings between data points / pixels in the data and the parameters of the

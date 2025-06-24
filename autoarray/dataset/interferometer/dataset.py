@@ -101,9 +101,7 @@ class Interferometer(AbstractDataset):
             else None
         )
 
-    @cached_property
-    def grids(self):
-        return GridsDataset(
+        self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,

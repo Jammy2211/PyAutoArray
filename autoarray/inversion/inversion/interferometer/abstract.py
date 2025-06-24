@@ -11,8 +11,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.inversion import inversion_util
 
-from autoarray.numba_util import profile_func
-
 
 class AbstractInversionInterferometer(AbstractInversion):
     def __init__(
@@ -20,7 +18,6 @@ class AbstractInversionInterferometer(AbstractInversion):
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -41,15 +38,12 @@ class AbstractInversionInterferometer(AbstractInversion):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
     @property
@@ -78,7 +72,6 @@ class AbstractInversionInterferometer(AbstractInversion):
         ]
 
     @property
-    @profile_func
     def mapped_reconstructed_image_dict(
         self,
     ) -> Dict[LinearObj, Array2D]:

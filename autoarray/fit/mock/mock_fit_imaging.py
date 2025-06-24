@@ -15,13 +15,11 @@ class MockFitImaging(FitImaging):
         model_data=None,
         inversion=None,
         blurred_image=None,
-        run_time_dict: Optional[Dict] = None,
     ):
         super().__init__(
             dataset=dataset or MockDataset(),
             dataset_model=dataset_model,
             use_mask_in_fit=use_mask_in_fit,
-            run_time_dict=run_time_dict,
         )
 
         self._noise_map = noise_map

@@ -7,7 +7,6 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
 
 
@@ -57,8 +56,6 @@ class MapperVoronoi(AbstractMapper):
     regularization
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
-    run_time_dict
-        A dictionary which contains timing of certain functions calls which is used for profiling.
     """
 
     @property
@@ -86,7 +83,6 @@ class MapperVoronoi(AbstractMapper):
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
     @cached_property
-    @profile_func
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data

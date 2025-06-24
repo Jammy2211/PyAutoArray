@@ -4,8 +4,6 @@ from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 
-from autoarray.numba_util import profile_func
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
@@ -27,7 +25,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -50,15 +47,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
         if self.settings.use_w_tilde:
@@ -68,7 +62,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             self.w_tilde = None
 
     @cached_property
-    @profile_func
     def w_tilde_data(self):
         return inversion_imaging_util.w_tilde_data_imaging_from(
             image_native=np.array(self.data.native.array).astype("float"),
@@ -80,7 +73,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @property
-    @profile_func
     def _data_vector_mapper(self) -> np.ndarray:
         """
         Returns the `data_vector` of all mappers, a 1D vector whose values are solved for by the simultaneous
@@ -115,7 +107,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return data_vector
 
     @cached_property
-    @profile_func
     def data_vector(self) -> np.ndarray:
         """
         Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
@@ -136,7 +127,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return self._data_vector_multi_mapper
 
     @property
-    @profile_func
     def _data_vector_x1_mapper(self) -> np.ndarray:
         """
         Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
@@ -157,7 +147,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @property
-    @profile_func
     def _data_vector_multi_mapper(self) -> np.ndarray:
         """
         Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
@@ -181,7 +170,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @property
-    @profile_func
     def _data_vector_func_list_and_mapper(self) -> np.ndarray:
         """
         Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
@@ -220,7 +208,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return data_vector
 
     @cached_property
-    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
@@ -263,7 +250,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return curvature_matrix
 
     @property
-    @profile_func
     def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         """
         Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
@@ -306,7 +292,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return curvature_matrix
 
-    @profile_func
     def _curvature_matrix_off_diag_from(
         self, mapper_0: AbstractMapper, mapper_1: AbstractMapper
     ) -> np.ndarray:
@@ -351,7 +336,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
 
     @property
-    @profile_func
     def _curvature_matrix_x1_mapper(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
@@ -363,7 +347,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return self._curvature_matrix_mapper_diag
 
     @property
-    @profile_func
     def _curvature_matrix_multi_mapper(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
@@ -401,7 +384,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return curvature_matrix
 
     @property
-    @profile_func
     def _curvature_matrix_func_list_and_mapper(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -480,7 +462,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return curvature_matrix
 
     @property
-    @profile_func
     def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual

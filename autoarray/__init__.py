@@ -1,9 +1,13 @@
+from autoconf.dictable import register_parser
+from autofit import conf
+
+conf.instance.register(__file__)
+
 from . import exc
 from . import type
 from . import util
 from . import fixtures
 from . import mock as m
-from .numba_util import profile_func
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde

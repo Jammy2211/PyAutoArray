@@ -1,10 +1,7 @@
-import copy
 import numpy as np
 from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
-
-from autoarray.numba_util import profile_func
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
@@ -24,7 +21,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -44,19 +40,15 @@ class InversionImagingMapping(AbstractInversionImaging):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            run_time_dict=run_time_dict,
         )
 
     @property
-    @profile_func
     def _data_vector_mapper(self) -> np.ndarray:
         """
         Returns the `data_vector` of all mappers, a 1D vector whose values are solved for by the simultaneous
@@ -95,7 +87,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         return data_vector
 
     @cached_property
-    @profile_func
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -116,7 +107,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         )
 
     @property
-    @profile_func
     def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         """
         Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
@@ -163,7 +153,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         return curvature_matrix
 
     @cached_property
-    @profile_func
     def curvature_matrix(self):
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -191,7 +180,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         )
 
     @property
-    @profile_func
     def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
