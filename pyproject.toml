@@ -27,7 +27,6 @@ classifiers = [
 ]
 keywords = ["cli"]
 dependencies = [
-    "autofit",
     "astropy>=5.0,<=6.1.2",
     "decorator>=4.0.0",
     "dill>=0.3.1.1",

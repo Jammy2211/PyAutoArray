@@ -1,6 +1,5 @@
 import numpy as np
 import jax.numpy as jnp
-from scipy.ndimage import convolve
 from typing import Tuple
 import warnings
 
@@ -497,6 +496,7 @@ def blurring_mask_2d_from(
     blurring_mask = blurring_from(mask=mask)
 
     """
+    from scipy.ndimage import convolve
 
     # Get the distance from False values to edges
     y_distance, x_distance = min_false_distance_to_edge(mask_2d)

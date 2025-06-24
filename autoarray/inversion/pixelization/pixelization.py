@@ -139,7 +139,6 @@ class Pixelization:
 
             # The example below shows how a `Pixelization` is used in modeling.
 
-            import autofit as af
             import autogalaxy as ag
 
             mesh = af.Model(ag.mesh.Rectangular)

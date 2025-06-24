@@ -1,8 +1,6 @@
-from astropy import units
 import jax
 import jax.numpy as jnp
 import numpy as np
-import scipy.signal
 from pathlib import Path
 from typing import List, Tuple, Union
 
@@ -16,7 +14,6 @@ from autoarray.structures.header import Header
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
-from autoarray.mask.mask_2d import mask_2d_util
 
 
 class Kernel2D(AbstractArray2D):
@@ -299,6 +296,9 @@ class Kernel2D(AbstractArray2D):
         centre: Tuple[float, float] = (0.0, 0.0),
         normalize: bool = False,
     ) -> "Kernel2D":
+
+        from astropy import units
+
         x_stddev = (
             x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
         )
@@ -471,6 +471,8 @@ class Kernel2D(AbstractArray2D):
         ------
         KernelException if either Kernel2D psf dimension is odd
         """
+        import scipy.signal
+
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
@@ -505,6 +507,7 @@ class Kernel2D(AbstractArray2D):
         ------
         KernelException if either Kernel2D psf dimension is odd
         """
+        import scipy.signal
 
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")

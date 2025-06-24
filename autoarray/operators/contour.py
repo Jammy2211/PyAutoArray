@@ -1,9 +1,6 @@
 from __future__ import annotations
 import numpy as np
 import jax.numpy as jnp
-from skimage import measure
-from scipy.spatial import ConvexHull
-from scipy.spatial import QhullError
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -56,6 +53,8 @@ class Grid2DContour:
     def contour_list(self):
         # make sure to use base numpy to convert JAX array back to a normal array
 
+        from skimage import measure
+
         if isinstance(self.contour_array, jnp.ndarray):
             contour_array = np.array(self.contour_array)
         else:
@@ -86,6 +85,10 @@ class Grid2DContour:
     def hull(
         self,
     ):
+
+        from scipy.spatial import ConvexHull
+        from scipy.spatial import QhullError
+
         if self.grid.shape[0] < 3:
             return None
 

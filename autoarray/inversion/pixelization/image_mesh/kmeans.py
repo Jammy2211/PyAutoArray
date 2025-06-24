@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.cluster import KMeans as ScipyKMeans
 from typing import Optional
 import sys
 import warnings
@@ -96,6 +95,8 @@ class KMeans(AbstractImageMeshWeighted):
         warnings.filterwarnings("ignore")
 
         weight_map = self.weight_map_from(adapt_data=adapt_data)
+
+        from sklearn.cluster import KMeans as ScipyKMeans
 
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),

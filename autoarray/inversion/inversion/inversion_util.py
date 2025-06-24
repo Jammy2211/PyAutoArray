@@ -1,10 +1,8 @@
 import jax.numpy as jnp
-import jaxnnls
-import jax
 import jax.lax as lax
 import numpy as np
 
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from autoconf import conf
 
@@ -302,6 +300,7 @@ def reconstruction_positive_only_from(
     -------
     Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
+    import jaxnnls
 
     try:
         reconstruction = jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)

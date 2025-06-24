@@ -1,6 +1,5 @@
 import jax.numpy as jnp
 import numpy as np
-from scipy.spatial import cKDTree
 from typing import Tuple
 
 from autoconf import conf
@@ -275,6 +274,8 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 
 def nearest_pixelization_index_for_slim_index_from_kdtree(grid, mesh_grid):
+    from scipy.spatial import cKDTree
+
     kdtree = cKDTree(mesh_grid)
 
     sparse_index_for_slim_index = []

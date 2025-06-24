@@ -15,13 +15,15 @@ class MockInversionInterferometer(InversionInterferometerMapping):
         transformer=None,
         linear_obj_list=None,
         operated_mapping_matrix=None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: SettingsInversion = None,
     ):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
             transformer=transformer,
         )
+
+        settings = settings or SettingsInversion()
 
         super().__init__(
             dataset=dataset,

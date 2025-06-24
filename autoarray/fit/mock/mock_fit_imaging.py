@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Optional
 
 from autoarray.dataset.mock.mock_dataset import MockDataset
 from autoarray.dataset.dataset_model import DatasetModel

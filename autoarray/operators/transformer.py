@@ -1,4 +1,3 @@
-from astropy import units
 import copy
 import jax.numpy as jnp
 import numpy as np
@@ -262,6 +261,8 @@ class TransformerNUFFT(NUFFT_cpu):
         adjoint_scaling : float
             Scaling factor for adjoint operations to normalize reconstructed images.
         """
+        from astropy import units
+
         if isinstance(self, NUFFTPlaceholder):
             pynufft_exception()
 
@@ -334,6 +335,8 @@ class TransformerNUFFT(NUFFT_cpu):
         - The plan must be initialized before performing any NUFFT operations (e.g., forward or adjoint).
         - This method modifies the internal state of the NUFFT object by calling `self.plan(...)`.
         """
+        from astropy import units
+
         if not isinstance(ratio, int):
             ratio = int(ratio)
 
