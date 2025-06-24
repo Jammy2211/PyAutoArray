@@ -81,7 +81,6 @@ class AbstractInversion:
                 "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
             )
 
-
         self.dataset = dataset
 
         self.linear_obj_list = linear_obj_list

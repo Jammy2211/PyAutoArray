@@ -11,6 +11,7 @@ from autoconf import cached_property
 
 from autoarray import exc
 
+
 class GridsDataset:
     def __init__(
         self,
@@ -87,6 +88,7 @@ class GridsDataset:
         self.border_relocator = BorderRelocator(
             mask=self.mask, sub_size=self.over_sample_size_pixelization
         )
+
 
 class GridsInterface:
     def __init__(

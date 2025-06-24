@@ -166,13 +166,15 @@ def sub_size_radial_bins_from(
 
     return sub_size_list[bin_indices]
 
+
 from autoarray.geometry import geometry_util
 
+
 def grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d: np.ndarray,
-        pixel_scales: ty.PixelScales,
-        sub_size: np.ndarray,
-        origin: Tuple[float, float] = (0.0, 0.0),
+    mask_2d: np.ndarray,
+    pixel_scales: ty.PixelScales,
+    sub_size: np.ndarray,
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
@@ -216,11 +218,9 @@ def grid_2d_slim_over_sampled_via_mask_from(
     pixels_in_mask = (np.size(mask_2d) - np.sum(mask_2d)).astype(int)
 
     if isinstance(sub_size, int):
-        sub_size = np.full(
-            fill_value=sub_size, shape=pixels_in_mask
-        )
+        sub_size = np.full(fill_value=sub_size, shape=pixels_in_mask)
 
-    total_sub_pixels = np.sum(sub_size ** 2)
+    total_sub_pixels = np.sum(sub_size**2)
 
     grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 
@@ -248,10 +248,10 @@ def grid_2d_slim_over_sampled_via_mask_from(
                 for y1 in range(sub):
                     for x1 in range(sub):
                         grid_slim[sub_index, 0] = -(
-                                y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
+                            y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )
                         grid_slim[sub_index, 1] = (
-                                x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
+                            x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
                         )
                         sub_index += 1
 

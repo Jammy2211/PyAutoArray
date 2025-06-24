@@ -1,3 +1,8 @@
+from autoconf.dictable import register_parser
+from autofit import conf
+
+conf.instance.register(__file__)
+
 from . import exc
 from . import type
 from . import util

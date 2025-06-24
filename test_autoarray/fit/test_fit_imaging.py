@@ -102,4 +102,3 @@ def test__data_and_model_are_identical__inversion_included__changes_certain_prop
         fit.chi_squared + 2.0 + 3.0 - 4.0 + fit.noise_normalization
     )
     assert fit.figure_of_merit == fit.log_evidence
-

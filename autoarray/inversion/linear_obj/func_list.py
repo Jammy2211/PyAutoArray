@@ -9,6 +9,7 @@ from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.type import Grid1D2DLike
 
+
 class AbstractLinearObjFuncList(LinearObj):
     def __init__(
         self,
