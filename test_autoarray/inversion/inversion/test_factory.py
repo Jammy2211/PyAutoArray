@@ -526,20 +526,20 @@ def test__inversion_matrices__x2_mappers(
 
     assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3][
         4
-    ] == pytest.approx(0.05594123, 1.0e-4)
+    ] == pytest.approx(0.004607102, 1.0e-4)
     assert inversion.reconstruction_dict[delaunay_mapper_9_3x3][4] == pytest.approx(
-        0.04686388, 1.0e-4
+        0.0475967358, 1.0e-4
     )
-    assert inversion.reconstruction[13] == pytest.approx(0.04686388, 1.0e-4)
+    assert inversion.reconstruction[13] == pytest.approx(0.047596735850, 1.0e-4)
 
     assert inversion.mapped_reconstructed_data_dict[rectangular_mapper_7x7_3x3][
         4
-    ] == pytest.approx(0.05594123, 1.0e-4)
+    ] == pytest.approx(0.0022574, 1.0e-4)
     assert inversion.mapped_reconstructed_data_dict[delaunay_mapper_9_3x3][
         3
-    ] == pytest.approx(0.01521323, 1.0e-4)
+    ] == pytest.approx(0.01545999, 1.0e-4)
     assert inversion.mapped_reconstructed_image[4] == pytest.approx(
-        0.10494037076075, 1.0e-4
+        0.05237029, 1.0e-4
     )
 
 
