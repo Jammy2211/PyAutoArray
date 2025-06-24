@@ -1,12 +1,14 @@
+import jax.numpy as jnp
 import numpy as np
 from typing import Tuple
 
 from autoconf import cached_property
 
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
-from autoarray.geometry import geometry_util
+from autoarray.inversion.pixelization.mappers import mapper_util
 
 
 class MapperRectangular(AbstractMapper):
@@ -95,19 +97,15 @@ class MapperRectangular(AbstractMapper):
         dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
         are equal to 1.0.
         """
-        mappings = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=np.array(self.source_plane_data_grid.over_sampled),
-            shape_native=self.source_plane_mesh_grid.shape_native,
-            pixel_scales=self.source_plane_mesh_grid.pixel_scales,
-            origin=self.source_plane_mesh_grid.origin,
-        ).astype("int")
 
-        mappings = mappings.reshape((len(mappings), 1))
+        mappings, weights = mapper_util.rectangular_mappings_weights_via_interpolation_from(
+            shape_native=self.shape_native,
+            source_plane_mesh_grid=self.source_plane_mesh_grid.array,
+            source_plane_data_grid=Grid2DIrregular(self.source_plane_data_grid.over_sampled).array,
+        )
 
         return PixSubWeights(
-            mappings=mappings,
-            sizes=np.ones(len(mappings), dtype="int"),
-            weights=np.ones(
-                (len(self.source_plane_data_grid.over_sampled), 1), dtype="int"
-            ),
+            mappings=np.array(mappings),
+            sizes=4*np.ones(len(mappings), dtype="int"),
+            weights=np.array(weights),
         )

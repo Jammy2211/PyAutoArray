@@ -92,8 +92,8 @@ class Grid2DContour:
         # cast JAX arrays to base numpy arrays
         grid_convex = np.zeros((len(self.grid), 2))
 
-        grid_convex[:, 0] = np.array(self.grid[:, 1])
-        grid_convex[:, 1] = np.array(self.grid[:, 0])
+        grid_convex[:, 0] = np.array(self.grid.array[:, 1])
+        grid_convex[:, 1] = np.array(self.grid.array[:, 0])
 
         try:
             hull = ConvexHull(grid_convex)
