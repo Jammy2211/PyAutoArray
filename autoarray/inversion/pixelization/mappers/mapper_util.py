@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import numpy as np
 from scipy.spatial import cKDTree
 from typing import Tuple
@@ -142,6 +143,97 @@ def data_slim_to_pixelization_unique_from(
         pix_lengths[ip] = pix_size
 
     return data_to_pix_unique, data_weights, pix_lengths
+
+
+def rectangular_mappings_weights_via_interpolation_from(
+    shape_native: Tuple[int, int],
+    source_plane_data_grid: jnp.ndarray,
+    source_plane_mesh_grid: jnp.ndarray,
+):
+    """
+    Compute bilinear interpolation weights and corresponding rectangular mesh indices for an irregular grid.
+
+    Given a flattened regular rectangular mesh grid and an irregular grid of data points, this function
+    determines for each irregular point:
+    - the indices of the 4 nearest rectangular mesh pixels (top-left, top-right, bottom-left, bottom-right), and
+    - the bilinear interpolation weights with respect to those pixels.
+
+    The function supports JAX and is compatible with JIT compilation.
+
+    Parameters
+    ----------
+    shape_native
+        The shape (Ny, Nx) of the original rectangular mesh grid before flattening.
+    source_plane_data_grid
+        The irregular grid of (y, x) points to interpolate.
+    source_plane_mesh_grid
+        The flattened regular rectangular mesh grid of (y, x) coordinates.
+
+    Returns
+    -------
+    mappings : jnp.ndarray of shape (N, 4)
+        Indices of the four nearest rectangular mesh pixels in the flattened mesh grid.
+        Order is: top-left, top-right, bottom-left, bottom-right.
+    weights : jnp.ndarray of shape (N, 4)
+        Bilinear interpolation weights corresponding to the four nearest mesh pixels.
+
+    Notes
+    -----
+    - Assumes the mesh grid is uniformly spaced.
+    - The weights sum to 1 for each irregular point.
+    - Uses bilinear interpolation in the (y, x) coordinate system.
+    """
+    source_plane_mesh_grid = source_plane_mesh_grid.reshape(*shape_native, 2)
+
+    # Assume mesh is shaped (Ny, Nx, 2)
+    Ny, Nx = source_plane_mesh_grid.shape[:2]
+
+    # Get mesh spacings and lower corner
+    y_coords = source_plane_mesh_grid[:, 0, 0]  # shape (Ny,)
+    x_coords = source_plane_mesh_grid[0, :, 1]  # shape (Nx,)
+
+    dy = y_coords[1] - y_coords[0]
+    dx = x_coords[1] - x_coords[0]
+
+    y_min = y_coords[0]
+    x_min = x_coords[0]
+
+    # shape (N_irregular, 2)
+    irregular = source_plane_data_grid
+
+    # Compute normalized mesh coordinates (floating indices)
+    fy = (irregular[:, 0] - y_min) / dy
+    fx = (irregular[:, 1] - x_min) / dx
+
+    # Integer indices of top-left corners
+    ix = jnp.floor(fx).astype(jnp.int32)
+    iy = jnp.floor(fy).astype(jnp.int32)
+
+    # Clip to stay within bounds
+    ix = jnp.clip(ix, 0, Nx - 2)
+    iy = jnp.clip(iy, 0, Ny - 2)
+
+    # Local coordinates inside the cell (0 <= tx, ty <= 1)
+    tx = fx - ix
+    ty = fy - iy
+
+    # Bilinear weights
+    w00 = (1 - tx) * (1 - ty)
+    w10 = tx * (1 - ty)
+    w01 = (1 - tx) * ty
+    w11 = tx * ty
+
+    weights = jnp.stack([w00, w10, w01, w11], axis=1)  # shape (N_irregular, 4)
+
+    # Compute indices of 4 surrounding pixels in the flattened mesh
+    i00 = iy * Nx + ix
+    i10 = iy * Nx + (ix + 1)
+    i01 = (iy + 1) * Nx + ix
+    i11 = (iy + 1) * Nx + (ix + 1)
+
+    mappings = jnp.stack([i00, i10, i01, i11], axis=1)  # shape (N_irregular, 4)
+
+    return mappings, weights
 
 
 @numba_util.jit()

@@ -504,20 +504,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     reconstruction=reconstruction,
                 )
 
-                # mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
-                #     image=mapped_reconstructed_image, mask=self.mask
-                # ).array
+                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
+                    image=mapped_reconstructed_image, mask=self.mask
+                ).array
 
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
-                )
-
-                mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
-                    image=mapped_reconstructed_image
-                )
-
-                mapped_reconstructed_image = Array2D(
-                    values=np.array(mapped_reconstructed_image), mask=self.mask
                 )
 
             else:
