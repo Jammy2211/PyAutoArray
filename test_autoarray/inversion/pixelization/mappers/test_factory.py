@@ -42,7 +42,6 @@ def test__rectangular_mapper():
         (5.0, 5.0), 1.0e-4
     )
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.5, 0.5), 1.0e-4)
-    print(mapper.mapping_matrix)
     assert mapper.mapping_matrix == pytest.approx(
         np.array(
             [

@@ -146,9 +146,9 @@ def data_slim_to_pixelization_unique_from(
 
 
 def rectangular_mappings_weights_via_interpolation_from(
-    shape_native : Tuple[int, int],
-    source_plane_data_grid:  jnp.ndarray,
-    source_plane_mesh_grid: jnp.ndarray
+    shape_native: Tuple[int, int],
+    source_plane_data_grid: jnp.ndarray,
+    source_plane_mesh_grid: jnp.ndarray,
 ):
     """
     Compute bilinear interpolation weights and corresponding rectangular mesh indices for an irregular grid.

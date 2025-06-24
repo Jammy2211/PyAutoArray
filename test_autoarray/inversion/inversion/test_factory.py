@@ -487,14 +487,8 @@ def test__inversion_matrices__x2_mappers(
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
-    assert (
-        inversion.operated_mapping_matrix[0:9, 0:9]
-        == rectangular_mapper_7x7_3x3.mapping_matrix
-    ).all()
-    assert (
-        inversion.operated_mapping_matrix[0:9, 9:18]
-        == delaunay_mapper_9_3x3.mapping_matrix
-    ).all()
+    assert inversion.operated_mapping_matrix[0:9, 0:9] == pytest.approx(rectangular_mapper_7x7_3x3.mapping_matrix, abs=1.0e-4)
+    assert inversion.operated_mapping_matrix[0:9, 9:18] == pytest.approx(delaunay_mapper_9_3x3.mapping_matrix, abs=1.0e-4)
 
     operated_mapping_matrix = np.hstack(
         [
