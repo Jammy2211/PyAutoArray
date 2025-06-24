@@ -71,8 +71,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             param_range = mapper_param_range_list[i]
 
             operated_mapping_matrix = self.psf.convolve_mapping_matrix(
-                mapping_matrix=mapper.mapping_matrix,
-                mask=self.mask
+                mapping_matrix=mapper.mapping_matrix, mask=self.mask
             )
 
             data_vector_mapper = (
@@ -131,8 +130,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper_param_range_i = mapper_param_range_list[i]
 
             operated_mapping_matrix = self.psf.convolve_mapping_matrix(
-                mapping_matrix=mapper_i.mapping_matrix,
-                mask=self.mask
+                mapping_matrix=mapper_i.mapping_matrix, mask=self.mask
             )
 
             diag = inversion_util.curvature_matrix_via_mapping_matrix_from(

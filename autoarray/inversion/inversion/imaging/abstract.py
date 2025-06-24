@@ -90,8 +90,7 @@ class AbstractInversionImaging(AbstractInversion):
         return [
             (
                 self.psf.convolve_mapping_matrix(
-                    mapping_matrix=linear_obj.mapping_matrix,
-                    mask=self.mask
+                    mapping_matrix=linear_obj.mapping_matrix, mask=self.mask
                 )
                 if linear_obj.operated_mapping_matrix_override is None
                 else self.linear_func_operated_mapping_matrix_dict[linear_obj]

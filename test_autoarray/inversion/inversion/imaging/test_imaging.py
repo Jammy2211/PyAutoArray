@@ -19,10 +19,19 @@ def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
         linear_obj_list=[rectangular_mapper_7x7_3x3],
     )
 
-    assert inversion.operated_mapping_matrix_list[0][0, 0] == pytest.approx(1.61999997, 1e-4)
+    assert inversion.operated_mapping_matrix_list[0][0, 0] == pytest.approx(
+        1.61999997, 1e-4
+    )
     assert inversion.operated_mapping_matrix[0, 0] == pytest.approx(1.61999997408, 1e-4)
 
-    mask = aa.Mask2D([[True, True, True, True], [True, False, False, True], [True, True, True, True]], pixel_scales=1.0)
+    mask = aa.Mask2D(
+        [
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ],
+        pixel_scales=1.0,
+    )
     psf = aa.m.MockPSF(operated_mapping_matrix=np.ones((2, 2)))
 
     inversion = aa.m.MockInversionImaging(
