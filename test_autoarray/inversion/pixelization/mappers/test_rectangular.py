@@ -31,18 +31,18 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    mappings, weights = aa.util.mapper.rectangular_mappings_weights_via_interpolation_from(
-        shape_native=(3,3),
-        source_plane_mesh_grid=mesh_grid.array,
-        source_plane_data_grid=aa.Grid2DIrregular(mapper_grids.source_plane_data_grid.over_sampled).array,
+    mappings, weights = (
+        aa.util.mapper.rectangular_mappings_weights_via_interpolation_from(
+            shape_native=(3, 3),
+            source_plane_mesh_grid=mesh_grid.array,
+            source_plane_data_grid=aa.Grid2DIrregular(
+                mapper_grids.source_plane_data_grid.over_sampled
+            ).array,
+        )
     )
 
-    assert (
-        mapper.pix_sub_weights.mappings == mappings
-    ).all()
-    assert (
-        mapper.pix_sub_weights.weights == weights
-    ).all()
+    assert (mapper.pix_sub_weights.mappings == mappings).all()
+    assert (mapper.pix_sub_weights.weights == weights).all()
 
 
 def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
