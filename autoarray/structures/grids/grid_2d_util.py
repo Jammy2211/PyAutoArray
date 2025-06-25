@@ -253,6 +253,15 @@ def grid_2d_slim_via_mask_from(
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
+    if isinstance(mask_2d, np.ndarray):
+        centres_scaled = np.array(centres_scaled)
+        pixel_scales = np.array(pixel_scales)
+        sign = np.array([-1.0, 1.0])
+        return (
+                (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
+                * sign
+                * pixel_scales
+        )
 
     centres_scaled = jnp.array(centres_scaled)
     pixel_scales = jnp.array(pixel_scales)
@@ -692,7 +701,8 @@ def grid_2d_slim_from(
         array_2d_native=grid_2d_native[:, :, 1],
         mask_2d=mask,
     )
-
+    if isinstance(grid_2d_native, np.ndarray):
+        return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
     return jnp.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
 
 
@@ -736,6 +746,8 @@ def grid_2d_native_from(
         mask_2d=mask_2d,
     )
 
+    if isinstance(grid_2d_slim, np.ndarray):
+        return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
     return jnp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 

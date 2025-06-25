@@ -343,7 +343,7 @@ class AbstractArray2D(Structure):
     @property
     def original_orientation(self) -> Union[np.ndarray, "Array2D"]:
         return layout_util.rotate_array_via_roe_corner_from(
-            array=np.array(self), roe_corner=self.header.original_roe_corner
+            array=self, roe_corner=self.header.original_roe_corner
         )
 
     @property
@@ -491,7 +491,7 @@ class AbstractArray2D(Structure):
         """
 
         resized_array_2d = array_2d_util.resized_array_2d_from(
-            array_2d=np.array(self.native.array), resized_shape=new_shape
+            array_2d=self.native.array, resized_shape=new_shape
         )
 
         resized_mask = self.mask.resized_from(
@@ -656,7 +656,7 @@ class Array2D(AbstractArray2D):
             origin=origin,
         )
 
-        return Array2D(values=np.array(values), mask=mask, header=header)
+        return Array2D(values=values, mask=mask, header=header)
 
     @classmethod
     def full(

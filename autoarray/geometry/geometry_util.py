@@ -474,8 +474,8 @@ def grid_pixels_2d_slim_from(
     centres_scaled = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
     )
-    centres_scaled = np.array(centres_scaled)
-    pixel_scales = np.array(pixel_scales)
+    centres_scaled = centres_scaled
+    pixel_scales = pixel_scales
     sign = np.array([-1, 1])
     return (sign * grid_scaled_2d_slim / pixel_scales) + centres_scaled + 0.5
 

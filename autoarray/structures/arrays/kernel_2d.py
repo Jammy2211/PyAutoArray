@@ -387,7 +387,7 @@ class Kernel2D(AbstractArray2D):
 
         try:
             kernel_rescaled = rescale(
-                np.array(self.native._array),
+                self.native.array,
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
@@ -395,7 +395,7 @@ class Kernel2D(AbstractArray2D):
             )
         except TypeError:
             kernel_rescaled = rescale(
-                np.array(self.native._array),
+                self.native.array,
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
@@ -479,11 +479,11 @@ class Kernel2D(AbstractArray2D):
         array_2d = array.native
 
         convolved_array_2d = scipy.signal.convolve2d(
-            array_2d.array, np.array(self.native.array), mode="same"
+            array_2d.array, self.native.array, mode="same"
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(array_2d.mask),
+            mask_2d=array_2d.mask,
             array_2d_native=convolved_array_2d,
         )
 
@@ -517,8 +517,8 @@ class Kernel2D(AbstractArray2D):
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(mask),
-            array_2d_native=np.array(convolved_array_2d),
+            mask_2d=mask,
+            array_2d_native=convolved_array_2d,
         )
 
         return Array2D(values=convolved_array_1d, mask=mask)
@@ -556,7 +556,7 @@ class Kernel2D(AbstractArray2D):
             blurring_image.array
         )
 
-        kernel = np.array(self.stored_native.array)
+        kernel = self.stored_native.array
 
         convolve_native = jax.scipy.signal.convolve(
             expanded_array_native, kernel, mode="same", method=jax_method
@@ -594,7 +594,7 @@ class Kernel2D(AbstractArray2D):
                 image.array
             )
 
-        kernel = np.array(self.stored_native.array)
+        kernel = self.stored_native.array
 
         convolve_native = jax.scipy.signal.convolve(
             expanded_array_native, kernel, mode="same", method=jax_method

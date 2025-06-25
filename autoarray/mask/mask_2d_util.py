@@ -50,6 +50,8 @@ def native_index_for_slim_index_2d_from(
 
     native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
     """
+    if isinstance(mask_2d, np.ndarray):
+        return np.stack(np.nonzero(~mask_2d.astype(bool))).T
     return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
 
 
