@@ -253,24 +253,26 @@ def grid_2d_slim_via_mask_from(
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
-    if isinstance(mask_2d, np.ndarray):
-        centres_scaled = np.array(centres_scaled)
-        pixel_scales = np.array(pixel_scales)
-        sign = np.array([-1.0, 1.0])
+    if isinstance(mask_2d, jnp.ndarray):
+
+        centres_scaled = jnp.array(centres_scaled)
+        pixel_scales = jnp.array(pixel_scales)
+        sign = jnp.array([-1.0, 1.0])
         return (
-            (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
-            * sign
-            * pixel_scales
+                (jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
+                * sign
+                * pixel_scales
         )
 
-    centres_scaled = jnp.array(centres_scaled)
-    pixel_scales = jnp.array(pixel_scales)
-    sign = jnp.array([-1.0, 1.0])
+    centres_scaled = np.array(centres_scaled)
+    pixel_scales = np.array(pixel_scales)
+    sign = np.array([-1.0, 1.0])
     return (
-        (jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
+        (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
         * sign
         * pixel_scales
     )
+
 
 
 def grid_2d_via_mask_from(
@@ -726,3 +728,57 @@ def grid_pixels_in_mask_pixels_from(
     np.add.at(mesh_pixels_per_image_pixel, (y_indices, x_indices), 1)
 
     return mesh_pixels_per_image_pixel
+
+
+
+
+def grid_2d_slim_via_shape_native_not_mask_from(
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    origin: Tuple[float, float] = (0.0, 0.0),
+) -> np.ndarray:
+    """
+    Build the slim (flattened) grid of all (y, x) pixel centres for a rectangular grid
+    of shape `shape_native`, scaled by `pixel_scales` and shifted by `origin`.
+
+    This is equivalent to taking an unmasked mask of shape `shape_native` and calling
+    grid_2d_slim_via_mask_from on it.
+
+    Parameters
+    ----------
+    shape_native
+        A pair (Ny, Nx) giving the number of pixels in y and x.
+    pixel_scales
+        A pair (sy, sx) giving the physical size of each pixel in y and x.
+    origin
+        A 2-tuple (y0, x0) around which the grid is centred.
+
+    Returns
+    -------
+    grid_slim : ndarray, shape (Ny*Nx, 2)
+        Each row is the (y, x) coordinate of one pixel centre, in row-major order,
+        shifted so that `origin` ↔ physical pixel-centre average, and scaled by
+        `pixel_scales`, with y increasing “up” and x increasing “right”.
+    """
+    Ny, Nx = shape_native
+    sy, sx = pixel_scales
+    y0, x0 = origin
+
+    # compute the integer pixel‐centre coordinates in array index space
+    # row indices 0..Ny-1, col indices 0..Nx-1
+    arange = jnp.arange
+    meshy, meshx = jnp.meshgrid(arange(Ny), arange(Nx), indexing="ij")
+    coords = jnp.stack([meshy, meshx], axis=-1).reshape(-1, 2)
+
+    # convert to physical coordinates: subtract array‐centre, flip y, scale, then add origin
+    # array‐centre in index space is at ((Ny-1)/2, (Nx-1)/2)
+    cy, cx = (Ny - 1) / 2.0, (Nx - 1) / 2.0
+    # row index i → physical y =  (cy - i) * sy + y0
+    # col index j → physical x =  (j  - cx) * sx + x0
+    idx_y = coords[:, 0]
+    idx_x = coords[:, 1]
+
+    phys_y = (cy - idx_y) * sy + y0
+    phys_x = (idx_x - cx) * sx + x0
+
+    return jnp.stack([phys_y, phys_x], axis=1)

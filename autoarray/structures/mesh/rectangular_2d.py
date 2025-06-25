@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import numpy as np
 
 from typing import List, Optional, Tuple
@@ -92,19 +93,18 @@ class Mesh2DRectangular(Abstract2DMesh):
             The size of the extra spacing placed between the edges of the rectangular pixelization and input grid.
         """
 
-        y_min = np.min(grid[:, 0]) - buffer
-        y_max = np.max(grid[:, 0]) + buffer
-        x_min = np.min(grid[:, 1]) - buffer
-        x_max = np.max(grid[:, 1]) + buffer
+        y_min = jnp.min(grid[:, 0]) - buffer
+        y_max = jnp.max(grid[:, 0]) + buffer
+        x_min = jnp.min(grid[:, 1]) - buffer
+        x_max = jnp.max(grid[:, 1]) + buffer
 
-        pixel_scales = (
-            float((y_max - y_min) / shape_native[0]),
-            float((x_max - x_min) / shape_native[1]),
-        )
+        pixel_scales = jnp.array((
+            (y_max - y_min) / shape_native[0],
+            (x_max - x_min) / shape_native[1],
+        ))
+        origin = jnp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
 
-        origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
-
-        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,

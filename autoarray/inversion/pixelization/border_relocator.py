@@ -63,6 +63,44 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     return sub_slim_indexes_for_slim_index
 
 
+def furthest_grid_2d_slim_index_from(
+        grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
+) -> int:
+    """
+    Returns the index in `slim_indexes` corresponding to the 2D point in `grid_2d_slim`
+    that is furthest from a given coordinate, measured by squared Euclidean distance.
+
+    Parameters
+    ----------
+    grid_2d_slim
+        A 2D array of shape (N, 2), where each row is a (y, x) coordinate.
+    slim_indexes
+        An array of indices into `grid_2d_slim` specifying which coordinates to consider.
+    coordinate
+        The (y, x) coordinate from which distances are calculated.
+
+    Returns
+    -------
+    int
+        The slim index of the point in `grid_2d_slim[slim_indexes]` that is furthest from `coordinate`.
+    """
+    subgrid = grid_2d_slim[slim_indexes]
+    dy = subgrid[:, 0] - coordinate[0]
+    dx = subgrid[:, 1] - coordinate[1]
+    squared_distances = dx ** 2 + dy ** 2
+
+    max_dist = np.max(squared_distances)
+
+    # Find all indices with max distance
+    max_positions = np.where(squared_distances == max_dist)[0]
+
+    # Choose the last one (to match original loop behavior)
+    max_index = max_positions[-1]
+
+    return slim_indexes[max_index]
+
+
+
 def sub_border_pixel_slim_indexes_from(
     mask_2d: np.ndarray, sub_size: Array2D
 ) -> np.ndarray:
@@ -231,55 +269,40 @@ def relocated_grid_from(grid, border_grid):
     return relocated_grid
 
 
-# def furthest_grid_2d_slim_index_from(
-#     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
-# ) -> int:
-#     """
-#     Returns the index in `slim_indexes` corresponding to the 2D point in `grid_2d_slim`
-#     that is furthest from a given coordinate, measured by squared Euclidean distance.
-#
-#     Parameters
-#     ----------
-#     grid_2d_slim
-#         A 2D array of shape (N, 2), where each row is a (y, x) coordinate.
-#     slim_indexes
-#         An array of indices into `grid_2d_slim` specifying which coordinates to consider.
-#     coordinate
-#         The (y, x) coordinate from which distances are calculated.
-#
-#     Returns
-#     -------
-#     int
-#         The slim index of the point in `grid_2d_slim[slim_indexes]` that is furthest from `coordinate`.
-#     """
-#     subgrid = grid_2d_slim[slim_indexes]  # shape (M, 2)
-#     dy = subgrid[:, 0] - coordinate[0]
-#     dx = subgrid[:, 1] - coordinate[1]
-#     squared_distances = dx**2 + dy**2
-#     max_index = np.argmax(squared_distances)
-#     return slim_indexes[max_index]
-
-
-
-def furthest_grid_2d_slim_index_from(
-    grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
-) -> int:
-    distance_to_centre = 0.0
-
-    for slim_index in slim_indexes:
-        y = grid_2d_slim[slim_index, 0]
-        x = grid_2d_slim[slim_index, 1]
-        distance_to_centre_new = (x - coordinate[1]) ** 2 + (y - coordinate[0]) ** 2
-
-        if distance_to_centre_new >= distance_to_centre:
-            distance_to_centre = distance_to_centre_new
-            furthest_grid_2d_slim_index = slim_index
-
-    return furthest_grid_2d_slim_index
-
-
 class BorderRelocator:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
+        """
+        Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
+        border.
+
+        Given an input mask and (optionally) a per‐pixel sub‐sampling size, this class computes:
+
+          1. `border_grid`: the (y,x) coordinates of every border pixel of the mask.
+          2. `sub_border_grid`: an over‐sampled border grid if sub‐sampling is requested.
+          3. `relocated_grid(grid)`: for any arbitrary grid of points (uniform or irregular), returns a new grid
+             where any point whose radius from the mask center exceeds the minimum radius of the border is
+             moved radially inward until it lies exactly on its nearest border pixel.
+
+        In practice this ensures that “outlier” rays or source‐plane pixels don’t fall outside the allowed
+        mask region when performing pixelization–based inversions or lens‐plane mappings.
+
+        See Figure 2 of https://arxiv.org/abs/1708.07377 for a description of why this functionality is required.
+
+        Attributes
+        ----------
+        mask : Mask2D
+            The input mask whose border defines the permissible region.
+        sub_size : Array2D
+            Per‐pixel sub‐sampling size (can be constant or spatially varying).
+        border_slim : np.ndarray
+            1D indexes of the mask’s border pixels in the slimmed representation.
+        sub_border_slim : np.ndarray
+            1D indexes of the over‐sampled (sub) border pixels.
+        border_grid : np.ndarray
+            Array of (y,x) coordinates for each border pixel.
+        sub_border_grid : np.ndarray
+            Array of (y,x) coordinates for each over‐sampled border pixel.
+        """
         self.mask = mask
 
         self.sub_size = over_sample_util.over_sample_size_convert_to_array_2d_from(
@@ -290,7 +313,10 @@ class BorderRelocator:
         self.sub_border_slim = sub_border_slim_from(
             mask=self.mask, sub_size=self.sub_size
         )
-        self.border_grid = self.mask.derive_grid.border
+        try:
+            self.border_grid = self.mask.derive_grid.border
+        except TypeError:
+            self.border_grid = None
 
         sub_grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=self.mask,
