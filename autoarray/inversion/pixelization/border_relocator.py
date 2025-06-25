@@ -193,50 +193,73 @@ def relocated_grid_from(grid, border_grid):
         The grid of border (y,x) coordinates.
     """
 
-    # Copy grid (note: jnp.copy returns the same buffer, but this is fine since we overwrite values selectively)
-    grid_relocated = jnp.array(grid)
-
-    # Compute the origin (center) of the border
+    # Compute origin (center) of the border grid
     border_origin = jnp.mean(border_grid, axis=0)
 
-    # Compute radii from the origin for the border and grid points
-    border_grid_radii = jnp.linalg.norm(border_grid - border_origin, axis=1)
-    border_min_radii = jnp.min(border_grid_radii)
+    # Radii from origin
+    grid_radii = jnp.linalg.norm(grid - border_origin, axis=1)                   # (N,)
+    border_radii = jnp.linalg.norm(border_grid - border_origin, axis=1)          # (M,)
+    border_min_radius = jnp.min(border_radii)
 
-    grid_radii = jnp.linalg.norm(grid - border_origin, axis=1)
+    # Determine which points are outside
+    outside_mask = grid_radii > border_min_radius  # (N,)
 
-    # Identify grid points outside the border
-    outside_mask = grid_radii > border_min_radii
-    grid_outside = grid[outside_mask]
+    # To compute nearest border point for each grid point, we must do it for all and then mask later
+    # Compute all distances: (N, M)
+    diffs = grid[:, None, :] - border_grid[None, :, :]     # (N, M, 2)
+    dists_squared = jnp.sum(diffs**2, axis=2)              # (N, M)
+    closest_indices = jnp.argmin(dists_squared, axis=1)    # (N,)
 
-    # Compute distances to all border points (shape: [N_outside, N_border])
-    diffs = grid_outside[:, None, :] - border_grid[None, :, :]
-    dists_squared = jnp.sum(diffs**2, axis=2)
-    closest_indices = jnp.argmin(dists_squared, axis=1)
+    # Get border radius for closest border point to each grid point
+    matched_border_radii = border_radii[closest_indices]   # (N,)
 
-    # Calculate move factors
-    selected_border_radii = border_grid_radii[closest_indices]
-    selected_grid_radii = grid_radii[outside_mask]
-    move_factors = selected_border_radii / selected_grid_radii
+    # Ratio of border to grid radius
+    move_factors = matched_border_radii / grid_radii       # (N,)
 
-    # Only apply move if move_factor < 1.0
-    apply_mask = move_factors < 1.0
-    grid_outside_selected = grid_outside[apply_mask]
-    move_factors_selected = move_factors[apply_mask]
+    # Only move if:
+    #   - the point is outside the border
+    #   - the matched border point is closer to the origin (i.e. move_factor < 1)
+    apply_move = jnp.logical_and(outside_mask, move_factors < 1.0)  # (N,)
 
-    moved_points = (
-        move_factors_selected[:, None]
-        * (grid_outside_selected - border_origin)
-        + border_origin
-    )
+    # Compute moved positions (for all points, but will select with mask)
+    direction_vectors = grid - border_origin                # (N, 2)
+    moved_grid = move_factors[:, None] * direction_vectors + border_origin  # (N, 2)
 
-    # Update relocated grid
-    outside_indices = jnp.nonzero(outside_mask)[0]
-    update_indices = outside_indices[apply_mask]
+    # Select which grid points to move
+    relocated_grid = jnp.where(apply_move[:, None], moved_grid, grid)  # (N, 2)
 
-    grid_relocated = grid_relocated.at[update_indices].set(moved_points)
+    return relocated_grid
 
-    return grid_relocated
+
+# def furthest_grid_2d_slim_index_from(
+#     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
+# ) -> int:
+#     """
+#     Returns the index in `slim_indexes` corresponding to the 2D point in `grid_2d_slim`
+#     that is furthest from a given coordinate, measured by squared Euclidean distance.
+#
+#     Parameters
+#     ----------
+#     grid_2d_slim
+#         A 2D array of shape (N, 2), where each row is a (y, x) coordinate.
+#     slim_indexes
+#         An array of indices into `grid_2d_slim` specifying which coordinates to consider.
+#     coordinate
+#         The (y, x) coordinate from which distances are calculated.
+#
+#     Returns
+#     -------
+#     int
+#         The slim index of the point in `grid_2d_slim[slim_indexes]` that is furthest from `coordinate`.
+#     """
+#     subgrid = grid_2d_slim[slim_indexes]  # shape (M, 2)
+#     dy = subgrid[:, 0] - coordinate[0]
+#     dx = subgrid[:, 1] - coordinate[1]
+#     squared_distances = dx**2 + dy**2
+#     max_index = np.argmax(squared_distances)
+#     return slim_indexes[max_index]
+
+
 
 def furthest_grid_2d_slim_index_from(
     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
