@@ -215,7 +215,9 @@ class Mask2D(Mask):
             pixel_scales=pixel_scales,
         )
 
-        self.derive_indexes.native_for_slim
+    @cached_property
+    def native_for_slim(self):
+        return self.derive_indexes.native_for_slim
 
     __no_flatten__ = ("derive_indexes",)
 
