@@ -1,4 +1,5 @@
 from __future__ import annotations
+import jax.numpy as jnp
 import numpy as np
 from typing import Tuple, Union
 
@@ -192,41 +193,48 @@ def relocated_grid_from(grid, border_grid):
         The grid of border (y,x) coordinates.
     """
 
-    # Copy the original grid
-    grid_relocated = np.copy(grid)
+    # Copy grid (note: jnp.copy returns the same buffer, but this is fine since we overwrite values selectively)
+    grid_relocated = jnp.array(grid)
 
     # Compute the origin (center) of the border
-    border_origin = np.mean(border_grid, axis=0)
+    border_origin = jnp.mean(border_grid, axis=0)
 
     # Compute radii from the origin for the border and grid points
-    border_grid_radii = np.linalg.norm(border_grid - border_origin, axis=1)
-    border_min_radii = np.min(border_grid_radii)
+    border_grid_radii = jnp.linalg.norm(border_grid - border_origin, axis=1)
+    border_min_radii = jnp.min(border_grid_radii)
 
-    grid_radii = np.linalg.norm(grid - border_origin, axis=1)
+    grid_radii = jnp.linalg.norm(grid - border_origin, axis=1)
 
     # Identify grid points outside the border
     outside_mask = grid_radii > border_min_radii
-
-    # For each grid point outside the border, find the nearest border pixel
     grid_outside = grid[outside_mask]
-    diffs = grid_outside[:, np.newaxis, :] - border_grid[np.newaxis, :, :]
-    dists_squared = np.sum(diffs**2, axis=2)
-    closest_indices = np.argmin(dists_squared, axis=1)
+
+    # Compute distances to all border points (shape: [N_outside, N_border])
+    diffs = grid_outside[:, None, :] - border_grid[None, :, :]
+    dists_squared = jnp.sum(diffs**2, axis=2)
+    closest_indices = jnp.argmin(dists_squared, axis=1)
 
     # Calculate move factors
-    move_factors = border_grid_radii[closest_indices] / grid_radii[outside_mask]
+    selected_border_radii = border_grid_radii[closest_indices]
+    selected_grid_radii = grid_radii[outside_mask]
+    move_factors = selected_border_radii / selected_grid_radii
 
     # Only apply move if move_factor < 1.0
     apply_mask = move_factors < 1.0
+    grid_outside_selected = grid_outside[apply_mask]
+    move_factors_selected = move_factors[apply_mask]
+
     moved_points = (
-        move_factors[apply_mask, np.newaxis]
-        * (grid_outside[apply_mask] - border_origin)
+        move_factors_selected[:, None]
+        * (grid_outside_selected - border_origin)
         + border_origin
     )
 
     # Update relocated grid
-    grid_relocated[outside_mask] = grid_outside
-    grid_relocated[np.where(outside_mask)[0][apply_mask]] = moved_points
+    outside_indices = jnp.nonzero(outside_mask)[0]
+    update_indices = outside_indices[apply_mask]
+
+    grid_relocated = grid_relocated.at[update_indices].set(moved_points)
 
     return grid_relocated
 
@@ -298,13 +306,13 @@ class BorderRelocator:
             return grid
 
         values = relocated_grid_from(
-            grid=np.array(grid.array),
-            border_grid=np.array(grid.array[self.border_slim]),
+            grid=grid.array,
+            border_grid=grid.array[self.border_slim],
         )
 
         over_sampled = relocated_grid_from(
-            grid=np.array(grid.over_sampled.array),
-            border_grid=np.array(grid.over_sampled.array[self.sub_border_slim]),
+            grid=grid.over_sampled.array,
+            border_grid=grid.over_sampled.array[self.sub_border_slim],
         )
 
         return Grid2D(
@@ -332,7 +340,7 @@ class BorderRelocator:
 
         return Grid2DIrregular(
             values=relocated_grid_from(
-                grid=np.array(mesh_grid.array),
-                border_grid=np.array(grid[self.sub_border_slim]),
+                grid=mesh_grid.array,
+                border_grid=grid[self.sub_border_slim],
             ),
         )
