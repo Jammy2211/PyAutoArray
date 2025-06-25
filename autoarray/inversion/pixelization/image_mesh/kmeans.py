@@ -105,7 +105,7 @@ class KMeans(AbstractImageMeshWeighted):
             max_iter=5,
         )
 
-        grid = mask.derive_grid.unmasked
+        grid = mask.derive_grid.unmasked.array
 
         try:
             kmeans = kmeans.fit(X=grid, sample_weight=weight_map)

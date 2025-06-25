@@ -153,9 +153,7 @@ class Mask1D(Mask):
         """
 
         return cls(
-            mask=np.array(
-                array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu)
-            ),
+            mask=array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             origin=origin,
         )

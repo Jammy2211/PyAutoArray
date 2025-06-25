@@ -140,7 +140,7 @@ class TransformerDFT:
         else:
             visibilities = transformer_util.visibilities_from(
                 image_1d=image.slim.array,
-                grid_radians=np.array(self.grid),
+                grid_radians=self.grid.array,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -170,7 +170,7 @@ class TransformerDFT:
         """
         image_slim = transformer_util.image_direct_from(
             visibilities=visibilities.in_array,
-            grid_radians=np.array(self.grid.array),
+            grid_radians=self.grid.array,
             uv_wavelengths=self.uv_wavelengths,
         )
 
@@ -210,7 +210,7 @@ class TransformerDFT:
 
         return transformer_util.transformed_mapping_matrix_from(
             mapping_matrix=mapping_matrix,
-            grid_radians=np.array(self.grid),
+            grid_radians=self.grid.array,
             uv_wavelengths=self.uv_wavelengths,
         )
 

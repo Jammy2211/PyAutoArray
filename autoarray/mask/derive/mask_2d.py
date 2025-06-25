@@ -204,7 +204,7 @@ class DeriveMask2D:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
         blurring_mask = mask_2d_util.blurring_mask_2d_from(
-            mask_2d=np.array(self.mask),
+            mask_2d=self.mask,
             kernel_shape_native=kernel_shape_native,
         )
 
@@ -325,7 +325,7 @@ class DeriveMask2D:
         from autoarray.mask.mask_2d import Mask2D
 
         edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(
-            mask_2d=np.array(self.mask)
+            mask_2d=self.mask
         ).astype("bool")
 
         return Mask2D(
