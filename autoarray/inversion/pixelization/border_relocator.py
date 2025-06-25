@@ -2,8 +2,6 @@ from __future__ import annotations
 import numpy as np
 from typing import Union
 
-from autoconf import cached_property
-
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -54,7 +52,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
 
     slim_index_for_sub_slim_indexes = (
         over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=mask_2d, sub_size=np.array(sub_size)
+            mask_2d=mask_2d, sub_size=sub_size
         ).astype("int")
     )
 
@@ -107,7 +105,7 @@ def sub_border_pixel_slim_indexes_from(
     sub_grid_2d_slim = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
         mask_2d=mask_2d,
         pixel_scales=(1.0, 1.0),
-        sub_size=np.array(sub_size),
+        sub_size=sub_size,
         origin=(0.0, 0.0),
     )
     mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
@@ -128,6 +126,46 @@ def sub_border_pixel_slim_indexes_from(
     return sub_border_pixels
 
 
+def sub_border_slim_from(mask, sub_size):
+    """
+    Returns the subgridded 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked
+    sub-pixels (given by ``False``) which neighbor any masked value (give by ``True``) and which are on the
+    extreme exterior of the mask.
+
+    The indexes are the sub-gridded extension of the ``border_slim`` which is illustrated above.
+
+    This quantity is too complicated to write-out in a docstring, and it is recommended you print it in
+    Python code to understand it if anything is unclear.
+
+    Examples
+    --------
+
+    .. code-block:: python
+
+        import autoarray as aa
+
+        mask_2d = aa.Mask2D(
+            mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
+                 [True, False, False, False, False, False, False, False, True],
+                 [True, False,  True,  True,  True,  True,  True, False, True],
+                 [True, False,  True, False, False, False,  True, False, True],
+                 [True, False,  True, False,  True, False,  True, False, True],
+                 [True, False,  True, False, False, False,  True, False, True],
+                 [True, False,  True,  True,  True,  True,  True, False, True],
+                 [True, False, False, False, False, False, False, False, True],
+                 [True,  True,  True,  True,  True,  True,  True,  True, True]]
+            pixel_scales=1.0,
+        )
+
+        derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
+
+        print(derive_indexes_2d.sub_border_slim)
+    """
+    return sub_border_pixel_slim_indexes_from(
+        mask_2d=np.array(mask), sub_size=np.array(sub_size).astype("int")
+    ).astype("int")
+
+
 class BorderRelocator:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         self.mask = mask
@@ -136,102 +174,12 @@ class BorderRelocator:
             over_sample_size=sub_size, mask=mask
         )
 
-    @cached_property
-    def border_slim(self):
-        """
-        Returns the  1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked
-        sub-pixels (given by ``False``) which neighbor any masked value (give by ``True``) and which are on the
-        extreme exterior of the mask.
+        self.border_slim = self.mask.derive_indexes.border_slim
+        self.sub_border_slim = sub_border_slim_from(
+            mask=self.mask, sub_size=self.sub_size
+        )
+        self.border_grid = self.mask.derive_grid.border
 
-        The indexes are the extended below to form the ``sub_border_slim`` which is illustrated above.
-
-        This quantity is too complicated to write-out in a docstring, and it is recommended you print it in
-        Python code to understand it if anything is unclear.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
-                     [True, False, False, False, False, False, False, False, True],
-                     [True, False,  True,  True,  True,  True,  True, False, True],
-                     [True, False,  True, False, False, False,  True, False, True],
-                     [True, False,  True, False,  True, False,  True, False, True],
-                     [True, False,  True, False, False, False,  True, False, True],
-                     [True, False,  True,  True,  True,  True,  True, False, True],
-                     [True, False, False, False, False, False, False, False, True],
-                     [True,  True,  True,  True,  True,  True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.border_slim)
-        """
-        return self.mask.derive_indexes.border_slim
-
-    @cached_property
-    def sub_border_slim(self) -> np.ndarray:
-        """
-        Returns the subgridded 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked
-        sub-pixels (given by ``False``) which neighbor any masked value (give by ``True``) and which are on the
-        extreme exterior of the mask.
-
-        The indexes are the sub-gridded extension of the ``border_slim`` which is illustrated above.
-
-        This quantity is too complicated to write-out in a docstring, and it is recommended you print it in
-        Python code to understand it if anything is unclear.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
-                     [True, False, False, False, False, False, False, False, True],
-                     [True, False,  True,  True,  True,  True,  True, False, True],
-                     [True, False,  True, False, False, False,  True, False, True],
-                     [True, False,  True, False,  True, False,  True, False, True],
-                     [True, False,  True, False, False, False,  True, False, True],
-                     [True, False,  True,  True,  True,  True,  True, False, True],
-                     [True, False, False, False, False, False, False, False, True],
-                     [True,  True,  True,  True,  True,  True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.sub_border_slim)
-        """
-        return sub_border_pixel_slim_indexes_from(
-            mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size).astype("int")
-        ).astype("int")
-
-    @cached_property
-    def border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
-        return self.mask.derive_grid.border
-
-    @cached_property
-    def sub_border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
         sub_grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
@@ -239,7 +187,7 @@ class BorderRelocator:
             origin=self.mask.origin,
         )
 
-        return sub_grid[self.sub_border_slim]
+        self.sub_border_grid = sub_grid[self.sub_border_slim]
 
     def relocated_grid_from(self, grid: Grid2D) -> Grid2D:
         """
