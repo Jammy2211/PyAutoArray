@@ -13,9 +13,9 @@ class FitImagingPlotterMeta(Plotter):
         self,
         fit,
         get_visuals_2d: Callable,
-        mat_plot_2d: MatPlot2D = MatPlot2D(),
-        visuals_2d: Visuals2D = Visuals2D(),
-        include_2d: Include2D = Include2D(),
+        mat_plot_2d: MatPlot2D = None,
+        visuals_2d: Visuals2D = None,
+        include_2d: Include2D = None,
         residuals_symmetric_cmap: bool = True,
     ):
         """
@@ -242,9 +242,9 @@ class FitImagingPlotter(Plotter):
     def __init__(
         self,
         fit: FitImaging,
-        mat_plot_2d: MatPlot2D = MatPlot2D(),
-        visuals_2d: Visuals2D = Visuals2D(),
-        include_2d: Include2D = Include2D(),
+        mat_plot_2d: MatPlot2D = None,
+        visuals_2d: Visuals2D = None,
+        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib

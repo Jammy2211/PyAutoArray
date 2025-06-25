@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import numpy as np
 from typing import List, Optional
 
@@ -142,6 +140,7 @@ class Colorbar(AbstractMatWrap):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
+        import matplotlib.pyplot as plt
 
         tick_values = self.tick_values_from(norm=norm, use_log10=use_log10)
         tick_labels = self.tick_labels_from(
@@ -183,6 +182,8 @@ class Colorbar(AbstractMatWrap):
         color_values
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
+        import matplotlib.pyplot as plt
+        import matplotlib.cm as cm
 
         mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
         mappable.set_array(color_values)

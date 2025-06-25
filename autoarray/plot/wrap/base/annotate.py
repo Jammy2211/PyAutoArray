@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
@@ -13,6 +11,9 @@ class Annotate(AbstractMatWrap):
     """
 
     def set(self):
+
+        import matplotlib.pyplot as plt
+
         if "x" not in self.kwargs and "y" not in self.kwargs and "s" not in self.kwargs:
             return
 

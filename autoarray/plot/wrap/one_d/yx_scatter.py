@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from typing import Union
 
@@ -29,6 +28,7 @@ class YXScatter(AbstractMatWrap1D):
         errors
             The error on every point of the grid that is plotted.
         """
+        import matplotlib.pyplot as plt
 
         config_dict = self.config_dict
 

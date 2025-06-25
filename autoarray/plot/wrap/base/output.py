@@ -1,5 +1,4 @@
 import logging
-import matplotlib.pyplot as plt
 from os import path
 import os
 from typing import Union, List, Optional
@@ -102,6 +101,9 @@ class Output:
         return filename
 
     def savefig(self, filename: str, output_path: str, format: str):
+
+        import matplotlib.pyplot as plt
+
         try:
             plt.savefig(
                 path.join(output_path, f"{filename}.{format}"),
@@ -130,6 +132,7 @@ class Output:
         auto_filename
             If the filename is not manually specified this name is used instead, which is defined in the parent plotter.
         """
+        import matplotlib.pyplot as plt
 
         filename = self.filename_from(auto_filename=auto_filename)
 
@@ -163,6 +166,7 @@ class Output:
         auto_filename
             If the filename is not manually specified this name is used instead, which is defined in the parent plotter.
         """
+        import matplotlib.pyplot as plt
 
         filename = self.filename_from(auto_filename=auto_filename)
 

@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
@@ -11,6 +9,7 @@ class Text(AbstractMatWrap):
 
     - plt.text: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.text.html
     """
+    import matplotlib.pyplot as plt
 
     def set(self):
         if "x" not in self.kwargs and "y" not in self.kwargs and "s" not in self.kwargs:

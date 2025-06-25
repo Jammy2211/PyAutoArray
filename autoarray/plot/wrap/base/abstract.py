@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib
 
 from autoconf import conf
 
@@ -16,6 +15,8 @@ def set_backend():
     It is also common for high perforamcne computers (HPCs) to not support visualization and raise an error when
     a graphical backend (e.g. TKAgg) is used. Setting the backend to `Agg` addresses this.
     """
+    import matplotlib
+
     backend = conf.get_matplotlib_backend()
 
     if backend not in "default":

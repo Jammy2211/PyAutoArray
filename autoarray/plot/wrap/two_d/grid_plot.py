@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 from typing import List, Union, Tuple
@@ -43,6 +42,7 @@ class GridPlot(AbstractMatWrap2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         """
+        import matplotlib.pyplot as plt
 
         ys = np.linspace(extent[2], extent[3], shape_native[1] + 1)
         xs = np.linspace(extent[0], extent[1], shape_native[0] + 1)
@@ -66,6 +66,7 @@ class GridPlot(AbstractMatWrap2D):
         grid
             The grid of (y,x) coordinates that is plotted.
         """
+        import matplotlib.pyplot as plt
 
         try:
             color = self.config_dict["c"]
@@ -94,6 +95,7 @@ class GridPlot(AbstractMatWrap2D):
         grid_list
             The list of grids of (y,x) coordinates that are plotted.
         """
+        import matplotlib.pyplot as plt
 
         if len(grid_list) == 0:
             return None
@@ -113,6 +115,9 @@ class GridPlot(AbstractMatWrap2D):
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         indexes: np.ndarray,
     ):
+
+        import matplotlib.pyplot as plt
+
         color = itertools.cycle(self.config_dict["c"])
         config_dict = self.config_dict
         config_dict.pop("c")
@@ -140,6 +145,8 @@ class GridPlot(AbstractMatWrap2D):
         indexes: np.ndarray,
         geometry: Geometry2D,
     ):
+        import matplotlib.pyplot as plt
+
         color = itertools.cycle(self.config_dict["c"])
         config_dict = self.config_dict
         config_dict.pop("c")
