@@ -19,9 +19,9 @@ class Array2DPlotter(Plotter):
     def __init__(
         self,
         array: Array2D,
-        mat_plot_2d: MatPlot2D = MatPlot2D(),
-        visuals_2d: Visuals2D = Visuals2D(),
-        include_2d: Include2D = Include2D(),
+        mat_plot_2d: MatPlot2D = None,
+        visuals_2d: Visuals2D = None,
+        include_2d: Include2D = None,
     ):
         """
         Plots `Array2D` objects using the matplotlib method `imshow()` and many other matplotlib functions which
@@ -70,9 +70,9 @@ class Grid2DPlotter(Plotter):
     def __init__(
         self,
         grid: Grid2D,
-        mat_plot_2d: MatPlot2D = MatPlot2D(),
-        visuals_2d: Visuals2D = Visuals2D(),
-        include_2d: Include2D = Include2D(),
+        mat_plot_2d: MatPlot2D = None,
+        visuals_2d: Visuals2D = None,
+        include_2d: Include2D = None,
     ):
         """
         Plots `Grid2D` objects using the matplotlib method `scatter()` and many other matplotlib functions which
@@ -141,9 +141,9 @@ class YX1DPlotter(Plotter):
         self,
         y: Union[Array1D, List],
         x: Optional[Union[Array1D, Grid1D, List]] = None,
-        mat_plot_1d: MatPlot1D = MatPlot1D(),
-        visuals_1d: Visuals1D = Visuals1D(),
-        include_1d: Include1D = Include1D(),
+        mat_plot_1d: MatPlot1D = None,
+        visuals_1d: Visuals1D = None,
+        include_1d: Include1D = None,
         should_plot_grid: bool = False,
         should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,

@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.stats import norm
 
 from autoarray import exc
 
@@ -316,6 +315,7 @@ def background_noise_map_via_edges_from(image, no_edges):
     no_edges
         Number of edges used to estimate the background level.
     """
+    from scipy.stats import norm
 
     from autoarray.structures.arrays.uniform_2d import Array2D
 

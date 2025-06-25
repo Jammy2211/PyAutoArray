@@ -1,6 +1,5 @@
 from enum import Enum
 import gc
-import matplotlib.pyplot as plt
 from typing import Union, Tuple
 
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
@@ -82,6 +81,8 @@ class Figure(AbstractMatWrap):
         """
         Wraps the Matplotlib method 'plt.figure' for opening a figure.
         """
+        import matplotlib.pyplot as plt
+
         if not plt.fignum_exists(num=1):
             config_dict = self.config_dict
             config_dict.pop("aspect")
@@ -93,5 +94,7 @@ class Figure(AbstractMatWrap):
         """
         Wraps the Matplotlib method 'plt.close' for closing a figure.
         """
+        import matplotlib.pyplot as plt
+
         plt.close()
         gc.collect()

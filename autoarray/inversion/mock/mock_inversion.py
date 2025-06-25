@@ -29,12 +29,14 @@ class MockInversion(AbstractInversion):
         regularization_term=None,
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: SettingsInversion = None,
     ):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
         )
+
+        settings = settings or SettingsInversion()
 
         super().__init__(
             dataset=dataset,

@@ -1,10 +1,6 @@
-import matplotlib.pyplot as plt
 from typing import Optional
 
-from autoconf import conf
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
-from autoarray.plot.wrap.base.units import Units
 
 
 class AbstractLabel(AbstractMatWrap):
@@ -48,6 +44,7 @@ class YLabel(AbstractLabel):
         units
             The units of the image that is plotted which informs the appropriate y label text.
         """
+        import matplotlib.pyplot as plt
 
         config_dict = self.config_dict
 
@@ -77,6 +74,7 @@ class XLabel(AbstractLabel):
         units
             The units of the image that is plotted which informs the appropriate x label text.
         """
+        import matplotlib.pyplot as plt
 
         config_dict = self.config_dict
 

@@ -1,5 +1,3 @@
-import numpy as np
-
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.pixelization import Pixelization
 

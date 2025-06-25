@@ -112,7 +112,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.unmasked_slim)
         """
         return mask_2d_util.mask_slim_indexes_from(
-            mask_2d=np.array(self.mask), return_masked_indexes=False
+            mask_2d=self.mask, return_masked_indexes=False
         ).astype("int")
 
     @property
@@ -154,7 +154,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.masked_slim)
         """
         return mask_2d_util.mask_slim_indexes_from(
-            mask_2d=np.array(self.mask), return_masked_indexes=True
+            mask_2d=self.mask, return_masked_indexes=True
         ).astype("int")
 
     @property
@@ -202,7 +202,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.edge_slim)
         """
         return mask_2d_util.edge_1d_indexes_from(
-            mask_2d=np.array(self.mask).astype("bool")
+            mask_2d=self.mask.astype("bool")
         ).astype("int")
 
     @property
@@ -304,7 +304,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.border_slim)
         """
         return mask_2d_util.border_slim_indexes_from(
-            mask_2d=np.array(self.mask).astype("bool")
+            mask_2d=self.mask.astype("bool")
         ).astype("int")
 
     @property
@@ -409,5 +409,5 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.native_for_slim)
         """
         return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=np.array(self.mask),
+            mask_2d=self.mask,
         ).astype("int")

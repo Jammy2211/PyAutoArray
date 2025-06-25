@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.spatial
+
 from typing import List, Union, Tuple
 
 from autoarray.structures.abstract_structure import Structure
@@ -82,7 +82,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         )
 
     @cached_property
-    def delaunay(self) -> scipy.spatial.Delaunay:
+    def delaunay(self) -> "scipy.spatial.Delaunay":
         """
         Returns a `scipy.spatial.Delaunay` object from the 2D (y,x) grid of irregular coordinates, which correspond to
         the corner of every triangle of a Delaunay triangulation.
@@ -95,6 +95,8 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
+        import scipy.spatial
+
         try:
             return scipy.spatial.Delaunay(
                 np.asarray([self.array[:, 0], self.array[:, 1]]).T
@@ -103,7 +105,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             raise exc.MeshException() from e
 
     @cached_property
-    def voronoi(self) -> scipy.spatial.Voronoi:
+    def voronoi(self) -> "scipy.spatial.Voronoi":
         """
         Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
         the centre of every Voronoi pixel.
@@ -115,6 +117,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
+        import scipy.spatial
         from scipy.spatial import QhullError
 
         try:

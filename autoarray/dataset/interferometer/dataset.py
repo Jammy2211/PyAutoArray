@@ -1,4 +1,3 @@
-from astropy.io import fits
 import logging
 import numpy as np
 from pathlib import Path
@@ -148,6 +147,9 @@ class Interferometer(AbstractDataset):
         )
 
     def w_tilde_preprocessing(self):
+
+        from astropy.io import fits
+
         if self.preprocessing_directory.is_dir():
             filename = "{}/curvature_preload.fits".format(self.preprocessing_directory)
 

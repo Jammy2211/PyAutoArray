@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-from scipy.interpolate import interp1d, griddata
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -46,6 +45,7 @@ def create_img_and_grid_hb_order(img_2d, mask, mask_radius, pixel_scales, length
     image associated to that grid.
     """
 
+    from scipy.interpolate import griddata
     from autoarray.structures.grids.uniform_2d import Grid2D
 
     shape_nnn = np.shape(mask)[0]
@@ -76,6 +76,7 @@ def inverse_transform_sampling_interpolated(probabilities, n_samples, gridx, gri
     probabilities: 1D normalized cumulative probablity curve.
     n_samples: the number of points to draw.
     """
+    from scipy.interpolate import interp1d
 
     cdf = np.cumsum(probabilities)
     npixels = len(probabilities)

@@ -1,15 +1,12 @@
 import matplotlib.pyplot as plt
-import jax.numpy as jnp
 import numpy as np
 import itertools
-from scipy.spatial import ConvexHull
 from typing import List, Union
 
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 
 class GridScatter(AbstractMatWrap2D):

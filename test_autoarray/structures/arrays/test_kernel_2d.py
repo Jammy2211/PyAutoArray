@@ -1,13 +1,11 @@
 from astropy import units
 from astropy.modeling import functional_models
 from astropy.coordinates import Angle
-import jax.numpy as jnp
 import numpy as np
 import pytest
 from os import path
 
 import autoarray as aa
-from autoarray import exc
 
 test_data_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 

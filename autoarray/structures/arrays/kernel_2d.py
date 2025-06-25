@@ -1,8 +1,6 @@
-from astropy import units
 import jax
 import jax.numpy as jnp
 import numpy as np
-import scipy.signal
 from pathlib import Path
 from typing import List, Tuple, Union
 
@@ -16,7 +14,6 @@ from autoarray.structures.header import Header
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
-from autoarray.mask.mask_2d import mask_2d_util
 
 
 class Kernel2D(AbstractArray2D):
@@ -299,6 +296,9 @@ class Kernel2D(AbstractArray2D):
         centre: Tuple[float, float] = (0.0, 0.0),
         normalize: bool = False,
     ) -> "Kernel2D":
+
+        from astropy import units
+
         x_stddev = (
             x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
         )
@@ -387,7 +387,7 @@ class Kernel2D(AbstractArray2D):
 
         try:
             kernel_rescaled = rescale(
-                np.array(self.native._array),
+                self.native.array,
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
@@ -395,7 +395,7 @@ class Kernel2D(AbstractArray2D):
             )
         except TypeError:
             kernel_rescaled = rescale(
-                np.array(self.native._array),
+                self.native.array,
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
@@ -471,17 +471,19 @@ class Kernel2D(AbstractArray2D):
         ------
         KernelException if either Kernel2D psf dimension is odd
         """
+        import scipy.signal
+
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
         array_2d = array.native
 
         convolved_array_2d = scipy.signal.convolve2d(
-            array_2d.array, np.array(self.native.array), mode="same"
+            array_2d.array, self.native.array, mode="same"
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(array_2d.mask),
+            mask_2d=array_2d.mask,
             array_2d_native=convolved_array_2d,
         )
 
@@ -505,6 +507,7 @@ class Kernel2D(AbstractArray2D):
         ------
         KernelException if either Kernel2D psf dimension is odd
         """
+        import scipy.signal
 
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")
@@ -514,8 +517,8 @@ class Kernel2D(AbstractArray2D):
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(mask),
-            array_2d_native=np.array(convolved_array_2d),
+            mask_2d=mask,
+            array_2d_native=convolved_array_2d,
         )
 
         return Array2D(values=convolved_array_1d, mask=mask)
@@ -553,7 +556,7 @@ class Kernel2D(AbstractArray2D):
             blurring_image.array
         )
 
-        kernel = np.array(self.stored_native.array)
+        kernel = self.stored_native.array
 
         convolve_native = jax.scipy.signal.convolve(
             expanded_array_native, kernel, mode="same", method=jax_method
@@ -591,7 +594,7 @@ class Kernel2D(AbstractArray2D):
                 image.array
             )
 
-        kernel = np.array(self.stored_native.array)
+        kernel = self.stored_native.array
 
         convolve_native = jax.scipy.signal.convolve(
             expanded_array_native, kernel, mode="same", method=jax_method

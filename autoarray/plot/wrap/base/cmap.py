@@ -1,10 +1,7 @@
 import copy
 import logging
-from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.colors as colors
 import numpy as np
 
-from autoconf import conf
 
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
@@ -60,6 +57,7 @@ class Cmap(AbstractMatWrap):
         array
             The array of data which is to be plotted.
         """
+        import matplotlib.colors as colors
 
         vmin = self.vmin_from(array=array, use_log10=use_log10)
         vmax = self.vmax_from(array=array, use_log10=use_log10)
@@ -99,6 +97,8 @@ class Cmap(AbstractMatWrap):
 
     @property
     def cmap(self):
+        from matplotlib.colors import LinearSegmentedColormap
+
         if self.config_dict["cmap"] == "default":
             from autoarray.plot.wrap.segmentdata import segmentdata
 

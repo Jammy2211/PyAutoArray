@@ -166,5 +166,9 @@ def array_1d_via_indexes_1d_from(
     ndarray
         The native 1D array of values mapped from the slimmed array with dimensions (total_x_pixels).
     """
+    if isinstance(array_1d_slim, np.ndarray):
+        array_1d_native = np.zeros(shape)
+        array_1d_native[native_index_for_slim_index_1d] = array_1d_slim
+        return array_1d_native
     array_1d_native = jnp.zeros(shape)
     return array_1d_native.at[native_index_for_slim_index_1d].set(array_1d_slim)

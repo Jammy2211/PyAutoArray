@@ -1,11 +1,7 @@
 import numpy as np
-from scipy.linalg import cho_solve
-from typing import List, Optional, Tuple
-
-from autoarray.inversion.inversion.settings import SettingsInversion
+from typing import Tuple
 
 from autoarray import numba_util
-from autoarray import exc
 
 
 @numba_util.jit()

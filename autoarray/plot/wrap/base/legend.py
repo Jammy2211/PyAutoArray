@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
@@ -19,6 +17,9 @@ class Legend(AbstractMatWrap):
         self.include = include
 
     def set(self):
+
+        import matplotlib.pyplot as plt
+
         if self.include:
             config_dict = self.config_dict
             config_dict.pop("include") if "include" in config_dict else None

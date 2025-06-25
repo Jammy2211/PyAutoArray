@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
@@ -14,4 +12,7 @@ class TickParams(AbstractMatWrap):
 
     def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
+
+        import matplotlib.pyplot as plt
+
         plt.tick_params(**self.config_dict)

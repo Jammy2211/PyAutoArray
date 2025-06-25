@@ -1,15 +1,13 @@
 from __future__ import annotations
 import numpy as np
-from scipy.interpolate import interp1d, griddata
+
 from typing import Optional
 
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
-from autoarray.operators.over_sampling.over_sampler import OverSampler
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -125,6 +123,8 @@ def image_and_grid_from(image, mask, mask_radius, pixel_scales, hilbert_length):
     image associated to that grid.
     """
 
+    from scipy.interpolate import griddata
+
     # For multi wavelength fits the input image may be a different resolution than the mask.
 
     try:
@@ -164,6 +164,7 @@ def inverse_transform_sampling_interpolated(probabilities, n_samples, gridx, gri
     probabilities: 1D normalized cumulative probablity curve.
     n_samples: the number of points to draw.
     """
+    from scipy.interpolate import interp1d
 
     cdf = np.cumsum(probabilities)
     npixels = len(probabilities)

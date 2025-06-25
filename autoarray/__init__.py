@@ -1,5 +1,5 @@
 from autoconf.dictable import register_parser
-from autofit import conf
+from autoconf import conf
 
 conf.instance.register(__file__)
 

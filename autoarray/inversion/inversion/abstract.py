@@ -1,17 +1,13 @@
 import copy
-import jax
 import jax.numpy as jnp
 import numpy as np
-from scipy.linalg import block_diag
-from scipy.sparse import csc_matrix
-from scipy.sparse.linalg import splu
+
 from typing import Dict, List, Optional, Type, Union
 
 from autoconf import cached_property
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
-from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
@@ -337,6 +333,8 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
+        from scipy.linalg import block_diag
+
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
@@ -703,6 +701,8 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
+        from scipy.sparse import csc_matrix
+        from scipy.sparse.linalg import splu
 
         if not self.has(cls=AbstractRegularization):
             return 0.0

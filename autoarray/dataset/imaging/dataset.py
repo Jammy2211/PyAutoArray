@@ -430,12 +430,12 @@ class Imaging(AbstractDataset):
         """
 
         if signal_to_noise_value is None:
-            noise_map = np.array(self.noise_map.native.array)
+            noise_map = self.noise_map.native
             noise_map[mask.array == False] = noise_value
         else:
             noise_map = np.where(
                 mask == False,
-                np.median(self.data.native.array[mask.derive_mask.edge == False])
+                np.median(self.data.native[mask.derive_mask.edge == False])
                 / signal_to_noise_value,
                 self.noise_map.native.array,
             )

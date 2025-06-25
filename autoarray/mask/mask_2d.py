@@ -331,7 +331,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=np.array(mask),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -385,7 +385,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=np.array(mask),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -442,7 +442,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=np.array(mask),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -512,7 +512,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=np.array(mask),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -560,7 +560,7 @@ class Mask2D(Mask):
         )
 
         return cls(
-            mask=np.array(mask),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
             invert=invert,
@@ -598,7 +598,7 @@ class Mask2D(Mask):
             mask = np.invert(mask.astype("bool"))
 
         mask = Mask2D(
-            mask=np.array(mask),
+            mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
         )
@@ -680,7 +680,7 @@ class Mask2D(Mask):
     @property
     def mask_centre(self) -> Tuple[float, float]:
         grid = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self),
+            mask_2d=self,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
@@ -697,7 +697,7 @@ class Mask2D(Mask):
         and 12 False entries going horizontally in the central regions of the mask, then shape_masked_pixels=(15,12).
         """
 
-        where = np.array(np.where(np.invert(self.astype("bool"))))
+        where = np.where(np.invert(self.astype("bool")))
         y0, x0 = np.amin(where, axis=1)
         y1, x1 = np.amax(where, axis=1)
 

@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.interpolate import griddata
+
 from typing import List, Optional, Tuple
 
 from autoarray import type as ty
@@ -174,6 +174,8 @@ class Mesh2DRectangular(Abstract2DMesh):
             The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
             is input.
         """
+        from scipy.interpolate import griddata
+
         interpolation_grid = self.interpolation_grid_from(
             shape_native=shape_native, extent=extent
         )

@@ -118,7 +118,7 @@ def convert_array_2d(
         If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
         mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
-    array_2d = convert_array(array=array_2d).copy()
+    array_2d = convert_array(array=array_2d)
 
     is_numpy = True if isinstance(array_2d, np.ndarray) else False
 
@@ -558,6 +558,10 @@ def array_2d_via_indexes_from(
     ndarray
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
+    if isinstance(array_2d_slim, np.ndarray):
+        array = np.zeros(shape)
+        array[tuple(native_index_for_slim_index_2d.T)] = array_2d_slim
+        return array
     return (
         jnp.zeros(shape).at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
     )

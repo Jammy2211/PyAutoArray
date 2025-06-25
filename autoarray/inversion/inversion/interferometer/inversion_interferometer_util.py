@@ -1,4 +1,3 @@
-from astropy.io import fits
 import logging
 import numpy as np
 import time
@@ -791,6 +790,9 @@ def w_tilde_curvature_preload_interferometer_in_stages_with_chunks_from(
     check=True,
     directory=None,
 ) -> np.ndarray:
+
+    from astropy.io import fits
+
     if directory is None:
         raise NotImplementedError()
 

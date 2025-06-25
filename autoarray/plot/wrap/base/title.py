@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
@@ -29,6 +27,9 @@ class Title(AbstractMatWrap):
         self.manual_label = self.kwargs.get("label")
 
     def set(self, auto_title=None, use_log10: bool = False):
+
+        import matplotlib.pyplot as plt
+
         config_dict = self.config_dict
 
         label = auto_title if self.manual_label is None else self.manual_label

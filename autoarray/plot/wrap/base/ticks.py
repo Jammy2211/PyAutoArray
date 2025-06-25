@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 from typing import List, Tuple, Optional
 
@@ -371,6 +369,8 @@ class YTicks(AbstractTicks):
         units
             The units of the figure.
         """
+        import matplotlib.pyplot as plt
+        from matplotlib.ticker import FormatStrFormatter
 
         if self.manual_min_max_value:
             min_value = self.manual_min_max_value[0]
@@ -426,6 +426,8 @@ class XTicks(AbstractTicks):
         units
             The units of the figure.
         """
+        import matplotlib.pyplot as plt
+        from matplotlib.ticker import FormatStrFormatter
 
         if self.manual_min_max_value:
             min_value = self.manual_min_max_value[0]

@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.spatial
+
 from typing import List, Tuple, Union
 
 from autoarray import numba_util
@@ -362,7 +362,7 @@ def delaunay_interpolated_array_from(
     shape_native: Tuple[int, int],
     interpolation_grid_slim: np.ndarray,
     pixel_values: np.ndarray,
-    delaunay: scipy.spatial.Delaunay,
+    delaunay: "scipy.spatial.Delaunay",
 ) -> np.ndarray:
     """
     Given a Delaunay triangulation and 1D values at the node of each Delaunay pixel (e.g. the connecting points where
@@ -513,7 +513,7 @@ def voronoi_edge_pixels_from(regions: np.ndarray, point_region: np.ndarray) -> L
 
 
 def voronoi_revised_from(
-    voronoi: scipy.spatial.Voronoi,
+    voronoi: "scipy.spatial.Voronoi",
 ) -> Union[List[Tuple], np.ndarray]:
     """
     To plot a Voronoi mesh using the `matplotlib.fill()` function a revised Voronoi mesh must be
@@ -592,7 +592,7 @@ def voronoi_nn_interpolated_array_from(
     shape_native: Tuple[int, int],
     interpolation_grid_slim: np.ndarray,
     pixel_values: np.ndarray,
-    voronoi: scipy.spatial.Voronoi,
+    voronoi: "scipy.spatial.Voronoi",
 ) -> np.ndarray:
     try:
         from autoarray.util.nn import nn_py

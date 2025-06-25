@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, List
+from typing import Tuple
 
 from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
