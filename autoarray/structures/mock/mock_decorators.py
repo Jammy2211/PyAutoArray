@@ -157,5 +157,3 @@ class MockGrid2DLikeObj:
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
         return [np.multiply(1.0, grid.array), np.multiply(2.0, grid.array)]
-
-

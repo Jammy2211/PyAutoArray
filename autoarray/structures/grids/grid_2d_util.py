@@ -258,9 +258,9 @@ def grid_2d_slim_via_mask_from(
         pixel_scales = np.array(pixel_scales)
         sign = np.array([-1.0, 1.0])
         return (
-                (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
-                * sign
-                * pixel_scales
+            (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
+            * sign
+            * pixel_scales
         )
 
     centres_scaled = jnp.array(centres_scaled)

@@ -407,7 +407,7 @@ def test__log_likelihood_from__with_mask():
 
 
 def test__log_likelihood_from__complex_data():
-    
+
     data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
     noise_map = np.array([2.0 + 1.0j, 2.0 + 1.0j])
     model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
