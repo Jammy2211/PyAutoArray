@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from typing import Union
+from typing import Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -116,7 +116,7 @@ def sub_border_pixel_slim_indexes_from(
         ]
 
         sub_border_pixels[border_1d_index] = (
-            grid_2d_util.furthest_grid_2d_slim_index_from(
+            furthest_grid_2d_slim_index_from(
                 grid_2d_slim=sub_grid_2d_slim,
                 slim_indexes=sub_border_pixels_of_border_pixel,
                 coordinate=mask_centre,
@@ -162,8 +162,89 @@ def sub_border_slim_from(mask, sub_size):
         print(derive_indexes_2d.sub_border_slim)
     """
     return sub_border_pixel_slim_indexes_from(
-        mask_2d=np.array(mask), sub_size=np.array(sub_size).astype("int")
+        mask_2d=mask, sub_size=sub_size.astype("int")
     ).astype("int")
+
+
+def relocated_grid_from(grid, border_grid):
+    """
+    Relocate the coordinates of a grid to its border if they are outside the border, where the border is
+    defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
+
+    This is performed as follows:
+
+    1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
+    2: Compute the radial distance of every grid coordinate from the origin.
+    3: For every coordinate, find its nearest pixel in the border.
+    4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
+    border pixel's radial distance.
+    5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
+    border (if its inside the border, do nothing).
+
+    The method can be used on uniform or irregular grids, however for irregular grids the border of the
+    'image-plane' mask is used to define border pixels.
+
+    Parameters
+    ----------
+    grid
+        The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
+    border_grid : Grid2D
+        The grid of border (y,x) coordinates.
+    """
+
+    # Copy the original grid
+    grid_relocated = np.copy(grid)
+
+    # Compute the origin (center) of the border
+    border_origin = np.mean(border_grid, axis=0)
+
+    # Compute radii from the origin for the border and grid points
+    border_grid_radii = np.linalg.norm(border_grid - border_origin, axis=1)
+    border_min_radii = np.min(border_grid_radii)
+
+    grid_radii = np.linalg.norm(grid - border_origin, axis=1)
+
+    # Identify grid points outside the border
+    outside_mask = grid_radii > border_min_radii
+
+    # For each grid point outside the border, find the nearest border pixel
+    grid_outside = grid[outside_mask]
+    diffs = grid_outside[:, np.newaxis, :] - border_grid[np.newaxis, :, :]
+    dists_squared = np.sum(diffs**2, axis=2)
+    closest_indices = np.argmin(dists_squared, axis=1)
+
+    # Calculate move factors
+    move_factors = border_grid_radii[closest_indices] / grid_radii[outside_mask]
+
+    # Only apply move if move_factor < 1.0
+    apply_mask = move_factors < 1.0
+    moved_points = (
+        move_factors[apply_mask, np.newaxis]
+        * (grid_outside[apply_mask] - border_origin)
+        + border_origin
+    )
+
+    # Update relocated grid
+    grid_relocated[outside_mask] = grid_outside
+    grid_relocated[np.where(outside_mask)[0][apply_mask]] = moved_points
+
+    return grid_relocated
+
+def furthest_grid_2d_slim_index_from(
+    grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
+) -> int:
+    distance_to_centre = 0.0
+
+    for slim_index in slim_indexes:
+        y = grid_2d_slim[slim_index, 0]
+        x = grid_2d_slim[slim_index, 1]
+        distance_to_centre_new = (x - coordinate[1]) ** 2 + (y - coordinate[0]) ** 2
+
+        if distance_to_centre_new >= distance_to_centre:
+            distance_to_centre = distance_to_centre_new
+            furthest_grid_2d_slim_index = slim_index
+
+    return furthest_grid_2d_slim_index
 
 
 class BorderRelocator:
@@ -181,9 +262,9 @@ class BorderRelocator:
         self.border_grid = self.mask.derive_grid.border
 
         sub_grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-            mask_2d=np.array(self.mask),
+            mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
-            sub_size=np.array(self.sub_size).astype("int"),
+            sub_size=self.sub_size.astype("int"),
             origin=self.mask.origin,
         )
 
@@ -216,12 +297,12 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        values = grid_2d_util.relocated_grid_via_jit_from(
+        values = relocated_grid_from(
             grid=np.array(grid.array),
             border_grid=np.array(grid.array[self.border_slim]),
         )
 
-        over_sampled = grid_2d_util.relocated_grid_via_jit_from(
+        over_sampled = relocated_grid_from(
             grid=np.array(grid.over_sampled.array),
             border_grid=np.array(grid.over_sampled.array[self.sub_border_slim]),
         )
@@ -250,7 +331,7 @@ class BorderRelocator:
             return mesh_grid
 
         return Grid2DIrregular(
-            values=grid_2d_util.relocated_grid_via_jit_from(
+            values=relocated_grid_from(
                 grid=np.array(mesh_grid.array),
                 border_grid=np.array(grid[self.sub_border_slim]),
             ),
