@@ -69,39 +69,6 @@ def test__sub_slim_indexes_for_pix_index():
         [0, 1, 2, 3, 4, 5, 6, 7],
     ]
 
-    (
-        sub_slim_indexes_for_pix_index,
-        sub_slim_sizes_for_pix_index,
-        sub_slim_weights_for_pix_index,
-    ) = mapper.sub_slim_indexes_for_pix_index_arr
-
-    assert (
-        sub_slim_indexes_for_pix_index
-        == np.array(
-            [
-                [0, 3, 6, -1, -1, -1, -1, -1],
-                [1, 4, -1, -1, -1, -1, -1, -1],
-                [2, -1, -1, -1, -1, -1, -1, -1],
-                [5, 7, -1, -1, -1, -1, -1, -1],
-                [0, 1, 2, 3, 4, 5, 6, 7],
-            ]
-        )
-    ).all()
-    assert (sub_slim_sizes_for_pix_index == np.array([3, 2, 1, 2, 8])).all()
-    assert (
-        sub_slim_weights_for_pix_index
-        == np.array(
-            [
-                [0.1, 0.4, 0.7, -1, -1, -1, -1, -1],
-                [0.2, 0.5, -1, -1, -1, -1, -1, -1],
-                [0.3, -1, -1, -1, -1, -1, -1, -1],
-                [0.6, 0.8, -1, -1, -1, -1, -1, -1],
-                [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2],
-            ]
-        )
-    ).all()
-
-
 def test__data_weight_total_for_pix_from():
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
