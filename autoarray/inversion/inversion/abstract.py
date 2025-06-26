@@ -394,16 +394,15 @@ class AbstractInversion:
         if self.all_linear_obj_have_regularization:
             return self.curvature_reg_matrix
 
-        curvature_reg_matrix = self.curvature_reg_matrix
+        # ids of values which are on edge so zero-d and not solved for.
+        ids_to_not_solve_for = jnp.array(self.no_regularization_index_list, dtype=int)
 
-        curvature_reg_matrix = np.delete(
-            curvature_reg_matrix, self.no_regularization_index_list, 0
-        )
-        curvature_reg_matrix = np.delete(
-            curvature_reg_matrix, self.no_regularization_index_list, 1
-        )
+        # Create a boolean mask: True = keep, False = ignore
+        mask = jnp.ones(self.data_vector.shape[0], dtype=bool).at[ids_to_not_solve_for].set(False)
 
-        return curvature_reg_matrix
+        # Zero rows and columns in the matrix we want to ignore
+        mask_matrix = mask[:, None] * mask[None, :]
+        return self.curvature_reg_matrix * mask_matrix
 
     @property
     def mapper_zero_pixel_list(self) -> np.ndarray:
@@ -455,45 +454,6 @@ class AbstractInversion:
                 and self.settings.force_edge_pixels_to_zeros
             ):
 
-                # ids_zeros = jnp.array(self.mapper_edge_pixel_list, dtype=int)
-                #
-                # values_to_solve = jnp.ones(
-                #     self.curvature_reg_matrix.shape[0], dtype=bool
-                # )
-                # values_to_solve = values_to_solve.at[ids_zeros].set(False)
-                #
-                # data_vector_input = self.data_vector[values_to_solve]
-                #
-                # print(data_vector_input)
-                #
-                # curvature_reg_matrix_input = self.curvature_reg_matrix[
-                #     values_to_solve, :
-                # ][:, values_to_solve]
-                #
-                # print(curvature_reg_matrix_input)
-                #
-                # # Get the values to assign (must be a JAX array)
-                # reconstruction = inversion_util.reconstruction_positive_only_from(
-                #     data_vector=data_vector_input,
-                #     curvature_reg_matrix=curvature_reg_matrix_input,
-                #     settings=self.settings,
-                # )
-                #
-                # print(reconstruction)
-                #
-                # aa
-                #
-                # # Allocate JAX array
-                # solutions = jnp.zeros(self.curvature_reg_matrix.shape[0])
-                #
-                # # Get indices where True
-                # indices = jnp.where(values_to_solve)[0]
-                #
-                # # Set reconstruction values at those indices
-                # solutions = solutions.at[indices].set(reconstruction)
-                #
-                # return solutions
-
                 # ids of values which are on edge so zero-d and not solved for.
                 ids_to_not_solve_for = jnp.array(self.mapper_edge_pixel_list, dtype=int)
 
@@ -507,8 +467,7 @@ class AbstractInversion:
                 mask_matrix = mask[:, None] * mask[None, :]
                 curvature_reg_matrix_masked = self.curvature_reg_matrix * mask_matrix
 
-
-                # Get the values to assign (must be a JAX array)
+                # Perform reconstruction via fnnls
                 return inversion_util.reconstruction_positive_only_from(
                     data_vector=data_vector_masked,
                     curvature_reg_matrix=curvature_reg_matrix_masked,
@@ -543,7 +502,14 @@ class AbstractInversion:
         if self.all_linear_obj_have_regularization:
             return self.reconstruction
 
-        return np.delete(self.reconstruction, self.no_regularization_index_list, axis=0)
+        # ids of values which are on edge so zero-d and not solved for.
+        ids_to_not_solve_for = jnp.array(self.no_regularization_index_list, dtype=int)
+
+        # Create a boolean mask: True = keep, False = ignore
+        mask = jnp.ones(self.reconstruction.shape[0], dtype=bool).at[ids_to_not_solve_for].set(False)
+
+        # Zero out entries we don't want to solve for
+        return self.reconstruction * mask
 
     @property
     def reconstruction_dict(self) -> Dict[LinearObj, np.ndarray]:
