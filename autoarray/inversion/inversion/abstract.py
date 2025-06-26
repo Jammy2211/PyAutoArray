@@ -378,7 +378,7 @@ class AbstractInversion:
             return self.regularization_matrix
 
         # ids of values which are on edge so zero-d and not solved for.
-        ids_to_keep = jnp.array(self.mapper_index_list, dtype=int)
+        ids_to_keep = self.mapper_index_list
 
         # Zero rows and columns in the matrix we want to ignore
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
@@ -417,7 +417,7 @@ class AbstractInversion:
             return self.curvature_reg_matrix
 
         # ids of values which are on edge so zero-d and not solved for.
-        ids_to_keep = jnp.array(self.mapper_index_list, dtype=int)
+        ids_to_keep = self.mapper_index_list
 
         # Zero rows and columns in the matrix we want to ignore
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
@@ -525,7 +525,7 @@ class AbstractInversion:
             return self.reconstruction
 
         # ids of values which are on edge so zero-d and not solved for.
-        ids_to_keep = jnp.array(self.mapper_index_list, dtype=int)
+        ids_to_keep = self.mapper_index_list
 
         # Zero rows and columns in the matrix we want to ignore
         return self.reconstruction[ids_to_keep]
@@ -671,9 +671,9 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return np.matmul(
+        return jnp.matmul(
             self.reconstruction_reduced.T,
-            np.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            jnp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
     @cached_property
