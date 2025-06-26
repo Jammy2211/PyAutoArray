@@ -726,32 +726,34 @@ def mapped_to_source_via_mapping_matrix_from(
     return mapped_to_source
 
 
-@numba_util.jit()
 def data_weight_total_for_pix_from(
-    pix_indexes_for_sub_slim_index: np.ndarray,
-    pix_weights_for_sub_slim_index: np.ndarray,
+    pix_indexes_for_sub_slim_index: np.ndarray,  # shape (M, B)
+    pix_weights_for_sub_slim_index: np.ndarray,  # shape (M, B)
     pixels: int,
 ) -> np.ndarray:
     """
-    Returns the total weight of every pixelization pixel, which is the sum of the weights of all data-points that
-    map to that pixel.
+    Returns the total weight of every pixelization pixel, which is the sum of
+    the weights of all data‐points (sub‐pixels) that map to that pixel.
 
     Parameters
     ----------
-    pix_indexes_for_sub_slim_index
-        The mappings from a data sub-pixel index to a pixelization pixel index.
-    pix_weights_for_sub_slim_index
-        The weights of the mappings of every data sub-pixel and pixelization pixel.
-    pixels
-        The number of pixels in the pixelization.
+    pix_indexes_for_sub_slim_index : np.ndarray, shape (M, B), int
+        For each of M sub‐slim indexes, the B pixelization‐pixel indices it maps to.
+    pix_weights_for_sub_slim_index : np.ndarray, shape (M, B), float
+        For each of those mappings, the corresponding interpolation weight.
+    pixels : int
+        The total number of pixelization pixels N.
+
+    Returns
+    -------
+    np.ndarray, shape (N,)
+        The per‐pixel total weight: for each j in [0..N-1], the sum of all
+        pix_weights_for_sub_slim_index[i,k] such that pix_indexes_for_sub_slim_index[i,k] == j.
     """
+    # Flatten both arrays into 1D
+    flat_idxs    = pix_indexes_for_sub_slim_index.ravel()
+    flat_weights = pix_weights_for_sub_slim_index.ravel()
 
-    pix_weight_total = np.zeros(pixels)
+    # Use bincount to sum weights at each index, ensuring length = pixels
+    return np.bincount(flat_idxs, weights=flat_weights, minlength=pixels)
 
-    for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
-        for pix_index, weight in zip(
-            pix_indexes, pix_weights_for_sub_slim_index[slim_index]
-        ):
-            pix_weight_total[int(pix_index)] += weight
-
-    return pix_weight_total
