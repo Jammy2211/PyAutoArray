@@ -381,15 +381,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        if len(self.regularization_list) == 1:
-            curvature_matrix = self.curvature_matrix
-            curvature_matrix += self.regularization_matrix
-
-            del self.__dict__["curvature_matrix"]
-
-            return curvature_matrix
-
-        return np.add(self.curvature_matrix, self.regularization_matrix)
+        return jnp.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property
     def curvature_reg_matrix_reduced(self) -> np.ndarray:
@@ -472,9 +464,13 @@ class AbstractInversion:
 
                 data_vector_input = self.data_vector[values_to_solve]
 
+            #    print(data_vector_input)
+
                 curvature_reg_matrix_input = self.curvature_reg_matrix[
                     values_to_solve, :
                 ][:, values_to_solve]
+
+            #    print(curvature_reg_matrix_input)
 
                 # Get the values to assign (must be a JAX array)
                 reconstruction = inversion_util.reconstruction_positive_only_from(
@@ -482,6 +478,10 @@ class AbstractInversion:
                     curvature_reg_matrix=curvature_reg_matrix_input,
                     settings=self.settings,
                 )
+
+         #       print(reconstruction)
+
+         #       aa
 
                 # Allocate JAX array
                 solutions = jnp.zeros(self.curvature_reg_matrix.shape[0])
@@ -493,6 +493,26 @@ class AbstractInversion:
                 solutions = solutions.at[indices].set(reconstruction)
 
                 return solutions
+
+                # # ids of values which are on edge so zero-d and not solved for.
+                # ids_to_not_solve_for = jnp.array(self.mapper_edge_pixel_list, dtype=int)
+                #
+                # # Create a boolean mask: True = keep, False = ignore
+                # mask = jnp.ones(self.data_vector.shape[0], dtype=bool).at[ids_to_not_solve_for].set(False)
+                #
+                # # Zero out entries we don't want to solve for
+                # data_vector_masked = self.data_vector * mask
+                #
+                # # Zero rows and columns in the matrix we want to ignore
+                # mask_matrix = mask[:, None] * mask[None, :]
+                # curvature_reg_matrix_masked = self.curvature_reg_matrix * mask_matrix
+
+                # Get the values to assign (must be a JAX array)
+                return inversion_util.reconstruction_positive_only_from(
+                    data_vector=data_vector_masked,
+                    curvature_reg_matrix=curvature_reg_matrix_masked,
+                    settings=self.settings,
+                )
 
             else:
 

@@ -561,8 +561,6 @@ def adaptive_pixel_signals_from(
 
     return pixel_signals**signal_scale
 
-
-@numba_util.jit()
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
@@ -643,21 +641,37 @@ def mapping_matrix_from(
     sub_fraction
         The fractional area each sub-pixel takes up in an pixel.
     """
+    M_sub, B = pix_indexes_for_sub_slim_index.shape
+    M = total_mask_pixels
+    S = pixels
 
-    mapping_matrix = np.zeros((total_mask_pixels, pixels))
+    # 1) Flatten
+    flat_pixidx  = pix_indexes_for_sub_slim_index.reshape(-1)   # (M_sub*B,)
+    flat_w       = pix_weights_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_parent  = jnp.repeat(slim_index_for_sub_slim_index, B) # (M_sub*B,)
+    flat_count   = jnp.repeat(pix_size_for_sub_slim_index, B)   # (M_sub*B,)
 
-    for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-        slim_index = slim_index_for_sub_slim_index[sub_slim_index]
+    # 2) Build valid mask: k < pix_size[i]
+    k = jnp.tile(jnp.arange(B), M_sub)                          # (M_sub*B,)
+    valid = k < flat_count                                      # (M_sub*B,)
 
-        for pix_count in range(pix_size_for_sub_slim_index[sub_slim_index]):
-            pix_index = pix_indexes_for_sub_slim_index[sub_slim_index, pix_count]
-            pix_weight = pix_weights_for_sub_slim_index[sub_slim_index, pix_count]
+    # 3) Zero out invalid weights
+    flat_w = flat_w * valid.astype(flat_w.dtype)
 
-            mapping_matrix[slim_index][pix_index] += (
-                sub_fraction[slim_index] * pix_weight
-            )
+    # 4) Redirect -1 indices to extra bin S
+    OUT = S
+    flat_pixidx = jnp.where(flat_pixidx < 0, OUT, flat_pixidx)
 
-    return mapping_matrix
+    # 5) Multiply by sub_fraction of the slim row
+    flat_frac = sub_fraction[flat_parent]                       # (M_sub*B,)
+    flat_contrib = flat_w * flat_frac                           # (M_sub*B,)
+
+    # 6) Scatter into (M × (S+1)), summing duplicates
+    mat = jnp.zeros((M, S + 1), dtype=flat_contrib.dtype)
+    mat = mat.at[flat_parent, flat_pixidx].add(flat_contrib)
+
+    # 7) Drop the extra column and return
+    return mat[:, :S]
 
 
 @numba_util.jit()

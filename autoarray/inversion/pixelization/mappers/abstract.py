@@ -249,9 +249,9 @@ class AbstractMapper(LinearObj):
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.over_sampler.mask.pixels_in_mask,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
-            pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=np.array(self.pix_indexes_for_sub_slim_index),
+            pix_sizes_for_sub_slim_index=np.array(self.pix_sizes_for_sub_slim_index),
+            pix_weights_for_sub_slim_index=np.array(self.pix_weights_for_sub_slim_index),
             pix_pixels=self.params,
             sub_size=np.array(self.over_sampler.sub_size).astype("int"),
         )
@@ -282,7 +282,7 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            sub_fraction=np.array(self.over_sampler.sub_fraction),
+            sub_fraction=self.over_sampler.sub_fraction,
         )
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:

@@ -147,6 +147,10 @@ class OverSampler:
             over_sample_size=sub_size, mask=mask
         )
 
+        self.sub_total = int(np.sum(self.sub_size**2))
+        self.sub_length = self.sub_size**self.mask.dimensions
+        self.sub_fraction = jnp.array(1.0 / self.sub_length.array)
+
         # Used for JAX based adaptive over sampling.
 
         # Define group sizes
@@ -172,31 +176,31 @@ class OverSampler:
     def tree_unflatten(cls, aux_data, children):
         return cls(mask=children[0], sub_size=children[1])
 
-    @property
-    def sub_total(self):
-        """
-        The total number of sub-pixels in the entire mask.
-        """
-        return int(np.sum(self.sub_size**2))
-
-    @property
-    def sub_length(self) -> Array2D:
-        """
-        The total number of sub-pixels in a give pixel,
-
-        For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
-        """
-        return self.sub_size**self.mask.dimensions
-
-    @property
-    def sub_fraction(self) -> Array2D:
-        """
-        The fraction of the area of a pixel every sub-pixel contains.
-
-        For example, a sub-size of 3x3 mean every pixel contains 1/9 the area.
-        """
-
-        return 1.0 / self.sub_length
+    # @property
+    # def sub_total(self):
+    #     """
+    #     The total number of sub-pixels in the entire mask.
+    #     """
+    #     return int(np.sum(self.sub_size**2))
+    #
+    # @property
+    # def sub_length(self) -> Array2D:
+    #     """
+    #     The total number of sub-pixels in a give pixel,
+    #
+    #     For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
+    #     """
+    #     return self.sub_size**self.mask.dimensions
+    #
+    # @property
+    # def sub_fraction(self) -> Array2D:
+    #     """
+    #     The fraction of the area of a pixel every sub-pixel contains.
+    #
+    #     For example, a sub-size of 3x3 mean every pixel contains 1/9 the area.
+    #     """
+    #
+    #     return 1.0 / self.sub_length
 
     @property
     def sub_pixel_areas(self) -> np.ndarray:
