@@ -354,19 +354,18 @@ class AbstractInversion:
         regularization it is bypassed.
         """
 
-        regularization_matrix = self.regularization_matrix
-
         if self.all_linear_obj_have_regularization:
-            return regularization_matrix
+            return self.regularization_matrix
 
-        regularization_matrix = np.delete(
-            regularization_matrix, self.no_regularization_index_list, 0
-        )
-        regularization_matrix = np.delete(
-            regularization_matrix, self.no_regularization_index_list, 1
-        )
+        # ids of values which are on edge so zero-d and not solved for.
+        ids_to_not_solve_for = jnp.array(self.no_regularization_index_list, dtype=int)
 
-        return regularization_matrix
+        # Create a boolean mask: True = keep, False = ignore
+        mask = jnp.ones(self.data_vector.shape[0], dtype=bool).at[ids_to_not_solve_for].set(False)
+
+        # Zero rows and columns in the matrix we want to ignore
+        mask_matrix = mask[:, None] * mask[None, :]
+        return self.regularization_matrix * mask_matrix
 
     @cached_property
     def curvature_reg_matrix(self) -> np.ndarray:
@@ -651,6 +650,12 @@ class AbstractInversion:
 
         if not self.has(cls=AbstractRegularization):
             return 0.0
+
+        print(self.reconstruction_reduced)
+        print(self.regularization_matrix_reduced)
+
+        print(self.reconstruction_reduced.shape)
+        print(self.regularization_matrix_reduced.shape)
 
         return np.matmul(
             self.reconstruction_reduced.T,
