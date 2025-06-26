@@ -561,6 +561,7 @@ def adaptive_pixel_signals_from(
 
     return pixel_signals**signal_scale
 
+
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
@@ -646,14 +647,14 @@ def mapping_matrix_from(
     S = pixels
 
     # 1) Flatten
-    flat_pixidx  = pix_indexes_for_sub_slim_index.reshape(-1)   # (M_sub*B,)
-    flat_w       = pix_weights_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
-    flat_parent  = jnp.repeat(slim_index_for_sub_slim_index, B) # (M_sub*B,)
-    flat_count   = jnp.repeat(pix_size_for_sub_slim_index, B)   # (M_sub*B,)
+    flat_pixidx = pix_indexes_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_w = pix_weights_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_parent = jnp.repeat(slim_index_for_sub_slim_index, B)  # (M_sub*B,)
+    flat_count = jnp.repeat(pix_size_for_sub_slim_index, B)  # (M_sub*B,)
 
     # 2) Build valid mask: k < pix_size[i]
-    k = jnp.tile(jnp.arange(B), M_sub)                          # (M_sub*B,)
-    valid = k < flat_count                                      # (M_sub*B,)
+    k = jnp.tile(jnp.arange(B), M_sub)  # (M_sub*B,)
+    valid = k < flat_count  # (M_sub*B,)
 
     # 3) Zero out invalid weights
     flat_w = flat_w * valid.astype(flat_w.dtype)
@@ -663,8 +664,8 @@ def mapping_matrix_from(
     flat_pixidx = jnp.where(flat_pixidx < 0, OUT, flat_pixidx)
 
     # 5) Multiply by sub_fraction of the slim row
-    flat_frac = sub_fraction[flat_parent]                       # (M_sub*B,)
-    flat_contrib = flat_w * flat_frac                           # (M_sub*B,)
+    flat_frac = sub_fraction[flat_parent]  # (M_sub*B,)
+    flat_contrib = flat_w * flat_frac  # (M_sub*B,)
 
     # 6) Scatter into (M × (S+1)), summing duplicates
     mat = jnp.zeros((M, S + 1), dtype=flat_contrib.dtype)

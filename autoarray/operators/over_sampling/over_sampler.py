@@ -149,7 +149,9 @@ class OverSampler:
 
         self.sub_total = int(np.sum(self.sub_size**2))
         self.sub_length = self.sub_size**self.mask.dimensions
-        self.sub_fraction = Array2D(values=jnp.array(1.0 / self.sub_length.array), mask=self.mask)
+        self.sub_fraction = Array2D(
+            values=jnp.array(1.0 / self.sub_length.array), mask=self.mask
+        )
 
         # Used for JAX based adaptive over sampling.
 

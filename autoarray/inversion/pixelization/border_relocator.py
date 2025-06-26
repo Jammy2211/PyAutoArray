@@ -64,7 +64,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
 
 
 def furthest_grid_2d_slim_index_from(
-        grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
+    grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
 ) -> int:
     """
     Returns the index in `slim_indexes` corresponding to the 2D point in `grid_2d_slim`
@@ -87,7 +87,7 @@ def furthest_grid_2d_slim_index_from(
     subgrid = grid_2d_slim[slim_indexes]
     dy = subgrid[:, 0] - coordinate[0]
     dx = subgrid[:, 1] - coordinate[1]
-    squared_distances = dx ** 2 + dy ** 2
+    squared_distances = dx**2 + dy**2
 
     max_dist = np.max(squared_distances)
 
@@ -98,7 +98,6 @@ def furthest_grid_2d_slim_index_from(
     max_index = max_positions[-1]
 
     return slim_indexes[max_index]
-
 
 
 def sub_border_pixel_slim_indexes_from(
@@ -154,12 +153,10 @@ def sub_border_pixel_slim_indexes_from(
             int(border_pixel)
         ]
 
-        sub_border_pixels[border_1d_index] = (
-            furthest_grid_2d_slim_index_from(
-                grid_2d_slim=sub_grid_2d_slim,
-                slim_indexes=sub_border_pixels_of_border_pixel,
-                coordinate=mask_centre,
-            )
+        sub_border_pixels[border_1d_index] = furthest_grid_2d_slim_index_from(
+            grid_2d_slim=sub_grid_2d_slim,
+            slim_indexes=sub_border_pixels_of_border_pixel,
+            coordinate=mask_centre,
         )
 
     return sub_border_pixels
@@ -235,8 +232,8 @@ def relocated_grid_from(grid, border_grid):
     border_origin = jnp.mean(border_grid, axis=0)
 
     # Radii from origin
-    grid_radii = jnp.linalg.norm(grid - border_origin, axis=1)                   # (N,)
-    border_radii = jnp.linalg.norm(border_grid - border_origin, axis=1)          # (M,)
+    grid_radii = jnp.linalg.norm(grid - border_origin, axis=1)  # (N,)
+    border_radii = jnp.linalg.norm(border_grid - border_origin, axis=1)  # (M,)
     border_min_radius = jnp.min(border_radii)
 
     # Determine which points are outside
@@ -244,15 +241,15 @@ def relocated_grid_from(grid, border_grid):
 
     # To compute nearest border point for each grid point, we must do it for all and then mask later
     # Compute all distances: (N, M)
-    diffs = grid[:, None, :] - border_grid[None, :, :]     # (N, M, 2)
-    dists_squared = jnp.sum(diffs**2, axis=2)              # (N, M)
-    closest_indices = jnp.argmin(dists_squared, axis=1)    # (N,)
+    diffs = grid[:, None, :] - border_grid[None, :, :]  # (N, M, 2)
+    dists_squared = jnp.sum(diffs**2, axis=2)  # (N, M)
+    closest_indices = jnp.argmin(dists_squared, axis=1)  # (N,)
 
     # Get border radius for closest border point to each grid point
-    matched_border_radii = border_radii[closest_indices]   # (N,)
+    matched_border_radii = border_radii[closest_indices]  # (N,)
 
     # Ratio of border to grid radius
-    move_factors = matched_border_radii / grid_radii       # (N,)
+    move_factors = matched_border_radii / grid_radii  # (N,)
 
     # Only move if:
     #   - the point is outside the border
@@ -260,7 +257,7 @@ def relocated_grid_from(grid, border_grid):
     apply_move = jnp.logical_and(outside_mask, move_factors < 1.0)  # (N,)
 
     # Compute moved positions (for all points, but will select with mask)
-    direction_vectors = grid - border_origin                # (N, 2)
+    direction_vectors = grid - border_origin  # (N, 2)
     moved_grid = move_factors[:, None] * direction_vectors + border_origin  # (N, 2)
 
     # Select which grid points to move

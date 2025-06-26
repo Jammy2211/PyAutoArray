@@ -249,9 +249,13 @@ class AbstractMapper(LinearObj):
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.over_sampler.mask.pixels_in_mask,
-            pix_indexes_for_sub_slim_index=np.array(self.pix_indexes_for_sub_slim_index),
+            pix_indexes_for_sub_slim_index=np.array(
+                self.pix_indexes_for_sub_slim_index
+            ),
             pix_sizes_for_sub_slim_index=np.array(self.pix_sizes_for_sub_slim_index),
-            pix_weights_for_sub_slim_index=np.array(self.pix_weights_for_sub_slim_index),
+            pix_weights_for_sub_slim_index=np.array(
+                self.pix_weights_for_sub_slim_index
+            ),
             pix_pixels=self.params,
             sub_size=np.array(self.over_sampler.sub_size).astype("int"),
         )
@@ -356,8 +360,12 @@ class AbstractMapper(LinearObj):
         """
 
         return mapper_util.data_weight_total_for_pix_from(
-            pix_indexes_for_sub_slim_index=np.array(self.pix_indexes_for_sub_slim_index),
-            pix_weights_for_sub_slim_index=np.array(self.pix_weights_for_sub_slim_index),
+            pix_indexes_for_sub_slim_index=np.array(
+                self.pix_indexes_for_sub_slim_index
+            ),
+            pix_weights_for_sub_slim_index=np.array(
+                self.pix_weights_for_sub_slim_index
+            ),
             pixels=self.pixels,
         )
 

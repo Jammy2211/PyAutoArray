@@ -301,7 +301,6 @@ def test__grid_2d_via_shape_native_from():
     ).all()
 
 
-
 def test__radial_projected_shape_slim_from():
     shape_slim = aa.util.grid_2d._radial_projected_shape_slim_from(
         extent=np.array([-1.0, 1.0, -1.0, 1.0]),

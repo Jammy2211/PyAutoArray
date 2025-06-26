@@ -98,10 +98,12 @@ class Mesh2DRectangular(Abstract2DMesh):
         x_min = jnp.min(grid[:, 1]) - buffer
         x_max = jnp.max(grid[:, 1]) + buffer
 
-        pixel_scales = jnp.array((
-            (y_max - y_min) / shape_native[0],
-            (x_max - x_min) / shape_native[1],
-        ))
+        pixel_scales = jnp.array(
+            (
+                (y_max - y_min) / shape_native[0],
+                (x_max - x_min) / shape_native[1],
+            )
+        )
         origin = jnp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
 
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(

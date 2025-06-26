@@ -253,7 +253,9 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     linear_obj = aa.m.MockLinearObj(
         parameters=1,
         grid=grid,
-        mapping_matrix=np.array([[1.0], [2.0], [3.0], [2.0], [3.0], [4.0], [3.0], [1.0], [2.0]]),
+        mapping_matrix=np.array(
+            [[1.0], [2.0], [3.0], [2.0], [3.0], [4.0], [3.0], [1.0], [2.0]]
+        ),
         regularization=None,
     )
 
@@ -341,7 +343,11 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True, force_edge_pixels_to_zeros=False),
+        settings=aa.SettingsInversion(
+            use_w_tilde=False,
+            use_positive_only_solver=True,
+            force_edge_pixels_to_zeros=False,
+        ),
     )
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
@@ -353,7 +359,11 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion_no_linear_func = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True, force_edge_pixels_to_zeros=False),
+        settings=aa.SettingsInversion(
+            use_w_tilde=False,
+            use_positive_only_solver=True,
+            force_edge_pixels_to_zeros=False,
+        ),
     )
 
     assert inversion.regularization_term == pytest.approx(

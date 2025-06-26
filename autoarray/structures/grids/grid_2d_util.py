@@ -259,9 +259,9 @@ def grid_2d_slim_via_mask_from(
         pixel_scales = jnp.array(pixel_scales)
         sign = jnp.array([-1.0, 1.0])
         return (
-                (jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
-                * sign
-                * pixel_scales
+            (jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
+            * sign
+            * pixel_scales
         )
 
     centres_scaled = np.array(centres_scaled)
@@ -272,7 +272,6 @@ def grid_2d_slim_via_mask_from(
         * sign
         * pixel_scales
     )
-
 
 
 def grid_2d_via_mask_from(
@@ -728,8 +727,6 @@ def grid_pixels_in_mask_pixels_from(
     np.add.at(mesh_pixels_per_image_pixel, (y_indices, x_indices), 1)
 
     return mesh_pixels_per_image_pixel
-
-
 
 
 def grid_2d_slim_via_shape_native_not_mask_from(

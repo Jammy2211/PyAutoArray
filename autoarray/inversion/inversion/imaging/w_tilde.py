@@ -94,7 +94,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=self.w_tilde_data,
-                    data_to_pix_unique=np.array(mapper.unique_mappings.data_to_pix_unique),
+                    data_to_pix_unique=np.array(
+                        mapper.unique_mappings.data_to_pix_unique
+                    ),
                     data_weights=np.array(mapper.unique_mappings.data_weights),
                     pix_lengths=np.array(mapper.unique_mappings.pix_lengths),
                     pix_pixels=mapper.params,
@@ -276,7 +278,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 curvature_preload=self.w_tilde.curvature_preload,
                 curvature_indexes=self.w_tilde.indexes,
                 curvature_lengths=self.w_tilde.lengths,
-                data_to_pix_unique=np.array(mapper_i.unique_mappings.data_to_pix_unique),
+                data_to_pix_unique=np.array(
+                    mapper_i.unique_mappings.data_to_pix_unique
+                ),
                 data_weights=np.array(mapper_i.unique_mappings.data_weights),
                 pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
                 pix_pixels=mapper_i.params,
