@@ -341,7 +341,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True, force_edge_pixels_to_zeros=False),
     )
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
@@ -353,7 +353,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion_no_linear_func = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True, force_edge_pixels_to_zeros=False),
     )
 
     assert inversion.regularization_term == pytest.approx(
