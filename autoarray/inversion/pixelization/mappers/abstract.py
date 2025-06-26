@@ -275,6 +275,7 @@ class AbstractMapper(LinearObj):
         It is described in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf and in more
         detail in the function  `mapper_util.mapping_matrix_from()`.
         """
+
         return mapper_util.mapping_matrix_from(
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
@@ -282,7 +283,7 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            sub_fraction=self.over_sampler.sub_fraction,
+            sub_fraction=self.over_sampler.sub_fraction.array,
         )
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
@@ -355,8 +356,8 @@ class AbstractMapper(LinearObj):
         """
 
         return mapper_util.data_weight_total_for_pix_from(
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=np.array(self.pix_indexes_for_sub_slim_index),
+            pix_weights_for_sub_slim_index=np.array(self.pix_weights_for_sub_slim_index),
             pixels=self.pixels,
         )
 
