@@ -2,7 +2,7 @@ import jax.numpy as jnp
 import jax.lax as lax
 import numpy as np
 
-from typing import List, Optional
+from typing import List, Optional, Type
 
 from autoconf import conf
 
@@ -346,3 +346,48 @@ def preconditioner_matrix_via_mapping_matrix_from(
     return (
         preconditioner_noise_normalization * curvature_matrix
     ) + regularization_matrix
+
+
+def param_range_list_from(cls: Type, linear_obj_list) -> List[List[int]]:
+    """
+    Each linear object in the `Inversion` has N parameters, and these parameters correspond to a certain range
+    of indexing values in the matrices used to perform the inversion.
+
+    This function returns the `param_range_list` of an input type of linear object, which gives the indexing range
+    of each linear object of the input type.
+
+    For example, if an `Inversion` has:
+
+    - A `LinearFuncList` linear object with 3 `params`.
+    - A `Mapper` with 100 `params`.
+    - A `Mapper` with 200 `params`.
+
+    The corresponding matrices of this inversion (e.g. the `curvature_matrix`) have `shape=(303, 303)` where:
+
+    - The `LinearFuncList` values are in the entries `[0:3]`.
+    - The first `Mapper` values are in the entries `[3:103]`.
+    - The second `Mapper` values are in the entries `[103:303]
+
+    For this example, `param_range_list_from(cls=AbstractMapper)` therefore returns the
+    list `[[3, 103], [103, 303]]`.
+
+    Parameters
+    ----------
+    cls
+        The type of class that the list of their parameter range index values are returned for.
+
+    Returns
+    -------
+    A list of the index range of the parameters of each linear object in the inversion of the input cls type.
+    """
+    index_list = []
+
+    pixel_count = 0
+
+    for linear_obj in linear_obj_list:
+        if isinstance(linear_obj, cls):
+            index_list.append([pixel_count, pixel_count + linear_obj.params])
+
+        pixel_count += linear_obj.params
+
+    return index_list

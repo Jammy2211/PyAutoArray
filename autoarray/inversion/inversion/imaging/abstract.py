@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Optional, Union, Type
+from typing import Dict, List, Union, Type
 
 from autoconf import cached_property
 

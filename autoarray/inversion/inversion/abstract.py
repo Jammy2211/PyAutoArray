@@ -68,17 +68,6 @@ class AbstractInversion:
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         """
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion functionality (linear light profiles, pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
         self.dataset = dataset
 
         self.linear_obj_list = linear_obj_list
@@ -160,17 +149,10 @@ class AbstractInversion:
         -------
         A list of the index range of the parameters of each linear object in the inversion of the input cls type.
         """
-        index_list = []
-
-        pixel_count = 0
-
-        for linear_obj in self.linear_obj_list:
-            if isinstance(linear_obj, cls):
-                index_list.append([pixel_count, pixel_count + linear_obj.params])
-
-            pixel_count += linear_obj.params
-
-        return index_list
+        return inversion_util.param_range_list_from(
+            cls=cls,
+            linear_obj_list=self.linear_obj_list
+        )
 
     def cls_list_from(self, cls: Type, cls_filtered: Optional[Type] = None) -> List:
         """
