@@ -687,40 +687,41 @@ def mapping_matrix_from(
     return mat[:, :S]
 
 
-@numba_util.jit()
 def mapped_to_source_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, array_slim: np.ndarray
 ) -> np.ndarray:
     """
-    Map a masked 2d image in the image domain to the source domain and sum up all mappings on the source-pixels.
+     Map a masked 2D image (in slim form) into the source plane by summing and averaging
+     each image-pixel's contribution to its mapped source-pixels.
 
-    For example, suppose we have an image and a mapper. We can map every image-pixel to its corresponding mapper's
-    source pixel and sum the values based on these mappings.
+     Each row i of `mapping_matrix` describes how image-pixel i is distributed (with
+     weights) across the source-pixels j.  `array_slim[i]` is then multiplied by those
+     weights and summed over i to give each source-pixel’s total mapped value; finally,
+     we divide by the number of nonzero contributions to form an average.
 
-    This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
+     Parameters
+     ----------
+     mapping_matrix : ndarray of shape (M, N)
+         mapping_matrix[i, j] ≥ 0 is the weight by which image-pixel i contributes to
+         source-pixel j.  Zero means “no contribution.”
+     array_slim : ndarray of shape (M,)
+         The slimmed image values for each image-pixel i.
 
-    Parameters
-    ----------
-    mapping_matrix
-        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-    array_slim
-        The masked 2D array of values in its slim representation (e.g. the image data) which are mapped to the
-        source domain in order to compute their average values.
-    """
+     Returns
+     -------
+     mapped_to_source : ndarray of shape (N,)
+         The averaged, mapped values on each of the N source-pixels.
+     """
+    # weighted sums: sum over i of array_slim[i] * mapping_matrix[i, j]
+    # ==> vector‐matrix multiply: (1×M) dot (M×N) → (N,)
+    mapped_to_source = array_slim @ mapping_matrix
 
-    mapped_to_source = np.zeros(mapping_matrix.shape[1])
+    # count how many nonzero contributions each source-pixel j received
+    counts = np.count_nonzero(mapping_matrix > 0.0, axis=0)
 
-    source_pixel_count = np.zeros(mapping_matrix.shape[1])
-
-    for i in range(mapping_matrix.shape[0]):
-        for j in range(mapping_matrix.shape[1]):
-            if mapping_matrix[i, j] > 0:
-                mapped_to_source[j] += array_slim[i] * mapping_matrix[i, j]
-                source_pixel_count[j] += 1
-
-    for j in range(mapping_matrix.shape[1]):
-        if source_pixel_count[j] > 0:
-            mapped_to_source[j] /= source_pixel_count[j]
+    # avoid division by zero: only divide where counts > 0
+    nonzero = counts > 0
+    mapped_to_source[nonzero] /= counts[nonzero]
 
     return mapped_to_source
 

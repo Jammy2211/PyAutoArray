@@ -223,7 +223,7 @@ def test__mapped_to_source_from(grid_2d_7x7):
 
     mapped_to_source_util = aa.util.mapper.mapped_to_source_via_mapping_matrix_from(
         mapping_matrix=np.array(mapper.mapping_matrix),
-        array_slim=np.array(array_slim),
+        array_slim=array_slim,
     )
 
     mapped_to_source_mapper = mapper.mapped_to_source_from(array=array_slim)
