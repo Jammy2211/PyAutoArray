@@ -51,7 +51,7 @@ class Visuals2D(AbstractVisuals):
     def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None, geometry=None):
         if self.origin is not None:
             plotter.origin_scatter.scatter_grid(
-                grid=Grid2DIrregular(values=self.origin)
+                grid=Grid2DIrregular(values=self.origin).array
             )
 
         if self.mask is not None:
