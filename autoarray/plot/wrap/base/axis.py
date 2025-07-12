@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from typing import List
 
@@ -34,6 +33,7 @@ class Axis(AbstractMatWrap):
             The extent of the figure which set the axis-limits on the figure the grid is plotted,
             following the format [xmin, xmax, ymin, ymax].
         """
+        import matplotlib.pyplot as plt
 
         config_dict = self.config_dict
         extent_dict = config_dict.get("extent")

@@ -1,6 +1,6 @@
 import numpy as np
-from scipy.interpolate import griddata
-from typing import List, Optional, Tuple
+
+from typing import Optional, Tuple
 
 from autoconf import cached_property
 
@@ -76,6 +76,8 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
             The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
             reconstructed source is returned on.
         """
+        from scipy.interpolate import griddata
+
         interpolation_grid = self.interpolation_grid_from(
             shape_native=shape_native, extent=extent
         )

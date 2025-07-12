@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Union
 
@@ -44,6 +43,7 @@ class FillBetween(AbstractMatWrap1D):
         y1
             The second line of ydata that defines the region that is filled in.
         """
+        import matplotlib.pyplot as plt
 
         config_dict = self.config_dict
 

@@ -1,5 +1,4 @@
 import logging
-from astropy import time
 from typing import Dict, Tuple, Optional
 
 from autoarray.dataset import preprocess
@@ -36,6 +35,8 @@ class Header:
 
     @property
     def modified_julian_date(self) -> Optional[str]:
+        from astropy import time
+
         if (
             self.date_of_observation is not None
             and self.time_of_observation is not None

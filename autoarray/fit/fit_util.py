@@ -174,12 +174,8 @@ def noise_normalization_complex_from(*, noise_map: jnp.ndarray) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    noise_normalization_real = jnp.sum(
-        jnp.log(2 * jnp.pi * np.array(noise_map).real ** 2.0)
-    )
-    noise_normalization_imag = jnp.sum(
-        jnp.log(2 * jnp.pi * np.array(noise_map).imag ** 2.0)
-    )
+    noise_normalization_real = jnp.sum(jnp.log(2 * jnp.pi * noise_map.real**2.0))
+    noise_normalization_imag = jnp.sum(jnp.log(2 * jnp.pi * noise_map.imag**2.0))
     return noise_normalization_real + noise_normalization_imag
 
 

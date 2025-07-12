@@ -1,4 +1,3 @@
-import numpy as np
 from typing import Optional, Tuple
 
 from autoarray.structures.abstract_structure import Structure

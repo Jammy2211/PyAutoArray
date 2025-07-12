@@ -34,5 +34,6 @@ def native_index_for_slim_index_1d_from(
 
     """
 
-    native_index_for_slim_index_1d = jnp.flatnonzero(~mask_1d)
-    return native_index_for_slim_index_1d
+    if isinstance(mask_1d, np.ndarray):
+        return np.flatnonzero(~mask_1d)
+    return jnp.flatnonzero(~mask_1d)

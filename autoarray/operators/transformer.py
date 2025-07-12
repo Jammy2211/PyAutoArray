@@ -1,4 +1,3 @@
-from astropy import units
 import copy
 import jax.numpy as jnp
 import numpy as np
@@ -141,7 +140,7 @@ class TransformerDFT:
         else:
             visibilities = transformer_util.visibilities_from(
                 image_1d=image.slim.array,
-                grid_radians=np.array(self.grid),
+                grid_radians=self.grid.array,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -171,7 +170,7 @@ class TransformerDFT:
         """
         image_slim = transformer_util.image_direct_from(
             visibilities=visibilities.in_array,
-            grid_radians=np.array(self.grid.array),
+            grid_radians=self.grid.array,
             uv_wavelengths=self.uv_wavelengths,
         )
 
@@ -211,7 +210,7 @@ class TransformerDFT:
 
         return transformer_util.transformed_mapping_matrix_from(
             mapping_matrix=mapping_matrix,
-            grid_radians=np.array(self.grid),
+            grid_radians=self.grid.array,
             uv_wavelengths=self.uv_wavelengths,
         )
 
@@ -262,6 +261,8 @@ class TransformerNUFFT(NUFFT_cpu):
         adjoint_scaling : float
             Scaling factor for adjoint operations to normalize reconstructed images.
         """
+        from astropy import units
+
         if isinstance(self, NUFFTPlaceholder):
             pynufft_exception()
 
@@ -334,6 +335,8 @@ class TransformerNUFFT(NUFFT_cpu):
         - The plan must be initialized before performing any NUFFT operations (e.g., forward or adjoint).
         - This method modifies the internal state of the NUFFT object by calling `self.plan(...)`.
         """
+        from astropy import units
+
         if not isinstance(ratio, int):
             ratio = int(ratio)
 

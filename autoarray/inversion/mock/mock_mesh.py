@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional
+from typing import Optional
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh

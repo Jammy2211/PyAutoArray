@@ -4,7 +4,6 @@ from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
 
-import matplotlib.pyplot as plt
 from typing import Optional, Tuple
 
 from autoarray.plot.visuals.one_d import Visuals1D
@@ -27,13 +26,13 @@ class AbstractPlotter:
         visuals_2d: Visuals2D = None,
         include_2d: Include2D = None,
     ):
-        self.visuals_1d = visuals_1d
-        self.include_1d = include_1d
-        self.mat_plot_1d = mat_plot_1d
+        self.visuals_1d = visuals_1d or Visuals1D()
+        self.include_1d = include_1d or Include1D()
+        self.mat_plot_1d = mat_plot_1d or MatPlot1D()
 
-        self.visuals_2d = visuals_2d
-        self.include_2d = include_2d
-        self.mat_plot_2d = mat_plot_2d
+        self.visuals_2d = visuals_2d or Visuals2D()
+        self.include_2d = include_2d or Include2D()
+        self.mat_plot_2d = mat_plot_2d or MatPlot2D()
 
         self.subplot_figsize = None
 
@@ -112,6 +111,7 @@ class AbstractPlotter:
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
             new figure and so that it can be output using the *output.output_figure(structure=None)* function.
         """
+        import matplotlib.pyplot as plt
 
         self.set_mat_plots_for_subplot(
             is_for_subplot=True,

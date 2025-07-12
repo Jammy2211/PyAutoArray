@@ -19,8 +19,11 @@ class MockInversionImaging(InversionImagingMapping):
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: SettingsInversion = None,
     ):
+
+        settings = settings or SettingsInversion()
+
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
@@ -85,13 +88,15 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         w_tilde=None,
         linear_obj_list=None,
         curvature_matrix_mapper_diag=None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: SettingsInversion = None,
     ):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
             psf=psf,
         )
+
+        settings = settings or SettingsInversion()
 
         super().__init__(
             dataset=dataset,

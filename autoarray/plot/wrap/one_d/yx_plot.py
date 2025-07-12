@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from typing import Union
 
@@ -51,6 +50,7 @@ class YXPlot(AbstractMatWrap1D):
         label
             Optionally include a label on the plot for a `Legend` to display.
         """
+        import matplotlib.pyplot as plt
 
         if self.label is not None:
             label = self.label

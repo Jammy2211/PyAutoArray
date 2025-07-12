@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.cluster import KMeans as ScipyKMeans
 from typing import Optional
 import sys
 import warnings
@@ -97,6 +96,8 @@ class KMeans(AbstractImageMeshWeighted):
 
         weight_map = self.weight_map_from(adapt_data=adapt_data)
 
+        from sklearn.cluster import KMeans as ScipyKMeans
+
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
             random_state=1,
@@ -104,7 +105,7 @@ class KMeans(AbstractImageMeshWeighted):
             max_iter=5,
         )
 
-        grid = mask.derive_grid.unmasked
+        grid = mask.derive_grid.unmasked.array
 
         try:
             kmeans = kmeans.fit(X=grid, sample_weight=weight_map)

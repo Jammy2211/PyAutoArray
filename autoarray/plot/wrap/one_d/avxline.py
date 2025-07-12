@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from typing import List, Optional
 
 from autoarray.plot.wrap.one_d.abstract import AbstractMatWrap1D
@@ -42,6 +41,7 @@ class AXVLine(AbstractMatWrap1D):
         label
             Labels for each vertical line used by a `Legend`.
         """
+        import matplotlib.pyplot as plt
 
         if vertical_line is [] or vertical_line is None:
             return

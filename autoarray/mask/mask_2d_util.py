@@ -1,6 +1,5 @@
 import numpy as np
 import jax.numpy as jnp
-from scipy.ndimage import convolve
 from typing import Tuple
 import warnings
 
@@ -51,6 +50,8 @@ def native_index_for_slim_index_2d_from(
 
     native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
     """
+    if isinstance(mask_2d, np.ndarray):
+        return np.stack(np.nonzero(~mask_2d.astype(bool))).T
     return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
 
 
@@ -497,6 +498,7 @@ def blurring_mask_2d_from(
     blurring_mask = blurring_from(mask=mask)
 
     """
+    from scipy.ndimage import convolve
 
     # Get the distance from False values to edges
     y_distance, x_distance = min_false_distance_to_edge(mask_2d)

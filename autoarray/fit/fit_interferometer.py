@@ -122,7 +122,7 @@ class FitInterferometer(FitDataset):
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
         return fit_util.noise_normalization_complex_from(
-            noise_map=self.noise_map,
+            noise_map=self.noise_map.array,
         )
 
     @property
