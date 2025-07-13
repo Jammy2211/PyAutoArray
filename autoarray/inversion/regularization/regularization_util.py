@@ -261,37 +261,26 @@ def weighted_regularization_matrix_from(
 
     return regularization_matrix
 
-
-@numba_util.jit()
 def brightness_zeroth_regularization_matrix_from(
     regularization_weights: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the regularization matrix of the brightness zeroth regularization scheme (e.g. ``BrightnessZeroth``).
+    Returns the regularization matrix for the zeroth-order brightness regularization scheme.
 
     Parameters
     ----------
     regularization_weights
-        The regularization weight of each pixel, adaptively governing the degree of zeroth order regularization
-        applied to each inversion parameter (e.g. mesh pixels of a ``Mapper``).
+        The regularization weights for each pixel, governing the strength of zeroth-order
+        regularization applied per inversion parameter.
 
     Returns
     -------
-    np.ndarray
-        The regularization matrix computed using an adaptive regularization scheme where the effective regularization
-        coefficient of every source pixel is different.
+    A diagonal regularization matrix where each diagonal element is the squared regularization weight
+    for that pixel.
     """
+    regularization_weight_squared = regularization_weights**2.0
+    return np.diag(regularization_weight_squared)
 
-    parameters = len(regularization_weights)
-
-    regularization_matrix = np.zeros(shape=(parameters, parameters))
-
-    regularization_weight = regularization_weights**2.0
-
-    for i in range(parameters):
-        regularization_matrix[i, i] += regularization_weight[i]
-
-    return regularization_matrix
 
 
 def reg_split_from(
@@ -357,43 +346,61 @@ def reg_split_from(
     return splitted_mappings, splitted_sizes, splitted_weights
 
 
-@numba_util.jit()
 def pixel_splitted_regularization_matrix_from(
     regularization_weights: np.ndarray,
     splitted_mappings: np.ndarray,
     splitted_sizes: np.ndarray,
     splitted_weights: np.ndarray,
 ) -> np.ndarray:
-    # I'm not sure what is the best way to add surface brightness weight to the regularization scheme here.
-    # Currently, I simply mulitply the i-th weight to the i-th source pixel, but there should be different ways.
-    # Need to keep an eye here.
+    """
+    Returns the regularization matrix for the adaptive splitted regularization scheme.
 
-    parameters = int(len(splitted_mappings) / 4)
+    This regularization scheme splits every source pixel into a cross of four regularization points and interpolates to
+    these points in order to smooth an inversion's solution. It was designed to remove stochasticity in the
+    regularization applied to a solution, which can occur when the number of neighbors of a pixelization's mesh
+    changes depending on the geometry of the mesh (e.g. Voronoi mesh).
 
-    regularization_matrix = np.zeros(shape=(parameters, parameters))
+    A visual illustration and description is given in the appendix of He et al 2024: https://arxiv.org/abs/2403.16253
 
+    Parameters
+    ----------
+    regularization_weights
+        The regularization weight of each pixel, adaptively governing the degree of regularization
+        applied to each inversion parameter.
+    splitted_mappings
+        The mapping of every image sub-pixel in the masked data to the pixels of a pixelization, where each mapping
+        acounts for the cross of four regularization points that each pixel is split into.
+    splitted_sizes
+        The number of mappings of every image sub-pixel in the masked data to the pixels of a pixelization,
+        where each mapping acounts for the cross of four regularization points that each pixel is split into.
+    splitted_weights
+        The interpolation weights of every image sub-pixel in the masked data's pixelization pixel mapping,
+        where each mapping acounts for the cross of four regularization points that each pixel is split into.
+    """
+
+    parameters = splitted_mappings.shape[0] // 4
+    regularization_matrix = np.zeros((parameters, parameters))
     regularization_weight = regularization_weights**2.0
 
-    for i in range(parameters):
-        regularization_matrix[i, i] += 2e-8
+    # Add small constant to diagonal
+    np.fill_diagonal(regularization_matrix, 2e-8)
 
+    # Compute regularization contributions
+    for i in range(parameters):
+        reg_w = regularization_weight[i]
         for j in range(4):
             k = i * 4 + j
-
             size = splitted_sizes[k]
-            mapping = splitted_mappings[k]
-            weight = splitted_weights[k]
+            mapping = splitted_mappings[k][:size]
+            weight = splitted_weights[k][:size]
 
-            for l in range(size):
-                for m in range(size - l):
-                    regularization_matrix[mapping[l], mapping[l + m]] += (
-                        weight[l] * weight[l + m] * regularization_weight[i]
-                    )
-                    regularization_matrix[mapping[l + m], mapping[l]] += (
-                        weight[l] * weight[l + m] * regularization_weight[i]
-                    )
+            # Outer product of weights and symmetric updates
+            outer = np.outer(weight, weight) * reg_w
+            rows, cols = np.meshgrid(mapping, mapping, indexing='ij')
+            regularization_matrix[rows, cols] += outer
 
-    for i in range(parameters):
-        regularization_matrix[i, i] /= 2.0
+    # Correct diagonal entries
+    np.fill_diagonal(regularization_matrix, np.diag(regularization_matrix) / 2.0)
 
     return regularization_matrix
+

@@ -22,8 +22,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         adapted to the data being fitted to smooth an inversion's solution.
 
         An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
-        and interpolates to these points in order
-        to smooth an inversion's solution.
+        and interpolates to these points in order to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
         Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
