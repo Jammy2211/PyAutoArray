@@ -41,7 +41,13 @@ class AbstractMesh:
         """
         if border_relocator is not None:
             return border_relocator.relocated_grid_from(grid=source_plane_data_grid)
-        return source_plane_data_grid
+
+        return Grid2D(
+            values=source_plane_data_grid.array,
+            mask=source_plane_data_grid.mask,
+            over_sample_size=source_plane_data_grid.over_sampler.sub_size,
+            over_sampled=source_plane_data_grid.over_sampled.array,
+        )
 
     def relocated_mesh_grid_from(
         self,
