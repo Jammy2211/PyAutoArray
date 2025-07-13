@@ -401,8 +401,10 @@ class AbstractInversion:
         # ids of values which are on edge so zero-d and not solved for.
         ids_to_keep = self.mapper_index_list
 
+        print(ids_to_keep)
+
         # Zero rows and columns in the matrix we want to ignore
-        return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
+        return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
     @property
     def mapper_zero_pixel_list(self) -> np.ndarray:

@@ -450,8 +450,5 @@ def pixel_splitted_regularization_matrix_from(
             rows, cols = np.meshgrid(mapping, mapping, indexing='ij')
             regularization_matrix[rows, cols] += outer
 
-    # Correct diagonal entries
-    np.fill_diagonal(regularization_matrix, np.diag(regularization_matrix) / 2.0)
-
     return regularization_matrix
 
