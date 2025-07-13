@@ -267,7 +267,7 @@ class AbstractInversion:
 
             mapper_index_list += range(param_range[0], param_range[1])
 
-        return mapper_index_list
+        return np.array(mapper_index_list)
 
     @property
     def mask(self) -> Array2D:
