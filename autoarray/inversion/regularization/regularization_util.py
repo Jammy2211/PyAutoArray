@@ -203,7 +203,7 @@ def brightness_zeroth_regularization_weights_from(
     return coefficient * (1.0 - pixel_signals)
 
 
-@numba_util.jit()
+# @numba_util.jit()
 def weighted_regularization_matrix_from(
     regularization_weights: np.ndarray,
     neighbors: np.ndarray,
@@ -237,29 +237,77 @@ def weighted_regularization_matrix_from(
         The regularization matrix computed using an adaptive regularization scheme where the effective regularization
         coefficient of every source pixel is different.
     """
-
     parameters = len(regularization_weights)
-
-    regularization_matrix = np.zeros(shape=(parameters, parameters))
-
+    regularization_matrix = np.zeros((parameters, parameters))
     regularization_weight = regularization_weights**2.0
 
+    # Add small diagonal offset
+    np.fill_diagonal(regularization_matrix, 1e-8)
+
     for i in range(parameters):
-        regularization_matrix[i, i] += 1e-8
         for j in range(neighbors_sizes[i]):
             neighbor_index = neighbors[i, j]
-            regularization_matrix[i, i] += regularization_weight[neighbor_index]
-            regularization_matrix[
-                neighbor_index, neighbor_index
-            ] += regularization_weight[neighbor_index]
-            regularization_matrix[i, neighbor_index] -= regularization_weight[
-                neighbor_index
-            ]
-            regularization_matrix[neighbor_index, i] -= regularization_weight[
-                neighbor_index
-            ]
+            w = regularization_weight[neighbor_index]
+
+            regularization_matrix[i, i] += w
+            regularization_matrix[neighbor_index, neighbor_index] += w
+            regularization_matrix[i, neighbor_index] -= w
+            regularization_matrix[neighbor_index, i] -= w
 
     return regularization_matrix
+
+
+# def weighted_regularization_matrix_from(
+#     regularization_weights: np.ndarray,
+#     neighbors: np.ndarray,
+#     neighbors_sizes: np.ndarray,
+# ) -> np.ndarray:
+#     """
+#     Returns the regularization matrix of the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
+#
+#     This matrix is computed using the regularization weights of every mesh pixel, which are computed using the
+#     function ``adaptive_regularization_weights_from``. These act as the effective regularization coefficients of
+#     every mesh pixel.
+#
+#     The regularization matrix is computed using the pixel-neighbors array, which is setup using the appropriate
+#     neighbor calculation of the corresponding ``Mapper`` class.
+#
+#     Parameters
+#     ----------
+#     regularization_weights
+#         The regularization weight of each pixel, adaptively governing the degree of gradient regularization
+#         applied to each inversion parameter (e.g. mesh pixels of a ``Mapper``).
+#     neighbors
+#         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
+#         the mesh grid (entries of -1 correspond to no neighbor).
+#     neighbors_sizes
+#         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
+#         Voronoi grid.
+#
+#     Returns
+#     -------
+#     np.ndarray
+#         The regularization matrix computed using an adaptive regularization scheme where the effective regularization
+#         coefficient of every source pixel is different.
+#     """
+#     parameters = len(regularization_weights)
+#     regularization_matrix = np.zeros((parameters, parameters))
+#     regularization_weight = regularization_weights**2.0
+#
+#     # Add small diagonal offset
+#     np.fill_diagonal(regularization_matrix, 1e-8)
+#
+#     for i in range(parameters):
+#         for j in range(neighbors_sizes[i]):
+#             neighbor_index = neighbors[i, j]
+#             w = regularization_weight[neighbor_index]
+#
+#             regularization_matrix[i, i] += w
+#             regularization_matrix[neighbor_index, neighbor_index] += w
+#             regularization_matrix[i, neighbor_index] -= w
+#             regularization_matrix[neighbor_index, i] -= w
+#
+#     return regularization_matrix
 
 def brightness_zeroth_regularization_matrix_from(
     regularization_weights: np.ndarray,

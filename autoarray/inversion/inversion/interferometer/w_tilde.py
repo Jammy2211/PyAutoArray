@@ -131,9 +131,9 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             sub_slim_sizes_for_pix_index,
             sub_slim_weights_for_pix_index,
         ) =  inversion_interferometer_util.sub_slim_indexes_for_pix_index(
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
-            pix_pixels=self.pixels,
+            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_pixels=mapper.pixels,
         )
 
         return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
