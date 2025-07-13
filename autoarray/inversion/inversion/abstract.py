@@ -400,26 +400,9 @@ class AbstractInversion:
 
         # ids of values which are on edge so zero-d and not solved for.
         ids_to_keep = self.mapper_index_list
+
         # Zero rows and columns in the matrix we want to ignore
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
-
-    @property
-    def mapper_zero_pixel_list(self) -> np.ndarray:
-        mapper_zero_pixel_list = []
-        param_range_list = self.param_range_list_from(cls=LinearObj)
-        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
-            if isinstance(linear_obj, AbstractMapper):
-                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[
-                    self.settings.image_pixels_source_zero
-                ]
-                source_pixels_zero = (
-                    np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0)
-                    != 0
-                )
-                mapper_zero_pixel_list.append(
-                    np.where(source_pixels_zero == True)[0] + param_range[0]
-                )
-        return mapper_zero_pixel_list
 
     @cached_property
     def reconstruction(self) -> np.ndarray:
