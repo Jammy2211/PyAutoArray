@@ -189,6 +189,25 @@ def test__inversion_imaging__via_regularizations(
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
 
+def test__inversion_imaging__source_pixel_zeroed_indices(
+    masked_imaging_7x7_no_blur,
+    rectangular_mapper_7x7_3x3,
+):
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[rectangular_mapper_7x7_3x3],
+        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        preloads=aa.Preloads(
+            mapper_indices=range(0, 9),
+            source_pixel_zeroed_indices=np.array([0])
+        )
+    )
+
+    assert inversion.reconstruction.shape[0] == 9
+    assert inversion.reconstruction[0] == 0.0
+    assert inversion.reconstruction[1] > 0.0
+
+
 def test__inversion_imaging__via_linear_obj_func_and_mapper(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
@@ -557,19 +576,19 @@ def test__inversion_matrices__x2_mappers(
 
     assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3][
         4
-    ] == pytest.approx(0.004607102, 1.0e-4)
+    ] == pytest.approx( 0.5000029374603968, 1.0e-4)
     assert inversion.reconstruction_dict[delaunay_mapper_9_3x3][4] == pytest.approx(
-        0.0475967358, 1.0e-4
+        0.4999970390886761, 1.0e-4
     )
-    assert inversion.reconstruction[13] == pytest.approx(0.047596735850, 1.0e-4)
+    assert inversion.reconstruction[13] == pytest.approx(0.49999703908867, 1.0e-4)
 
     assert inversion.mapped_reconstructed_data_dict[rectangular_mapper_7x7_3x3][
         4
-    ] == pytest.approx(0.0022574, 1.0e-4)
+    ] == pytest.approx(0.5000029, 1.0e-4)
     assert inversion.mapped_reconstructed_data_dict[delaunay_mapper_9_3x3][
         3
-    ] == pytest.approx(0.01545999, 1.0e-4)
-    assert inversion.mapped_reconstructed_image[4] == pytest.approx(0.05237029, 1.0e-4)
+    ] == pytest.approx(0.49999704, 1.0e-4)
+    assert inversion.mapped_reconstructed_image[4] == pytest.approx(0.99999998, 1.0e-4)
 
 
 def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):

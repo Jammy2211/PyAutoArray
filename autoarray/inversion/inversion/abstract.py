@@ -254,7 +254,7 @@ class AbstractInversion:
         return no_regularization_index_list
 
     @property
-    def mapper_indices(self) -> np.ndarray[]:
+    def mapper_indices(self) -> np.ndarray:
 
         if self.preloads.mapper_indices is not None:
             return self.preloads.mapper_indices
@@ -421,44 +421,30 @@ class AbstractInversion:
             ZTx := np.dot(Z.T, x)
         """
         if self.settings.use_positive_only_solver:
-            """
-            For the new implementation, we now need to take out the cols and rows of
-            the curvature_reg_matrix that corresponds to the parameters we force to be 0.
-            Similar for the data vector.
 
-            What we actually doing is that we have set the correspoding cols of the Z to be 0.
-            As the curvature_reg_matrix = ZTZ, so the cols and rows are all taken out.
-            And the data_vector = ZTx, so the corresponding row is also taken out.
-            """
+            if self.preloads.source_pixel_zeroed_indices is not None:
 
-            if (
-                self.has(cls=AbstractMapper)
-                and self.settings.force_edge_pixels_to_zeros
-            ):
+                # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
+                ids_to_keep = self.preloads.source_pixel_zeroed_indices_to_keep
 
-                # ids of values which are on edge so zero-d and not solved for.
-                ids_to_remove = jnp.array(self.mapper_edge_pixel_list, dtype=int)
-
-                # Create a boolean mask: True = keep, False = ignore
-                mask = (
-                    jnp.ones(self.data_vector.shape[0], dtype=bool)
-                    .at[ids_to_remove]
-                    .set(False)
-                )
-
-                # Zero out entries we don't want to solve for
-                data_vector_masked = self.data_vector * mask
-
-                # Zero rows and columns in the matrix we want to ignore
-                mask_matrix = mask[:, None] * mask[None, :]
-                curvature_reg_matrix_masked = self.curvature_reg_matrix * mask_matrix
+                # Use advanced indexing to select rows/columns
+                data_vector = self.data_vector[ids_to_keep]
+                curvature_reg_matrix = self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
                 # Perform reconstruction via fnnls
-                return inversion_util.reconstruction_positive_only_from(
-                    data_vector=data_vector_masked,
-                    curvature_reg_matrix=curvature_reg_matrix_masked,
+                reconstruction_partial = inversion_util.reconstruction_positive_only_from(
+                    data_vector=data_vector,
+                    curvature_reg_matrix=curvature_reg_matrix,
                     settings=self.settings,
                 )
+
+                # Allocate full solution array
+                reconstruction = jnp.zeros(self.data_vector.shape[0])
+
+                # Scatter the partial solution back to the full shape
+                reconstruction = reconstruction.at[ids_to_keep].set(reconstruction_partial)
+
+                return reconstruction
 
             else:
 
