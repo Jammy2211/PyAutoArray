@@ -254,20 +254,20 @@ class AbstractInversion:
         return no_regularization_index_list
 
     @property
-    def mapper_index_list(self) -> List[int]:
+    def mapper_indices(self) -> np.ndarray[]:
 
-        if self.preloads.mapper_index_list is not None:
-            return self.preloads.mapper_index_list
+        if self.preloads.mapper_indices is not None:
+            return self.preloads.mapper_indices
 
-        mapper_index_list = []
+        mapper_indices = []
 
         param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
         for param_range in param_range_list:
 
-            mapper_index_list += range(param_range[0], param_range[1])
+            mapper_indices += range(param_range[0], param_range[1])
 
-        return np.array(mapper_index_list)
+        return np.array(mapper_indices)
 
     @property
     def mask(self) -> Array2D:
@@ -360,7 +360,7 @@ class AbstractInversion:
             return self.regularization_matrix
 
         # ids of values which are on edge so zero-d and not solved for.
-        ids_to_keep = self.mapper_index_list
+        ids_to_keep = self.mapper_indices
 
         # Zero rows and columns in the matrix we want to ignore
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
@@ -399,7 +399,7 @@ class AbstractInversion:
             return self.curvature_reg_matrix
 
         # ids of values which are on edge so zero-d and not solved for.
-        ids_to_keep = self.mapper_index_list
+        ids_to_keep = self.mapper_indices
 
         # Zero rows and columns in the matrix we want to ignore
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
@@ -489,7 +489,7 @@ class AbstractInversion:
             return self.reconstruction
 
         # ids of values which are on edge so zero-d and not solved for.
-        ids_to_keep = self.mapper_index_list
+        ids_to_keep = self.mapper_indices
 
         # Zero rows and columns in the matrix we want to ignore
         return self.reconstruction[ids_to_keep]
