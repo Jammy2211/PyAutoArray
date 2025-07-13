@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 from typing import Dict, List, Optional, Union
 
@@ -14,6 +13,7 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
+from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
@@ -48,6 +48,17 @@ class InversionImagingWTilde(AbstractInversionImaging):
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         """
+
+        try:
+            import numba
+        except ModuleNotFoundError:
+            raise exc.InversionException(
+                "Inversion functionality (linear light profiles, pixelized reconstructions) is "
+                "disabled if numba is not installed.\n\n"
+                "This is because the run-times without numba are too slow.\n\n"
+                "Please install numba, which is described at the following web page:\n\n"
+                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            )
 
         super().__init__(
             dataset=dataset,
@@ -94,9 +105,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=self.w_tilde_data,
-                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.unique_mappings.data_weights,
-                    pix_lengths=mapper.unique_mappings.pix_lengths,
+                    data_to_pix_unique=np.array(
+                        mapper.unique_mappings.data_to_pix_unique
+                    ),
+                    data_weights=np.array(mapper.unique_mappings.data_weights),
+                    pix_lengths=np.array(mapper.unique_mappings.pix_lengths),
                     pix_pixels=mapper.params,
                 )
             )
@@ -276,9 +289,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 curvature_preload=self.w_tilde.curvature_preload,
                 curvature_indexes=self.w_tilde.indexes,
                 curvature_lengths=self.w_tilde.lengths,
-                data_to_pix_unique=mapper_i.unique_mappings.data_to_pix_unique,
-                data_weights=mapper_i.unique_mappings.data_weights,
-                pix_lengths=mapper_i.unique_mappings.pix_lengths,
+                data_to_pix_unique=np.array(
+                    mapper_i.unique_mappings.data_to_pix_unique
+                ),
+                data_weights=np.array(mapper_i.unique_mappings.data_weights),
+                pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
                 pix_pixels=mapper_i.params,
             )
 

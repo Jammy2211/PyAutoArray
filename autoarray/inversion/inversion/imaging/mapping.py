@@ -9,6 +9,7 @@ from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImag
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.inversion import inversion_util
@@ -21,6 +22,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -46,6 +48,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
         )
 
     @property

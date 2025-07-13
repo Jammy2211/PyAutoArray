@@ -102,14 +102,12 @@ class MapperRectangular(AbstractMapper):
             mapper_util.rectangular_mappings_weights_via_interpolation_from(
                 shape_native=self.shape_native,
                 source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-                source_plane_data_grid=Grid2DIrregular(
-                    self.source_plane_data_grid.over_sampled
-                ).array,
+                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
             )
         )
 
         return PixSubWeights(
-            mappings=np.array(mappings),
-            sizes=4 * np.ones(len(mappings), dtype="int"),
-            weights=np.array(weights),
+            mappings=mappings,
+            sizes=4 * jnp.ones(len(mappings), dtype="int"),
+            weights=weights,
         )

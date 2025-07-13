@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Optional, Union, Type
+from typing import Dict, List, Union, Type
 
 from autoconf import cached_property
 
@@ -10,6 +10,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
@@ -20,6 +21,7 @@ class AbstractInversionImaging(AbstractInversion):
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -66,6 +68,7 @@ class AbstractInversionImaging(AbstractInversion):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
         )
 
     @property

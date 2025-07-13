@@ -14,6 +14,7 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 
@@ -21,6 +22,7 @@ def inversion_from(
     dataset: Union[Imaging, Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = None,
 ):
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
@@ -55,6 +57,7 @@ def inversion_from(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
         )
 
     return inversion_interferometer_from(
@@ -68,6 +71,7 @@ def inversion_imaging_from(
     dataset,
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = None,
 ):
     """
     Factory which given an input `Imaging` dataset and list of linear objects, creates an `InversionImaging`.
@@ -126,6 +130,7 @@ def inversion_imaging_from(
         dataset=dataset,
         linear_obj_list=linear_obj_list,
         settings=settings,
+        preloads=preloads,
     )
 
 

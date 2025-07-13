@@ -68,7 +68,7 @@ def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
         pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub_slim_index=grid_2d_sub_1_7x7.over_sampler.slim_for_sub_slim,
-        adapt_data=np.array(image_7x7),
+        adapt_data=image_7x7,
     )
 
     assert (pixel_signals == pixel_signals_util).all()

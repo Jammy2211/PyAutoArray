@@ -65,6 +65,7 @@ from .operators.over_sampling.decorator import over_sample
 from .operators.contour import Grid2DContour
 from .layout.layout import Layout1D
 from .layout.layout import Layout2D
+from .preloads import Preloads
 from .structures.arrays.uniform_1d import Array1D
 from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.rgb import Array2DRGB

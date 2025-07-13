@@ -10,12 +10,11 @@ logger = logging.getLogger(__name__)
 class SettingsInversion:
     def __init__(
         self,
-        use_w_tilde: bool = True,
+        use_w_tilde: bool = False,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = True,
-        image_pixels_source_zero=None,
         no_regularization_add_to_curvature_diag_value: float = None,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
@@ -83,7 +82,6 @@ class SettingsInversion:
         self._use_border_relocator = use_border_relocator
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
-        self.image_pixels_source_zero = image_pixels_source_zero
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
         )

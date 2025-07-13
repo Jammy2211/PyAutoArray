@@ -147,6 +147,112 @@ def test__grid_2d_slim_via_shape_native_from():
     ).all()
 
 
+def test__grid_2d_slim_via_shape_native_not_mask_from():
+    grid_2d = aa.util.grid_2d.grid_2d_slim_via_shape_native_not_mask_from(
+        shape_native=(2, 3),
+        pixel_scales=(1.0, 1.0),
+    )
+
+    assert (
+        grid_2d
+        == np.array(
+            [
+                [0.5, -1.0],
+                [0.5, 0.0],
+                [0.5, 1.0],
+                [-0.5, -1.0],
+                [-0.5, 0.0],
+                [-0.5, 1.0],
+            ]
+        )
+    ).all()
+
+    grid_2d = aa.util.grid_2d.grid_2d_slim_via_shape_native_not_mask_from(
+        shape_native=(3, 2),
+        pixel_scales=(1.0, 1.0),
+    )
+
+    assert (
+        grid_2d
+        == np.array(
+            [
+                [1.0, -0.5],
+                [1.0, 0.5],
+                [0.0, -0.5],
+                [0.0, 0.5],
+                [-1.0, -0.5],
+                [-1.0, 0.5],
+            ]
+        )
+    ).all()
+
+    grid_2d = aa.util.grid_2d.grid_2d_slim_via_shape_native_not_mask_from(
+        shape_native=(3, 2), pixel_scales=(1.0, 1.0), origin=(3.0, -2.0)
+    )
+
+    assert (
+        grid_2d
+        == np.array(
+            [
+                [4.0, -2.5],
+                [4.0, -1.5],
+                [3.0, -2.5],
+                [3.0, -1.5],
+                [2.0, -2.5],
+                [2.0, -1.5],
+            ]
+        )
+    ).all()
+
+
+def test__grid_2d_via_shape_native_from():
+    grid_2d = aa.util.grid_2d.grid_2d_via_shape_native_from(
+        shape_native=(2, 3),
+        pixel_scales=(1.0, 1.0),
+    )
+
+    assert (
+        grid_2d
+        == np.array(
+            [
+                [[0.5, -1.0], [0.5, 0.0], [0.5, 1.0]],
+                [[-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0]],
+            ]
+        )
+    ).all()
+
+    grid_2d = aa.util.grid_2d.grid_2d_via_shape_native_from(
+        shape_native=(3, 2),
+        pixel_scales=(1.0, 1.0),
+    )
+
+    assert (
+        grid_2d
+        == np.array(
+            [
+                [[1.0, -0.5], [1.0, 0.5]],
+                [[0.0, -0.5], [0.0, 0.5]],
+                [[-1.0, -0.5], [-1.0, 0.5]],
+            ]
+        )
+    ).all()
+
+    grid_2d = aa.util.grid_2d.grid_2d_via_shape_native_from(
+        shape_native=(3, 2), pixel_scales=(1.0, 1.0), origin=(3.0, -2.0)
+    )
+
+    assert (
+        grid_2d
+        == np.array(
+            [
+                [[4.0, -2.5], [4.0, -1.5]],
+                [[3.0, -2.5], [3.0, -1.5]],
+                [[2.0, -2.5], [2.0, -1.5]],
+            ]
+        )
+    ).all()
+
+
 def test__grid_2d_via_shape_native_from():
     grid_2d = aa.util.grid_2d.grid_2d_via_shape_native_from(
         shape_native=(2, 3),

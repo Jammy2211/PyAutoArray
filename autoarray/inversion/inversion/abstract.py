@@ -13,6 +13,7 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 
@@ -27,6 +28,7 @@ class AbstractInversion:
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -66,22 +68,13 @@ class AbstractInversion:
             Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         """
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion functionality (linear light profiles, pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
         self.dataset = dataset
 
         self.linear_obj_list = linear_obj_list
 
         self.settings = settings
+
+        self.preloads = preloads or Preloads()
 
     @property
     def data(self):
@@ -156,17 +149,9 @@ class AbstractInversion:
         -------
         A list of the index range of the parameters of each linear object in the inversion of the input cls type.
         """
-        index_list = []
-
-        pixel_count = 0
-
-        for linear_obj in self.linear_obj_list:
-            if isinstance(linear_obj, cls):
-                index_list.append([pixel_count, pixel_count + linear_obj.params])
-
-            pixel_count += linear_obj.params
-
-        return index_list
+        return inversion_util.param_range_list_from(
+            cls=cls, linear_obj_list=self.linear_obj_list
+        )
 
     def cls_list_from(self, cls: Type, cls_filtered: Optional[Type] = None) -> List:
         """
@@ -268,6 +253,22 @@ class AbstractInversion:
         return no_regularization_index_list
 
     @property
+    def mapper_indices(self) -> np.ndarray:
+
+        if self.preloads.mapper_indices is not None:
+            return self.preloads.mapper_indices
+
+        mapper_indices = []
+
+        param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for param_range in param_range_list:
+
+            mapper_indices += range(param_range[0], param_range[1])
+
+        return np.array(mapper_indices)
+
+    @property
     def mask(self) -> Array2D:
         return self.data.mask
 
@@ -354,19 +355,14 @@ class AbstractInversion:
         regularization it is bypassed.
         """
 
-        regularization_matrix = self.regularization_matrix
-
         if self.all_linear_obj_have_regularization:
-            return regularization_matrix
+            return self.regularization_matrix
 
-        regularization_matrix = np.delete(
-            regularization_matrix, self.no_regularization_index_list, 0
-        )
-        regularization_matrix = np.delete(
-            regularization_matrix, self.no_regularization_index_list, 1
-        )
+        # ids of values which are on edge so zero-d and not solved for.
+        ids_to_keep = self.mapper_indices
 
-        return regularization_matrix
+        # Zero rows and columns in the matrix we want to ignore
+        return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
 
     @cached_property
     def curvature_reg_matrix(self) -> np.ndarray:
@@ -381,55 +377,31 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        if len(self.regularization_list) == 1:
-            curvature_matrix = self.curvature_matrix
-            curvature_matrix += self.regularization_matrix
-
-            del self.__dict__["curvature_matrix"]
-
-            return curvature_matrix
-
-        return np.add(self.curvature_matrix, self.regularization_matrix)
+        return jnp.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property
-    def curvature_reg_matrix_reduced(self) -> np.ndarray:
+    def curvature_reg_matrix_reduced(self) -> Optional[np.ndarray]:
         """
-        The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
+        The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
+        linear algebra system we solve for using D and F above and is given by
+        equation (12) in https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
-        This is the curvature reg matrix for only the mappers, which is necessary for computing the log det
-        term without the linear light profiles included.
+        A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
+        modules.
+
+        For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
+        The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
+        regularization it is bypassed.
         """
+
         if self.all_linear_obj_have_regularization:
             return self.curvature_reg_matrix
 
-        curvature_reg_matrix = self.curvature_reg_matrix
+        # ids of values which are on edge so zero-d and not solved for.
+        ids_to_keep = self.mapper_indices
 
-        curvature_reg_matrix = np.delete(
-            curvature_reg_matrix, self.no_regularization_index_list, 0
-        )
-        curvature_reg_matrix = np.delete(
-            curvature_reg_matrix, self.no_regularization_index_list, 1
-        )
-
-        return curvature_reg_matrix
-
-    @property
-    def mapper_zero_pixel_list(self) -> np.ndarray:
-        mapper_zero_pixel_list = []
-        param_range_list = self.param_range_list_from(cls=LinearObj)
-        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
-            if isinstance(linear_obj, AbstractMapper):
-                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[
-                    self.settings.image_pixels_source_zero
-                ]
-                source_pixels_zero = (
-                    np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0)
-                    != 0
-                )
-                mapper_zero_pixel_list.append(
-                    np.where(source_pixels_zero == True)[0] + param_range[0]
-                )
-        return mapper_zero_pixel_list
+        # Zero rows and columns in the matrix we want to ignore
+        return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
     @cached_property
     def reconstruction(self) -> np.ndarray:
@@ -448,51 +420,36 @@ class AbstractInversion:
             ZTx := np.dot(Z.T, x)
         """
         if self.settings.use_positive_only_solver:
-            """
-            For the new implementation, we now need to take out the cols and rows of
-            the curvature_reg_matrix that corresponds to the parameters we force to be 0.
-            Similar for the data vector.
 
-            What we actually doing is that we have set the correspoding cols of the Z to be 0.
-            As the curvature_reg_matrix = ZTZ, so the cols and rows are all taken out.
-            And the data_vector = ZTx, so the corresponding row is also taken out.
-            """
+            if self.preloads.source_pixel_zeroed_indices is not None:
 
-            if (
-                self.has(cls=AbstractMapper)
-                and self.settings.force_edge_pixels_to_zeros
-            ):
+                # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
+                ids_to_keep = self.preloads.source_pixel_zeroed_indices_to_keep
 
-                ids_zeros = jnp.array(self.mapper_edge_pixel_list, dtype=int)
+                # Use advanced indexing to select rows/columns
+                data_vector = self.data_vector[ids_to_keep]
+                curvature_reg_matrix = self.curvature_reg_matrix[ids_to_keep][
+                    :, ids_to_keep
+                ]
 
-                values_to_solve = jnp.ones(
-                    self.curvature_reg_matrix.shape[0], dtype=bool
-                )
-                values_to_solve = values_to_solve.at[ids_zeros].set(False)
-
-                data_vector_input = self.data_vector[values_to_solve]
-
-                curvature_reg_matrix_input = self.curvature_reg_matrix[
-                    values_to_solve, :
-                ][:, values_to_solve]
-
-                # Get the values to assign (must be a JAX array)
-                reconstruction = inversion_util.reconstruction_positive_only_from(
-                    data_vector=data_vector_input,
-                    curvature_reg_matrix=curvature_reg_matrix_input,
-                    settings=self.settings,
+                # Perform reconstruction via fnnls
+                reconstruction_partial = (
+                    inversion_util.reconstruction_positive_only_from(
+                        data_vector=data_vector,
+                        curvature_reg_matrix=curvature_reg_matrix,
+                        settings=self.settings,
+                    )
                 )
 
-                # Allocate JAX array
-                solutions = jnp.zeros(self.curvature_reg_matrix.shape[0])
+                # Allocate full solution array
+                reconstruction = jnp.zeros(self.data_vector.shape[0])
 
-                # Get indices where True
-                indices = jnp.where(values_to_solve)[0]
+                # Scatter the partial solution back to the full shape
+                reconstruction = reconstruction.at[ids_to_keep].set(
+                    reconstruction_partial
+                )
 
-                # Set reconstruction values at those indices
-                solutions = solutions.at[indices].set(reconstruction)
-
-                return solutions
+                return reconstruction
 
             else:
 
@@ -522,7 +479,11 @@ class AbstractInversion:
         if self.all_linear_obj_have_regularization:
             return self.reconstruction
 
-        return np.delete(self.reconstruction, self.no_regularization_index_list, axis=0)
+        # ids of values which are on edge so zero-d and not solved for.
+        ids_to_keep = self.mapper_indices
+
+        # Zero rows and columns in the matrix we want to ignore
+        return self.reconstruction[ids_to_keep]
 
     @property
     def reconstruction_dict(self) -> Dict[LinearObj, np.ndarray]:
@@ -665,9 +626,9 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return np.matmul(
+        return jnp.matmul(
             self.reconstruction_reduced.T,
-            np.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            jnp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
     @cached_property
@@ -682,7 +643,9 @@ class AbstractInversion:
 
         try:
             return 2.0 * np.sum(
-                np.log(np.diag(np.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+                jnp.log(
+                    jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced))
+                )
             )
         except np.linalg.LinAlgError as e:
             raise exc.InversionException() from e

@@ -10,45 +10,6 @@ from autoarray.inversion.pixelization.mesh import mesh_util
 
 
 @numba_util.jit()
-def sub_slim_indexes_for_pix_index(
-    pix_indexes_for_sub_slim_index: np.ndarray,
-    pix_weights_for_sub_slim_index: np.ndarray,
-    pix_pixels: int,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
-
-    for pix_indexes in pix_indexes_for_sub_slim_index:
-        for pix_index in pix_indexes:
-            sub_slim_sizes_for_pix_index[pix_index] += 1
-
-    max_pix_size = np.max(sub_slim_sizes_for_pix_index)
-
-    sub_slim_indexes_for_pix_index = -1 * np.ones(shape=(pix_pixels, int(max_pix_size)))
-    sub_slim_weights_for_pix_index = -1 * np.ones(shape=(pix_pixels, int(max_pix_size)))
-    sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
-
-    for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
-        pix_weights = pix_weights_for_sub_slim_index[slim_index]
-
-        for pix_index, pix_weight in zip(pix_indexes, pix_weights):
-            sub_slim_indexes_for_pix_index[
-                pix_index, int(sub_slim_sizes_for_pix_index[pix_index])
-            ] = slim_index
-
-            sub_slim_weights_for_pix_index[
-                pix_index, int(sub_slim_sizes_for_pix_index[pix_index])
-            ] = pix_weight
-
-            sub_slim_sizes_for_pix_index[pix_index] += 1
-
-    return (
-        sub_slim_indexes_for_pix_index,
-        sub_slim_sizes_for_pix_index,
-        sub_slim_weights_for_pix_index,
-    )
-
-
-@numba_util.jit()
 def data_slim_to_pixelization_unique_from(
     data_pixels,
     pix_indexes_for_sub_slim_index: np.ndarray,
@@ -498,7 +459,6 @@ def remove_bad_entries_voronoi_nn(
     return pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index
 
 
-@numba_util.jit()
 def adaptive_pixel_signals_from(
     pixels: int,
     pixel_weights: np.ndarray,
@@ -536,33 +496,47 @@ def adaptive_pixel_signals_from(
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
-    pixel_signals = np.zeros((pixels,))
-    pixel_sizes = np.zeros((pixels,))
+    M_sub, B = pix_indexes_for_sub_slim_index.shape
 
-    for sub_slim_index in range(len(pix_indexes_for_sub_slim_index)):
-        vertices_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
+    # 1) Flatten the per‐mapping tables:
+    flat_pixidx = pix_indexes_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_weights = pixel_weights.reshape(-1)  # (M_sub*B,)
 
-        mask_1d_index = slim_index_for_sub_slim_index[sub_slim_index]
+    # 2) Build a matching “parent‐slim” index for each flattened entry:
+    I_sub = jnp.repeat(jnp.arange(M_sub), B)  # (M_sub*B,)
 
-        pix_size_tem = pix_size_for_sub_slim_index[sub_slim_index]
+    # 3) Mask out any k >= pix_size_for_sub_slim_index[i]
+    valid = I_sub < 0  # dummy to get shape
+    # better:
+    valid = (jnp.arange(B)[None, :] < pix_size_for_sub_slim_index[:, None]).reshape(-1)
 
-        if pix_size_tem > 1:
-            pixel_signals[vertices_indexes[:pix_size_tem]] += (
-                adapt_data[mask_1d_index] * pixel_weights[sub_slim_index]
-            )
-            pixel_sizes[vertices_indexes] += 1
-        else:
-            pixel_signals[vertices_indexes[0]] += adapt_data[mask_1d_index]
-            pixel_sizes[vertices_indexes[0]] += 1
+    flat_weights = jnp.where(valid, flat_weights, 0.0)
+    flat_pixidx = jnp.where(
+        valid, flat_pixidx, pixels
+    )  # send invalid indices to an out-of-bounds slot
 
-    pixel_sizes[pixel_sizes == 0] = 1
-    pixel_signals /= pixel_sizes
-    pixel_signals /= np.max(pixel_signals)
+    # 4) Look up data & multiply by mapping weights:
+    flat_data_vals = adapt_data[slim_index_for_sub_slim_index][I_sub]  # (M_sub*B,)
+    flat_contrib = flat_data_vals * flat_weights  # (M_sub*B,)
 
+    # 5) Scatter‐add into signal sums and counts:
+    pixel_signals = jnp.zeros((pixels + 1,)).at[flat_pixidx].add(flat_contrib)
+    pixel_counts = jnp.zeros((pixels + 1,)).at[flat_pixidx].add(valid.astype(float))
+
+    # 6) Drop the extra “out-of-bounds” slot:
+    pixel_signals = pixel_signals[:pixels]
+    pixel_counts = pixel_counts[:pixels]
+
+    # 7) Normalize
+    pixel_counts = jnp.where(pixel_counts > 0, pixel_counts, 1.0)
+    pixel_signals = pixel_signals / pixel_counts
+    max_sig = jnp.max(pixel_signals)
+    pixel_signals = jnp.where(max_sig > 0, pixel_signals / max_sig, pixel_signals)
+
+    # 8) Exponentiate
     return pixel_signals**signal_scale
 
 
-@numba_util.jit()
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
@@ -643,87 +617,110 @@ def mapping_matrix_from(
     sub_fraction
         The fractional area each sub-pixel takes up in an pixel.
     """
+    M_sub, B = pix_indexes_for_sub_slim_index.shape
+    M = total_mask_pixels
+    S = pixels
 
-    mapping_matrix = np.zeros((total_mask_pixels, pixels))
+    # 1) Flatten
+    flat_pixidx = pix_indexes_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_w = pix_weights_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_parent = jnp.repeat(slim_index_for_sub_slim_index, B)  # (M_sub*B,)
+    flat_count = jnp.repeat(pix_size_for_sub_slim_index, B)  # (M_sub*B,)
 
-    for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-        slim_index = slim_index_for_sub_slim_index[sub_slim_index]
+    # 2) Build valid mask: k < pix_size[i]
+    k = jnp.tile(jnp.arange(B), M_sub)  # (M_sub*B,)
+    valid = k < flat_count  # (M_sub*B,)
 
-        for pix_count in range(pix_size_for_sub_slim_index[sub_slim_index]):
-            pix_index = pix_indexes_for_sub_slim_index[sub_slim_index, pix_count]
-            pix_weight = pix_weights_for_sub_slim_index[sub_slim_index, pix_count]
+    # 3) Zero out invalid weights
+    flat_w = flat_w * valid.astype(flat_w.dtype)
 
-            mapping_matrix[slim_index][pix_index] += (
-                sub_fraction[slim_index] * pix_weight
-            )
+    # 4) Redirect -1 indices to extra bin S
+    OUT = S
+    flat_pixidx = jnp.where(flat_pixidx < 0, OUT, flat_pixidx)
 
-    return mapping_matrix
+    # 5) Multiply by sub_fraction of the slim row
+    flat_frac = sub_fraction[flat_parent]  # (M_sub*B,)
+    flat_contrib = flat_w * flat_frac  # (M_sub*B,)
+
+    # 6) Scatter into (M × (S+1)), summing duplicates
+    mat = jnp.zeros((M, S + 1), dtype=flat_contrib.dtype)
+    mat = mat.at[flat_parent, flat_pixidx].add(flat_contrib)
+
+    # 7) Drop the extra column and return
+    return mat[:, :S]
 
 
-@numba_util.jit()
 def mapped_to_source_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, array_slim: np.ndarray
 ) -> np.ndarray:
     """
-    Map a masked 2d image in the image domain to the source domain and sum up all mappings on the source-pixels.
+    Map a masked 2D image (in slim form) into the source plane by summing and averaging
+    each image-pixel's contribution to its mapped source-pixels.
 
-    For example, suppose we have an image and a mapper. We can map every image-pixel to its corresponding mapper's
-    source pixel and sum the values based on these mappings.
-
-    This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
+    Each row i of `mapping_matrix` describes how image-pixel i is distributed (with
+    weights) across the source-pixels j.  `array_slim[i]` is then multiplied by those
+    weights and summed over i to give each source-pixel’s total mapped value; finally,
+    we divide by the number of nonzero contributions to form an average.
 
     Parameters
     ----------
-    mapping_matrix
-        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-    array_slim
-        The masked 2D array of values in its slim representation (e.g. the image data) which are mapped to the
-        source domain in order to compute their average values.
+    mapping_matrix : ndarray of shape (M, N)
+        mapping_matrix[i, j] ≥ 0 is the weight by which image-pixel i contributes to
+        source-pixel j.  Zero means “no contribution.”
+    array_slim : ndarray of shape (M,)
+        The slimmed image values for each image-pixel i.
+
+    Returns
+    -------
+    mapped_to_source : ndarray of shape (N,)
+        The averaged, mapped values on each of the N source-pixels.
     """
+    # weighted sums: sum over i of array_slim[i] * mapping_matrix[i, j]
+    # ==> vector‐matrix multiply: (1×M) dot (M×N) → (N,)
+    mapped_to_source = array_slim @ mapping_matrix
 
-    mapped_to_source = np.zeros(mapping_matrix.shape[1])
+    # count how many nonzero contributions each source-pixel j received
+    counts = np.count_nonzero(mapping_matrix > 0.0, axis=0)
 
-    source_pixel_count = np.zeros(mapping_matrix.shape[1])
-
-    for i in range(mapping_matrix.shape[0]):
-        for j in range(mapping_matrix.shape[1]):
-            if mapping_matrix[i, j] > 0:
-                mapped_to_source[j] += array_slim[i] * mapping_matrix[i, j]
-                source_pixel_count[j] += 1
-
-    for j in range(mapping_matrix.shape[1]):
-        if source_pixel_count[j] > 0:
-            mapped_to_source[j] /= source_pixel_count[j]
+    # avoid division by zero: only divide where counts > 0
+    nonzero = counts > 0
+    mapped_to_source[nonzero] /= counts[nonzero]
 
     return mapped_to_source
 
 
-@numba_util.jit()
 def data_weight_total_for_pix_from(
-    pix_indexes_for_sub_slim_index: np.ndarray,
-    pix_weights_for_sub_slim_index: np.ndarray,
+    pix_indexes_for_sub_slim_index: np.ndarray,  # shape (M, B)
+    pix_weights_for_sub_slim_index: np.ndarray,  # shape (M, B)
     pixels: int,
 ) -> np.ndarray:
     """
-    Returns the total weight of every pixelization pixel, which is the sum of the weights of all data-points that
-    map to that pixel.
+    Returns the total weight of every pixelization pixel, which is the sum of
+    the weights of all data‐points (sub‐pixels) that map to that pixel.
 
     Parameters
     ----------
-    pix_indexes_for_sub_slim_index
-        The mappings from a data sub-pixel index to a pixelization pixel index.
-    pix_weights_for_sub_slim_index
-        The weights of the mappings of every data sub-pixel and pixelization pixel.
-    pixels
-        The number of pixels in the pixelization.
+    pix_indexes_for_sub_slim_index : np.ndarray, shape (M, B), int
+        For each of M sub‐slim indexes, the B pixelization‐pixel indices it maps to.
+    pix_weights_for_sub_slim_index : np.ndarray, shape (M, B), float
+        For each of those mappings, the corresponding interpolation weight.
+    pixels : int
+        The total number of pixelization pixels N.
+
+    Returns
+    -------
+    np.ndarray, shape (N,)
+        The per‐pixel total weight: for each j in [0..N-1], the sum of all
+        pix_weights_for_sub_slim_index[i,k] such that pix_indexes_for_sub_slim_index[i,k] == j.
     """
+    # Flatten arrays
+    flat_idxs = pix_indexes_for_sub_slim_index.ravel()
+    flat_weights = pix_weights_for_sub_slim_index.ravel()
 
-    pix_weight_total = np.zeros(pixels)
+    # Filter out -1 (invalid mappings)
+    valid_mask = flat_idxs >= 0
+    flat_idxs = flat_idxs[valid_mask]
+    flat_weights = flat_weights[valid_mask]
 
-    for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
-        for pix_index, weight in zip(
-            pix_indexes, pix_weights_for_sub_slim_index[slim_index]
-        ):
-            pix_weight_total[int(pix_index)] += weight
-
-    return pix_weight_total
+    # Sum weights by pixel index
+    return np.bincount(flat_idxs, weights=flat_weights, minlength=pixels)

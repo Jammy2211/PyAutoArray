@@ -230,9 +230,13 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             pix_lengths,
         ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde_data.shape[0],
-            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-            pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=np.array(
+                mapper.pix_indexes_for_sub_slim_index
+            ),
+            pix_sizes_for_sub_slim_index=np.array(mapper.pix_sizes_for_sub_slim_index),
+            pix_weights_for_sub_slim_index=np.array(
+                mapper.pix_weights_for_sub_slim_index
+            ),
             pix_pixels=mapper.params,
             sub_size=np.array(grid.over_sample_size),
         )
@@ -345,9 +349,13 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             pix_lengths,
         ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde_lengths.shape[0],
-            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-            pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=np.array(
+                mapper.pix_indexes_for_sub_slim_index
+            ),
+            pix_sizes_for_sub_slim_index=np.array(mapper.pix_sizes_for_sub_slim_index),
+            pix_weights_for_sub_slim_index=np.array(
+                mapper.pix_weights_for_sub_slim_index
+            ),
             pix_pixels=mapper.params,
             sub_size=np.array(grid.over_sample_size),
         )
