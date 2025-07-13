@@ -353,29 +353,32 @@ def pixel_splitted_regularization_matrix_from(
     splitted_weights: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the regularization matrix for the adaptive splitted regularization scheme.
+    Returns the regularization matrix for the adaptive split-pixel regularization scheme.
 
-    This regularization scheme splits every source pixel into a cross of four regularization points and interpolates to
-    these points in order to smooth an inversion's solution. It was designed to remove stochasticity in the
-    regularization applied to a solution, which can occur when the number of neighbors of a pixelization's mesh
-    changes depending on the geometry of the mesh (e.g. Voronoi mesh).
+    This scheme splits each source pixel into a cross of four regularization points and interpolates
+    to those points to smooth the inversion solution. It is designed to mitigate stochasticity in
+    the regularization that can arise when the number of neighboring pixels varies across a
+    mesh (e.g., in a Voronoi tessellation).
 
-    A visual illustration and description is given in the appendix of He et al 2024: https://arxiv.org/abs/2403.16253
+    A visual description and further details are provided in the appendix of He et al. (2024):
+    https://arxiv.org/abs/2403.16253
 
     Parameters
     ----------
     regularization_weights
-        The regularization weight of each pixel, adaptively governing the degree of regularization
+        The regularization weight per pixel, adaptively controlling the strength of regularization
         applied to each inversion parameter.
     splitted_mappings
-        The mapping of every image sub-pixel in the masked data to the pixels of a pixelization, where each mapping
-        acounts for the cross of four regularization points that each pixel is split into.
+        The image pixel index mappings for each of the four regularization points into which each source pixel is split.
     splitted_sizes
-        The number of mappings of every image sub-pixel in the masked data to the pixels of a pixelization,
-        where each mapping acounts for the cross of four regularization points that each pixel is split into.
+        The number of neighbors or interpolation terms associated with each regularization point.
     splitted_weights
-        The interpolation weights of every image sub-pixel in the masked data's pixelization pixel mapping,
-        where each mapping acounts for the cross of four regularization points that each pixel is split into.
+        The interpolation weights corresponding to each mapping entry, used to apply regularization
+        between split points.
+
+    Returns
+    -------
+    The regularization matrix of shape [source_pixels, source_pixels].
     """
 
     parameters = splitted_mappings.shape[0] // 4

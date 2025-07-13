@@ -711,10 +711,15 @@ def data_weight_total_for_pix_from(
         The per‐pixel total weight: for each j in [0..N-1], the sum of all
         pix_weights_for_sub_slim_index[i,k] such that pix_indexes_for_sub_slim_index[i,k] == j.
     """
-    # Flatten both arrays into 1D
-    flat_idxs    = pix_indexes_for_sub_slim_index.ravel()
+    # Flatten arrays
+    flat_idxs = pix_indexes_for_sub_slim_index.ravel()
     flat_weights = pix_weights_for_sub_slim_index.ravel()
 
-    # Use bincount to sum weights at each index, ensuring length = pixels
+    # Filter out -1 (invalid mappings)
+    valid_mask = flat_idxs >= 0
+    flat_idxs = flat_idxs[valid_mask]
+    flat_weights = flat_weights[valid_mask]
+
+    # Sum weights by pixel index
     return np.bincount(flat_idxs, weights=flat_weights, minlength=pixels)
 
