@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 from typing import Dict, List, Optional, Union
 
@@ -14,6 +13,7 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
+from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 

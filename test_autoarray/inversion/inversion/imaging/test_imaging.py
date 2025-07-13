@@ -163,4 +163,5 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
                     mapping_matrix=np.ones(matrix_shape), source_plane_data_grid=grid
                 )
             ],
+            settings=aa.SettingsInversion(use_w_tilde=True)
         )
