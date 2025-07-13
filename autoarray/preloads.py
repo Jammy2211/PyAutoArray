@@ -10,7 +10,11 @@ logger.setLevel(level="INFO")
 
 class Preloads:
 
-    def __init__(self, mapper_indices: np.ndarray = None, source_pixel_zeroed_indices: np.ndarray = None):
+    def __init__(
+        self,
+        mapper_indices: np.ndarray = None,
+        source_pixel_zeroed_indices: np.ndarray = None,
+    ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
         and compatibility with JAX.

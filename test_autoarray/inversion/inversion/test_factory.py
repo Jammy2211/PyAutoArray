@@ -198,9 +198,8 @@ def test__inversion_imaging__source_pixel_zeroed_indices(
         linear_obj_list=[rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
         preloads=aa.Preloads(
-            mapper_indices=range(0, 9),
-            source_pixel_zeroed_indices=np.array([0])
-        )
+            mapper_indices=range(0, 9), source_pixel_zeroed_indices=np.array([0])
+        ),
     )
 
     assert inversion.reconstruction.shape[0] == 9
@@ -576,7 +575,7 @@ def test__inversion_matrices__x2_mappers(
 
     assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3][
         4
-    ] == pytest.approx( 0.5000029374603968, 1.0e-4)
+    ] == pytest.approx(0.5000029374603968, 1.0e-4)
     assert inversion.reconstruction_dict[delaunay_mapper_9_3x3][4] == pytest.approx(
         0.4999970390886761, 1.0e-4
     )

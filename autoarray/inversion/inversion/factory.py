@@ -22,7 +22,7 @@ def inversion_from(
     dataset: Union[Imaging, Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
-    preloads :Preloads = None,
+    preloads: Preloads = None,
 ):
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
@@ -71,7 +71,7 @@ def inversion_imaging_from(
     dataset,
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
-    preloads : Preloads = None,
+    preloads: Preloads = None,
 ):
     """
     Factory which given an input `Imaging` dataset and list of linear objects, creates an `InversionImaging`.

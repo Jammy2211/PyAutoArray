@@ -499,31 +499,33 @@ def adaptive_pixel_signals_from(
     M_sub, B = pix_indexes_for_sub_slim_index.shape
 
     # 1) Flatten the per‐mapping tables:
-    flat_pixidx  = pix_indexes_for_sub_slim_index.reshape(-1)    # (M_sub*B,)
-    flat_weights = pixel_weights.reshape(-1)   # (M_sub*B,)
+    flat_pixidx = pix_indexes_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
+    flat_weights = pixel_weights.reshape(-1)  # (M_sub*B,)
 
     # 2) Build a matching “parent‐slim” index for each flattened entry:
-    I_sub = jnp.repeat(jnp.arange(M_sub), B)                     # (M_sub*B,)
+    I_sub = jnp.repeat(jnp.arange(M_sub), B)  # (M_sub*B,)
 
     # 3) Mask out any k >= pix_size_for_sub_slim_index[i]
-    valid = (I_sub < 0)  # dummy to get shape
+    valid = I_sub < 0  # dummy to get shape
     # better:
     valid = (jnp.arange(B)[None, :] < pix_size_for_sub_slim_index[:, None]).reshape(-1)
 
     flat_weights = jnp.where(valid, flat_weights, 0.0)
-    flat_pixidx  = jnp.where(valid, flat_pixidx, pixels)  # send invalid indices to an out-of-bounds slot
+    flat_pixidx = jnp.where(
+        valid, flat_pixidx, pixels
+    )  # send invalid indices to an out-of-bounds slot
 
     # 4) Look up data & multiply by mapping weights:
     flat_data_vals = adapt_data[slim_index_for_sub_slim_index][I_sub]  # (M_sub*B,)
-    flat_contrib   = flat_data_vals * flat_weights                     # (M_sub*B,)
+    flat_contrib = flat_data_vals * flat_weights  # (M_sub*B,)
 
     # 5) Scatter‐add into signal sums and counts:
-    pixel_signals = jnp.zeros((pixels+1,)).at[flat_pixidx].add(flat_contrib)
-    pixel_counts  = jnp.zeros((pixels+1,)).at[flat_pixidx].add(valid.astype(float))
+    pixel_signals = jnp.zeros((pixels + 1,)).at[flat_pixidx].add(flat_contrib)
+    pixel_counts = jnp.zeros((pixels + 1,)).at[flat_pixidx].add(valid.astype(float))
 
     # 6) Drop the extra “out-of-bounds” slot:
     pixel_signals = pixel_signals[:pixels]
-    pixel_counts  = pixel_counts[:pixels]
+    pixel_counts = pixel_counts[:pixels]
 
     # 7) Normalize
     pixel_counts = jnp.where(pixel_counts > 0, pixel_counts, 1.0)
@@ -532,7 +534,7 @@ def adaptive_pixel_signals_from(
     pixel_signals = jnp.where(max_sig > 0, pixel_signals / max_sig, pixel_signals)
 
     # 8) Exponentiate
-    return pixel_signals ** signal_scale
+    return pixel_signals**signal_scale
 
 
 def mapping_matrix_from(
@@ -652,27 +654,27 @@ def mapped_to_source_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, array_slim: np.ndarray
 ) -> np.ndarray:
     """
-     Map a masked 2D image (in slim form) into the source plane by summing and averaging
-     each image-pixel's contribution to its mapped source-pixels.
+    Map a masked 2D image (in slim form) into the source plane by summing and averaging
+    each image-pixel's contribution to its mapped source-pixels.
 
-     Each row i of `mapping_matrix` describes how image-pixel i is distributed (with
-     weights) across the source-pixels j.  `array_slim[i]` is then multiplied by those
-     weights and summed over i to give each source-pixel’s total mapped value; finally,
-     we divide by the number of nonzero contributions to form an average.
+    Each row i of `mapping_matrix` describes how image-pixel i is distributed (with
+    weights) across the source-pixels j.  `array_slim[i]` is then multiplied by those
+    weights and summed over i to give each source-pixel’s total mapped value; finally,
+    we divide by the number of nonzero contributions to form an average.
 
-     Parameters
-     ----------
-     mapping_matrix : ndarray of shape (M, N)
-         mapping_matrix[i, j] ≥ 0 is the weight by which image-pixel i contributes to
-         source-pixel j.  Zero means “no contribution.”
-     array_slim : ndarray of shape (M,)
-         The slimmed image values for each image-pixel i.
+    Parameters
+    ----------
+    mapping_matrix : ndarray of shape (M, N)
+        mapping_matrix[i, j] ≥ 0 is the weight by which image-pixel i contributes to
+        source-pixel j.  Zero means “no contribution.”
+    array_slim : ndarray of shape (M,)
+        The slimmed image values for each image-pixel i.
 
-     Returns
-     -------
-     mapped_to_source : ndarray of shape (N,)
-         The averaged, mapped values on each of the N source-pixels.
-     """
+    Returns
+    -------
+    mapped_to_source : ndarray of shape (N,)
+        The averaged, mapped values on each of the N source-pixels.
+    """
     # weighted sums: sum over i of array_slim[i] * mapping_matrix[i, j]
     # ==> vector‐matrix multiply: (1×M) dot (M×N) → (N,)
     mapped_to_source = array_slim @ mapping_matrix
@@ -722,4 +724,3 @@ def data_weight_total_for_pix_from(
 
     # Sum weights by pixel index
     return np.bincount(flat_idxs, weights=flat_weights, minlength=pixels)
-

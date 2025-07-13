@@ -309,6 +309,7 @@ def weighted_regularization_matrix_from(
 #
 #     return regularization_matrix
 
+
 def brightness_zeroth_regularization_matrix_from(
     regularization_weights: np.ndarray,
 ) -> np.ndarray:
@@ -328,7 +329,6 @@ def brightness_zeroth_regularization_matrix_from(
     """
     regularization_weight_squared = regularization_weights**2.0
     return np.diag(regularization_weight_squared)
-
 
 
 def reg_split_from(
@@ -447,8 +447,7 @@ def pixel_splitted_regularization_matrix_from(
 
             # Outer product of weights and symmetric updates
             outer = np.outer(weight, weight) * reg_w
-            rows, cols = np.meshgrid(mapping, mapping, indexing='ij')
+            rows, cols = np.meshgrid(mapping, mapping, indexing="ij")
             regularization_matrix[rows, cols] += outer
 
     return regularization_matrix
-

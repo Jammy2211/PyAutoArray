@@ -130,7 +130,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             sub_slim_indexes_for_pix_index,
             sub_slim_sizes_for_pix_index,
             sub_slim_weights_for_pix_index,
-        ) =  inversion_interferometer_util.sub_slim_indexes_for_pix_index(
+        ) = inversion_interferometer_util.sub_slim_indexes_for_pix_index(
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=mapper.pixels,

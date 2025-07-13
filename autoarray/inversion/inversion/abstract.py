@@ -150,8 +150,7 @@ class AbstractInversion:
         A list of the index range of the parameters of each linear object in the inversion of the input cls type.
         """
         return inversion_util.param_range_list_from(
-            cls=cls,
-            linear_obj_list=self.linear_obj_list
+            cls=cls, linear_obj_list=self.linear_obj_list
         )
 
     def cls_list_from(self, cls: Type, cls_filtered: Optional[Type] = None) -> List:
@@ -429,20 +428,26 @@ class AbstractInversion:
 
                 # Use advanced indexing to select rows/columns
                 data_vector = self.data_vector[ids_to_keep]
-                curvature_reg_matrix = self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
+                curvature_reg_matrix = self.curvature_reg_matrix[ids_to_keep][
+                    :, ids_to_keep
+                ]
 
                 # Perform reconstruction via fnnls
-                reconstruction_partial = inversion_util.reconstruction_positive_only_from(
-                    data_vector=data_vector,
-                    curvature_reg_matrix=curvature_reg_matrix,
-                    settings=self.settings,
+                reconstruction_partial = (
+                    inversion_util.reconstruction_positive_only_from(
+                        data_vector=data_vector,
+                        curvature_reg_matrix=curvature_reg_matrix,
+                        settings=self.settings,
+                    )
                 )
 
                 # Allocate full solution array
                 reconstruction = jnp.zeros(self.data_vector.shape[0])
 
                 # Scatter the partial solution back to the full shape
-                reconstruction = reconstruction.at[ids_to_keep].set(reconstruction_partial)
+                reconstruction = reconstruction.at[ids_to_keep].set(
+                    reconstruction_partial
+                )
 
                 return reconstruction
 
@@ -638,7 +643,9 @@ class AbstractInversion:
 
         try:
             return 2.0 * np.sum(
-                jnp.log(jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+                jnp.log(
+                    jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced))
+                )
             )
         except np.linalg.LinAlgError as e:
             raise exc.InversionException() from e

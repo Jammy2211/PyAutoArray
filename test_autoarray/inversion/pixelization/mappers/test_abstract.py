@@ -69,6 +69,7 @@ def test__sub_slim_indexes_for_pix_index():
         [0, 1, 2, 3, 4, 5, 6, 7],
     ]
 
+
 def test__data_weight_total_for_pix_from():
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
