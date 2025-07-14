@@ -4,8 +4,6 @@ from typing import List, Optional, Union
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.one_d import Include1D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
@@ -21,7 +19,6 @@ class Array2DPlotter(Plotter):
         array: Array2D,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots `Array2D` objects using the matplotlib method `imshow()` and many other matplotlib functions which
@@ -32,8 +29,7 @@ class Array2DPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Array2D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Array2D` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -43,12 +39,8 @@ class Array2DPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals for 2D plots.
         """
-        super().__init__(
-            visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
-        )
+        super().__init__(visuals_2d=visuals_2d, mat_plot_2d=mat_plot_2d)
 
         self.array = array
 
@@ -72,7 +64,6 @@ class Grid2DPlotter(Plotter):
         grid: Grid2D,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots `Grid2D` objects using the matplotlib method `scatter()` and many other matplotlib functions which
@@ -83,8 +74,7 @@ class Grid2DPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Grid2D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Grid2D` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -94,12 +84,8 @@ class Grid2DPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Grid2D` are extracted and plotted as visuals for 2D plots.
         """
-        super().__init__(
-            visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
-        )
+        super().__init__(visuals_2d=visuals_2d, mat_plot_2d=mat_plot_2d)
 
         self.grid = grid
 
@@ -143,7 +129,6 @@ class YX1DPlotter(Plotter):
         x: Optional[Union[Array1D, Grid1D, List]] = None,
         mat_plot_1d: MatPlot1D = None,
         visuals_1d: Visuals1D = None,
-        include_1d: Include1D = None,
         should_plot_grid: bool = False,
         should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,
@@ -159,8 +144,7 @@ class YX1DPlotter(Plotter):
         but a user can manually input values into `MatPlot1d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals1D` object. Attributes may be extracted from
-        the `Array1D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include1D`
-        object or the `config/visualize/include.ini` file.
+        the `Array1D` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -172,8 +156,6 @@ class YX1DPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d
             Contains 1D visuals that can be overlaid on 1D plots.
-        include_1d
-            Specifies which attributes of the `Array1D` are extracted and plotted as visuals for 1D plots.
         """
 
         if isinstance(y, list):
@@ -182,9 +164,7 @@ class YX1DPlotter(Plotter):
         if isinstance(x, list):
             x = Array1D.no_mask(values=x, pixel_scales=1.0)
 
-        super().__init__(
-            visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
-        )
+        super().__init__(visuals_1d=visuals_1d, mat_plot_1d=mat_plot_1d)
 
         self.y = y
         self.x = y.grid_radial if x is None else x

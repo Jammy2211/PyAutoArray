@@ -3,7 +3,6 @@ from typing import Union
 
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -22,7 +21,6 @@ class MapperPlotter(Plotter):
         mapper: MapperRectangular,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `Mapper` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -33,8 +31,7 @@ class MapperPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Mapper` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Mapper` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -44,12 +41,8 @@ class MapperPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Mapper` are extracted and plotted as visuals for 2D plots.
         """
-        super().__init__(
-            visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
-        )
+        super().__init__(visuals_2d=visuals_2d, mat_plot_2d=mat_plot_2d)
 
         self.mapper = mapper
 

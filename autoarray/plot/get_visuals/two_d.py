@@ -6,7 +6,6 @@ from autoarray.inversion.pixelization.mappers.rectangular import (
 )
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.plot.get_visuals.abstract import AbstractGetVisuals
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -15,13 +14,9 @@ from autoarray.type import Grid2DLike
 
 
 class GetVisuals2D(AbstractGetVisuals):
-    def __init__(self, include: Include2D, visuals: Visuals2D):
+    def __init__(self, visuals: Visuals2D):
         """
         Class which gets 2D attributes and adds them to a `Visuals2D` objects, such that they are plotted on 2D figures.
-
-        For a visual to be extracted and added for plotting, it must have a `True` value in its corresponding entry in
-        the `Include2D` object. If this entry is `False`, the `GetVisuals2D.get` method returns a None and the
-        attribute is omitted from the plot.
 
         The `GetVisuals2D` class adds new visuals to a pre-existing `Visuals2D` object that is passed to
         its `__init__` method. This only adds a new entry if the visual are not already in this object.
@@ -34,12 +29,11 @@ class GetVisuals2D(AbstractGetVisuals):
         visuals
             The pre-existing visuals of the plotter which new visuals are added too via the `GetVisuals2D` class.
         """
-        super().__init__(include=include, visuals=visuals)
+        super().__init__(visuals=visuals)
 
     def origin_via_mask_from(self, mask: Mask2D) -> Grid2DIrregular:
         """
-        From a `Mask2D` get its origin for plotter, which is only extracted if an origin is not already
-        in `self.visuals` and with `True` entries in the `Include2D` object are extracted for plotting.
+        From a `Mask2D` get its origin for plotter.
 
         Parameters
         ----------
@@ -57,9 +51,6 @@ class GetVisuals2D(AbstractGetVisuals):
     def via_mask_from(self, mask: Mask2D) -> Visuals2D:
         """
         From a `Mask2D` get its attributes that can be plotted and return them in a `Visuals2D` object.
-
-        Only attributes not already in `self.visuals` and with `True` entries in the `Include2D` object are extracted
-        for plotting.
 
         From a `Mask2D` the following attributes can be extracted for plotting:
 
@@ -89,9 +80,6 @@ class GetVisuals2D(AbstractGetVisuals):
         """
         From a `Grid2D` get its attributes that can be plotted and return them in a `Visuals2D` object.
 
-        Only attributes not already in `self.visuals` and with `True` entries in the `Include2D` object are extracted
-        for plotting.
-
         From a `Grid2D` the following attributes can be extracted for plotting:
 
         - origin: the (y,x) origin of the grid's coordinate system.
@@ -118,9 +106,6 @@ class GetVisuals2D(AbstractGetVisuals):
         From a `Mapper` get its attributes that can be plotted in the mapper's data-plane  (e.g. the reconstructed
         data) and return them in a `Visuals2D` object.
 
-        Only attributes not already in `self.visuals` and with `True` entries in the `Include2D` object are extracted
-        for plotting.
-
         From a `Mapper` the following attributes can be extracted for plotting in the data-plane:
 
         - origin: the (y,x) origin of the `Array2D`'s coordinate system in the data plane.
@@ -142,7 +127,8 @@ class GetVisuals2D(AbstractGetVisuals):
         visuals_via_mask = self.via_mask_from(mask=mapper.mapper_grids.mask)
 
         mesh_grid = self.get(
-            "mesh_grid", mapper.image_plane_mesh_grid, "mapper_image_plane_mesh_grid"
+            "mesh_grid",
+            mapper.image_plane_mesh_grid,
         )
 
         return (
@@ -155,9 +141,6 @@ class GetVisuals2D(AbstractGetVisuals):
         """
         From a `Mapper` get its attributes that can be plotted in the mapper's source-plane  (e.g. the reconstruction)
         and return them in a `Visuals2D` object.
-
-        Only attributes not already in `self.visuals` and with `True` entries in the `Include2D` object are extracted
-        for plotting.
 
         From a `Mapper` the following attributes can be extracted for plotting in the source-plane:
 
@@ -185,7 +168,6 @@ class GetVisuals2D(AbstractGetVisuals):
         grid = self.get(
             "grid",
             mapper.source_plane_data_grid.over_sampled,
-            "mapper_source_plane_data_grid",
         )
 
         try:
@@ -198,7 +180,8 @@ class GetVisuals2D(AbstractGetVisuals):
             border = None
 
         mesh_grid = self.get(
-            "mesh_grid", mapper.source_plane_mesh_grid, "mapper_source_plane_mesh_grid"
+            "mesh_grid",
+            mapper.source_plane_mesh_grid,
         )
 
         return self.visuals + self.visuals.__class__(
@@ -208,9 +191,6 @@ class GetVisuals2D(AbstractGetVisuals):
     def via_fit_imaging_from(self, fit: FitImaging) -> Visuals2D:
         """
         From a `FitImaging` get its attributes that can be plotted and return them in a `Visuals2D` object.
-
-        Only attributes not already in `self.visuals` and with `True` entries in the `Include2D` object are extracted
-        for plotting.
 
         From a `FitImaging` the following attributes can be extracted for plotting:
 

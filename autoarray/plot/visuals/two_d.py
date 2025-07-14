@@ -1,4 +1,3 @@
-import numpy as np
 from matplotlib import patches as ptch
 from typing import List, Optional, Union
 
@@ -58,7 +57,10 @@ class Visuals2D(AbstractVisuals):
             plotter.mask_scatter.scatter_grid(grid=self.mask.derive_grid.edge.array)
 
         if self.border is not None:
-            plotter.border_scatter.scatter_grid(grid=self.border.array)
+            try:
+                plotter.border_scatter.scatter_grid(grid=self.border.array)
+            except AttributeError:
+                plotter.border_scatter.scatter_grid(grid=self.border)
 
         if self.grid is not None:
             plotter.grid_scatter.scatter_grid(grid=self.grid.array)

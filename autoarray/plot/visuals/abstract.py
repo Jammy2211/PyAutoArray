@@ -12,12 +12,8 @@ class AbstractVisuals(ABC):
         mask = Mask2D.circular(shape_native=(100, 100), pixel_scales=0.1, radius=3.0)
         array = Array2D.ones(shape_native=(100, 100), pixel_scales=0.1)
         masked_array = al.Array2D(values=array, mask=mask)
-        include_2d = Include2D(mask=True)
-        array_plotter = aplt.Array2DPlotter(array=masked_array, include_2d=include_2d)
+        array_plotter = aplt.Array2DPlotter(array=masked_array)
         array_plotter.figure()
-
-        Because `mask=True` in `Include2D` the function `figure` extracts the `Mask2D` from the `masked_array`
-        and plots it. It does this by creating a new `Visuals2D` object.
 
         If the user did not manually input a `Visuals2D` object, the one created in `function_array` is the one used to
         plot the image
@@ -25,12 +21,10 @@ class AbstractVisuals(ABC):
         However, if the user specifies their own `Visuals2D` object and passed it to the plotter, e.g.:
 
         visuals_2d = Visuals2D(origin=(0.0, 0.0))
-        include_2d = Include2D(mask=True)
-        array_plotter = aplt.Array2DPlotter(array=masked_array, include_2d=include_2d)
+        array_plotter = aplt.Array2DPlotter(array=masked_array)
 
-        We now wish for the `Plotter` to plot the `origin` in the user's input `Visuals2D` object and the `Mask2d`
-        extracted via the `Include2D`. To achieve this, two `Visuals2D` objects are created: (i) the user's input
-        instance (with an origin) and; (ii) the one created by the `Include2D` object (with a mask).
+        We now wish for the `Plotter` to plot the `origin` in the user's input `Visuals2D` object. To achieve this,
+        one `Visuals2D` object is created: (i) the user's input instance (with an origin).
 
         This `__add__` override means we can add the two together to make the final `Visuals2D` object that is
         plotted on the figure containing both the `origin` and `Mask2D`.:

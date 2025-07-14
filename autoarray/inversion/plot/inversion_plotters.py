@@ -5,7 +5,6 @@ from autoconf import conf
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -20,7 +19,6 @@ class InversionPlotter(Plotter):
         inversion: AbstractInversion,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
         residuals_symmetric_cmap: bool = True,
     ):
         """
@@ -32,8 +30,7 @@ class InversionPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Inversion` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Inversion` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -43,13 +40,8 @@ class InversionPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Inversion` are extracted and plotted as visuals for 2D plots.
-
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.inversion = inversion
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
@@ -91,7 +83,6 @@ class InversionPlotter(Plotter):
             mapper=self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index],
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
-            include_2d=self.include_2d,
         )
 
     def figures_2d(self, reconstructed_image: bool = False):
@@ -350,9 +341,9 @@ class InversionPlotter(Plotter):
         if self.mat_plot_2d.use_log10:
             self.mat_plot_2d.contour = False
 
-        mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
+        # mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
 
-        self.include_2d._mapper_image_plane_mesh_grid = False
+        # self.include_2d._mapper_image_plane_mesh_grid = False
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, data_subtracted=True
@@ -371,15 +362,15 @@ class InversionPlotter(Plotter):
 
         self.mat_plot_2d.use_log10 = False
 
-        self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
-        self.include_2d._mapper_image_plane_mesh_grid = True
+        # self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
+        # self.include_2d._mapper_image_plane_mesh_grid = True
         self.set_title(label="Mesh Pixel Grid Overlaid")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
         )
         self.set_title(label=None)
 
-        self.include_2d._mapper_image_plane_mesh_grid = False
+        # self.include_2d._mapper_image_plane_mesh_grid = False
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstruction=True
@@ -436,7 +427,7 @@ class InversionPlotter(Plotter):
     ):
         self.open_subplot_figure(number_subplots=4)
 
-        self.include_2d._mapper_image_plane_mesh_grid = False
+        # self.include_2d._mapper_image_plane_mesh_grid = False
 
         self.figures_2d_of_pixelization(
             pixelization_index=pixelization_index, data_subtracted=True

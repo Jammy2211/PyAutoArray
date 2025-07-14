@@ -4,8 +4,6 @@ from typing import Callable
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.one_d import Include1D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
@@ -19,10 +17,8 @@ class FitInterferometerPlotterMeta(Plotter):
         get_visuals_2d_real_space: Callable,
         mat_plot_1d: MatPlot1D,
         visuals_1d: Visuals1D,
-        include_1d: Include1D,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
         residuals_symmetric_cmap: bool = True,
     ):
         """
@@ -35,8 +31,7 @@ class FitInterferometerPlotterMeta(Plotter):
         customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `FitInterferometer` and plotted via the visuals object, if the corresponding entry is `True` in
-        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+        extracted from the `FitInterferometer` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -48,24 +43,18 @@ class FitInterferometerPlotterMeta(Plotter):
             Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d
             Contains 1D visuals that can be overlaid on 1D plots.
-        include_1d
-            Specifies which attributes of the `FitInterferometer` are extracted and plotted as visuals for 1D plots.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `FitInterferometer` are extracted and plotted as visuals for 2D plots.
         residuals_symmetric_cmap
             If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
             that `abs(vmin) = abs(vmax)`.
         """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
-            include_1d=include_1d,
             visuals_1d=visuals_1d,
             mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
 
@@ -457,10 +446,8 @@ class FitInterferometerPlotter(Plotter):
         fit: FitInterferometer,
         mat_plot_1d: MatPlot1D = None,
         visuals_1d: Visuals1D = None,
-        include_1d: Include1D = None,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `FitInterferometer` objects using the matplotlib method `imshow()` and many other
@@ -471,8 +458,7 @@ class FitInterferometerPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitInterferometer` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `FitInterferometer` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -482,15 +468,11 @@ class FitInterferometerPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
             Contains visuals that can be overlaid on the plot.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         """
         super().__init__(
             mat_plot_1d=mat_plot_1d,
-            include_1d=include_1d,
             visuals_1d=visuals_1d,
             mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
 
@@ -500,10 +482,8 @@ class FitInterferometerPlotter(Plotter):
             fit=self.fit,
             get_visuals_2d_real_space=self.get_visuals_2d_real_space,
             mat_plot_1d=self.mat_plot_1d,
-            include_1d=self.include_1d,
             visuals_1d=self.visuals_1d,
             mat_plot_2d=self.mat_plot_2d,
-            include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
         )
 

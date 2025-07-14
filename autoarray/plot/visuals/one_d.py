@@ -2,7 +2,6 @@ import numpy as np
 from typing import List, Optional, Union
 
 from autoarray.mask.mask_1d import Mask1D
-from autoarray.plot.include.one_d import Include1D
 from autoarray.plot.visuals.abstract import AbstractVisuals
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -22,10 +21,6 @@ class Visuals1D(AbstractVisuals):
         self.points = points
         self.vertical_line = vertical_line
         self.shaded_region = shaded_region
-
-    @property
-    def include(self):
-        return Include1D()
 
     def plot_via_plotter(self, plotter):
         if self.points is not None:

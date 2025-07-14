@@ -47,14 +47,12 @@ class MockYX1DPlotter(aplt.YX1DPlotter):
         x,
         mat_plot_1d: aplt.MatPlot1D = None,
         visuals_1d: aplt.Visuals1D = None,
-        include_1d: aplt.Include1D = None,
     ):
         super().__init__(
             y=y,
             x=x,
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
-            include_1d=include_1d,
         )
 
     def figures_1d(self, figure_name=False):

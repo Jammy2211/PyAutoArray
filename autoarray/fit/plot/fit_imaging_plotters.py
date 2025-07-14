@@ -2,7 +2,6 @@ from typing import Callable
 
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.fit.fit_imaging import FitImaging
@@ -15,7 +14,6 @@ class FitImagingPlotterMeta(Plotter):
         get_visuals_2d: Callable,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
         residuals_symmetric_cmap: bool = True,
     ):
         """
@@ -27,8 +25,7 @@ class FitImagingPlotterMeta(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `FitImaging` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -40,15 +37,11 @@ class FitImagingPlotterMeta(Plotter):
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
             Contains visuals that can be overlaid on the plot.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         residuals_symmetric_cmap
             If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
             that `abs(vmin) = abs(vmax)`.
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.fit = fit
         self.get_visuals_2d = get_visuals_2d
@@ -244,7 +237,6 @@ class FitImagingPlotter(Plotter):
         fit: FitImaging,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -255,8 +247,7 @@ class FitImagingPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `FitImaging` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -266,12 +257,8 @@ class FitImagingPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
             Contains visuals that can be overlaid on the plot.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.fit = fit
 
@@ -279,7 +266,6 @@ class FitImagingPlotter(Plotter):
             fit=self.fit,
             get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
-            include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
         )
 
