@@ -1,4 +1,4 @@
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
@@ -8,7 +8,7 @@ from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
-class InterferometerPlotter(Plotter):
+class InterferometerPlotter(AbstractPlotter):
     def __init__(
         self,
         dataset: Interferometer,
@@ -54,9 +54,6 @@ class InterferometerPlotter(Plotter):
     @property
     def interferometer(self):
         return self.dataset
-
-    def get_visuals_2d_real_space(self):
-        return self.get_2d.via_mask_from(mask=self.dataset.real_space_mask)
 
     def figures_2d(
         self,
@@ -183,14 +180,14 @@ class InterferometerPlotter(Plotter):
         if dirty_image:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_image,
-                visuals_2d=self.get_visuals_2d_real_space(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image"),
             )
 
         if dirty_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map"
                 ),
@@ -199,7 +196,7 @@ class InterferometerPlotter(Plotter):
         if dirty_signal_to_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map",

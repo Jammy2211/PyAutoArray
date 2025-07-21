@@ -3,7 +3,7 @@ import numpy as np
 from autoconf import conf
 
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
@@ -13,7 +13,7 @@ from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
 
-class InversionPlotter(Plotter):
+class InversionPlotter(AbstractPlotter):
     def __init__(
         self,
         inversion: AbstractInversion,
@@ -45,24 +45,6 @@ class InversionPlotter(Plotter):
 
         self.inversion = inversion
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
-
-    def get_visuals_2d_for_data(self) -> Visuals2D:
-        try:
-            mapper = self.inversion.cls_list_from(cls=AbstractMapper)[0]
-
-            visuals = self.get_2d.via_mapper_for_data_from(mapper=mapper)
-
-            if self.visuals_2d.pix_indexes is not None:
-                indexes = mapper.pix_indexes_for_slim_indexes(
-                    pix_indexes=self.visuals_2d.pix_indexes
-                )
-
-                visuals.indexes = indexes
-
-            return visuals
-
-        except (AttributeError, IndexError):
-            return self.visuals_2d
 
     def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
         """
@@ -100,7 +82,7 @@ class InversionPlotter(Plotter):
         if reconstructed_image:
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
-                visuals_2d=self.get_visuals_2d_for_data(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -174,7 +156,7 @@ class InversionPlotter(Plotter):
 
                 self.mat_plot_2d.plot_array(
                     array=array,
-                    visuals_2d=self.get_visuals_2d_for_data(),
+                    visuals_2d=self.visuals_2d,
                     grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                     auto_labels=AutoLabels(
                         title="Data Subtracted", filename="data_subtracted"
@@ -190,7 +172,7 @@ class InversionPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=array,
-                visuals_2d=self.get_visuals_2d_for_data(),
+                visuals_2d=self.visuals_2d,
                 grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
@@ -283,7 +265,7 @@ class InversionPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=sub_size,
-                visuals_2d=self.get_visuals_2d_for_data(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Sub Pixels Per Image Pixels",
                     filename="sub_pixels_per_image_pixels",
@@ -298,7 +280,7 @@ class InversionPlotter(Plotter):
 
                 self.mat_plot_2d.plot_array(
                     array=mesh_pixels_per_image_pixels,
-                    visuals_2d=self.get_visuals_2d_for_data(),
+                    visuals_2d=self.visuals_2d,
                     auto_labels=AutoLabels(
                         title="Mesh Pixels Per Image Pixels",
                         filename="mesh_pixels_per_image_pixels",
@@ -341,10 +323,6 @@ class InversionPlotter(Plotter):
         if self.mat_plot_2d.use_log10:
             self.mat_plot_2d.contour = False
 
-        # mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
-
-        # self.include_2d._mapper_image_plane_mesh_grid = False
-
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, data_subtracted=True
         )
@@ -362,13 +340,19 @@ class InversionPlotter(Plotter):
 
         self.mat_plot_2d.use_log10 = False
 
-        # self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
-        # self.include_2d._mapper_image_plane_mesh_grid = True
+        mapper = self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index]
+
+        self.visuals_2d += Visuals2D(
+            mesh_grid=mapper.mapper_grids.image_plane_mesh_grid
+        )
+
         self.set_title(label="Mesh Pixel Grid Overlaid")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
         )
         self.set_title(label=None)
+
+        self.visuals_2d.mesh_grid = None
 
         # self.include_2d._mapper_image_plane_mesh_grid = False
 
@@ -427,8 +411,6 @@ class InversionPlotter(Plotter):
     ):
         self.open_subplot_figure(number_subplots=4)
 
-        # self.include_2d._mapper_image_plane_mesh_grid = False
-
         self.figures_2d_of_pixelization(
             pixelization_index=pixelization_index, data_subtracted=True
         )
@@ -447,9 +429,9 @@ class InversionPlotter(Plotter):
             total_pixels=total_pixels, filter_neighbors=True
         )
 
-        self.visuals_2d.pix_indexes = [
-            [index] for index in pix_indexes[pixelization_index]
-        ]
+        indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
+
+        self.visuals_2d.indexes = indexes
 
         self.figures_2d_of_pixelization(
             pixelization_index=pixelization_index, reconstructed_image=True

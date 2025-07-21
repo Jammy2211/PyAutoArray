@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Optional, Union
 
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
@@ -13,7 +13,7 @@ from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 
-class Array2DPlotter(Plotter):
+class Array2DPlotter(AbstractPlotter):
     def __init__(
         self,
         array: Array2D,
@@ -44,21 +44,18 @@ class Array2DPlotter(Plotter):
 
         self.array = array
 
-    def get_visuals_2d(self) -> Visuals2D:
-        return self.get_2d.via_mask_from(mask=self.array.mask)
-
     def figure_2d(self):
         """
         Plots the plotter's `Array2D` object in 2D.
         """
         self.mat_plot_2d.plot_array(
             array=self.array,
-            visuals_2d=self.get_visuals_2d(),
+            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Array2D", filename="array"),
         )
 
 
-class Grid2DPlotter(Plotter):
+class Grid2DPlotter(AbstractPlotter):
     def __init__(
         self,
         grid: Grid2D,
@@ -89,9 +86,6 @@ class Grid2DPlotter(Plotter):
 
         self.grid = grid
 
-    def get_visuals_2d(self) -> Visuals2D:
-        return self.get_2d.via_grid_from(grid=self.grid)
-
     def figure_2d(
         self,
         color_array: np.ndarray = None,
@@ -114,7 +108,7 @@ class Grid2DPlotter(Plotter):
         """
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
-            visuals_2d=self.get_visuals_2d(),
+            visuals_2d=self.visuals_2d,
             auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
             plot_grid_lines=plot_grid_lines,
@@ -122,7 +116,7 @@ class Grid2DPlotter(Plotter):
         )
 
 
-class YX1DPlotter(Plotter):
+class YX1DPlotter(AbstractPlotter):
     def __init__(
         self,
         y: Union[Array1D, List],
@@ -174,9 +168,6 @@ class YX1DPlotter(Plotter):
         self.plot_yx_dict = plot_yx_dict or {}
         self.auto_labels = auto_labels
 
-    def get_visuals_1d(self) -> Visuals1D:
-        return self.get_1d.via_array_1d_from(array_1d=self.x)
-
     def figure_1d(self):
         """
         Plots the plotter's y and x values in 1D.
@@ -185,7 +176,7 @@ class YX1DPlotter(Plotter):
         self.mat_plot_1d.plot_yx(
             y=self.y,
             x=self.x,
-            visuals_1d=self.get_visuals_1d(),
+            visuals_1d=self.visuals_1d,
             auto_labels=self.auto_labels,
             should_plot_grid=self.should_plot_grid,
             should_plot_zero=self.should_plot_zero,

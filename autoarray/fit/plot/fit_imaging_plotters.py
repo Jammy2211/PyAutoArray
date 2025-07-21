@@ -1,17 +1,16 @@
 from typing import Callable
 
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.fit.fit_imaging import FitImaging
 
 
-class FitImagingPlotterMeta(Plotter):
+class FitImagingPlotterMeta(AbstractPlotter):
     def __init__(
         self,
         fit,
-        get_visuals_2d: Callable,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
         residuals_symmetric_cmap: bool = True,
@@ -31,8 +30,6 @@ class FitImagingPlotterMeta(Plotter):
         ----------
         fit
             The fit to an imaging dataset the plotter plots.
-        get_visuals_2d
-            A function which extracts from the `FitImaging` the 2D visuals which are plotted on figures.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
@@ -44,7 +41,6 @@ class FitImagingPlotterMeta(Plotter):
         super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.fit = fit
-        self.get_visuals_2d = get_visuals_2d
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
     def figures_2d(
@@ -88,14 +84,14 @@ class FitImagingPlotterMeta(Plotter):
         if data:
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Data", filename=f"data{suffix}"),
             )
 
         if noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Noise-Map", filename=f"noise_map{suffix}"
                 ),
@@ -104,7 +100,7 @@ class FitImagingPlotterMeta(Plotter):
         if signal_to_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename=f"signal_to_noise_map{suffix}"
                 ),
@@ -113,7 +109,7 @@ class FitImagingPlotterMeta(Plotter):
         if model_image:
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Model Image", filename=f"model_image{suffix}"
                 ),
@@ -127,7 +123,7 @@ class FitImagingPlotterMeta(Plotter):
         if residual_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Residual Map", filename=f"residual_map{suffix}"
                 ),
@@ -136,7 +132,7 @@ class FitImagingPlotterMeta(Plotter):
         if normalized_residual_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map",
                     filename=f"normalized_residual_map{suffix}",
@@ -148,7 +144,7 @@ class FitImagingPlotterMeta(Plotter):
         if chi_squared_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename=f"chi_squared_map{suffix}"
                 ),
@@ -157,7 +153,7 @@ class FitImagingPlotterMeta(Plotter):
         if residual_flux_fraction_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Residual Flux Fraction Map",
                     filename=f"residual_flux_fraction_map{suffix}",
@@ -231,7 +227,7 @@ class FitImagingPlotterMeta(Plotter):
         )
 
 
-class FitImagingPlotter(Plotter):
+class FitImagingPlotter(AbstractPlotter):
     def __init__(
         self,
         fit: FitImaging,
@@ -264,7 +260,6 @@ class FitImagingPlotter(Plotter):
 
         self._fit_imaging_meta_plotter = FitImagingPlotterMeta(
             fit=self.fit,
-            get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
         )
@@ -272,6 +267,3 @@ class FitImagingPlotter(Plotter):
         self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
         self.subplot = self._fit_imaging_meta_plotter.subplot
         self.subplot_fit = self._fit_imaging_meta_plotter.subplot_fit
-
-    def get_visuals_2d(self) -> Visuals2D:
-        return self.get_2d.via_fit_imaging_from(fit=self.fit)

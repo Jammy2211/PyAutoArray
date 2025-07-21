@@ -10,8 +10,6 @@ from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
-from autoarray.plot.get_visuals.one_d import GetVisuals1D
-from autoarray.plot.get_visuals.two_d import GetVisuals2D
 
 
 class AbstractPlotter:
@@ -213,13 +211,3 @@ class AbstractPlotter:
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")
 
         self.close_subplot_figure()
-
-
-class Plotter(AbstractPlotter):
-    @property
-    def get_1d(self):
-        return GetVisuals1D(visuals=self.visuals_1d)
-
-    @property
-    def get_2d(self):
-        return GetVisuals2D(visuals=self.visuals_2d)

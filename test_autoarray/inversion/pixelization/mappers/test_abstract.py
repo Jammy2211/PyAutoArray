@@ -16,7 +16,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
         parameters=9,
     )
 
-    pixe_indexes_for_slim_indexes = mapper.pix_indexes_for_slim_indexes(
+    pixe_indexes_for_slim_indexes = mapper.slim_indexes_for_pix_indexes(
         pix_indexes=[0, 1]
     )
 
@@ -31,7 +31,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
         parameters=9,
     )
 
-    pixe_indexes_for_slim_indexes = mapper.pix_indexes_for_slim_indexes(
+    pixe_indexes_for_slim_indexes = mapper.slim_indexes_for_pix_indexes(
         pix_indexes=[[0], [4]]
     )
 

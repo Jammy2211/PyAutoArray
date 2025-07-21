@@ -105,19 +105,3 @@ def test__uses_figure_or_subplot_configs_correctly():
     assert plotter.mat_plot_2d.figure.config_dict["aspect"] == "square"
     assert plotter.mat_plot_2d.cmap.config_dict["cmap"] == "default"
     assert plotter.mat_plot_2d.cmap.config_dict["norm"] == "linear"
-
-
-def test__get__visuals():
-    visuals_2d = aplt.Visuals2D()
-
-    plotter = abstract_plotters.Plotter(visuals_2d=visuals_2d)
-    attr = plotter.get_2d.get(name="origin", value=1)
-
-    assert attr == 1
-
-    visuals_2d = aplt.Visuals2D(origin=10)
-
-    plotter = abstract_plotters.Plotter(visuals_2d=visuals_2d)
-    attr = plotter.get_2d.get(name="origin", value=2)
-
-    assert attr == 10
