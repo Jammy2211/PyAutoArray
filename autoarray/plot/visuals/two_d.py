@@ -22,6 +22,7 @@ class Visuals2D(AbstractVisuals):
         mesh_grid: Optional[Grid2D] = None,
         vectors: Optional[VectorYX2DIrregular] = None,
         patches: Optional[List[ptch.Patch]] = None,
+        fill_region: Optional[List] = None,
         array_overlay: Optional[Array2D] = None,
         parallel_overscan=None,
         serial_prescan=None,
@@ -39,6 +40,7 @@ class Visuals2D(AbstractVisuals):
         self.mesh_grid = mesh_grid
         self.vectors = vectors
         self.patches = patches
+        self.fill_region = fill_region
         self.array_overlay = array_overlay
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
@@ -73,6 +75,11 @@ class Visuals2D(AbstractVisuals):
 
         if self.patches is not None:
             plotter.patch_overlay.overlay_patches(patches=self.patches)
+
+        if self.fill_region is not None:
+            plotter.fill.plot_fill(
+                fill_region=self.fill_region
+            )
 
         if self.lines is not None:
             plotter.grid_plot.plot_grid(grid=self.lines)

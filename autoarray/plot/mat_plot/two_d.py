@@ -43,6 +43,7 @@ class MatPlot2D(AbstractMatPlot):
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
+        fill: Optional[w2d.Fill] = None,
         contour: Optional[w2d.Contour] = None,
         grid_scatter: Optional[w2d.GridScatter] = None,
         grid_plot: Optional[w2d.GridPlot] = None,
@@ -117,6 +118,8 @@ class MatPlot2D(AbstractMatPlot):
             Sets any annotations on the figure and customizes its appearance using `plt.annotate`.
         legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
+        fill
+            Sets the fill of the figure using `plt.fill` and customizes its appearance, such as the color and alpha.
         output
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         array_overlay
@@ -178,6 +181,7 @@ class MatPlot2D(AbstractMatPlot):
             output=output,
         )
 
+        self.fill = fill or w2d.Fill(is_default=True)
         self.array_overlay = array_overlay or w2d.ArrayOverlay(is_default=True)
 
         self.contour = contour or w2d.Contour(is_default=True)

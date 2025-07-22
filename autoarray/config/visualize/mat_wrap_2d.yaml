@@ -32,6 +32,15 @@ Contour:             # wrapper for `plt.contour()`: customize contours plotted o
     total_contours: 10     # Number of contours to plot
     use_log10: true        # If true, contours are plotted with log10 spacing, if False, linear spacing.
     include_values: true   # If true, the values of the contours are plotted on the figure.
+Fill:                # wrapper for `plt.fill()`: customize the appearance of filled areas.
+  figure:
+    alpha: 1.0
+    edgecolor: k
+    facecolor: k
+  subplot:
+    alpha: 0.5
+    edgecolor: k
+    facecolor: k
 BorderScatter:       # wrapper for `plt.scatter()`: customize the apperance of 2D borders.
   figure:
     c: r

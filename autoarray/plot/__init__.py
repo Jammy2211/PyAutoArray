@@ -22,6 +22,7 @@ from autoarray.plot.wrap.one_d.fill_between import FillBetween
 
 from autoarray.plot.wrap.two_d.array_overlay import ArrayOverlay
 from autoarray.plot.wrap.two_d.contour import Contour
+from autoarray.plot.wrap.two_d.fill import Fill
 from autoarray.plot.wrap.two_d.grid_scatter import GridScatter
 from autoarray.plot.wrap.two_d.grid_plot import GridPlot
 from autoarray.plot.wrap.two_d.grid_errorbar import GridErrorbar
