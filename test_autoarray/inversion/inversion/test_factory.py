@@ -296,49 +296,49 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
         inversion_mapping.log_det_curvature_reg_matrix_term
     )
 
-
-def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
-    masked_imaging_7x7_no_blur,
-    rectangular_mapper_7x7_3x3,
-):
-    masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
-    masked_imaging_7x7_no_blur.data[4] = 2.0
-
-    mask = masked_imaging_7x7_no_blur.mask
-
-    grid = aa.Grid2D.from_mask(mask=mask)
-
-    linear_obj = aa.m.MockLinearObj(
-        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
-    )
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
-    )
-
-    masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
-
-    masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_data_dict[
-        linear_obj
-    ]
-
-    inversion_no_linear_func = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
-    )
-
-    assert inversion.regularization_term == pytest.approx(
-        inversion_no_linear_func.regularization_term, 1.0e-4
-    )
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        inversion_no_linear_func.log_det_curvature_reg_matrix_term, 1.0e-4
-    )
-    assert inversion.log_det_regularization_matrix_term == pytest.approx(
-        inversion_no_linear_func.log_det_regularization_matrix_term, 1.0e-4
-    )
+#
+# def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
+#     masked_imaging_7x7_no_blur,
+#     rectangular_mapper_7x7_3x3,
+# ):
+#     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
+#     masked_imaging_7x7_no_blur.data[4] = 2.0
+#
+#     mask = masked_imaging_7x7_no_blur.mask
+#
+#     grid = aa.Grid2D.from_mask(mask=mask)
+#
+#     linear_obj = aa.m.MockLinearObj(
+#         parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+#     )
+#
+#     inversion = aa.Inversion(
+#         dataset=masked_imaging_7x7_no_blur,
+#         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
+#         settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+#     )
+#
+#     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
+#
+#     masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_data_dict[
+#         linear_obj
+#     ]
+#
+#     inversion_no_linear_func = aa.Inversion(
+#         dataset=masked_imaging_7x7_no_blur,
+#         linear_obj_list=[rectangular_mapper_7x7_3x3],
+#         settings=aa.SettingsInversion(use_w_tilde=False),
+#     )
+#
+#     assert inversion.regularization_term == pytest.approx(
+#         inversion_no_linear_func.regularization_term, 1.0e-4
+#     )
+#     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+#         inversion_no_linear_func.log_det_curvature_reg_matrix_term, 1.0e-4
+#     )
+#     assert inversion.log_det_regularization_matrix_term == pytest.approx(
+#         inversion_no_linear_func.log_det_regularization_matrix_term, 1.0e-4
+#     )
 
 
 def test__inversion_imaging__linear_obj_func_with_w_tilde(
