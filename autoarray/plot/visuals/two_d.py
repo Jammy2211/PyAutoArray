@@ -1,4 +1,3 @@
-import numpy as np
 from matplotlib import patches as ptch
 from typing import List, Optional, Union
 
@@ -23,13 +22,12 @@ class Visuals2D(AbstractVisuals):
         mesh_grid: Optional[Grid2D] = None,
         vectors: Optional[VectorYX2DIrregular] = None,
         patches: Optional[List[ptch.Patch]] = None,
+        fill_region: Optional[List] = None,
         array_overlay: Optional[Array2D] = None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
         indexes=None,
-        pix_indexes=None,
-        indexes_via_scatter=False,
     ):
         self.origin = origin
         self.mask = mask
@@ -40,28 +38,34 @@ class Visuals2D(AbstractVisuals):
         self.mesh_grid = mesh_grid
         self.vectors = vectors
         self.patches = patches
+        self.fill_region = fill_region
         self.array_overlay = array_overlay
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
         self.serial_overscan = serial_overscan
         self.indexes = indexes
-        self.pix_indexes = pix_indexes
-        self.indexes_via_scatter = indexes_via_scatter
 
-    def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None, geometry=None):
+    def plot_via_plotter(self, plotter, grid_indexes=None):
+
+        if self.mask is not None:
+            plotter.mask_scatter.scatter_grid(grid=self.mask.derive_grid.edge.array)
+
         if self.origin is not None:
             plotter.origin_scatter.scatter_grid(
                 grid=Grid2DIrregular(values=self.origin).array
             )
 
-        if self.mask is not None:
-            plotter.mask_scatter.scatter_grid(grid=self.mask.derive_grid.edge.array)
-
         if self.border is not None:
-            plotter.border_scatter.scatter_grid(grid=self.border.array)
+            try:
+                plotter.border_scatter.scatter_grid(grid=self.border.array)
+            except AttributeError:
+                plotter.border_scatter.scatter_grid(grid=self.border)
 
         if self.grid is not None:
-            plotter.grid_scatter.scatter_grid(grid=self.grid.array)
+            try:
+                plotter.grid_scatter.scatter_grid(grid=self.grid.array)
+            except AttributeError:
+                plotter.grid_scatter.scatter_grid(grid=self.grid)
 
         if self.mesh_grid is not None:
             plotter.mesh_grid_scatter.scatter_grid(grid=self.mesh_grid.array)
@@ -75,32 +79,15 @@ class Visuals2D(AbstractVisuals):
         if self.patches is not None:
             plotter.patch_overlay.overlay_patches(patches=self.patches)
 
+        if self.fill_region is not None:
+            plotter.fill.plot_fill(fill_region=self.fill_region)
+
         if self.lines is not None:
             plotter.grid_plot.plot_grid(grid=self.lines)
 
         if self.indexes is not None and grid_indexes is not None:
-            if not self.indexes_via_scatter:
-                plotter.index_plot.plot_grid_indexes_multi(
-                    grid=grid_indexes, indexes=self.indexes, geometry=geometry
-                )
 
-            else:
-                plotter.index_scatter.scatter_grid_indexes(
-                    grid=grid_indexes,
-                    indexes=self.indexes,
-                )
-
-        if self.pix_indexes is not None and mapper is not None:
-            indexes = mapper.pix_indexes_for_slim_indexes(pix_indexes=self.pix_indexes)
-
-            if not self.indexes_via_scatter:
-                plotter.index_plot.plot_grid_indexes_x1(
-                    grid=grid_indexes,
-                    indexes=indexes,
-                )
-
-            else:
-                plotter.index_scatter.scatter_grid_indexes(
-                    grid=mapper.source_plane_data_grid.over_sampled,
-                    indexes=indexes,
-                )
+            plotter.index_scatter.scatter_grid_indexes(
+                grid=grid_indexes,
+                indexes=self.indexes,
+            )

@@ -1,8 +1,6 @@
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.one_d import Include1D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
@@ -10,16 +8,14 @@ from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
-class InterferometerPlotter(Plotter):
+class InterferometerPlotter(AbstractPlotter):
     def __init__(
         self,
         dataset: Interferometer,
         mat_plot_1d: MatPlot1D = None,
         visuals_1d: Visuals1D = None,
-        include_1d: Include1D = None,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `Interferometer` objects using the matplotlib methods `plot()`, `scatter()` and
@@ -31,8 +27,7 @@ class InterferometerPlotter(Plotter):
         customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `LightProfile` and plotted via the visuals object, if the corresponding entry is `True` in
-        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+        extracted from the `LightProfile` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -42,32 +37,23 @@ class InterferometerPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d
             Contains 1D visuals that can be overlaid on 1D plots.
-        include_1d
-            Specifies which attributes of the `Interferometer` are extracted and plotted as visuals for 1D plots.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Interferometer` are extracted and plotted as visuals for 2D plots.
         """
         self.dataset = dataset
 
         super().__init__(
             mat_plot_1d=mat_plot_1d,
-            include_1d=include_1d,
             visuals_1d=visuals_1d,
             mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
 
     @property
     def interferometer(self):
         return self.dataset
-
-    def get_visuals_2d_real_space(self):
-        return self.get_2d.via_mask_from(mask=self.dataset.real_space_mask)
 
     def figures_2d(
         self,
@@ -194,14 +180,14 @@ class InterferometerPlotter(Plotter):
         if dirty_image:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_image,
-                visuals_2d=self.get_visuals_2d_real_space(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image"),
             )
 
         if dirty_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map"
                 ),
@@ -210,7 +196,7 @@ class InterferometerPlotter(Plotter):
         if dirty_signal_to_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map",

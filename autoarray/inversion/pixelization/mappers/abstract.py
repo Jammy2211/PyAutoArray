@@ -291,7 +291,7 @@ class AbstractMapper(LinearObj):
             adapt_data=np.array(self.adapt_data),
         )
 
-    def pix_indexes_for_slim_indexes(self, pix_indexes: List) -> List[List]:
+    def slim_indexes_for_pix_indexes(self, pix_indexes: List) -> List[List]:
         """
         Returns the index mappings between every masked data-point (not subgridded) on the data and the mapper
         pixels / parameters that it maps too.
@@ -299,7 +299,7 @@ class AbstractMapper(LinearObj):
         The `slim_index` refers to the masked data pixels (without subgridding) and `pix_indexes` the pixelization
         pixel indexes, for example:
 
-        - `pix_indexes_for_slim_indexes[0] = [2, 3]`: The data's first (index 0) pixel maps to the
+        - `slim_indexes_for_pix_indexes[0] = [2, 3]`: The data's first (index 0) pixel maps to the
         pixelization's third (index 2) and fourth (index 3) pixels.
 
         Parameters

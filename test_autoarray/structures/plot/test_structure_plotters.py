@@ -57,7 +57,6 @@ def test__array(
 
     array_plotter = aplt.Array2DPlotter(
         array=array_2d_7x7,
-        include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(
             output=aplt.Output(path=plot_path, filename="array2", format="png")
         ),
@@ -138,7 +137,6 @@ def test__grid(
         mat_plot_2d=aplt.MatPlot2D(
             output=aplt.Output(path=plot_path, filename="grid2", format="png")
         ),
-        include_2d=aplt.Include2D(origin=True, mask=True, border=True),
     )
 
     grid_2d_plotter.figure_2d(color_array=color_array)

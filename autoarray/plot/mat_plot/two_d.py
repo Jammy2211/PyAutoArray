@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Optional, List, Tuple, Union
+from typing import Optional, List, Union
 
 from autoconf import conf
 
@@ -43,6 +43,7 @@ class MatPlot2D(AbstractMatPlot):
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
+        fill: Optional[w2d.Fill] = None,
         contour: Optional[w2d.Contour] = None,
         grid_scatter: Optional[w2d.GridScatter] = None,
         grid_plot: Optional[w2d.GridPlot] = None,
@@ -63,6 +64,7 @@ class MatPlot2D(AbstractMatPlot):
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
         use_log10: bool = False,
+        plot_mask: bool = True,
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -121,6 +123,8 @@ class MatPlot2D(AbstractMatPlot):
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         array_overlay
             Overlays an input `Array2D` over the figure using `plt.imshow`.
+        fill
+            Sets the fill of the figure using `plt.fill` and customizes its appearance, such as the color and alpha.
         contour
             Overlays contours of an input `Array2D` over the figure using `plt.contour`.
         grid_scatter
@@ -179,6 +183,7 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.array_overlay = array_overlay or w2d.ArrayOverlay(is_default=True)
+        self.fill = fill or w2d.Fill(is_default=True)
 
         self.contour = contour or w2d.Contour(is_default=True)
 
@@ -219,6 +224,7 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.use_log10 = use_log10
+        self.plot_mask = plot_mask
 
         self.is_for_subplot = False
 
@@ -364,9 +370,13 @@ class MatPlot2D(AbstractMatPlot):
             except ValueError:
                 pass
 
-        visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=grid_indexes, geometry=array.geometry
-        )
+        if self.plot_mask and visuals_2d.mask is None:
+
+            if not array.mask.is_all_false:
+
+                self.mask_scatter.scatter_grid(grid=array.mask.derive_grid.edge.array)
+
+        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)
 
         if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
@@ -476,9 +486,7 @@ class MatPlot2D(AbstractMatPlot):
         if self.contour is not False:
             self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
-        visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=grid.array, geometry=grid.geometry
-        )
+        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid.array)
 
         if not self.is_for_subplot:
             self.output.to_figure(structure=grid, auto_filename=auto_labels.filename)
@@ -590,10 +598,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self,
-            grid_indexes=mapper.source_plane_data_grid.over_sampled,
-            mapper=mapper,
-            geometry=mapper.mapper_grids.mask.geometry,
+            plotter=self, grid_indexes=mapper.source_plane_data_grid.over_sampled
         )
 
         if not self.is_for_subplot:
@@ -674,10 +679,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self,
-            grid_indexes=mapper.source_plane_data_grid.over_sampled,
-            mapper=mapper,
-            geometry=mapper.mapper_grids.mask.geometry,
+            plotter=self, grid_indexes=mapper.source_plane_data_grid.over_sampled
         )
 
         if not self.is_for_subplot:
@@ -757,10 +759,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self,
-            grid_indexes=mapper.source_plane_data_grid.over_sampled,
-            mapper=mapper,
-            geometry=mapper.mapper_grids.mask.geometry,
+            plotter=self, grid_indexes=mapper.source_plane_data_grid.over_sampled
         )
 
         if pixel_values is not None:

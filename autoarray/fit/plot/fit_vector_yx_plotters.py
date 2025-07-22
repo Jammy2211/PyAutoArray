@@ -1,22 +1,19 @@
 from typing import Callable
 
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.fit.fit_imaging import FitImaging
 from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotterMeta
 
 
-class FitVectorYXPlotterMeta(Plotter):
+class FitVectorYXPlotterMeta(AbstractPlotter):
     def __init__(
         self,
         fit,
-        get_visuals_2d: Callable,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -27,28 +24,20 @@ class FitVectorYXPlotterMeta(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `FitImaging` and plotted via the visuals object.
 
         Parameters
         ----------
         fit
             The fit to an imaging dataset the plotter plots.
-        get_visuals_2d
-            A function which extracts from the `FitImaging` the 2D visuals which are plotted on figures.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
             Contains visuals that can be overlaid on the plot.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.fit = fit
-        self.get_visuals_2d = get_visuals_2d
 
     def figures_2d(
         self,
@@ -84,26 +73,24 @@ class FitVectorYXPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the chi-squared map.
         """
 
-        fit_plotter_y = FitImaging(self.fit.data.y_array)
-
         if image:
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Data", filename="image_2d"),
             )
 
         if noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
 
         if signal_to_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
@@ -112,21 +99,21 @@ class FitVectorYXPlotterMeta(Plotter):
         if model_image:
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Model Image", filename="model_image"),
             )
 
         if residual_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
             )
 
         if normalized_residual_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
@@ -135,7 +122,7 @@ class FitVectorYXPlotterMeta(Plotter):
         if chi_squared_map:
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
                 ),
@@ -204,13 +191,12 @@ class FitVectorYXPlotterMeta(Plotter):
         )
 
 
-class FitImagingPlotter(Plotter):
+class FitImagingPlotter(AbstractPlotter):
     def __init__(
         self,
         fit: FitImaging,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -221,8 +207,7 @@ class FitImagingPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `FitImaging` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -232,26 +217,17 @@ class FitImagingPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
             Contains visuals that can be overlaid on the plot.
-        include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
         """
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.fit = fit
 
         self._fit_imaging_meta_plotter = FitImagingPlotterMeta(
             fit=self.fit,
-            get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
-            include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
         )
 
         self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
         self.subplot = self._fit_imaging_meta_plotter.subplot
         self.subplot_fit = self._fit_imaging_meta_plotter.subplot_fit
-
-    def get_visuals_2d(self) -> Visuals2D:
-        return self.get_2d.via_fit_imaging_from(fit=self.fit)

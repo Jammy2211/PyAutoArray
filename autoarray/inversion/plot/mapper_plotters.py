@@ -1,9 +1,8 @@
 import numpy as np
 from typing import Union
 
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -16,13 +15,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class MapperPlotter(Plotter):
+class MapperPlotter(AbstractPlotter):
     def __init__(
         self,
         mapper: MapperRectangular,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `Mapper` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -33,8 +31,7 @@ class MapperPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Mapper` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Mapper` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -44,23 +41,13 @@ class MapperPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Mapper` are extracted and plotted as visuals for 2D plots.
         """
-        super().__init__(
-            visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
-        )
+        super().__init__(visuals_2d=visuals_2d, mat_plot_2d=mat_plot_2d)
 
         self.mapper = mapper
 
-    def get_visuals_2d_for_data(self) -> Visuals2D:
-        return self.get_2d.via_mapper_for_data_from(mapper=self.mapper)
-
-    def get_visuals_2d_for_source(self) -> Visuals2D:
-        return self.get_2d.via_mapper_for_source_from(mapper=self.mapper)
-
     def figure_2d(
-        self, interpolate_to_uniform: bool = True, solution_vector: bool = None
+        self, interpolate_to_uniform: bool = False, solution_vector: bool = None
     ):
         """
         Plots the plotter's `Mapper` object in 2D.
@@ -76,7 +63,7 @@ class MapperPlotter(Plotter):
         """
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
+            visuals_2d=self.visuals_2d,
             interpolate_to_uniform=interpolate_to_uniform,
             pixel_values=solution_vector,
             auto_labels=AutoLabels(
@@ -84,8 +71,19 @@ class MapperPlotter(Plotter):
             ),
         )
 
+    def figure_2d_image(self, image):
+
+        self.mat_plot_2d.plot_array(
+            array=image,
+            visuals_2d=self.visuals_2d,
+            grid_indexes=self.mapper.mapper_grids.image_plane_data_grid.over_sampled,
+            auto_labels=AutoLabels(
+                title="Image (Image-Plane)", filename="mapper_image"
+            ),
+        )
+
     def subplot_image_and_mapper(
-        self, image: Array2D, interpolate_to_uniform: bool = True
+        self, image: Array2D, interpolate_to_uniform: bool = False
     ):
         """
         Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.
@@ -105,22 +103,7 @@ class MapperPlotter(Plotter):
         """
         self.open_subplot_figure(number_subplots=2)
 
-        self.mat_plot_2d.plot_array(
-            array=image,
-            visuals_2d=self.get_visuals_2d_for_data(),
-            auto_labels=AutoLabels(title="Image (Image-Plane)"),
-        )
-
-        if self.visuals_2d.pix_indexes is not None:
-            indexes = self.mapper.pix_indexes_for_slim_indexes(
-                pix_indexes=self.visuals_2d.pix_indexes
-            )
-
-            self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.over_sampler.uniform_over_sampled,
-                indexes=indexes,
-            )
-
+        self.figure_2d_image(image=image)
         self.figure_2d(interpolate_to_uniform=interpolate_to_uniform)
 
         self.mat_plot_2d.output.subplot_to_figure(
@@ -154,7 +137,7 @@ class MapperPlotter(Plotter):
         try:
             self.mat_plot_2d.plot_mapper(
                 mapper=self.mapper,
-                visuals_2d=self.get_visuals_2d_for_source(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=auto_labels,
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,

@@ -3,11 +3,9 @@ from typing import Optional, Union
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoconf import cached_property
 
 from autoarray import exc
 

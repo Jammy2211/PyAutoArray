@@ -2,21 +2,18 @@ import copy
 from typing import Callable, Optional
 
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
-from autoarray.plot.abstract_plotters import Plotter
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.dataset.imaging.dataset import Imaging
 
 
-class ImagingPlotterMeta(Plotter):
+class ImagingPlotterMeta(AbstractPlotter):
     def __init__(
         self,
         dataset: Imaging,
-        get_visuals_2d: Callable,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `Imaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -27,29 +24,21 @@ class ImagingPlotterMeta(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Imaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Imaging` and plotted via the visuals object.
 
         Parameters
         ----------
         dataset
             The imaging dataset the plotter plots.
-        get_visuals_2d
-            A function which extracts from the `Imaging` the 2D visuals which are plotted on figures.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Imaging` are extracted and plotted as visuals for 2D plots.
         """
 
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.dataset = dataset
-        self.get_visuals_2d = get_visuals_2d
 
     @property
     def imaging(self):
@@ -91,21 +80,21 @@ class ImagingPlotterMeta(Plotter):
         if data:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.data,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title=title_str or f" Data", filename="data"),
             )
 
         if noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title_str or f"Noise-Map", filename="noise_map"),
             )
 
         if psf:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.psf,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title=title_str or f"Point Spread Function",
                     filename="psf",
@@ -116,7 +105,7 @@ class ImagingPlotterMeta(Plotter):
         if signal_to_noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title=title_str or f"Signal-To-Noise Map",
                     filename="signal_to_noise_map",
@@ -127,7 +116,7 @@ class ImagingPlotterMeta(Plotter):
         if over_sample_size_lp:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.grids.over_sample_size_lp,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title=title_str or f"Over Sample Size (Light Profiles)",
                     filename="over_sample_size_lp",
@@ -138,7 +127,7 @@ class ImagingPlotterMeta(Plotter):
         if over_sample_size_pixelization:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.grids.over_sample_size_pixelization,
-                visuals_2d=self.get_visuals_2d(),
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title=title_str or f"Over Sample Size (Pixelization)",
                     filename="over_sample_size_pixelization",
@@ -227,13 +216,12 @@ class ImagingPlotterMeta(Plotter):
         self.mat_plot_2d.use_log10 = use_log10_original
 
 
-class ImagingPlotter(Plotter):
+class ImagingPlotter(AbstractPlotter):
     def __init__(
         self,
         dataset: Imaging,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
-        include_2d: Include2D = None,
     ):
         """
         Plots the attributes of `Imaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -244,8 +232,7 @@ class ImagingPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Imaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
-        object or the `config/visualize/include.ini` file.
+        the `Imaging` and plotted via the visuals object.
 
         Parameters
         ----------
@@ -255,27 +242,18 @@ class ImagingPlotter(Plotter):
             Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
             Contains 2D visuals that can be overlaid on 2D plots.
-        include_2d
-            Specifies which attributes of the `Imaging` are extracted and plotted as visuals for 2D plots.
         """
 
-        super().__init__(
-            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
-        )
+        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.dataset = dataset
 
         self._imaging_meta_plotter = ImagingPlotterMeta(
             dataset=self.dataset,
-            get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
-            include_2d=self.include_2d,
             visuals_2d=self.visuals_2d,
         )
 
         self.figures_2d = self._imaging_meta_plotter.figures_2d
         self.subplot = self._imaging_meta_plotter.subplot
         self.subplot_dataset = self._imaging_meta_plotter.subplot_dataset
-
-    def get_visuals_2d(self):
-        return self.get_2d.via_mask_from(mask=self.dataset.mask)

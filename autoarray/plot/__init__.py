@@ -22,6 +22,7 @@ from autoarray.plot.wrap.one_d.fill_between import FillBetween
 
 from autoarray.plot.wrap.two_d.array_overlay import ArrayOverlay
 from autoarray.plot.wrap.two_d.contour import Contour
+from autoarray.plot.wrap.two_d.fill import Fill
 from autoarray.plot.wrap.two_d.grid_scatter import GridScatter
 from autoarray.plot.wrap.two_d.grid_plot import GridPlot
 from autoarray.plot.wrap.two_d.grid_errorbar import GridErrorbar
@@ -43,12 +44,8 @@ from autoarray.plot.wrap.two_d.parallel_overscan_plot import ParallelOverscanPlo
 from autoarray.plot.wrap.two_d.serial_prescan_plot import SerialPrescanPlot
 from autoarray.plot.wrap.two_d.serial_overscan_plot import SerialOverscanPlot
 
-from autoarray.plot.get_visuals.one_d import GetVisuals1D
-from autoarray.plot.get_visuals.two_d import GetVisuals2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
-from autoarray.plot.include.one_d import Include1D
-from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.auto_labels import AutoLabels
