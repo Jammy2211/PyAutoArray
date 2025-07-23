@@ -82,13 +82,10 @@ def constant_regularization_matrix_from(
     )
 
 
-
-@numba_util.jit()
 def constant_zeroth_regularization_matrix_from(
     coefficient: float,
     coefficient_zeroth: float,
     neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -113,24 +110,34 @@ def constant_zeroth_regularization_matrix_from(
         The regularization matrix computed using Regularization where the effective regularization
         coefficient of every source pixel is the same.
     """
+    S, P = neighbors.shape
+    reg1 = coefficient**2
+    reg0 = coefficient_zeroth**2
 
-    pixels = len(neighbors)
+    # 1) Flatten (i,j) neighbor‐pairs
+    I = jnp.repeat(jnp.arange(S), P)       # (S*P,)
+    J = neighbors.reshape(-1)              # (S*P,)
 
-    regularization_matrix = np.zeros(shape=(pixels, pixels))
+    # 2) Remap “no neighbor” = -1 → OUT = S
+    OUT = S
+    J = jnp.where(J < 0, OUT, J)
 
-    regularization_coefficient = coefficient**2.0
-    regularization_coefficient_zeroth = coefficient_zeroth**2.0
+    # 3) Start on an (S+1)x(S+1) zero canvas
+    M = jnp.zeros((S+1, S+1), dtype=jnp.float32)
 
-    for i in range(pixels):
-        regularization_matrix[i, i] += 1e-8
-        regularization_matrix[i, i] += regularization_coefficient_zeroth
-        for j in range(neighbors_sizes[i]):
-            neighbor_index = neighbors[i, j]
-            regularization_matrix[i, i] += regularization_coefficient
-            regularization_matrix[i, neighbor_index] -= regularization_coefficient
+    # 4) Diagonal baseline: 1e-8 + reg0  for i in [0..S-1]
+    diag_base = jnp.concatenate([jnp.full((S,), 1e-8 + reg0), jnp.zeros((1,))])
+    M = M.at[jnp.diag_indices(S+1)].add(diag_base)
 
-    return regularization_matrix
+    # 5) Scatter the first-order reg1 into diag[i] for each neighbor (i→j):
+    #    M[i,i] += reg1
+    M = M.at[I, I].add(reg1)
 
+    # 6) Scatter the off-diagonals: M[i,j] -= reg1
+    M = M.at[I, J].add(-reg1)
+
+    # 7) Return only the top‐left S×S block
+    return M[:S, :S]
 
 def adaptive_regularization_weights_from(
     inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray

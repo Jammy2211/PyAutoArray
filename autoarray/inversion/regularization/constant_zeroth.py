@@ -55,5 +55,4 @@ class ConstantZeroth(AbstractRegularization):
             coefficient=self.coefficient_neighbor,
             coefficient_zeroth=self.coefficient_zeroth,
             neighbors=linear_obj.neighbors,
-            neighbors_sizes=linear_obj.neighbors.sizes,
         )

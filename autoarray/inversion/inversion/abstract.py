@@ -663,6 +663,9 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
+        if not self.has(cls=AbstractRegularization):
+            return 0.0
+
         try:
             return 2.0 * np.sum(
                 jnp.log(
