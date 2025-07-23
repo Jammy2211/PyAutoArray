@@ -1,5 +1,6 @@
 import copy
 import jax.numpy as jnp
+from jax.scipy.linalg import block_diag
 import numpy as np
 
 from typing import Dict, List, Optional, Type, Union
@@ -334,8 +335,6 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
-        from scipy.linalg import block_diag
-
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
@@ -664,30 +663,14 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
-        from scipy.sparse import csc_matrix
-        from scipy.sparse.linalg import splu
-
-        if not self.has(cls=AbstractRegularization):
-            return 0.0
-
         try:
-            lu = splu(csc_matrix(self.regularization_matrix_reduced))
-            diagL = lu.L.diagonal()
-            diagU = lu.U.diagonal()
-            diagL = diagL.astype(np.complex128)
-            diagU = diagU.astype(np.complex128)
-
-            return np.real(np.log(diagL).sum() + np.log(diagU).sum())
-
-        except RuntimeError:
-            try:
-                return 2.0 * np.sum(
-                    np.log(
-                        np.diag(np.linalg.cholesky(self.regularization_matrix_reduced))
-                    )
+            return 2.0 * np.sum(
+                jnp.log(
+                    jnp.diag(jnp.linalg.cholesky(self.regularization_matrix_reduced))
                 )
-            except np.linalg.LinAlgError as e:
-                raise exc.InversionException() from e
+            )
+        except np.linalg.LinAlgError as e:
+            raise exc.InversionException() from e
 
     @property
     def reconstruction_noise_map_with_covariance(self) -> np.ndarray:

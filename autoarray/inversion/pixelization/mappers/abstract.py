@@ -288,7 +288,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
-            adapt_data=np.array(self.adapt_data),
+            adapt_data=self.adapt_data.array,
         )
 
     def slim_indexes_for_pix_indexes(self, pix_indexes: List) -> List[List]:

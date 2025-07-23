@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import numpy as np
 from typing import Tuple
 
@@ -5,7 +6,6 @@ from autoarray import exc
 from autoarray import numba_util
 
 
-@numba_util.jit()
 def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.ndarray:
     """
     Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
@@ -27,59 +27,60 @@ def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.nda
         The regularization matrix computed using Regularization where the effective regularization
         coefficient of every source pixel is the same.
     """
-
-    regularization_matrix = np.zeros(shape=(pixels, pixels))
-
-    regularization_coefficient = coefficient**2.0
-
-    for i in range(pixels):
-        regularization_matrix[i, i] += regularization_coefficient
-
-    return regularization_matrix
+    reg_coeff = coefficient ** 2.0
+    # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
+    return jnp.eye(pixels) * reg_coeff
 
 
-@numba_util.jit()
 def constant_regularization_matrix_from(
-    coefficient: float, neighbors: np.ndarray, neighbors_sizes: np.ndarray
-) -> np.ndarray:
+    coefficient: float,
+    neighbors: np.ndarray[[int, int], np.int64],
+    neighbors_sizes: np.ndarray[[int], np.int64],
+) -> np.ndarray[[int, int], np.float64]:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
 
     A complete description of regularizatin and the `regularization_matrix` can be found in the `Regularization`
     class in the module `autoarray.inversion.regularization`.
 
+    Memory requirement: 2SP + S^2
+    FLOPS: 1 + 2S + 2SP
+
     Parameters
     ----------
     coefficient
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
-    neighbors
+    neighbors : ndarray, shape (S, P), dtype=int64
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    neighbors_sizes
+    neighbors_sizes : ndarray, shape (S,), dtype=int64
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
     Returns
     -------
-    np.ndarray
+    regularization_matrix : ndarray, shape (S, S), dtype=float64
         The regularization matrix computed using Regularization where the effective regularization
         coefficient of every source pixel is the same.
     """
+    S, P = neighbors.shape
+    # as the regularization matrix is S by S, S would be out of bound (any out of bound index would do)
+    OUT_OF_BOUND_IDX = S
+    regularization_coefficient = coefficient * coefficient
 
-    parameters = len(neighbors)
+    # flatten it for feeding into the matrix as j indices
+    neighbors = neighbors.flatten()
+    # now create the corresponding i indices
+    I_IDX = jnp.repeat(jnp.arange(S), P)
+    # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
+    # This ensures that JAX can efficiently drop these entries during matrix updates.
+    neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+    return (
+        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[I_IDX, neighbors]
+        # unique indices should be guranteed by neighbors-spec
+        .add(-regularization_coefficient, mode="drop", unique_indices=True)
+    )
 
-    regularization_matrix = np.zeros(shape=(parameters, parameters))
-
-    regularization_coefficient = coefficient**2.0
-
-    for i in range(parameters):
-        regularization_matrix[i, i] += 1e-8
-        for j in range(neighbors_sizes[i]):
-            neighbor_index = neighbors[i, j]
-            regularization_matrix[i, i] += regularization_coefficient
-            regularization_matrix[i, neighbor_index] -= regularization_coefficient
-
-    return regularization_matrix
 
 
 @numba_util.jit()
@@ -203,11 +204,9 @@ def brightness_zeroth_regularization_weights_from(
     return coefficient * (1.0 - pixel_signals)
 
 
-# @numba_util.jit()
 def weighted_regularization_matrix_from(
     regularization_weights: np.ndarray,
     neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the regularization matrix of the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
@@ -237,78 +236,43 @@ def weighted_regularization_matrix_from(
         The regularization matrix computed using an adaptive regularization scheme where the effective regularization
         coefficient of every source pixel is different.
     """
-    parameters = len(regularization_weights)
-    regularization_matrix = np.zeros((parameters, parameters))
-    regularization_weight = regularization_weights**2.0
+    S, P = neighbors.shape
+    reg_w = regularization_weights ** 2
 
-    # Add small diagonal offset
-    np.fill_diagonal(regularization_matrix, 1e-8)
+    # 1) Flatten the (i→j) neighbor pairs
+    I = jnp.repeat(jnp.arange(S), P)            # (S*P,)
+    J = neighbors.reshape(-1)                   # (S*P,)
 
-    for i in range(parameters):
-        for j in range(neighbors_sizes[i]):
-            neighbor_index = neighbors[i, j]
-            w = regularization_weight[neighbor_index]
+    # 2) Remap “no neighbor” entries to an extra slot S, whose weight=0
+    OUT = S
+    J = jnp.where(J < 0, OUT, J)
 
-            regularization_matrix[i, i] += w
-            regularization_matrix[neighbor_index, neighbor_index] += w
-            regularization_matrix[i, neighbor_index] -= w
-            regularization_matrix[neighbor_index, i] -= w
+    # 3) Build an extended weight vector with a zero at index S
+    reg_w_ext = jnp.concatenate([reg_w, jnp.zeros((1,))], axis=0)
+    w_ij = reg_w_ext[J]                         # (S*P,)
 
-    return regularization_matrix
+    # 4) Start with zeros on an (S+1)x(S+1) canvas so we can scatter into row S safely
+    mat = jnp.zeros((S + 1, S + 1), dtype=regularization_weights.dtype)
 
+    # 5) Scatter into the diagonal:
+    #    - the tiny 1e-8 floor on each i < S
+    #    - sum_j reg_w[j] into diag[i]
+    #    - sum contributions reg_w[j] into diag[j]
+    #    (diagonal at OUT=S picks up zeros only)
+    diag_updates_i = jnp.concatenate([
+        jnp.full((S,), 1e-8),
+        jnp.zeros((1,))  # out‐of‐bounds slot stays zero
+    ], axis=0)
+    mat = mat.at[jnp.diag_indices(S + 1)].add(diag_updates_i)
+    mat = mat.at[I, I].add(w_ij)
+    mat = mat.at[J, J].add(w_ij)
 
-# def weighted_regularization_matrix_from(
-#     regularization_weights: np.ndarray,
-#     neighbors: np.ndarray,
-#     neighbors_sizes: np.ndarray,
-# ) -> np.ndarray:
-#     """
-#     Returns the regularization matrix of the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
-#
-#     This matrix is computed using the regularization weights of every mesh pixel, which are computed using the
-#     function ``adaptive_regularization_weights_from``. These act as the effective regularization coefficients of
-#     every mesh pixel.
-#
-#     The regularization matrix is computed using the pixel-neighbors array, which is setup using the appropriate
-#     neighbor calculation of the corresponding ``Mapper`` class.
-#
-#     Parameters
-#     ----------
-#     regularization_weights
-#         The regularization weight of each pixel, adaptively governing the degree of gradient regularization
-#         applied to each inversion parameter (e.g. mesh pixels of a ``Mapper``).
-#     neighbors
-#         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
-#         the mesh grid (entries of -1 correspond to no neighbor).
-#     neighbors_sizes
-#         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
-#         Voronoi grid.
-#
-#     Returns
-#     -------
-#     np.ndarray
-#         The regularization matrix computed using an adaptive regularization scheme where the effective regularization
-#         coefficient of every source pixel is different.
-#     """
-#     parameters = len(regularization_weights)
-#     regularization_matrix = np.zeros((parameters, parameters))
-#     regularization_weight = regularization_weights**2.0
-#
-#     # Add small diagonal offset
-#     np.fill_diagonal(regularization_matrix, 1e-8)
-#
-#     for i in range(parameters):
-#         for j in range(neighbors_sizes[i]):
-#             neighbor_index = neighbors[i, j]
-#             w = regularization_weight[neighbor_index]
-#
-#             regularization_matrix[i, i] += w
-#             regularization_matrix[neighbor_index, neighbor_index] += w
-#             regularization_matrix[i, neighbor_index] -= w
-#             regularization_matrix[neighbor_index, i] -= w
-#
-#     return regularization_matrix
+    # 6) Scatter the off‐diagonal subtractions:
+    mat = mat.at[I, J].add(-w_ij)
+    mat = mat.at[J, I].add(-w_ij)
 
+    # 7) Drop the extra row/column S and return the S×S result
+    return mat[:S, :S]
 
 def brightness_zeroth_regularization_matrix_from(
     regularization_weights: np.ndarray,

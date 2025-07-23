@@ -71,7 +71,10 @@ class Visuals2D(AbstractVisuals):
             plotter.mesh_grid_scatter.scatter_grid(grid=self.mesh_grid.array)
 
         if self.positions is not None:
-            plotter.positions_scatter.scatter_grid(grid=self.positions)
+            try:
+                plotter.positions_scatter.scatter_grid(grid=self.positions.array)
+            except (AttributeError, ValueError):
+                plotter.positions_scatter.scatter_grid(grid=self.positions)
 
         if self.vectors is not None:
             plotter.vector_yx_quiver.quiver_vectors(vectors=self.vectors)
