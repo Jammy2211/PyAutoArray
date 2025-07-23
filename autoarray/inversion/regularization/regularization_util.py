@@ -86,6 +86,7 @@ def constant_zeroth_regularization_matrix_from(
     coefficient: float,
     coefficient_zeroth: float,
     neighbors: np.ndarray,
+    neighbors_sizes: np.ndarray[[int], np.int64],
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -111,33 +112,28 @@ def constant_zeroth_regularization_matrix_from(
         coefficient of every source pixel is the same.
     """
     S, P = neighbors.shape
-    reg1 = coefficient**2
-    reg0 = coefficient_zeroth**2
+    # as the regularization matrix is S by S, S would be out of bound (any out of bound index would do)
+    OUT_OF_BOUND_IDX = S
+    regularization_coefficient = coefficient * coefficient
 
-    # 1) Flatten (i,j) neighbor‐pairs
-    I = jnp.repeat(jnp.arange(S), P)       # (S*P,)
-    J = neighbors.reshape(-1)              # (S*P,)
+    # flatten it for feeding into the matrix as j indices
+    neighbors = neighbors.flatten()
+    # now create the corresponding i indices
+    I_IDX = jnp.repeat(jnp.arange(S), P)
+    # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
+    # This ensures that JAX can efficiently drop these entries during matrix updates.
+    neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+    const = (
+        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[I_IDX, neighbors]
+        # unique indices should be guranteed by neighbors-spec
+        .add(-regularization_coefficient, mode="drop", unique_indices=True)
+    )
 
-    # 2) Remap “no neighbor” = -1 → OUT = S
-    OUT = S
-    J = jnp.where(J < 0, OUT, J)
+    reg_coeff = coefficient_zeroth ** 2.0
+    # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
+    zeroth = jnp.eye(P) * reg_coeff
 
-    # 3) Start on an (S+1)x(S+1) zero canvas
-    M = jnp.zeros((S+1, S+1), dtype=jnp.float32)
-
-    # 4) Diagonal baseline: 1e-8 + reg0  for i in [0..S-1]
-    diag_base = jnp.concatenate([jnp.full((S,), 1e-8 + reg0), jnp.zeros((1,))])
-    M = M.at[jnp.diag_indices(S+1)].add(diag_base)
-
-    # 5) Scatter the first-order reg1 into diag[i] for each neighbor (i→j):
-    #    M[i,i] += reg1
-    M = M.at[I, I].add(reg1)
-
-    # 6) Scatter the off-diagonals: M[i,j] -= reg1
-    M = M.at[I, J].add(-reg1)
-
-    # 7) Return only the top‐left S×S block
-    return M[:S, :S]
+    return const + zeroth
 
 def adaptive_regularization_weights_from(
     inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray

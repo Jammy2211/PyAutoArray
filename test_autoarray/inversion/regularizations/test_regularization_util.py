@@ -147,11 +147,14 @@ def test__constant_regularization_matrix_from():
 def test__constant_zeroth_regularization_matrix_from():
     neighbors = np.array([[1, 2, -1], [0, -1, -1], [0, -1, -1]])
 
+    neighbors_sizes = np.array([2, 1, 1])
+
     regularization_matrix = (
         aa.util.regularization.constant_zeroth_regularization_matrix_from(
             coefficient=2.0,
             coefficient_zeroth=0.5,
             neighbors=neighbors,
+            neighbors_sizes=neighbors_sizes,
         )
     )
 
