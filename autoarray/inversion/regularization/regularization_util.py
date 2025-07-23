@@ -3,10 +3,24 @@ from typing import Tuple
 
 from autoarray import exc
 
-from autoarray.inversion.regularization.adaptive_brightness import adaptive_regularization_weights_from
-from autoarray.inversion.regularization.brightness_zeroth import brightness_zeroth_regularization_matrix_from
-from autoarray.inversion.regularization.brightness_zeroth import brightness_zeroth_regularization_weights_from
-from autoarray.inversion.regularization.constant import constant_regularization_matrix_from
+from autoarray.inversion.regularization.adaptive_brightness import (
+    adaptive_regularization_weights_from,
+)
+from autoarray.inversion.regularization.adaptive_brightness import (
+    weighted_regularization_matrix_from,
+)
+from autoarray.inversion.regularization.brightness_zeroth import (
+    brightness_zeroth_regularization_matrix_from,
+)
+from autoarray.inversion.regularization.brightness_zeroth import (
+    brightness_zeroth_regularization_weights_from,
+)
+from autoarray.inversion.regularization.constant import (
+    constant_regularization_matrix_from,
+)
+from autoarray.inversion.regularization.constant_zeroth import (
+    constant_zeroth_regularization_matrix_from,
+)
 from autoarray.inversion.regularization.exponential_kernel import exp_cov_matrix_from
 from autoarray.inversion.regularization.gaussian_kernel import gauss_cov_matrix_from
 from autoarray.inversion.regularization.matern_kernel import matern_kernel

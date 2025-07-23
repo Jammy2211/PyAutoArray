@@ -52,7 +52,9 @@ def constant_regularization_matrix_from(
     # This ensures that JAX can efficiently drop these entries during matrix updates.
     neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
     return (
-        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[I_IDX, neighbors]
+        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+            I_IDX, neighbors
+        ]
         # unique indices should be guranteed by neighbors-spec
         .add(-regularization_coefficient, mode="drop", unique_indices=True)
     )

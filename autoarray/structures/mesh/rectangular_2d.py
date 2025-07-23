@@ -136,7 +136,9 @@ class Mesh2DRectangular(Abstract2DMesh):
 
     @cached_property
     def edge_pixel_list(self) -> List:
-        return mesh_util.rectangular_edge_pixel_list_from(shape_native=self.shape_native)
+        return mesh_util.rectangular_edge_pixel_list_from(
+            shape_native=self.shape_native
+        )
 
     @property
     def pixels(self) -> int:

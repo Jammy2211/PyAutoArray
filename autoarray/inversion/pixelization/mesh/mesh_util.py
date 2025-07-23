@@ -110,6 +110,7 @@ def rectangular_corner_neighbors(
 
     return neighbors, neighbors_sizes
 
+
 def rectangular_top_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -144,6 +145,7 @@ def rectangular_top_edge_neighbors(
     neighbors_sizes[top_edge_pixels] = 3
 
     return neighbors, neighbors_sizes
+
 
 def rectangular_left_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
@@ -180,6 +182,7 @@ def rectangular_left_edge_neighbors(
 
     return neighbors, neighbors_sizes
 
+
 def rectangular_right_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -214,6 +217,7 @@ def rectangular_right_edge_neighbors(
     neighbors_sizes[pixel_indices] = 3
 
     return neighbors, neighbors_sizes
+
 
 def rectangular_bottom_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
@@ -288,13 +292,14 @@ def rectangular_central_neighbors(
 
     # Compute neighbor indices
     neighbors[pixel_indices, 0] = pixel_indices - n_cols  # Up
-    neighbors[pixel_indices, 1] = pixel_indices - 1       # Left
-    neighbors[pixel_indices, 2] = pixel_indices + 1       # Right
+    neighbors[pixel_indices, 1] = pixel_indices - 1  # Left
+    neighbors[pixel_indices, 2] = pixel_indices + 1  # Right
     neighbors[pixel_indices, 3] = pixel_indices + n_cols  # Down
 
     neighbors_sizes[pixel_indices] = 4
 
     return neighbors, neighbors_sizes
+
 
 def rectangular_edge_pixel_list_from(shape_native: Tuple[int, int]) -> List[int]:
     """

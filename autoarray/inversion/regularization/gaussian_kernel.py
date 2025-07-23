@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
+
 def gauss_cov_matrix_from(
     scale: float,
     pixel_points: jnp.ndarray,  # shape (N, 2)
@@ -34,17 +35,17 @@ def gauss_cov_matrix_from(
         The Gaussian covariance matrix.
     """
     # Ensure array:
-    pts = jnp.asarray(pixel_points)               # (N, 2)
+    pts = jnp.asarray(pixel_points)  # (N, 2)
     # Compute squared distances: ||p_i - p_j||^2
-    diffs = pts[:, None, :] - pts[None, :, :]     # (N, N, 2)
-    d2   = jnp.sum(diffs**2, axis=-1)             # (N, N)
+    diffs = pts[:, None, :] - pts[None, :, :]  # (N, N, 2)
+    d2 = jnp.sum(diffs**2, axis=-1)  # (N, N)
 
     # Gaussian kernel
-    cov  = jnp.exp(-d2 / (2.0 * scale**2))        # (N, N)
+    cov = jnp.exp(-d2 / (2.0 * scale**2))  # (N, N)
 
     # Add tiny jitter on the diagonal
-    N    = pts.shape[0]
-    cov  = cov + jnp.eye(N, dtype=cov.dtype) * 1e-8
+    N = pts.shape[0]
+    cov = cov + jnp.eye(N, dtype=cov.dtype) * 1e-8
 
     return cov
 
@@ -111,8 +112,7 @@ class GaussianKernel(AbstractRegularization):
         The regularization matrix.
         """
         covariance_matrix = gauss_cov_matrix_from(
-            scale=self.scale,
-            pixel_points=linear_obj.source_plane_mesh_grid.array
+            scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid.array
         )
 
         return self.coefficient * jnp.linalg.inv(covariance_matrix)

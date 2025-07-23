@@ -14,7 +14,7 @@ class Preloads:
         self,
         mapper_indices: np.ndarray = None,
         source_pixel_zeroed_indices: np.ndarray = None,
-        linear_light_profile_blurred_mapping_matrix = None,
+        linear_light_profile_blurred_mapping_matrix=None,
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance

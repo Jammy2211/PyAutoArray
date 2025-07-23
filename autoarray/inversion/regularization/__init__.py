@@ -10,4 +10,3 @@ from .adaptive_brightness_split_zeroth import AdaptiveBrightnessSplitZeroth
 from .gaussian_kernel import GaussianKernel
 from .exponential_kernel import ExponentialKernel
 from .matern_kernel import MaternKernel
-

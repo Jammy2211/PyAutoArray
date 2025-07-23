@@ -50,12 +50,14 @@ def constant_zeroth_regularization_matrix_from(
     # This ensures that JAX can efficiently drop these entries during matrix updates.
     neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
     const = (
-        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[I_IDX, neighbors]
+        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+            I_IDX, neighbors
+        ]
         # unique indices should be guranteed by neighbors-spec
         .add(-regularization_coefficient, mode="drop", unique_indices=True)
     )
 
-    reg_coeff = coefficient_zeroth ** 2.0
+    reg_coeff = coefficient_zeroth**2.0
     # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
     zeroth = jnp.eye(P) * reg_coeff
 

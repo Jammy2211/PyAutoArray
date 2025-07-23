@@ -30,7 +30,7 @@ def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> jnp.nd
         coefficient of every source pixel is the same.
     """
 
-    reg_coeff = coefficient ** 2.0
+    reg_coeff = coefficient**2.0
 
     # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
 

@@ -80,11 +80,11 @@ def weighted_regularization_matrix_from(
         coefficient of every source pixel is different.
     """
     S, P = neighbors.shape
-    reg_w = regularization_weights ** 2
+    reg_w = regularization_weights**2
 
     # 1) Flatten the (i→j) neighbor pairs
-    I = jnp.repeat(jnp.arange(S), P)            # (S*P,)
-    J = neighbors.reshape(-1)                   # (S*P,)
+    I = jnp.repeat(jnp.arange(S), P)  # (S*P,)
+    J = neighbors.reshape(-1)  # (S*P,)
 
     # 2) Remap “no neighbor” entries to an extra slot S, whose weight=0
     OUT = S
@@ -92,7 +92,7 @@ def weighted_regularization_matrix_from(
 
     # 3) Build an extended weight vector with a zero at index S
     reg_w_ext = jnp.concatenate([reg_w, jnp.zeros((1,))], axis=0)
-    w_ij = reg_w_ext[J]                         # (S*P,)
+    w_ij = reg_w_ext[J]  # (S*P,)
 
     # 4) Start with zeros on an (S+1)x(S+1) canvas so we can scatter into row S safely
     mat = jnp.zeros((S + 1, S + 1), dtype=regularization_weights.dtype)
@@ -102,10 +102,9 @@ def weighted_regularization_matrix_from(
     #    - sum_j reg_w[j] into diag[i]
     #    - sum contributions reg_w[j] into diag[j]
     #    (diagonal at OUT=S picks up zeros only)
-    diag_updates_i = jnp.concatenate([
-        jnp.full((S,), 1e-8),
-        jnp.zeros((1,))  # out‐of‐bounds slot stays zero
-    ], axis=0)
+    diag_updates_i = jnp.concatenate(
+        [jnp.full((S,), 1e-8), jnp.zeros((1,))], axis=0  # out‐of‐bounds slot stays zero
+    )
     mat = mat.at[jnp.diag_indices(S + 1)].add(diag_updates_i)
     mat = mat.at[I, I].add(w_ij)
     mat = mat.at[J, J].add(w_ij)
@@ -116,6 +115,7 @@ def weighted_regularization_matrix_from(
 
     # 7) Drop the extra row/column S and return the S×S result
     return mat[:S, :S]
+
 
 class AdaptiveBrightness(AbstractRegularization):
     def __init__(

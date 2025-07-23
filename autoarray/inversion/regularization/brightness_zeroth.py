@@ -42,6 +42,7 @@ def brightness_zeroth_regularization_weights_from(
     """
     return coefficient * (1.0 - pixel_signals)
 
+
 def brightness_zeroth_regularization_matrix_from(
     regularization_weights: jnp.ndarray,
 ) -> jnp.ndarray:
@@ -61,7 +62,6 @@ def brightness_zeroth_regularization_matrix_from(
     """
     regularization_weight_squared = regularization_weights**2.0
     return jnp.diag(regularization_weight_squared)
-
 
 
 class BrightnessZeroth(AbstractRegularization):

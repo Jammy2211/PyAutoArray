@@ -405,7 +405,6 @@ def test__weighted_regularization_matrix_from():
         [[1, 2, -1, -1], [0, 2, 3, -1], [0, 1, -1, -1], [1, -1, -1, -1]]
     )
 
-
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
