@@ -1,5 +1,5 @@
 from __future__ import annotations
-import numpy as np
+import jax.numpy as jnp
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -8,6 +8,60 @@ if TYPE_CHECKING:
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray.inversion.regularization import regularization_util
+
+
+def brightness_zeroth_regularization_weights_from(
+    coefficient: float, pixel_signals: jnp.ndarray
+) -> jnp.ndarray:
+    """
+    Returns the regularization weights for the brightness zeroth regularization scheme (e.g. ``BrightnessZeroth``).
+
+    The weights define the level of zeroth order regularization applied to every mesh parameter (typically pixels
+    of a ``Mapper``).
+
+    They are computed using an estimate of the expected signal in each pixel.
+
+    The zeroth order regularization coefficients is applied in combination with  1.0 - pixel_signals, which are
+    the pixels with a low pixel-signal (i.e. where the signal is not located near the source being reconstructed in
+    the pixelization).
+
+    Parameters
+    ----------
+    coefficient
+        The level of zeroth order regularization applied to every mesh parameter (typically pixels of a ``Mapper``),
+        with the degree applied varying based on the ``pixel_signals``.
+    pixel_signals
+        The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal
+        and low signal pixelizations.
+
+    Returns
+    -------
+    jnp.ndarray
+        The zeroth order regularization weights which act as the effective level of zeroth order regularization
+        applied to every mesh parameter.
+    """
+    return coefficient * (1.0 - pixel_signals)
+
+def brightness_zeroth_regularization_matrix_from(
+    regularization_weights: jnp.ndarray,
+) -> jnp.ndarray:
+    """
+    Returns the regularization matrix for the zeroth-order brightness regularization scheme.
+
+    Parameters
+    ----------
+    regularization_weights
+        The regularization weights for each pixel, governing the strength of zeroth-order
+        regularization applied per inversion parameter.
+
+    Returns
+    -------
+    A diagonal regularization matrix where each diagonal element is the squared regularization weight
+    for that pixel.
+    """
+    regularization_weight_squared = regularization_weights**2.0
+    return jnp.diag(regularization_weight_squared)
+
 
 
 class BrightnessZeroth(AbstractRegularization):
@@ -45,7 +99,7 @@ class BrightnessZeroth(AbstractRegularization):
         self.coefficient = coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization weights of the ``BrightnessZeroth`` regularization scheme.
 
@@ -65,11 +119,11 @@ class BrightnessZeroth(AbstractRegularization):
         """
         pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
 
-        return regularization_util.brightness_zeroth_regularization_weights_from(
+        return brightness_zeroth_regularization_weights_from(
             coefficient=self.coefficient, pixel_signals=pixel_signals
         )
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -84,6 +138,6 @@ class BrightnessZeroth(AbstractRegularization):
         """
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
-        return regularization_util.brightness_zeroth_regularization_matrix_from(
+        return brightness_zeroth_regularization_matrix_from(
             regularization_weights=regularization_weights
         )
