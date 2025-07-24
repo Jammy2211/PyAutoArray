@@ -227,8 +227,6 @@ def test__brightness_zeroth_regularization_weights_from():
 def test__weighted_regularization_matrix_from():
     neighbors = np.array([[2], [3], [0], [1]])
 
-    neighbors_sizes = np.array([1, 1, 1, 1])
-
     b_matrix = np.array([[-1, 0, 1, 0], [0, -1, 0, 1], [1, 0, -1, 0], [0, 1, 0, -1]])
 
     test_regularization_matrix = np.matmul(b_matrix.T, b_matrix)
@@ -238,7 +236,6 @@ def test__weighted_regularization_matrix_from():
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
     )
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
@@ -250,8 +247,6 @@ def test__weighted_regularization_matrix_from():
     # the rows of each B matrix wherever we like ;0.
 
     neighbors = np.array([[1, 2], [0, -1], [0, -1]])
-
-    neighbors_sizes = np.array([2, 1, 1])
 
     b_matrix_1 = np.array(
         [[-1, 1, 0], [-1, 0, 1], [1, -1, 0]]  # Pair 1  # Pair 2
@@ -272,7 +267,6 @@ def test__weighted_regularization_matrix_from():
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
     )
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
@@ -291,14 +285,11 @@ def test__weighted_regularization_matrix_from():
 
     neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
 
-    neighbors_sizes = np.array([2, 2, 2, 2])
-
     regularization_weights = np.ones((4,))
 
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
     )
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
@@ -383,7 +374,6 @@ def test__weighted_regularization_matrix_from():
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
     )
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
@@ -415,12 +405,9 @@ def test__weighted_regularization_matrix_from():
         [[1, 2, -1, -1], [0, 2, 3, -1], [0, 1, -1, -1], [1, -1, -1, -1]]
     )
 
-    neighbors_sizes = np.array([2, 3, 2, 1])
-
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
     )
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
@@ -436,7 +423,6 @@ def test__weighted_regularization_matrix_from():
         ]
     )
 
-    neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
     regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
     # I'm inputting the regularization weight_list directly thiss time, as it'd be a pain to multiply with a
@@ -503,7 +489,6 @@ def test__weighted_regularization_matrix_from():
     regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
         neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
     )
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)

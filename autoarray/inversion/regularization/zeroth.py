@@ -1,5 +1,5 @@
 from __future__ import annotations
-import numpy as np
+import jax.numpy as jnp
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -7,7 +7,34 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray.inversion.regularization import regularization_util
+
+def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> jnp.ndarray:
+    """
+    Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
+    to the regularization matrix.
+
+    A complete description of regularization and the `regularization_matrix` can be found in the `Regularization`
+    class in the module `autoarray.inversion.regularization`.
+
+    Parameters
+    ----------
+    pixels
+        The number of pixels in the linear object which is to be regularized, being used to in the inversion.
+    coefficient
+        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+
+    Returns
+    -------
+    np.ndarray
+        The regularization matrix computed using Regularization where the effective regularization
+        coefficient of every source pixel is the same.
+    """
+
+    reg_coeff = coefficient**2.0
+
+    # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
+
+    return jnp.eye(pixels) * reg_coeff
 
 
 class Zeroth(AbstractRegularization):
@@ -60,9 +87,9 @@ class Zeroth(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.params)
+        return self.coefficient * jnp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -75,6 +102,6 @@ class Zeroth(AbstractRegularization):
         -------
         The regularization matrix.
         """
-        return regularization_util.zeroth_regularization_matrix_from(
+        return zeroth_regularization_matrix_from(
             coefficient=self.coefficient, pixels=linear_obj.params
         )

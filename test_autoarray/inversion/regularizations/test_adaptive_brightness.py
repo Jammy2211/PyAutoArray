@@ -55,7 +55,6 @@ def test__regularization_matrix__matches_util():
         aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             neighbors=neighbors,
-            neighbors_sizes=neighbors_sizes,
         )
     )
 

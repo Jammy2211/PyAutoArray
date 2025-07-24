@@ -1,4 +1,5 @@
 from __future__ import annotations
+import jax.numpy as jnp
 import numpy as np
 from typing import TYPE_CHECKING
 
@@ -7,52 +8,46 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray import numba_util
 
-
-@numba_util.jit()
 def gauss_cov_matrix_from(
     scale: float,
-    pixel_points: np.ndarray,
-) -> np.ndarray:
+    pixel_points: jnp.ndarray,  # shape (N, 2)
+) -> jnp.ndarray:
     """
-    Consutruct the source brightness covariance matrix, which is used to determined the regularization
-    pattern (i.e, how the different source pixels are smoothed).
+    Construct the source‐pixel Gaussian covariance matrix for regularization.
 
-    the covariance matrix includes one non-linear parameters, the scale coefficient, which is used to
-    determine the typical scale of the regularization pattern.
+    For N source‐pixels at coordinates (y_i, x_i), we define
+
+      C_ij = exp( -||p_i - p_j||^2 / (2 scale^2) )
+
+    plus a tiny diagonal “jitter” (1e-8) to ensure numerical stability.
 
     Parameters
     ----------
     scale
-        the typical scale of the regularization pattern .
+        The characteristic length scale of the Gaussian kernel.
     pixel_points
-        An 2d array with shape [N_source_pixels, 2], which save the source pixelization coordinates (on source plane).
-        Something like [[y1,x1], [y2,x2], ...]
+        Array of shape (N, 2), giving the (y, x) coordinates of each source pixel.
 
     Returns
     -------
-    np.ndarray
-        The source covariance matrix (2d array), shape [N_source_pixels, N_source_pixels].
+    cov : jnp.ndarray, shape (N, N)
+        The Gaussian covariance matrix.
     """
+    # Ensure array:
+    pts = jnp.asarray(pixel_points)  # (N, 2)
+    # Compute squared distances: ||p_i - p_j||^2
+    diffs = pts[:, None, :] - pts[None, :, :]  # (N, N, 2)
+    d2 = jnp.sum(diffs**2, axis=-1)  # (N, N)
 
-    pixels = len(pixel_points)
-    covariance_matrix = np.zeros(shape=(pixels, pixels))
+    # Gaussian kernel
+    cov = jnp.exp(-d2 / (2.0 * scale**2))  # (N, N)
 
-    for i in range(pixels):
-        covariance_matrix[i, i] += 1e-8
-        for j in range(pixels):
-            xi = pixel_points[i, 1]
-            yi = pixel_points[i, 0]
-            xj = pixel_points[j, 1]
-            yj = pixel_points[j, 0]
-            d_ij = np.sqrt(
-                (xi - xj) ** 2 + (yi - yj) ** 2
-            )  # distance between the pixel i and j
+    # Add tiny jitter on the diagonal
+    N = pts.shape[0]
+    cov = cov + jnp.eye(N, dtype=cov.dtype) * 1e-8
 
-            covariance_matrix[i, j] += np.exp(-1.0 * d_ij**2 / (2 * scale**2))
-
-    return covariance_matrix
+    return cov
 
 
 class GaussianKernel(AbstractRegularization):
@@ -117,7 +112,7 @@ class GaussianKernel(AbstractRegularization):
         The regularization matrix.
         """
         covariance_matrix = gauss_cov_matrix_from(
-            scale=self.scale, pixel_points=np.array(linear_obj.source_plane_mesh_grid)
+            scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid.array
         )
 
-        return self.coefficient * np.linalg.inv(covariance_matrix)
+        return self.coefficient * jnp.linalg.inv(covariance_matrix)

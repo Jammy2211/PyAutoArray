@@ -1,5 +1,5 @@
 from __future__ import annotations
-import numpy as np
+import jax.numpy as jnp
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -7,7 +7,57 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray.inversion.regularization import regularization_util
+
+def constant_regularization_matrix_from(
+    coefficient: float,
+    neighbors: jnp.ndarray[[int, int], jnp.int64],
+    neighbors_sizes: jnp.ndarray[[int], jnp.int64],
+) -> jnp.ndarray[[int, int], jnp.float64]:
+    """
+    From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
+
+    A complete description of regularizatin and the `regularization_matrix` can be found in the `Regularization`
+    class in the module `autoarray.inversion.regularization`.
+
+    Memory requirement: 2SP + S^2
+    FLOPS: 1 + 2S + 2SP
+
+    Parameters
+    ----------
+    coefficient
+        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+    neighbors : ndarray, shape (S, P), dtype=int64
+        An array of length (total_pixels) which provides the index of all neighbors of every pixel in
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    neighbors_sizes : ndarray, shape (S,), dtype=int64
+        An array of length (total_pixels) which gives the number of neighbors of every pixel in the
+        Voronoi grid.
+
+    Returns
+    -------
+    regularization_matrix : ndarray, shape (S, S), dtype=float64
+        The regularization matrix computed using Regularization where the effective regularization
+        coefficient of every source pixel is the same.
+    """
+    S, P = neighbors.shape
+    # as the regularization matrix is S by S, S would be out of bound (any out of bound index would do)
+    OUT_OF_BOUND_IDX = S
+    regularization_coefficient = coefficient * coefficient
+
+    # flatten it for feeding into the matrix as j indices
+    neighbors = neighbors.flatten()
+    # now create the corresponding i indices
+    I_IDX = jnp.repeat(jnp.arange(S), P)
+    # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
+    # This ensures that JAX can efficiently drop these entries during matrix updates.
+    neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+    return (
+        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+            I_IDX, neighbors
+        ]
+        # unique indices should be guranteed by neighbors-spec
+        .add(-regularization_coefficient, mode="drop", unique_indices=True)
+    )
 
 
 class Constant(AbstractRegularization):
@@ -38,7 +88,7 @@ class Constant(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -57,9 +107,9 @@ class Constant(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.params)
+        return self.coefficient * jnp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -73,7 +123,7 @@ class Constant(AbstractRegularization):
         The regularization matrix.
         """
 
-        return regularization_util.constant_regularization_matrix_from(
+        return constant_regularization_matrix_from(
             coefficient=self.coefficient,
             neighbors=linear_obj.neighbors,
             neighbors_sizes=linear_obj.neighbors.sizes,

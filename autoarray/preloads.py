@@ -14,6 +14,7 @@ class Preloads:
         self,
         mapper_indices: np.ndarray = None,
         source_pixel_zeroed_indices: np.ndarray = None,
+        linear_light_profile_blurred_mapping_matrix=None,
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
@@ -37,11 +38,17 @@ class Preloads:
             Indices of source pixels that should be set to zero in the reconstruction. These typically correspond to
             outer-edge source-plane regions with no image-plane mapping (e.g. outside a circular mask), helping
             separate the lens light from the pixelized source model.
+        linear_light_profile_blurred_mapping_matrix
+            The evaluated images of the linear light profiles that make up the blurred mapping matrix component of the
+            inversion, with the other component being the pixelization's pixels. These are fixed when the lens light
+            is fixed to the maximum likelihood solution, allowing the blurred mapping matrix to be preloaded, but
+            the intensity values will still be solved for during the inversion.
         """
 
         self.mapper_indices = None
         self.source_pixel_zeroed_indices = None
         self.source_pixel_zeroed_indices_to_keep = None
+        self.linear_light_profile_blurred_mapping_matrix = None
 
         if mapper_indices is not None:
 
@@ -58,3 +65,9 @@ class Preloads:
 
             # Get the indices where values_to_solve is True
             self.source_pixel_zeroed_indices_to_keep = jnp.where(values_to_solve)[0]
+
+        if linear_light_profile_blurred_mapping_matrix is not None:
+
+            self.linear_light_profile_blurred_mapping_matrix = jnp.array(
+                linear_light_profile_blurred_mapping_matrix
+            )

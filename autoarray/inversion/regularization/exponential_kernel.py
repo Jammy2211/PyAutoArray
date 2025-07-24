@@ -1,5 +1,5 @@
 from __future__ import annotations
-import numpy as np
+import jax.numpy as jnp
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -7,52 +7,44 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray import numba_util
 
-
-@numba_util.jit()
 def exp_cov_matrix_from(
     scale: float,
-    pixel_points: np.ndarray,
-) -> np.ndarray:
+    pixel_points: jnp.ndarray,  # shape (N, 2)
+) -> jnp.ndarray:  # shape (N, N)
     """
-    Consutruct the source brightness covariance matrix, which is used to determined the regularization
-    pattern (i.e, how the different  source pixels are smoothed).
+    Construct the source brightness covariance matrix using an exponential kernel:
 
-    The covariance matrix includes one non-linear parameters, the scale coefficient, which is used to determine
-    the typical scale of the regularization pattern.
+        cov[i,j] = exp(- d_{ij} / scale)
+
+    with a tiny jitter 1e-8 added on the diagonal for numerical stability.
 
     Parameters
     ----------
     scale
-        The typical scale of the regularization pattern .
+        The length‐scale of the exponential kernel.
     pixel_points
-        An 2d array with shape [N_source_pixels, 2], which save the source pixelization coordinates (on source plane).
-        Something like [[y1,x1], [y2,x2], ...]
+        Array of shape (N, 2) giving the (y,x) coordinates of each source‐plane pixel.
 
     Returns
     -------
-    np.ndarray
-        The source covariance matrix (2d array), shape [N_source_pixels, N_source_pixels].
+    jnp.ndarray, shape (N, N)
+        The exponential covariance matrix.
     """
+    # pairwise differences: shape (N, N, 2)
+    diff = pixel_points[:, None, :] - pixel_points[None, :, :]
 
-    pixels = len(pixel_points)
-    covariance_matrix = np.zeros(shape=(pixels, pixels))
+    # Euclidean distances: shape (N, N)
+    d = jnp.linalg.norm(diff, axis=-1)
 
-    for i in range(pixels):
-        covariance_matrix[i, i] += 1e-8
-        for j in range(pixels):
-            xi = pixel_points[i, 1]
-            yi = pixel_points[i, 0]
-            xj = pixel_points[j, 1]
-            yj = pixel_points[j, 0]
-            d_ij = np.sqrt(
-                (xi - xj) ** 2 + (yi - yj) ** 2
-            )  # distance between the pixel i and j
+    # exponential kernel
+    cov = jnp.exp(-d / scale)
 
-            covariance_matrix[i, j] += np.exp(-1.0 * d_ij / scale)
+    # add a small jitter on the diagonal
+    N = pixel_points.shape[0]
+    cov = cov + jnp.eye(N) * 1e-8
 
-    return covariance_matrix
+    return cov
 
 
 class ExponentialKernel(AbstractRegularization):
@@ -83,7 +75,7 @@ class ExponentialKernel(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -102,9 +94,9 @@ class ExponentialKernel(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.params)
+        return self.coefficient * jnp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -119,7 +111,7 @@ class ExponentialKernel(AbstractRegularization):
         """
         covariance_matrix = exp_cov_matrix_from(
             scale=self.scale,
-            pixel_points=np.array(linear_obj.source_plane_mesh_grid),
+            pixel_points=linear_obj.source_plane_mesh_grid.array,
         )
 
-        return self.coefficient * np.linalg.inv(covariance_matrix)
+        return self.coefficient * jnp.linalg.inv(covariance_matrix)

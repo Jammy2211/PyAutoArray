@@ -79,7 +79,17 @@ class GridScatter(AbstractMatWrap2D):
 
         try:
             for grid in grid_list:
-                plt.scatter(y=grid[:, 0], x=grid[:, 1], c=next(color), **config_dict)
+                try:
+                    plt.scatter(
+                        y=grid[:, 0], x=grid[:, 1], c=next(color), **config_dict
+                    )
+                except ValueError:
+                    plt.scatter(
+                        y=grid.array[:, 0],
+                        x=grid.array[:, 1],
+                        c=next(color),
+                        **config_dict,
+                    )
         except IndexError:
             return None
 
