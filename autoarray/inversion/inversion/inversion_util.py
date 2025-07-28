@@ -231,26 +231,7 @@ def reconstruction_positive_negative_from(
     curvature_reg_matrix
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
-    try:
-        reconstruction = jnp.linalg.solve(curvature_reg_matrix, data_vector)
-    except np.linalg.LinAlgError as e:
-        raise exc.InversionException() from e
-
-    if jnp.isnan(reconstruction).any():
-        raise exc.InversionException
-
-    if (
-        conf.instance["general"]["inversion"]["check_reconstruction"]
-        or force_check_reconstruction
-    ):
-        for mapper_param_range in mapper_param_range_list:
-            if np.allclose(
-                a=reconstruction[mapper_param_range[0] : mapper_param_range[1]],
-                b=reconstruction[mapper_param_range[0]],
-            ):
-                raise exc.InversionException()
-
-    return reconstruction
+    return jnp.linalg.solve(curvature_reg_matrix, data_vector)
 
 
 def reconstruction_positive_only_from(
