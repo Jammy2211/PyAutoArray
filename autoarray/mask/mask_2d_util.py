@@ -50,9 +50,14 @@ def native_index_for_slim_index_2d_from(
 
     native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
     """
-    if isinstance(mask_2d, np.ndarray):
-        return np.stack(np.nonzero(~mask_2d.astype(bool))).T
-    return jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T
+
+    if isinstance(mask_2d, jnp.ndarray):
+        # JAX branch (assume jnp.ndarray)
+        rows, cols = jnp.where(~mask_2d.astype(bool))
+        return jnp.stack([rows, cols], axis=1)
+
+    rows, cols = np.where(~mask_2d.astype(bool))
+    return np.stack([rows, cols], axis=1)
 
 
 def mask_2d_centres_from(

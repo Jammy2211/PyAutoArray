@@ -159,9 +159,26 @@ class Imaging(AbstractDataset):
                     """
                 )
 
-        if psf is not None and use_normalized_psf:
+        if psf is not None:
+
+            if not data.mask.is_all_false:
+
+                image_mask = data.mask
+                blurring_mask = data.mask.derive_mask.blurring_from(
+                    kernel_shape_native=psf.shape_native
+                )
+
+            else:
+
+                image_mask = None
+                blurring_mask = None
+
             psf = Kernel2D.no_mask(
-                values=psf.native._array, pixel_scales=psf.pixel_scales, normalize=True
+                values=psf.native._array,
+                pixel_scales=psf.pixel_scales,
+                normalize=use_normalized_psf,
+                image_mask=image_mask,
+                blurring_mask=blurring_mask,
             )
 
         self.psf = psf

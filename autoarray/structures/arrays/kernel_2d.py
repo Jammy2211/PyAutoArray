@@ -24,6 +24,8 @@ class Kernel2D(AbstractArray2D):
         header=None,
         normalize: bool = False,
         store_native: bool = False,
+        image_mask=None,
+        blurring_mask=None,
         *args,
         **kwargs,
     ):
@@ -56,6 +58,25 @@ class Kernel2D(AbstractArray2D):
 
         self.stored_native = self.native
 
+        self.slim_to_native_tuple = None
+
+        if image_mask is not None:
+
+            slim_to_native = image_mask.derive_indexes.native_for_slim.astype("int32")
+            self.slim_to_native_tuple = (slim_to_native[:, 0], slim_to_native[:, 1])
+
+        self.slim_to_native_blurring_tuple = None
+
+        if blurring_mask is not None:
+
+            slim_to_native_blurring = (
+                blurring_mask.derive_indexes.native_for_slim.astype("int32")
+            )
+            self.slim_to_native_blurring_tuple = (
+                slim_to_native_blurring[:, 0],
+                slim_to_native_blurring[:, 1],
+            )
+
     @classmethod
     def no_mask(
         cls,
@@ -64,6 +85,8 @@ class Kernel2D(AbstractArray2D):
         shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
         normalize: bool = False,
+        image_mask=None,
+        blurring_mask=None,
     ):
         """
         Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
@@ -91,7 +114,13 @@ class Kernel2D(AbstractArray2D):
             pixel_scales=pixel_scales,
             origin=origin,
         )
-        return Kernel2D(values=values, mask=values.mask, normalize=normalize)
+        return Kernel2D(
+            values=values,
+            mask=values.mask,
+            normalize=normalize,
+            image_mask=image_mask,
+            blurring_mask=blurring_mask,
+        )
 
     @classmethod
     def full(
@@ -540,21 +569,33 @@ class Kernel2D(AbstractArray2D):
             kernels that are more than about 5x5. Default is `fft`.
         """
 
-        slim_to_native = jnp.nonzero(
-            jnp.logical_not(image.mask.array), size=image.shape[0]
-        )
-        slim_to_native_blurring = jnp.nonzero(
-            jnp.logical_not(blurring_image.mask.array), size=blurring_image.shape[0]
+        slim_to_native_tuple = self.slim_to_native_tuple
+        slim_to_native_blurring_tuple = self.slim_to_native_blurring_tuple
+
+        if slim_to_native_tuple is None:
+
+            slim_to_native_tuple = jnp.nonzero(
+                jnp.logical_not(image.mask.array), size=image.shape[0]
+            )
+
+        if slim_to_native_blurring_tuple is None:
+
+            slim_to_native_blurring_tuple = jnp.nonzero(
+                jnp.logical_not(blurring_image.mask.array), size=blurring_image.shape[0]
+            )
+
+        # make sure dtype matches what you want
+        expanded_array_native = jnp.zeros(
+            image.mask.shape, dtype=jnp.asarray(image.array).dtype
         )
 
-        expanded_array_native = jnp.zeros(image.mask.shape)
-
-        expanded_array_native = expanded_array_native.at[slim_to_native].set(
-            image.array
+        # set using a tuple of index arrays
+        expanded_array_native = expanded_array_native.at[slim_to_native_tuple].set(
+            jnp.asarray(image.array)
         )
-        expanded_array_native = expanded_array_native.at[slim_to_native_blurring].set(
-            blurring_image.array
-        )
+        expanded_array_native = expanded_array_native.at[
+            slim_to_native_blurring_tuple
+        ].set(jnp.asarray(blurring_image.array))
 
         kernel = self.stored_native.array
 
@@ -562,7 +603,7 @@ class Kernel2D(AbstractArray2D):
             expanded_array_native, kernel, mode="same", method=jax_method
         )
 
-        convolved_array_1d = convolve_native[slim_to_native]
+        convolved_array_1d = convolve_native[slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
@@ -583,15 +624,25 @@ class Kernel2D(AbstractArray2D):
             kernels that are more than about 5x5. Default is `fft`.
         """
 
-        slim_to_native = jnp.nonzero(jnp.logical_not(mask.array), size=image.shape[0])
+        slim_to_native_tuple = self.slim_to_native_tuple
 
+        if slim_to_native_tuple is None:
+
+            slim_to_native_tuple = jnp.nonzero(
+                jnp.logical_not(mask.array), size=image.shape[0]
+            )
+
+        # make sure dtype matches what you want
         expanded_array_native = jnp.zeros(mask.shape)
 
+        # set using a tuple of index arrays
         if isinstance(image, np.ndarray) or isinstance(image, jnp.ndarray):
-            expanded_array_native = expanded_array_native.at[slim_to_native].set(image)
+            expanded_array_native = expanded_array_native.at[slim_to_native_tuple].set(
+                image
+            )
         else:
-            expanded_array_native = expanded_array_native.at[slim_to_native].set(
-                image.array
+            expanded_array_native = expanded_array_native.at[slim_to_native_tuple].set(
+                jnp.asarray(image.array)
             )
 
         kernel = self.stored_native.array
@@ -600,7 +651,50 @@ class Kernel2D(AbstractArray2D):
             expanded_array_native, kernel, mode="same", method=jax_method
         )
 
-        convolved_array_1d = convolve_native[slim_to_native]
+        convolved_array_1d = convolve_native[slim_to_native_tuple]
+
+        return Array2D(values=convolved_array_1d, mask=mask)
+
+    def convolve_image_no_blurring_for_mapping(self, image, mask, jax_method="direct"):
+        """
+        For a given 1D array and blurring array, convolve the two using this psf.
+
+        Parameters
+        ----------
+        image
+            1D array of the values which are to be blurred with the psf's PSF.
+        blurring_image
+            1D array of the blurring values which blur into the array after PSF convolution.
+        jax_method
+            If JAX is enabled this keyword will indicate what method is used for the PSF
+            convolution. Can be either `direct` to calculate it in real space or `fft`
+            to calculated it via a fast Fourier transform. `fft` is typically faster for
+            kernels that are more than about 5x5. Default is `fft`.
+        """
+
+        slim_to_native_tuple = self.slim_to_native_tuple
+
+        if slim_to_native_tuple is None:
+
+            slim_to_native_tuple = jnp.nonzero(
+                jnp.logical_not(mask.array), size=image.shape[0]
+            )
+
+        # make sure dtype matches what you want
+        expanded_array_native = jnp.zeros(mask.shape)
+
+        # set using a tuple of index arrays
+        expanded_array_native = expanded_array_native.at[slim_to_native_tuple].set(
+            image
+        )
+
+        kernel = self.stored_native.array
+
+        convolve_native = jax.scipy.signal.convolve(
+            expanded_array_native, kernel, mode="same", method=jax_method
+        )
+
+        convolved_array_1d = convolve_native[slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=mask)
 
@@ -612,6 +706,6 @@ class Kernel2D(AbstractArray2D):
         image
             1D array of the values which are to be blurred with the psf's PSF.
         """
-        return jax.vmap(self.convolve_image_no_blurring, in_axes=(1, None, None))(
-            mapping_matrix, mask, jax_method
-        ).T
+        return jax.vmap(
+            self.convolve_image_no_blurring_for_mapping, in_axes=(1, None, None)
+        )(mapping_matrix, mask, jax_method).T

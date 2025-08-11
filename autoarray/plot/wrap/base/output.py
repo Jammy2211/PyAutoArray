@@ -108,7 +108,7 @@ class Output:
             plt.savefig(
                 path.join(output_path, f"{filename}.{format}"),
                 bbox_inches=self.bbox_inches,
-                pad_inches=0,
+                pad_inches=0.1,
             )
         except ValueError as e:
             logger.info(

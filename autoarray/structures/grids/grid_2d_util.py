@@ -253,25 +253,29 @@ def grid_2d_slim_via_mask_from(
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
+
+    # JAX branch
     if isinstance(mask_2d, jnp.ndarray):
-
-        centres_scaled = jnp.array(centres_scaled)
-        pixel_scales = jnp.array(pixel_scales)
+        centres_scaled = jnp.asarray(centres_scaled)
+        pixel_scales = jnp.asarray(pixel_scales)
         sign = jnp.array([-1.0, 1.0])
-        return (
-            (jnp.stack(jnp.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
-            * sign
-            * pixel_scales
-        )
 
-    centres_scaled = np.array(centres_scaled)
-    pixel_scales = np.array(pixel_scales)
+        # use jnp.where instead of jnp.nonzero
+        rows, cols = jnp.where(~mask_2d.astype(bool))
+        indices = jnp.stack([rows, cols], axis=1)  # shape (N_unmasked, 2)
+
+        # (indices - centre) -> pixel offsets; apply sign and scale to get physical coords
+        return (indices - centres_scaled) * sign * pixel_scales
+
+    # NumPy branch (kept consistent)
+    centres_scaled = np.asarray(centres_scaled)
+    pixel_scales = np.asarray(pixel_scales)
     sign = np.array([-1.0, 1.0])
-    return (
-        (np.stack(np.nonzero(~mask_2d.astype(bool))).T - centres_scaled)
-        * sign
-        * pixel_scales
-    )
+
+    rows, cols = np.where(~mask_2d.astype(bool))
+    indices = np.stack([rows, cols], axis=1)
+
+    return (indices - centres_scaled) * sign * pixel_scales
 
 
 def grid_2d_via_mask_from(
