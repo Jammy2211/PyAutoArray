@@ -14,14 +14,6 @@ from autoarray.structures.grids import grid_2d_util
 
 
 class Abstract2DMeshTriangulation(Abstract2DMesh):
-    @property
-    def slim(self) -> "Structure":
-        raise NotImplementedError()
-
-    @property
-    def native(self) -> Structure:
-        raise NotImplementedError()
-
     def __init__(
         self,
         values: Union[np.ndarray, List],

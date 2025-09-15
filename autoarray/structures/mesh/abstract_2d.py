@@ -5,6 +5,15 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 class Abstract2DMesh(Structure):
+
+    @property
+    def slim(self) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
     @property
     def parameters(self) -> int:
         return self.pixels
