@@ -3,16 +3,19 @@ import numpy as np
 
 from typing import List, Optional, Tuple
 
+from autoconf import cached_property
+
 from autoarray import type as ty
 from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids import grid_2d_util
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
-from autoconf import cached_property
 
+from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+
+from autoarray.inversion.pixelization.mappers import mapper_util
+from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.structures.grids import grid_2d_util
 
 class Mesh2DRectangular(Abstract2DMesh):
 
@@ -128,7 +131,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @cached_property
-    def edges(self) -> Neighbors:
+    def edges(self):
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
         `Neighbors` for a complete description of the neighboring scheme).
@@ -140,6 +143,24 @@ class Mesh2DRectangular(Abstract2DMesh):
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
         )
+
+    @cached_property
+    def edges_transformed(self):
+        """
+        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
+        `Neighbors` for a complete description of the neighboring scheme).
+
+        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
+        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
+        """
+
+        edges_transformed = mapper_util.adaptive_rectangular_transformed_grid_from(
+            source_plane_data_grid=self.array,
+            grid=self.edges.reshape(-1, 2),
+        )
+
+
+        return edges_transformed.reshape(self.edges.shape)
 
     @cached_property
     def edge_pixel_list(self) -> List:

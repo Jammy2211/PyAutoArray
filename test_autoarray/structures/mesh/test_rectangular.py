@@ -75,6 +75,46 @@ def test__edges():
         ),  # left
     )
 
+def test__edges_transformed():
+
+    grid = np.array(
+        [
+            [-1.5, -1.5],
+            [-1.5, 0.0],
+            [-1.5, 1.5],
+            [0.0, -1.5],
+            [0.0, 0.0],
+            [0.0, 1.5],
+            [1.5, -1.5],
+            [1.5, 0.0],
+            [1.5, 1.5],
+        ]
+    )
+
+    mesh = aa.Mesh2DRectangular.overlay_grid(
+        shape_native=(3, 3), grid=grid, buffer=1e-8
+    )
+
+    assert mesh.edges_transformed[0] == pytest.approx(
+        np.array(
+            [
+                [[1.5, -1.5], [1.5, -0.5]],  # top
+                [[1.5, -0.5], [0.5, -0.5]],  # right
+                [[0.5, -0.5], [0.5, -1.5]],  # bottom
+                [[0.5, -1.5], [1.5, -1.5]],
+            ]
+        ),  # left
+    )
+    assert mesh.edges[1] == pytest.approx(
+        np.array(
+            [
+                [[1.5, -0.5], [1.5, 0.5]],  # top
+                [[1.5, 0.5], [0.5, 0.5]],  # right
+                [[0.5, 0.5], [0.5, -0.5]],  # bottom
+                [[0.5, -0.5], [1.5, -0.5]],
+            ]
+        ),  # left
+    )
 
 def test__edge_pixel_list():
     grid = np.array(

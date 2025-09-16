@@ -134,6 +134,26 @@ def create_transforms(traced_points):
     return transform, inv_transform
 
 
+
+def adaptive_rectangular_transformed_grid_from(
+    source_plane_data_grid,
+    grid
+):
+
+    mu = source_plane_data_grid.mean(axis=0)
+    scale = source_plane_data_grid.std(axis=0).min()
+    
+    grid_scaled = (grid - mu) / scale
+
+    transform, inv_transform = create_transforms(grid_scaled)
+
+    def inv_full(U):
+        return inv_transform(U) * scale + mu
+
+    return inv_full(grid)
+
+
+
 def adaptive_rectangular_mappings_weights_via_interpolation_from(
     source_grid_size: int,
     source_plane_data_grid,
@@ -194,14 +214,14 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     grid_scaled = (source_plane_data_grid - mu) / scale
-    grid_over_scaled = (source_plane_data_grid_over_sampled - mu) / scale
 
     # --- Step 2. Build transforms ---
     transform, inv_transform = create_transforms(grid_scaled)
 
     # --- Step 3. Transform oversampled grid into index space ---
-    grid_over_transformed = transform(grid_over_scaled)
-    grid_over_index = source_grid_size * grid_over_transformed
+    grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
+    grid_over_sampled_transformed = transform(grid_over_sampled_scaled)
+    grid_over_index = source_grid_size * grid_over_sampled_transformed
 
     # --- Step 4. Floor/ceil indices ---
     ix_down = jnp.floor(grid_over_index[:, 0])
