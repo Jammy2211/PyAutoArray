@@ -110,7 +110,9 @@ class MapperRectangular(AbstractMapper):
             mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
                 source_grid_size=self.shape_native[0],
                 source_plane_data_grid=self.source_plane_mesh_grid.array,
-                source_plane_data_grid_over_sampled=jnp.array(self.source_plane_data_grid.over_sampled),
+                source_plane_data_grid_over_sampled=jnp.array(
+                    self.source_plane_data_grid.over_sampled
+                ),
             )
         )
 

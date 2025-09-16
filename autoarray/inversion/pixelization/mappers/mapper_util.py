@@ -127,7 +127,6 @@ def create_transforms(traced_points):
     N = traced_points.shape[0]
     t = jnp.arange(1, N + 1) / (N + 1)
 
-
     sort_points = jnp.sort(traced_points, axis=0)
 
     transform = partial(forward_interp, sort_points, t)
@@ -136,9 +135,9 @@ def create_transforms(traced_points):
 
 
 def adaptive_rectangular_mappings_weights_via_interpolation_from(
-        source_grid_size: int,
-        source_plane_data_grid,
-        source_plane_data_grid_over_sampled,
+    source_grid_size: int,
+    source_plane_data_grid,
+    source_plane_data_grid_over_sampled,
 ):
     """
     Compute bilinear interpolation indices and weights for mapping an oversampled
@@ -240,7 +239,9 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     w_br = delta_down[:, 0] * delta_down[:, 1]
 
     # --- Step 8. Stack outputs ---
-    flat_indices = jnp.stack([flat_bl, flat_br, flat_tl, flat_tr], axis=1).astype("int64")
+    flat_indices = jnp.stack([flat_bl, flat_br, flat_tl, flat_tr], axis=1).astype(
+        "int64"
+    )
     weights = jnp.stack([w_bl, w_br, w_tl, w_tr], axis=1)
 
     return flat_indices, weights
