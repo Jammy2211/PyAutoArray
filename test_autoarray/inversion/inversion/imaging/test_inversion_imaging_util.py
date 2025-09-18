@@ -243,7 +243,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
         data_vector_via_w_tilde = (
             aa.util.inversion_imaging.data_vector_via_w_tilde_data_imaging_from(
-                w_tilde_data=w_tilde_data,
+                w_tilde_data=np.array(w_tilde_data),
                 data_to_pix_unique=data_to_pix_unique.astype("int"),
                 data_weights=data_weights,
                 pix_lengths=pix_lengths.astype("int"),

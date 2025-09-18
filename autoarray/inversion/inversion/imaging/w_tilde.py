@@ -1,3 +1,4 @@
+import jax.numpy as jnp
 import numpy as np
 from typing import Dict, List, Optional, Union
 
@@ -91,31 +92,33 @@ class InversionImagingWTilde(AbstractInversionImaging):
         in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
         """
 
-        if not self.has(cls=AbstractMapper):
-            return None
+        return jnp.dot(self.mapping_matrix.T, self.w_tilde_data)
 
-        data_vector = np.zeros(self.total_params)
-
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
-
-        for mapper_index, mapper in enumerate(mapper_list):
-            data_vector_mapper = (
-                inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=np.array(self.w_tilde_data),
-                    data_to_pix_unique=np.array(
-                        mapper.unique_mappings.data_to_pix_unique
-                    ),
-                    data_weights=np.array(mapper.unique_mappings.data_weights),
-                    pix_lengths=np.array(mapper.unique_mappings.pix_lengths),
-                    pix_pixels=mapper.params,
-                )
-            )
-            param_range = mapper_param_range[mapper_index]
-
-            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
-
-        return data_vector
+        # if not self.has(cls=AbstractMapper):
+        #     return None
+        #
+        # data_vector = np.zeros(self.total_params)
+        #
+        # mapper_list = self.cls_list_from(cls=AbstractMapper)
+        # mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
+        #
+        # for mapper_index, mapper in enumerate(mapper_list):
+        #     data_vector_mapper = (
+        #         inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
+        #             w_tilde_data=np.array(self.w_tilde_data),
+        #             data_to_pix_unique=np.array(
+        #                 mapper.unique_mappings.data_to_pix_unique
+        #             ),
+        #             data_weights=np.array(mapper.unique_mappings.data_weights),
+        #             pix_lengths=np.array(mapper.unique_mappings.pix_lengths),
+        #             pix_pixels=mapper.params,
+        #         )
+        #     )
+        #     param_range = mapper_param_range[mapper_index]
+        #
+        #     data_vector[param_range[0] : param_range[1],] = data_vector_mapper
+        #
+        # return data_vector
 
     @cached_property
     def data_vector(self) -> np.ndarray:
@@ -170,7 +173,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         return np.concatenate(
             [
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=self.w_tilde_data,
+                    w_tilde_data=np.array(self.w_tilde_data),
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
@@ -193,7 +196,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         separation of functions enables the `data_vector` to be preloaded in certain circumstances.
         """
 
-        data_vector = self._data_vector_mapper
+        data_vector = np.array(self._data_vector_mapper)
 
         linear_func_param_range = self.param_range_list_from(
             cls=AbstractLinearObjFuncList
