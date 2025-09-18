@@ -159,7 +159,6 @@ class Mesh2DRectangular(Abstract2DMesh):
             grid=self.edges.reshape(-1, 2),
         )
 
-
         return edges_transformed.reshape(self.edges.shape)
 
     @cached_property

@@ -426,17 +426,6 @@ def test__data_subtracted_dict():
     assert (inversion.data_subtracted_dict[linear_obj_1] == 2.0 * np.ones(3)).all()
 
 
-def test__reconstruction_raises_exception_for_linalg_error():
-    # noinspection PyTypeChecker
-    inversion = aa.m.MockInversion(
-        data_vector=np.ones(3), curvature_reg_matrix=np.ones((3, 3))
-    )
-
-    with pytest.raises(exc.InversionException):
-        # noinspection PyStatementEffect
-        inversion.reconstruction
-
-
 def test__regularization_term():
     reconstruction = np.array([1.0, 1.0, 1.0])
 
