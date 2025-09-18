@@ -75,12 +75,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @cached_property
     def w_tilde_data(self):
         return inversion_imaging_util.w_tilde_data_imaging_from(
-            image_native=np.array(self.data.native.array).astype("float"),
-            noise_map_native=np.array(self.noise_map.native.array).astype("float"),
-            kernel_native=np.array(self.psf.native.array).astype("float"),
-            native_index_for_slim_index=np.array(
-                self.data.mask.derive_indexes.native_for_slim
-            ).astype("int"),
+            image_native=self.data.native.array,
+            noise_map_native=self.noise_map.native.array,
+            kernel_native=self.psf.native.array,
+            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim
         )
 
     @property
@@ -104,7 +102,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         for mapper_index, mapper in enumerate(mapper_list):
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=self.w_tilde_data,
+                    w_tilde_data=np.array(self.w_tilde_data),
                     data_to_pix_unique=np.array(
                         mapper.unique_mappings.data_to_pix_unique
                     ),
@@ -152,7 +150,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         linear_obj = self.linear_obj_list[0]
 
         return inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-            w_tilde_data=self.w_tilde_data,
+            w_tilde_data=np.array(self.w_tilde_data),
             data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
             data_weights=linear_obj.unique_mappings.data_weights,
             pix_lengths=linear_obj.unique_mappings.pix_lengths,
