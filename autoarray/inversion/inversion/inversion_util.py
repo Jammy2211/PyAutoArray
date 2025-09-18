@@ -187,6 +187,34 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
     return jnp.dot(mapping_matrix, reconstruction)
 
 
+def mapped_reconstructed_data_via_w_tilde_from(
+    w_tilde: np.ndarray, mapping_matrix: np.ndarray, reconstruction: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the reconstructed data vector from the unblurred mapping matrix `M`,
+    the reconstruction vector `s`, and the PSF convolution operator `w_tilde`.
+
+    Equivalent to:
+        reconstructed = (W @ M) @ s
+                      = W @ (M @ s)
+
+    Parameters
+    ----------
+    w_tilde
+        Array of shape [image_pixels, image_pixels], the PSF convolution operator.
+    mapping_matrix
+        Array of shape [image_pixels, source_pixels], unblurred mapping matrix.
+    reconstruction
+        Array of shape [source_pixels], solution vector.
+
+    Returns
+    -------
+    ndarray
+        The reconstructed data vector of shape [image_pixels].
+    """
+    return w_tilde @ (mapping_matrix @ reconstruction)
+
+
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,

@@ -92,3 +92,15 @@ class WTildeImaging(AbstractWTilde):
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),
         )
+
+    @cached_property
+    def psf_operator_matrix_dense(self):
+
+        return inversion_imaging_util.psf_operator_matrix_dense_from(
+            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            native_index_for_slim_index=np.array(
+                self.mask.derive_indexes.native_for_slim
+            ).astype("int"),
+            native_shape=self.noise_map.shape_native,
+            correlate=False
+        )

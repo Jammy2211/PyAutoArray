@@ -6,6 +6,63 @@ from typing import Tuple
 from autoarray import numba_util
 from scipy.signal import correlate2d
 
+import numpy as np
+
+def psf_operator_matrix_dense_from(
+    kernel_native: np.ndarray,
+    native_index_for_slim_index: np.ndarray,  # shape (N_pix, 2), native (y,x) coords of masked pixels
+    native_shape: tuple[int, int],
+    correlate: bool = True,
+) -> np.ndarray:
+    """
+    Construct a dense PSF operator W (N_pix x N_pix) that maps masked image pixels to masked image pixels.
+
+    Parameters
+    ----------
+    kernel_native : (Ky, Kx) PSF kernel.
+    native_index_for_slim_index : (N_pix, 2) array of int
+        Native (y, x) coords for each masked pixel.
+    native_shape : (Ny, Nx)
+        Native 2D image shape.
+    correlate : bool, default True
+        If True, use correlation convention (no kernel flip).
+        If False, use convolution convention (flip kernel).
+
+    Returns
+    -------
+    W : ndarray, shape (N_pix, N_pix)
+        Dense PSF operator.
+    """
+    Ky, Kx = kernel_native.shape
+    ph, pw = Ky // 2, Kx // 2
+    Ny, Nx = native_shape
+    N_pix = native_index_for_slim_index.shape[0]
+
+    ker = kernel_native if correlate else kernel_native[::-1, ::-1]
+
+    # Padded index grid: -1 everywhere, slim index where masked
+    index_padded = -np.ones((Ny + 2*ph, Nx + 2*pw), dtype=np.int64)
+    for p, (y, x) in enumerate(native_index_for_slim_index):
+        index_padded[y + ph, x + pw] = p
+
+    # Neighborhood offsets
+    dy = np.arange(Ky) - ph
+    dx = np.arange(Kx) - pw
+
+    W = np.zeros((N_pix, N_pix), dtype=float)
+
+    for i, (y, x) in enumerate(native_index_for_slim_index):
+        yp = y + ph
+        xp = x + pw
+        for j, dy_ in enumerate(dy):
+            for k, dx_ in enumerate(dx):
+                neigh = index_padded[yp + dy_, xp + dx_]
+                if neigh >= 0:
+                    W[i, neigh] += ker[j, k]
+
+    return W
+
+
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
