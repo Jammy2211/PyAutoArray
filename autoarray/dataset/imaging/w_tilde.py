@@ -2,7 +2,11 @@ import copy
 import logging
 import numpy as np
 
+from autoconf import cached_property
+
 from autoarray.dataset.abstract.w_tilde import AbstractWTilde
+
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +17,9 @@ class WTildeImaging(AbstractWTilde):
         curvature_preload: np.ndarray,
         indexes: np.ndim,
         lengths: np.ndarray,
+        noise_map : np.ndarray,
+        psf : np.ndarray,
+        mask : np.ndarray,
         noise_map_value: float,
     ):
         """
@@ -44,3 +51,44 @@ class WTildeImaging(AbstractWTilde):
 
         self.indexes = indexes
         self.lengths = lengths
+        self.noise_map = noise_map
+        self.psf = psf
+        self.mask = mask
+
+    @cached_property
+    def w_matrix(self):
+        """
+        The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
+        convolution of every pair of image pixels given the noise map. This can be used to efficiently compute the
+        curvature matrix via the mappings between image and source pixels, in a way that omits having to perform the
+        PSF convolution on every individual source pixel. This provides a significant speed up for inversions of imaging
+        datasets.
+
+        The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
+        making it impossible to store in memory and its use in linear algebra calculations extremely. The method
+        `w_tilde_curvature_preload_imaging_from` describes a compressed representation that overcomes this hurdles. It is
+        advised `w_tilde` and this method are only used for testing.
+
+        Parameters
+        ----------
+        noise_map_native
+            The two dimensional masked noise-map of values which w_tilde is computed from.
+        kernel_native
+            The two dimensional PSF kernel that w_tilde encodes the convolution of.
+        native_index_for_slim_index
+            An array of shape [total_x_pixels*sub_size] that maps pixels from the slimmed array to the native array.
+
+        Returns
+        -------
+        ndarray
+            A matrix that encodes the PSF convolution values between the noise map that enables efficient calculation of
+            the curvature matrix.
+        """
+
+        return inversion_imaging_util.w_tilde_curvature_imaging_from(
+            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
+            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            native_index_for_slim_index=np.array(
+                self.mask.derive_indexes.native_for_slim
+            ).astype("int"),
+        )

@@ -4,8 +4,6 @@ import numpy as np
 
 from typing import List, Optional, Type
 
-from autoconf import conf
-
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
@@ -36,8 +34,7 @@ def curvature_matrix_via_w_tilde_from(
     ndarray
         The curvature matrix `F` (see Warren & Dye 2003).
     """
-
-    return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
+    return jnp.dot(mapping_matrix.T, jnp.dot(w_tilde, mapping_matrix))
 
 
 def curvature_matrix_with_added_to_diag_from(

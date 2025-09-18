@@ -91,7 +91,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This method is used to compute part of the `data_vector` if there are also linear function list objects
         in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
         """
-
         return jnp.dot(self.mapping_matrix.T, self.w_tilde_data)
 
         # if not self.has(cls=AbstractMapper):
@@ -360,7 +359,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This method computes the `curvature_matrix` when there is a single mapper object in the `Inversion`,
         which circumvents `block_diag` for speed up.
         """
-        return self._curvature_matrix_mapper_diag
+
+        return inversion_util.curvature_matrix_via_w_tilde_from(
+            w_tilde=self.w_tilde.w_matrix,
+            mapping_matrix=self.mapping_matrix
+        )
+
+#        return self._curvature_matrix_mapper_diag
 
     @property
     def _curvature_matrix_multi_mapper(self) -> np.ndarray:

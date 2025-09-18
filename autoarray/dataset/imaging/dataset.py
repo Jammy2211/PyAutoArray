@@ -252,6 +252,9 @@ class Imaging(AbstractDataset):
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
             noise_map_value=self.noise_map[0],
+            noise_map=self.noise_map,
+            psf=self.psf,
+            mask=self.mask,
         )
 
     @classmethod
