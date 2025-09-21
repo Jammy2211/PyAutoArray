@@ -148,16 +148,17 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This method computes the `data_vector` whenthere is a single mapper object in the `Inversion`,
         which circumvents `np.concatenate` for speed up.
         """
+        return self._data_vector_mapper
 
-        linear_obj = self.linear_obj_list[0]
-
-        return inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-            w_tilde_data=np.array(self.w_tilde_data),
-            data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-            data_weights=linear_obj.unique_mappings.data_weights,
-            pix_lengths=linear_obj.unique_mappings.pix_lengths,
-            pix_pixels=linear_obj.params,
-        )
+        # linear_obj = self.linear_obj_list[0]
+        #
+        # return inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
+        #     w_tilde_data=self.w_tilde_data,
+        #     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
+        #     data_weights=linear_obj.unique_mappings.data_weights,
+        #     pix_lengths=linear_obj.unique_mappings.pix_lengths,
+        #     pix_pixels=linear_obj.params,
+        # )
 
     @property
     def _data_vector_multi_mapper(self) -> np.ndarray:

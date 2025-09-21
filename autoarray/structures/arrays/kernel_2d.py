@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+from jax import lax
 import numpy as np
 from pathlib import Path
 from typing import List, Tuple, Union
@@ -14,6 +15,7 @@ from autoarray.structures.header import Header
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
+
 
 
 class Kernel2D(AbstractArray2D):
@@ -698,6 +700,115 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=mask)
 
+    # def convolve_mapping_matrix(self, mapping_matrix, mask, jax_method="direct", chan_chunk=128):
+    #     """
+    #     mapping_matrix : (N_masked, S)  rows correspond to mask == False in row-major order
+    #     mask           : (H, W) boolean (False = kept, True = masked)
+    #     chan_chunk     : number of source columns processed at once (avoid large workspaces)
+    #     to_f32         : cast inputs to float32 for smaller workspace & faster conv
+    #     returns        : (N_masked, S) convolved, re-masked mapping matrix
+    #     """
+    #     H, W = mask.shape
+    #     S = mapping_matrix.shape[1]
+    #     N = H * W
+    #
+    #     psf_kernel = self.stored_native.array
+    #
+    #     # Indices of kept pixels (False in the mask), STATIC size for jit
+    #     flat_mask = mask.reshape(-1)
+    #     K = mapping_matrix.shape[0]  # number of unmasked pixels
+    #     keep_idx = jnp.where(~flat_mask, size=K, fill_value=0)[0]  # (K,)
+    #
+    #     # Expand to full grid (N, S): zeros everywhere, fill only kept rows
+    #     full = jnp.zeros((N, S), dtype=mapping_matrix.dtype)
+    #     full = full.at[keep_idx, :].set(mapping_matrix)
+    #
+    #     out_cols = []
+    #     kH, kW = psf_kernel.shape
+    #
+    #     for c0 in range(0, S, chan_chunk):
+    #         c1 = min(c0 + chan_chunk, S)
+    #         G = c1 - c0  # groups in this chunk
+    #
+    #         # Treat the G columns as G input channels: images shape [1, G, H, W]
+    #         imgs = full[:, c0:c1].T.reshape(1, G, H, W)
+    #
+    #         # Depthwise/grouped conv: kernel shape [G, 1, kH, kW]
+    #         # Use broadcast_to to avoid actual data replication.
+    #         kernel = jnp.broadcast_to(psf_kernel[None, None, :, :], (G, 1, kH, kW))
+    #
+    #         y = lax.conv_general_dilated(
+    #             imgs,
+    #             kernel,
+    #             window_strides=(1, 1),
+    #             padding="SAME",
+    #             dimension_numbers=("NCHW", "OIHW", "NCHW"),
+    #             feature_group_count=G,  # depthwise: each channel convolved independently
+    #         )  # [1, G, H, W]
+    #
+    #         # Back to (N, G) then re-mask
+    #         y_full = y.reshape(G, N).T
+    #         y_masked = y_full[keep_idx, :]  # (K, G)
+    #         out_cols.append(y_masked)
+    #
+    #     return jnp.concatenate(out_cols, axis=1)  # (K, S)
+    #
+    #
+    # def convolve_mapping_matrix(self, mapping_matrix, mask, jax_method="direct"):
+    #     """
+    #     mapping_matrix: [N_masked, S]  (rows correspond to mask==False in row-major order)
+    #     mask          : [H, W] boolean (False=kept, True=masked)
+    #     returns       : [N_masked, S] convolved, re-masked mapping matrix
+    #     """
+    #     psf_kernel = self.stored_native.array
+    #     H, W = mask.shape
+    #     S = mapping_matrix.shape[1]
+    #     N = H * W
+    #
+    #     # Indices of kept pixels (False in the mask), with STATIC size for jit.
+    #     flat_mask = mask.reshape(-1)
+    #     K = mapping_matrix.shape[0]  # number of unmasked pixels
+    #     keep_idx = jnp.where(~flat_mask, size=K, fill_value=0)[0]  # shape (K,)
+    #
+    #     # Expand to full grid: zeros everywhere, fill only kept rows.
+    #     full = jnp.zeros((N, S), dtype=mapping_matrix.dtype)
+    #     full = full.at[keep_idx, :].set(mapping_matrix)
+    #
+    #     # Batch conv: [S, 1, H, W] * [1, 1, kH, kW] -> [S, 1, H, W]
+    #     images = full.T.reshape(S, 1, H, W)
+    #     kernel = psf_kernel[jnp.newaxis, jnp.newaxis, :, :]
+    #
+    #     convolved = lax.conv_general_dilated(
+    #         images,
+    #         kernel,
+    #         window_strides=(1, 1),
+    #         padding="SAME",
+    #         dimension_numbers=("NCHW", "OIHW", "NCHW"),
+    #     )
+    #
+    #     # Back to masked slim grid
+    #     convolved_full = convolved.reshape(S, N).T
+    #     convolved_masked = convolved_full[keep_idx, :]  # shape (K, S)
+    #
+    #     return convolved_masked
+
+
+    # def convolve_mapping_matrix(self, mapping_matrix, mask, jax_method="direct"):
+
+        # mapping_matrix_list = []
+        #
+        # for i in range(mapping_matrix.shape[1]):
+        #
+        #     blurred_image_2d = self.convolve_image_no_blurring_for_mapping(
+        #         image=mapping_matrix[:,i],
+        #         mask=mask
+        #     )
+        #
+        #     mapping_matrix_list.append(blurred_image_2d.array)
+        #
+        # return jnp.stack(mapping_matrix_list, axis=1)
+
+
     def convolve_mapping_matrix(self, mapping_matrix, mask, jax_method="direct"):
         """For a given 1D array and blurring array, convolve the two using this psf.
 
@@ -709,3 +820,4 @@ class Kernel2D(AbstractArray2D):
         return jax.vmap(
             self.convolve_image_no_blurring_for_mapping, in_axes=(1, None, None)
         )(mapping_matrix, mask, jax_method).T
+
