@@ -421,7 +421,7 @@ def make_rectangular_mapper_7x7_3x3():
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperRectangular(
+    return aa.MapperRectangularUniform(
         mapper_grids=mapper_grids,
         border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),

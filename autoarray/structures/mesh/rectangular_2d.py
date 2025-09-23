@@ -109,7 +109,7 @@ class Mesh2DRectangular(Abstract2DMesh):
             origin=origin,
         )
 
-        return Mesh2DRectangular(
+        return cls(
             values=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,

@@ -568,64 +568,71 @@ class MatPlot2D(AbstractMatPlot):
 
         if pixel_values is not None:
 
-            # self.plot_array(
-            #     array=pixel_values,
-            #     visuals_2d=visuals_2d,
-            #     auto_labels=auto_labels,
-            #     bypass=True,
-            # )
+            from autoarray.inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
+            from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
 
-            norm = self.cmap.norm_from(
-                array=pixel_values.array, use_log10=self.use_log10
-            )
+            if isinstance(mapper, MapperRectangularUniform):
 
-            edges_transformed = mapper.edges_transformed
-
-            edges_transformed_dense = np.moveaxis(
-                np.stack(np.meshgrid(*edges_transformed.T)), 0, 2
-            )
-
-            plt.pcolormesh(
-                edges_transformed_dense[..., 0],
-                edges_transformed_dense[..., 1],
-                pixel_values.array.reshape(shape_native),
-                shading="flat",
-                norm=norm,
-                cmap=self.cmap.cmap,
-            )
-
-            if self.colorbar is not False:
-
-                cb = self.colorbar.set(
-                    units=self.units,
-                    ax=ax,
-                    norm=norm,
-                    cb_unit=auto_labels.cb_unit,
-                    use_log10=self.use_log10,
+                self.plot_array(
+                    array=pixel_values,
+                    visuals_2d=visuals_2d,
+                    auto_labels=auto_labels,
+                    bypass=True,
                 )
-                self.colorbar_tickparams.set(cb=cb)
 
-        extent_axis = self.axis.config_dict.get("extent")
+            else:
 
-        if extent_axis is None:
-            extent_axis = extent
+                norm = self.cmap.norm_from(
+                    array=pixel_values.array, use_log10=self.use_log10
+                )
 
-        self.axis.set(extent=extent_axis)
+                edges_transformed = mapper.edges_transformed
 
-        self.tickparams.set()
-        self.yticks.set(
-            min_value=extent_axis[2],
-            max_value=extent_axis[3],
-            units=self.units,
-            pixels=shape_native[0],
-        )
+                edges_transformed_dense = np.moveaxis(
+                    np.stack(np.meshgrid(*edges_transformed.T)), 0, 2
+                )
 
-        self.xticks.set(
-            min_value=extent_axis[0],
-            max_value=extent_axis[1],
-            units=self.units,
-            pixels=shape_native[1],
-        )
+                plt.pcolormesh(
+                    edges_transformed_dense[..., 0],
+                    edges_transformed_dense[..., 1],
+                    pixel_values.array.reshape(shape_native),
+                    shading="flat",
+                    norm=norm,
+                    cmap=self.cmap.cmap,
+                )
+
+                if self.colorbar is not False:
+
+                    cb = self.colorbar.set(
+                        units=self.units,
+                        ax=ax,
+                        norm=norm,
+                        cb_unit=auto_labels.cb_unit,
+                        use_log10=self.use_log10,
+                    )
+                    self.colorbar_tickparams.set(cb=cb)
+
+                extent_axis = self.axis.config_dict.get("extent")
+
+                if extent_axis is None:
+                    extent_axis = extent
+
+                self.axis.set(extent=extent_axis)
+
+                self.tickparams.set()
+                self.yticks.set(
+                    min_value=extent_axis[2],
+                    max_value=extent_axis[3],
+                    units=self.units,
+                    pixels=shape_native[0],
+                )
+
+                self.xticks.set(
+                    min_value=extent_axis[0],
+                    max_value=extent_axis[1],
+                    units=self.units,
+                    pixels=shape_native[1],
+                )
 
         if not isinstance(self.text, list):
             self.text.set()

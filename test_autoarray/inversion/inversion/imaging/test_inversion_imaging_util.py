@@ -183,7 +183,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
     psf = kernel
 
-    pixelization = aa.mesh.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.RectangularUniform(shape=(20, 20))
 
     # TODO : Use pytest.parameterize
 
@@ -266,7 +266,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
     psf = kernel
 
-    pixelization = aa.mesh.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.RectangularUniform(shape=(20, 20))
 
     mapper_grids = pixelization.mapper_grids_from(
         mask=mask,
@@ -313,7 +313,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
 
     psf = kernel
 
-    pixelization = aa.mesh.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.RectangularUniform(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
         grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=sub_size)

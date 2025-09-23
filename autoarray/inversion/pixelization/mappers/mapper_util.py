@@ -161,8 +161,6 @@ def adaptive_rectangular_areas_from(source_grid_size, source_plane_data_grid):
         return inv_transform(U) * scale + mu
 
     pixel_edges = inv_full(jnp.stack([pixel_edges_1d, pixel_edges_1d]).T)
-
-    # lengths along each axis
     pixel_lengths = jnp.diff(pixel_edges, axis=0).squeeze()  # shape (N_source, 2)
 
     dy = pixel_lengths[:, 0]

@@ -24,7 +24,7 @@ def test__rectangular_mapper():
     grid.over_sampled[0, 0] = -2.0
     grid.over_sampled[0, 1] = 2.0
 
-    mesh = aa.mesh.Rectangular(shape=(3, 3))
+    mesh = aa.mesh.RectangularUniform(shape=(3, 3))
 
     mapper_grids = mesh.mapper_grids_from(
         mask=mask,
@@ -35,7 +35,7 @@ def test__rectangular_mapper():
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    assert isinstance(mapper, aa.MapperRectangular)
+    assert isinstance(mapper, aa.MapperRectangularUniform)
     assert mapper.image_plane_mesh_grid == None
 
     assert mapper.source_plane_mesh_grid.geometry.shape_native_scaled == pytest.approx(
