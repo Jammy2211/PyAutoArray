@@ -13,7 +13,7 @@ def make_five_pixels():
     return np.array([[0, 0], [0, 1], [1, 0], [1, 1], [1, 2]])
 
 
-def _test__sub_slim_indexes_for_pix_index():
+def test__sub_slim_indexes_for_pix_index():
     pix_indexes_for_sub_slim_index = np.array(
         [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
     ).astype("int")

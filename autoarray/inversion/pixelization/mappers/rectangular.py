@@ -123,6 +123,20 @@ class MapperRectangular(AbstractMapper):
         )
 
     @cached_property
+    def areas_transformed(self):
+        """
+        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
+        `Neighbors` for a complete description of the neighboring scheme).
+
+        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
+        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
+        """
+        return mapper_util.adaptive_rectangular_areas_from(
+            source_grid_size=self.shape_native[0],
+            source_plane_data_grid=self.source_plane_data_grid.array,
+        )
+
+    @cached_property
     def edges_transformed(self):
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
@@ -138,5 +152,5 @@ class MapperRectangular(AbstractMapper):
 
         return mapper_util.adaptive_rectangular_transformed_grid_from(
             source_plane_data_grid=self.source_plane_data_grid.array,
-            grid=edges_reshaped
+            grid=edges_reshaped,
         )

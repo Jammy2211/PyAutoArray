@@ -124,20 +124,17 @@ def create_transforms(traced_points):
     # stored in a (N, 2) array and return functions that
     # take in (N, 2) arrays and transform the values into
     # the range (0, 1) and the inverse transform
-    N = traced_points.shape[0] #// 2
+    N = traced_points.shape[0]  # // 2
     t = jnp.arange(1, N + 1) / (N + 1)
 
-    sort_points = jnp.sort(traced_points, axis=0)#[::2]
+    sort_points = jnp.sort(traced_points, axis=0)  # [::2]
 
     transform = partial(forward_interp, sort_points, t)
     inv_transform = partial(reverse_interp, t, sort_points)
     return transform, inv_transform
 
 
-def adaptive_rectangular_transformed_grid_from(
-        source_plane_data_grid,
-        grid
-):
+def adaptive_rectangular_transformed_grid_from(source_plane_data_grid, grid):
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
@@ -150,6 +147,28 @@ def adaptive_rectangular_transformed_grid_from(
     return inv_full(grid)
 
 
+def adaptive_rectangular_areas_from(source_grid_size, source_plane_data_grid):
+
+    pixel_edges_1d = jnp.linspace(0, 1, source_grid_size + 1)
+
+    mu = source_plane_data_grid.mean(axis=0)
+    scale = source_plane_data_grid.std(axis=0).min()
+    source_grid_scaled = (source_plane_data_grid - mu) / scale
+
+    transform, inv_transform = create_transforms(source_grid_scaled)
+
+    def inv_full(U):
+        return inv_transform(U) * scale + mu
+
+    pixel_edges = inv_full(jnp.stack([pixel_edges_1d, pixel_edges_1d]).T)
+
+    # lengths along each axis
+    pixel_lengths = jnp.diff(pixel_edges, axis=0).squeeze()  # shape (N_source, 2)
+
+    dy = pixel_lengths[:, 0]
+    dx = pixel_lengths[:, 1]
+
+    return jnp.outer(dy, dx).flatten()
 
 
 def adaptive_rectangular_mappings_weights_via_interpolation_from(

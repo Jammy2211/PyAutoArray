@@ -17,7 +17,6 @@ from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 
 
-
 class Kernel2D(AbstractArray2D):
     def __init__(
         self,
@@ -711,4 +710,3 @@ class Kernel2D(AbstractArray2D):
         return jax.vmap(
             self.convolve_image_no_blurring_for_mapping, in_axes=(1, None, None)
         )(mapping_matrix, mask, jax_method).T
-

@@ -144,7 +144,13 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
     grid = aa.Grid2D.from_mask(mask=mask)
 
     w_tilde = WTildeImaging(
-        curvature_preload=None, indexes=None, lengths=None, noise_map_value=2.0, noise_map=None, psf=None, mask=mask
+        curvature_preload=None,
+        indexes=None,
+        lengths=None,
+        noise_map_value=2.0,
+        noise_map=None,
+        psf=None,
+        mask=mask,
     )
 
     with pytest.raises(exc.InversionException):

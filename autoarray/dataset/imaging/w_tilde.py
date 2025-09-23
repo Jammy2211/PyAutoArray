@@ -17,9 +17,9 @@ class WTildeImaging(AbstractWTilde):
         curvature_preload: np.ndarray,
         indexes: np.ndim,
         lengths: np.ndarray,
-        noise_map : np.ndarray,
-        psf : np.ndarray,
-        mask : np.ndarray,
+        noise_map: np.ndarray,
+        psf: np.ndarray,
+        mask: np.ndarray,
         noise_map_value: float,
     ):
         """
@@ -102,5 +102,5 @@ class WTildeImaging(AbstractWTilde):
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),
             native_shape=self.noise_map.shape_native,
-            correlate=False
+            correlate=False,
         )

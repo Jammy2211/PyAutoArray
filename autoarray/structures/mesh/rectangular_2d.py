@@ -17,6 +17,7 @@ from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids import grid_2d_util
 
+
 class Mesh2DRectangular(Abstract2DMesh):
 
     def __init__(

@@ -86,6 +86,7 @@ def test__reconstruction_positive_negative_from():
 
     assert reconstruction == pytest.approx(np.array([1.0, -1.0, 3.0]), 1.0e-4)
 
+
 def test__mapped_reconstructed_data_via_mapping_matrix_from():
     mapping_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 

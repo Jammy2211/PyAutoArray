@@ -79,7 +79,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             image_native=self.data.native.array,
             noise_map_native=self.noise_map.native.array,
             kernel_native=self.psf.native.array,
-            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim
+            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
         )
 
     @property
@@ -362,11 +362,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
 
         return inversion_util.curvature_matrix_via_w_tilde_from(
-            w_tilde=self.w_tilde.w_matrix,
-            mapping_matrix=self.mapping_matrix
+            w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
         )
 
-#        return self._curvature_matrix_mapper_diag
+    #        return self._curvature_matrix_mapper_diag
 
     @property
     def _curvature_matrix_multi_mapper(self) -> np.ndarray:
@@ -518,7 +517,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
         for linear_obj in self.linear_obj_list:
             reconstruction = reconstruction_dict[linear_obj]
 
-            if isinstance(linear_obj, AbstractMapper) and self.has(cls=AbstractLinearObjFuncList):
+            if isinstance(linear_obj, AbstractMapper) and self.has(
+                cls=AbstractLinearObjFuncList
+            ):
 
                 mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
@@ -535,12 +536,16 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     values=mapped_reconstructed_image, mask=self.mask
                 )
 
-            elif isinstance(linear_obj, AbstractMapper) and not self.has(cls=AbstractLinearObjFuncList):
+            elif isinstance(linear_obj, AbstractMapper) and not self.has(
+                cls=AbstractLinearObjFuncList
+            ):
 
-                mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_w_tilde_from(
-                    w_tilde=self.w_tilde.psf_operator_matrix_dense,
-                    mapping_matrix=self.mapping_matrix,
-                    reconstruction=reconstruction,
+                mapped_reconstructed_image = (
+                    inversion_util.mapped_reconstructed_data_via_w_tilde_from(
+                        w_tilde=self.w_tilde.psf_operator_matrix_dense,
+                        mapping_matrix=self.mapping_matrix,
+                        reconstruction=reconstruction,
+                    )
                 )
 
                 mapped_reconstructed_image = Array2D(

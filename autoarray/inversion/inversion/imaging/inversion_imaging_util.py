@@ -8,6 +8,7 @@ from scipy.signal import correlate2d
 
 import numpy as np
 
+
 def psf_operator_matrix_dense_from(
     kernel_native: np.ndarray,
     native_index_for_slim_index: np.ndarray,  # shape (N_pix, 2), native (y,x) coords of masked pixels
@@ -41,7 +42,7 @@ def psf_operator_matrix_dense_from(
     ker = kernel_native if correlate else kernel_native[::-1, ::-1]
 
     # Padded index grid: -1 everywhere, slim index where masked
-    index_padded = -np.ones((Ny + 2*ph, Nx + 2*pw), dtype=np.int64)
+    index_padded = -np.ones((Ny + 2 * ph, Nx + 2 * pw), dtype=np.int64)
     for p, (y, x) in enumerate(native_index_for_slim_index):
         index_padded[y + ph, x + pw] = p
 
@@ -103,31 +104,33 @@ def w_tilde_data_imaging_from(
     """
 
     # 1) weight map = image / noise^2 (safe where noise==0)
-    weight_map = jnp.where(noise_map_native > 0.0,
-                           image_native / (noise_map_native ** 2),
-                           0.0)
+    weight_map = jnp.where(
+        noise_map_native > 0.0, image_native / (noise_map_native**2), 0.0
+    )
 
     Ky, Kx = kernel_native.shape
     ph, pw = Ky // 2, Kx // 2
 
     # 2) pad so neighbourhood gathers never go OOB
-    padded = jnp.pad(weight_map, ((ph, ph), (pw, pw)), mode="constant", constant_values=0.0)
+    padded = jnp.pad(
+        weight_map, ((ph, ph), (pw, pw)), mode="constant", constant_values=0.0
+    )
 
     # 3) build broadcasted neighbourhood indices for all requested pixels
     # shift pixel coords into the padded frame
-    ys = native_index_for_slim_index[:, 0] + ph   # (N,)
-    xs = native_index_for_slim_index[:, 1] + pw   # (N,)
+    ys = native_index_for_slim_index[:, 0] + ph  # (N,)
+    xs = native_index_for_slim_index[:, 1] + pw  # (N,)
 
     # kernel-relative offsets
-    dy = jnp.arange(Ky) - ph                      # (Ky,)
-    dx = jnp.arange(Kx) - pw                      # (Kx,)
+    dy = jnp.arange(Ky) - ph  # (Ky,)
+    dx = jnp.arange(Kx) - pw  # (Kx,)
 
     # broadcast to (N, Ky, Kx)
     Y = ys[:, None, None] + dy[None, :, None]
     X = xs[:, None, None] + dx[None, None, :]
 
     # 4) gather patches and correlate (no kernel flip)
-    patches = padded[Y, X]                        # (N, Ky, Kx)
+    patches = padded[Y, X]  # (N, Ky, Kx)
     return jnp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
 
 

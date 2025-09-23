@@ -575,21 +575,21 @@ class MatPlot2D(AbstractMatPlot):
             #     bypass=True,
             # )
 
-            norm = self.cmap.norm_from(array=pixel_values.array, use_log10=self.use_log10)
+            norm = self.cmap.norm_from(
+                array=pixel_values.array, use_log10=self.use_log10
+            )
 
             edges_transformed = mapper.edges_transformed
 
             edges_transformed_dense = np.moveaxis(
-                np.stack(np.meshgrid(*edges_transformed.T)),
-                0,
-                2
+                np.stack(np.meshgrid(*edges_transformed.T)), 0, 2
             )
 
             plt.pcolormesh(
                 edges_transformed_dense[..., 0],
                 edges_transformed_dense[..., 1],
                 pixel_values.array.reshape(shape_native),
-                shading='flat',
+                shading="flat",
                 norm=norm,
                 cmap=self.cmap.cmap,
             )
