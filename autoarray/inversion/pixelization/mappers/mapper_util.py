@@ -124,33 +124,31 @@ def create_transforms(traced_points):
     # stored in a (N, 2) array and return functions that
     # take in (N, 2) arrays and transform the values into
     # the range (0, 1) and the inverse transform
-    N = traced_points.shape[0]
+    N = traced_points.shape[0] #// 2
     t = jnp.arange(1, N + 1) / (N + 1)
 
-    sort_points = jnp.sort(traced_points, axis=0)
+    sort_points = jnp.sort(traced_points, axis=0)#[::2]
 
     transform = partial(forward_interp, sort_points, t)
     inv_transform = partial(reverse_interp, t, sort_points)
     return transform, inv_transform
 
 
-
 def adaptive_rectangular_transformed_grid_from(
-    source_plane_data_grid,
-    grid
+        source_plane_data_grid,
+        grid
 ):
-
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
-    
-    grid_scaled = (grid - mu) / scale
+    source_grid_scaled = (source_plane_data_grid - mu) / scale
 
-    transform, inv_transform = create_transforms(grid_scaled)
+    transform, inv_transform = create_transforms(source_grid_scaled)
 
     def inv_full(U):
         return inv_transform(U) * scale + mu
 
     return inv_full(grid)
+
 
 
 
@@ -213,10 +211,10 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     # --- Step 1. Normalize grid ---
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
-    grid_scaled = (source_plane_data_grid - mu) / scale
+    source_grid_scaled = (source_plane_data_grid - mu) / scale
 
     # --- Step 2. Build transforms ---
-    transform, inv_transform = create_transforms(grid_scaled)
+    transform, inv_transform = create_transforms(source_grid_scaled)
 
     # --- Step 3. Transform oversampled grid into index space ---
     grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
@@ -230,10 +228,10 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     iy_up = jnp.ceil(grid_over_index[:, 1])
 
     # --- Step 5. Four corners ---
-    idx_bl = jnp.stack([ix_down, iy_down], axis=1)  # bottom-left
-    idx_br = jnp.stack([ix_up, iy_down], axis=1)  # bottom-right
-    idx_tl = jnp.stack([ix_down, iy_up], axis=1)  # top-left
-    idx_tr = jnp.stack([ix_up, iy_up], axis=1)  # top-right
+    idx_tl = jnp.stack([ix_up, iy_down], axis=1)
+    idx_tr = jnp.stack([ix_up, iy_up], axis=1)
+    idx_br = jnp.stack([ix_down, iy_up], axis=1)
+    idx_bl = jnp.stack([ix_down, iy_down], axis=1)
 
     # --- Step 6. Flatten indices ---
     def flatten(idx, n):
@@ -241,28 +239,25 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
         col = idx[:, 1]
         return row * n + col
 
-    flat_bl = flatten(idx_bl, source_grid_size)
-    flat_br = flatten(idx_br, source_grid_size)
     flat_tl = flatten(idx_tl, source_grid_size)
     flat_tr = flatten(idx_tr, source_grid_size)
+    flat_bl = flatten(idx_bl, source_grid_size)
+    flat_br = flatten(idx_br, source_grid_size)
 
-    # --- Step 7. Bilinear interpolation weights ---
-    idx_down = jnp.stack([ix_down, iy_down], axis=1)
-    idx_up = jnp.stack([ix_up, iy_up], axis=1)
-
-    delta_up = idx_up - grid_over_index
-    delta_down = grid_over_index - idx_down
-
-    w_tl = delta_up[:, 0] * delta_up[:, 1]
-    w_bl = delta_up[:, 0] * delta_down[:, 1]
-    w_tr = delta_down[:, 0] * delta_up[:, 1]
-    w_br = delta_down[:, 0] * delta_down[:, 1]
-
-    # --- Step 8. Stack outputs ---
-    flat_indices = jnp.stack([flat_bl, flat_br, flat_tl, flat_tr], axis=1).astype(
+    flat_indices = jnp.stack([flat_tl, flat_tr, flat_bl, flat_br], axis=1).astype(
         "int64"
     )
-    weights = jnp.stack([w_bl, w_br, w_tl, w_tr], axis=1)
+
+    # --- Step 7. Bilinear interpolation weights ---
+    t_row = (grid_over_index[:, 0] - ix_down) / (ix_up - ix_down + 1e-12)
+    t_col = (grid_over_index[:, 1] - iy_down) / (iy_up - iy_down + 1e-12)
+
+    # Weights
+    w_tl = (1 - t_row) * (1 - t_col)
+    w_tr = (1 - t_row) * t_col
+    w_bl = t_row * (1 - t_col)
+    w_br = t_row * t_col
+    weights = jnp.stack([w_tl, w_tr, w_bl, w_br], axis=1)
 
     return flat_indices, weights
 

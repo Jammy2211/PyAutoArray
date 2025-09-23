@@ -131,37 +131,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @cached_property
-    def edges(self):
-        """
-        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
-        `Neighbors` for a complete description of the neighboring scheme).
-
-        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
-        """
-        return mesh_util.rectangular_edges_from(
-            shape_native=self.shape_native,
-            pixel_scales=self.pixel_scales,
-        )
-
-    @cached_property
-    def edges_transformed(self):
-        """
-        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
-        `Neighbors` for a complete description of the neighboring scheme).
-
-        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
-        """
-
-        edges_transformed = mapper_util.adaptive_rectangular_transformed_grid_from(
-            source_plane_data_grid=self.array,
-            grid=self.edges.reshape(-1, 2),
-        )
-
-        return edges_transformed.reshape(self.edges.shape)
-
-    @cached_property
     def edge_pixel_list(self) -> List:
         return mesh_util.rectangular_edge_pixel_list_from(
             shape_native=self.shape_native

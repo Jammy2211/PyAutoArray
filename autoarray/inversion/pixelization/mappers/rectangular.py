@@ -98,26 +98,45 @@ class MapperRectangular(AbstractMapper):
         are equal to 1.0.
         """
 
-        mappings, weights = (
-            mapper_util.rectangular_mappings_weights_via_interpolation_from(
-                shape_native=self.shape_native,
-                source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-            )
-        )
-
         # mappings, weights = (
-        #     mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
-        #         source_grid_size=self.shape_native[0],
-        #         source_plane_data_grid=self.source_plane_mesh_grid.array,
-        #         source_plane_data_grid_over_sampled=jnp.array(
-        #             self.source_plane_data_grid.over_sampled
-        #         ),
+        #     mapper_util.rectangular_mappings_weights_via_interpolation_from(
+        #         shape_native=self.shape_native,
+        #         source_plane_mesh_grid=self.source_plane_mesh_grid.array,
+        #         source_plane_data_grid=self.source_plane_data_grid.over_sampled,
         #     )
         # )
+
+        mappings, weights = (
+            mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
+                source_grid_size=self.shape_native[0],
+                source_plane_data_grid=self.source_plane_data_grid.array,
+                source_plane_data_grid_over_sampled=jnp.array(
+                    self.source_plane_data_grid.over_sampled
+                ),
+            )
+        )
 
         return PixSubWeights(
             mappings=mappings,
             sizes=4 * jnp.ones(len(mappings), dtype="int"),
             weights=weights,
+        )
+
+    @cached_property
+    def edges_transformed(self):
+        """
+        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
+        `Neighbors` for a complete description of the neighboring scheme).
+
+        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
+        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
+        """
+
+        # edges defined in 0 -> 1 space, there is one more edge than pixel centers on each side
+        edges = jnp.linspace(0, 1, self.shape_native[0] + 1)
+        edges_reshaped = jnp.stack([edges, edges]).T
+
+        return mapper_util.adaptive_rectangular_transformed_grid_from(
+            source_plane_data_grid=self.source_plane_data_grid.array,
+            grid=edges_reshaped
         )
