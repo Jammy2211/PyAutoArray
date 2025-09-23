@@ -1,17 +1,14 @@
 import jax.numpy as jnp
-import numpy as np
-from typing import Tuple
 
 from autoconf import cached_property
 
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
 from autoarray.inversion.pixelization.mappers import mapper_util
 
 
-class MapperRectangular(AbstractMapper):
+class MapperRectangularUniform(MapperRectangular):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
     the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
@@ -59,10 +56,6 @@ class MapperRectangular(AbstractMapper):
         which for a mapper smooths neighboring pixels on the mesh.
     """
 
-    @property
-    def shape_native(self) -> Tuple[int, ...]:
-        return self.source_plane_mesh_grid.shape_native
-
     @cached_property
     def pix_sub_weights(self) -> PixSubWeights:
         """
@@ -98,21 +91,11 @@ class MapperRectangular(AbstractMapper):
         are equal to 1.0.
         """
 
-        # mappings, weights = (
-        #     mapper_util.rectangular_mappings_weights_via_interpolation_from(
-        #         shape_native=self.shape_native,
-        #         source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-        #         source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-        #     )
-        # )
-
         mappings, weights = (
-            mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
-                source_grid_size=self.shape_native[0],
-                source_plane_data_grid=self.source_plane_data_grid.array,
-                source_plane_data_grid_over_sampled=jnp.array(
-                    self.source_plane_data_grid.over_sampled
-                ),
+            mapper_util.rectangular_mappings_weights_via_interpolation_from(
+                shape_native=self.shape_native,
+                source_plane_mesh_grid=self.source_plane_mesh_grid.array,
+                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
             )
         )
 
@@ -120,37 +103,4 @@ class MapperRectangular(AbstractMapper):
             mappings=mappings,
             sizes=4 * jnp.ones(len(mappings), dtype="int"),
             weights=weights,
-        )
-
-    @cached_property
-    def areas_transformed(self):
-        """
-        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
-        `Neighbors` for a complete description of the neighboring scheme).
-
-        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
-        """
-        return mapper_util.adaptive_rectangular_areas_from(
-            source_grid_size=self.shape_native[0],
-            source_plane_data_grid=self.source_plane_data_grid.array,
-        )
-
-    @cached_property
-    def edges_transformed(self):
-        """
-        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
-        `Neighbors` for a complete description of the neighboring scheme).
-
-        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
-        """
-
-        # edges defined in 0 -> 1 space, there is one more edge than pixel centers on each side
-        edges = jnp.linspace(0, 1, self.shape_native[0] + 1)
-        edges_reshaped = jnp.stack([edges, edges]).T
-
-        return mapper_util.adaptive_rectangular_transformed_grid_from(
-            source_plane_data_grid=self.source_plane_data_grid.array,
-            grid=edges_reshaped,
         )

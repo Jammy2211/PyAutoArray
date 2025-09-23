@@ -87,22 +87,6 @@ def test__reconstruction_positive_negative_from():
     assert reconstruction == pytest.approx(np.array([1.0, -1.0, 3.0]), 1.0e-4)
 
 
-def test__reconstruction_positive_negative_from__check_solution_raises_error_cause_all_values_identical():
-    data_vector = np.array([1.0, 1.0, 1.0])
-
-    curvature_reg_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
-
-    # reconstruction = np.array([1.0, 1.0, 1.0])
-
-    with pytest.raises(aa.exc.InversionException):
-        aa.util.inversion.reconstruction_positive_negative_from(
-            data_vector=data_vector,
-            curvature_reg_matrix=curvature_reg_matrix,
-            mapper_param_range_list=[[0, 3]],
-            force_check_reconstruction=True,
-        )
-
-
 def test__mapped_reconstructed_data_via_mapping_matrix_from():
     mapping_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 

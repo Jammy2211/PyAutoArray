@@ -4,8 +4,6 @@ import numpy as np
 
 from typing import List, Optional, Type
 
-from autoconf import conf
-
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
@@ -36,8 +34,7 @@ def curvature_matrix_via_w_tilde_from(
     ndarray
         The curvature matrix `F` (see Warren & Dye 2003).
     """
-
-    return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
+    return jnp.dot(mapping_matrix.T, jnp.dot(w_tilde, mapping_matrix))
 
 
 def curvature_matrix_with_added_to_diag_from(
@@ -188,6 +185,34 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
 
     """
     return jnp.dot(mapping_matrix, reconstruction)
+
+
+def mapped_reconstructed_data_via_w_tilde_from(
+    w_tilde: np.ndarray, mapping_matrix: np.ndarray, reconstruction: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the reconstructed data vector from the unblurred mapping matrix `M`,
+    the reconstruction vector `s`, and the PSF convolution operator `w_tilde`.
+
+    Equivalent to:
+        reconstructed = (W @ M) @ s
+                      = W @ (M @ s)
+
+    Parameters
+    ----------
+    w_tilde
+        Array of shape [image_pixels, image_pixels], the PSF convolution operator.
+    mapping_matrix
+        Array of shape [image_pixels, source_pixels], unblurred mapping matrix.
+    reconstruction
+        Array of shape [source_pixels], solution vector.
+
+    Returns
+    -------
+    ndarray
+        The reconstructed data vector of shape [image_pixels].
+    """
+    return w_tilde @ (mapping_matrix @ reconstruction)
 
 
 def reconstruction_positive_negative_from(

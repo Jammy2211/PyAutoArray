@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple
 
 
 from autoarray.structures.grids.uniform_2d import Grid2D

@@ -12,7 +12,7 @@ def test__neighbors__compare_to_mesh_util():
     # I8 I 9I10I11I
     # I12I13I14I15I
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
     )
 
@@ -39,7 +39,7 @@ def test__edge_pixel_list():
         ]
     )
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(3, 3), grid=grid, buffer=1e-8
     )
 
@@ -61,7 +61,7 @@ def test__shape_native_and_pixel_scales():
         ]
     )
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(3, 3), grid=grid, buffer=1e-8
     )
 
@@ -82,7 +82,7 @@ def test__shape_native_and_pixel_scales():
         ]
     )
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(5, 4), grid=grid, buffer=1e-8
     )
 
@@ -91,7 +91,7 @@ def test__shape_native_and_pixel_scales():
 
     grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(3, 3), grid=grid, buffer=1e-8
     )
 
@@ -114,7 +114,7 @@ def test__pixel_centres__3x3_grid__pixel_centres():
         ]
     )
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(3, 3), grid=grid, buffer=1e-8
     )
 
@@ -148,7 +148,7 @@ def test__pixel_centres__3x3_grid__pixel_centres():
         ]
     )
 
-    mesh = aa.Mesh2DRectangular.overlay_grid(
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(4, 3), grid=grid, buffer=1e-8
     )
 
@@ -179,7 +179,7 @@ def test__interpolated_array_from():
         pixel_scales=1.0,
     )
 
-    grid_rectangular = aa.Mesh2DRectangular(
+    grid_rectangular = aa.Mesh2DRectangularUniform(
         values=grid, shape_native=grid.shape_native, pixel_scales=grid.pixel_scales
     )
 

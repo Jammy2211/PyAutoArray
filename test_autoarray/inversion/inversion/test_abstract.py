@@ -115,8 +115,8 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=1)
 
-    mesh_0 = aa.mesh.Rectangular(shape=(3, 3))
-    mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
+    mesh_0 = aa.mesh.RectangularUniform(shape=(3, 3))
+    mesh_1 = aa.mesh.RectangularUniform(shape=(4, 4))
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
         mask=mask,
@@ -424,17 +424,6 @@ def test__data_subtracted_dict():
 
     assert (inversion.data_subtracted_dict[linear_obj_0] == np.ones(3)).all()
     assert (inversion.data_subtracted_dict[linear_obj_1] == 2.0 * np.ones(3)).all()
-
-
-def test__reconstruction_raises_exception_for_linalg_error():
-    # noinspection PyTypeChecker
-    inversion = aa.m.MockInversion(
-        data_vector=np.ones(3), curvature_reg_matrix=np.ones((3, 3))
-    )
-
-    with pytest.raises(exc.InversionException):
-        # noinspection PyStatementEffect
-        inversion.reconstruction
 
 
 def test__regularization_term():

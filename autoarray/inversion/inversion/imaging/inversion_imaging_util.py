@@ -1,10 +1,69 @@
+from scipy.signal import convolve2d
+import jax.numpy as jnp
 import numpy as np
 from typing import Tuple
 
 from autoarray import numba_util
+from scipy.signal import correlate2d
+
+import numpy as np
 
 
-@numba_util.jit()
+def psf_operator_matrix_dense_from(
+    kernel_native: np.ndarray,
+    native_index_for_slim_index: np.ndarray,  # shape (N_pix, 2), native (y,x) coords of masked pixels
+    native_shape: tuple[int, int],
+    correlate: bool = True,
+) -> np.ndarray:
+    """
+    Construct a dense PSF operator W (N_pix x N_pix) that maps masked image pixels to masked image pixels.
+
+    Parameters
+    ----------
+    kernel_native : (Ky, Kx) PSF kernel.
+    native_index_for_slim_index : (N_pix, 2) array of int
+        Native (y, x) coords for each masked pixel.
+    native_shape : (Ny, Nx)
+        Native 2D image shape.
+    correlate : bool, default True
+        If True, use correlation convention (no kernel flip).
+        If False, use convolution convention (flip kernel).
+
+    Returns
+    -------
+    W : ndarray, shape (N_pix, N_pix)
+        Dense PSF operator.
+    """
+    Ky, Kx = kernel_native.shape
+    ph, pw = Ky // 2, Kx // 2
+    Ny, Nx = native_shape
+    N_pix = native_index_for_slim_index.shape[0]
+
+    ker = kernel_native if correlate else kernel_native[::-1, ::-1]
+
+    # Padded index grid: -1 everywhere, slim index where masked
+    index_padded = -np.ones((Ny + 2 * ph, Nx + 2 * pw), dtype=np.int64)
+    for p, (y, x) in enumerate(native_index_for_slim_index):
+        index_padded[y + ph, x + pw] = p
+
+    # Neighborhood offsets
+    dy = np.arange(Ky) - ph
+    dx = np.arange(Kx) - pw
+
+    W = np.zeros((N_pix, N_pix), dtype=float)
+
+    for i, (y, x) in enumerate(native_index_for_slim_index):
+        yp = y + ph
+        xp = x + pw
+        for j, dy_ in enumerate(dy):
+            for k, dx_ in enumerate(dx):
+                neigh = index_padded[yp + dy_, xp + dx_]
+                if neigh >= 0:
+                    W[i, neigh] += ker[j, k]
+
+    return W
+
+
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
@@ -44,32 +103,35 @@ def w_tilde_data_imaging_from(
         efficient calculation of the data vector.
     """
 
-    kernel_shift_y = -(kernel_native.shape[1] // 2)
-    kernel_shift_x = -(kernel_native.shape[0] // 2)
+    # 1) weight map = image / noise^2 (safe where noise==0)
+    weight_map = jnp.where(
+        noise_map_native > 0.0, image_native / (noise_map_native**2), 0.0
+    )
 
-    image_pixels = len(native_index_for_slim_index)
+    Ky, Kx = kernel_native.shape
+    ph, pw = Ky // 2, Kx // 2
 
-    w_tilde_data = np.zeros((image_pixels,))
+    # 2) pad so neighbourhood gathers never go OOB
+    padded = jnp.pad(
+        weight_map, ((ph, ph), (pw, pw)), mode="constant", constant_values=0.0
+    )
 
-    weight_map_native = image_native / noise_map_native**2.0
+    # 3) build broadcasted neighbourhood indices for all requested pixels
+    # shift pixel coords into the padded frame
+    ys = native_index_for_slim_index[:, 0] + ph  # (N,)
+    xs = native_index_for_slim_index[:, 1] + pw  # (N,)
 
-    for ip0 in range(image_pixels):
-        ip0_y, ip0_x = native_index_for_slim_index[ip0]
+    # kernel-relative offsets
+    dy = jnp.arange(Ky) - ph  # (Ky,)
+    dx = jnp.arange(Kx) - pw  # (Kx,)
 
-        value = 0.0
+    # broadcast to (N, Ky, Kx)
+    Y = ys[:, None, None] + dy[None, :, None]
+    X = xs[:, None, None] + dx[None, None, :]
 
-        for k0_y in range(kernel_native.shape[0]):
-            for k0_x in range(kernel_native.shape[1]):
-                weight_value = weight_map_native[
-                    ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
-                ]
-
-                if not np.isnan(weight_value):
-                    value += kernel_native[k0_y, k0_x] * weight_value
-
-        w_tilde_data[ip0] = value
-
-    return w_tilde_data
+    # 4) gather patches and correlate (no kernel flip)
+    patches = padded[Y, X]  # (N, Ky, Kx)
+    return jnp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
 
 
 @numba_util.jit()

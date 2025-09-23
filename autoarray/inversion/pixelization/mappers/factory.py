@@ -4,6 +4,7 @@ from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
+from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 
@@ -39,10 +40,19 @@ def mapper_from(
     from autoarray.inversion.pixelization.mappers.rectangular import (
         MapperRectangular,
     )
+    from autoarray.inversion.pixelization.mappers.rectangular_uniform import (
+        MapperRectangularUniform,
+    )
     from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 
-    if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
+    if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangularUniform):
+        return MapperRectangularUniform(
+            mapper_grids=mapper_grids,
+            border_relocator=border_relocator,
+            regularization=regularization,
+        )
+    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
         return MapperRectangular(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,

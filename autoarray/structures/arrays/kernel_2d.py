@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+from jax import lax
 import numpy as np
 from pathlib import Path
 from typing import List, Tuple, Union

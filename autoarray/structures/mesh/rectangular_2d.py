@@ -3,25 +3,22 @@ import numpy as np
 
 from typing import List, Optional, Tuple
 
+from autoconf import cached_property
+
 from autoarray import type as ty
 from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids import grid_2d_util
+
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
-from autoconf import cached_property
+
+from autoarray.inversion.pixelization.mappers import mapper_util
+from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.structures.grids import grid_2d_util
 
 
 class Mesh2DRectangular(Abstract2DMesh):
-    @property
-    def slim(self) -> "Structure":
-        raise NotImplementedError()
-
-    @property
-    def native(self) -> Structure:
-        raise NotImplementedError()
 
     def __init__(
         self,
@@ -112,7 +109,7 @@ class Mesh2DRectangular(Abstract2DMesh):
             origin=origin,
         )
 
-        return Mesh2DRectangular(
+        return cls(
             values=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,

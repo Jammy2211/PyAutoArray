@@ -564,18 +564,79 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
+            shape_native = mapper.source_plane_mesh_grid.shape_native
+
         if pixel_values is not None:
-            self.plot_array(
-                array=pixel_values,
-                visuals_2d=visuals_2d,
-                auto_labels=auto_labels,
-                bypass=True,
+
+            from autoarray.inversion.pixelization.mappers.rectangular_uniform import (
+                MapperRectangularUniform,
+            )
+            from autoarray.inversion.pixelization.mappers.rectangular import (
+                MapperRectangular,
             )
 
-        self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
+            if isinstance(mapper, MapperRectangularUniform):
 
-        self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
-        self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
+                self.plot_array(
+                    array=pixel_values,
+                    visuals_2d=visuals_2d,
+                    auto_labels=auto_labels,
+                    bypass=True,
+                )
+
+            else:
+
+                norm = self.cmap.norm_from(
+                    array=pixel_values.array, use_log10=self.use_log10
+                )
+
+                edges_transformed = mapper.edges_transformed
+
+                edges_transformed_dense = np.moveaxis(
+                    np.stack(np.meshgrid(*edges_transformed.T)), 0, 2
+                )
+
+                plt.pcolormesh(
+                    edges_transformed_dense[..., 0],
+                    edges_transformed_dense[..., 1],
+                    pixel_values.array.reshape(shape_native),
+                    shading="flat",
+                    norm=norm,
+                    cmap=self.cmap.cmap,
+                )
+
+                if self.colorbar is not False:
+
+                    cb = self.colorbar.set(
+                        units=self.units,
+                        ax=ax,
+                        norm=norm,
+                        cb_unit=auto_labels.cb_unit,
+                        use_log10=self.use_log10,
+                    )
+                    self.colorbar_tickparams.set(cb=cb)
+
+                extent_axis = self.axis.config_dict.get("extent")
+
+                if extent_axis is None:
+                    extent_axis = extent
+
+                self.axis.set(extent=extent_axis)
+
+                self.tickparams.set()
+                self.yticks.set(
+                    min_value=extent_axis[2],
+                    max_value=extent_axis[3],
+                    units=self.units,
+                    pixels=shape_native[0],
+                )
+
+                self.xticks.set(
+                    min_value=extent_axis[0],
+                    max_value=extent_axis[1],
+                    units=self.units,
+                    pixels=shape_native[1],
+                )
 
         if not isinstance(self.text, list):
             self.text.set()
@@ -587,13 +648,12 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [annotate.set() for annotate in self.annotate]
 
-        self.grid_plot.plot_rectangular_grid_lines(
-            extent=mapper.source_plane_mesh_grid.geometry.extent,
-            shape_native=mapper.shape_native,
-        )
+        # self.grid_plot.plot_rectangular_grid_lines(
+        #     extent=mapper.source_plane_mesh_grid.geometry.extent,
+        #     shape_native=mapper.shape_native,
+        # )
 
         self.title.set(auto_title=auto_labels.title)
-        self.tickparams.set()
         self.ylabel.set()
         self.xlabel.set()
 

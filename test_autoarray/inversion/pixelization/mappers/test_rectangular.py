@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import autoarray as aa
 
@@ -21,7 +22,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DRectangular.overlay_grid(
+    mesh_grid = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(3, 3), grid=grid.over_sampled
     )
 
@@ -46,7 +47,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
 
 def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
-    mesh_grid = aa.Mesh2DRectangular.overlay_grid(
+    mesh_grid = aa.Mesh2DRectangularUniform.overlay_grid(
         shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled
     )
 
@@ -72,3 +73,73 @@ def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
     )
 
     assert (pixel_signals == pixel_signals_util).all()
+
+
+def test__areas_transformed(mask_2d_7x7):
+
+    grid = aa.Grid2DIrregular(
+        [
+            [-1.5, -1.5],
+            [-1.5, 0.0],
+            [-1.5, 1.5],
+            [0.0, -1.5],
+            [0.0, 0.0],
+            [0.0, 1.5],
+            [1.5, -1.5],
+            [1.5, 0.0],
+            [1.5, 1.5],
+        ],
+    )
+
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
+        shape_native=(3, 3), grid=grid, buffer=1e-8
+    )
+
+    mapper_grids = aa.MapperGrids(
+        mask=mask_2d_7x7,
+        source_plane_data_grid=grid,
+        source_plane_mesh_grid=mesh,
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+
+    assert mapper.areas_transformed[4] == pytest.approx(
+        4.0,
+        abs=1e-8,
+    )
+
+
+def test__edges_transformed(mask_2d_7x7):
+
+    grid = aa.Grid2DIrregular(
+        [
+            [-1.5, -1.5],
+            [-1.5, 0.0],
+            [-1.5, 1.5],
+            [0.0, -1.5],
+            [0.0, 0.0],
+            [0.0, 1.5],
+            [1.5, -1.5],
+            [1.5, 0.0],
+            [1.5, 1.5],
+        ],
+    )
+
+    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
+        shape_native=(3, 3), grid=grid, buffer=1e-8
+    )
+
+    mapper_grids = aa.MapperGrids(
+        mask=mask_2d_7x7,
+        source_plane_data_grid=grid,
+        source_plane_mesh_grid=mesh,
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+
+    assert mapper.edges_transformed[4] == pytest.approx(
+        np.array(
+            [1.5, 1.5],  # left
+        ),
+        abs=1e-8,
+    )

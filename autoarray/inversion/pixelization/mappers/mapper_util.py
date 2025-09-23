@@ -105,6 +105,180 @@ def data_slim_to_pixelization_unique_from(
     return data_to_pix_unique, data_weights, pix_lengths
 
 
+import jax
+import jax.numpy as jnp
+
+from functools import partial
+
+
+def forward_interp(xp, yp, x):
+    return jax.vmap(jnp.interp, in_axes=(1, 1, None, None, None))(x, xp, yp, 0, 1).T
+
+
+def reverse_interp(xp, yp, x):
+    return jax.vmap(jnp.interp, in_axes=(1, None, 1))(x, xp, yp).T
+
+
+def create_transforms(traced_points):
+    # make functions that takes a set of traced points
+    # stored in a (N, 2) array and return functions that
+    # take in (N, 2) arrays and transform the values into
+    # the range (0, 1) and the inverse transform
+    N = traced_points.shape[0]  # // 2
+    t = jnp.arange(1, N + 1) / (N + 1)
+
+    sort_points = jnp.sort(traced_points, axis=0)  # [::2]
+
+    transform = partial(forward_interp, sort_points, t)
+    inv_transform = partial(reverse_interp, t, sort_points)
+    return transform, inv_transform
+
+
+def adaptive_rectangular_transformed_grid_from(source_plane_data_grid, grid):
+    mu = source_plane_data_grid.mean(axis=0)
+    scale = source_plane_data_grid.std(axis=0).min()
+    source_grid_scaled = (source_plane_data_grid - mu) / scale
+
+    transform, inv_transform = create_transforms(source_grid_scaled)
+
+    def inv_full(U):
+        return inv_transform(U) * scale + mu
+
+    return inv_full(grid)
+
+
+def adaptive_rectangular_areas_from(source_grid_size, source_plane_data_grid):
+
+    pixel_edges_1d = jnp.linspace(0, 1, source_grid_size + 1)
+
+    mu = source_plane_data_grid.mean(axis=0)
+    scale = source_plane_data_grid.std(axis=0).min()
+    source_grid_scaled = (source_plane_data_grid - mu) / scale
+
+    transform, inv_transform = create_transforms(source_grid_scaled)
+
+    def inv_full(U):
+        return inv_transform(U) * scale + mu
+
+    pixel_edges = inv_full(jnp.stack([pixel_edges_1d, pixel_edges_1d]).T)
+    pixel_lengths = jnp.diff(pixel_edges, axis=0).squeeze()  # shape (N_source, 2)
+
+    dy = pixel_lengths[:, 0]
+    dx = pixel_lengths[:, 1]
+
+    return jnp.outer(dy, dx).flatten()
+
+
+def adaptive_rectangular_mappings_weights_via_interpolation_from(
+    source_grid_size: int,
+    source_plane_data_grid,
+    source_plane_data_grid_over_sampled,
+):
+    """
+    Compute bilinear interpolation indices and weights for mapping an oversampled
+    source-plane grid onto a regular rectangular pixelization.
+
+    This function takes a set of irregularly-sampled source-plane coordinates and
+    builds an adaptive mapping onto a `source_grid_size x source_grid_size` rectangular
+    pixelization using bilinear interpolation. The interpolation is expressed as:
+
+        f(x, y) ≈ w_bl * f(ix_down, iy_down) +
+                  w_br * f(ix_up,   iy_down) +
+                  w_tl * f(ix_down, iy_up) +
+                  w_tr * f(ix_up,   iy_up)
+
+    where `(ix_down, ix_up, iy_down, iy_up)` are the integer grid coordinates
+    surrounding the continuous position `(x, y)`.
+
+    Steps performed:
+      1. Normalize the source-plane grid by subtracting its mean and dividing by
+         the minimum axis standard deviation (to balance scaling).
+      2. Construct forward/inverse transforms which map the grid into the unit square [0,1]^2.
+      3. Transform the oversampled source-plane grid into [0,1]^2, then scale it
+         to index space `[0, source_grid_size)`.
+      4. Compute floor/ceil along x and y axes to find the enclosing rectangular cell.
+      5. Build the four corner indices: bottom-left (bl), bottom-right (br),
+         top-left (tl), and top-right (tr).
+      6. Flatten the 2D indices into 1D indices suitable for scatter operations,
+         with a flipped row-major convention: row = source_grid_size - i, col = j.
+      7. Compute bilinear interpolation weights (`w_bl, w_br, w_tl, w_tr`).
+      8. Return arrays of flattened indices and weights of shape `(N, 4)`, where
+         `N` is the number of oversampled coordinates.
+
+    Parameters
+    ----------
+    source_grid_size : int
+        The number of pixels along one dimension of the rectangular pixelization.
+        The grid is square: (source_grid_size x source_grid_size).
+    source_plane_data_grid : (M, 2) ndarray
+        The base source-plane coordinates, used to define normalization and transforms.
+    source_plane_data_grid_over_sampled : (N, 2) ndarray
+        Oversampled source-plane coordinates to be interpolated onto the rectangular grid.
+
+    Returns
+    -------
+    flat_indices : (N, 4) int ndarray
+        The flattened indices of the four neighboring pixel corners for each oversampled point.
+        Order: [bl, br, tl, tr].
+    weights : (N, 4) float ndarray
+        The bilinear interpolation weights for each of the four neighboring pixels.
+        Order: [w_bl, w_br, w_tl, w_tr].
+    """
+
+    # --- Step 1. Normalize grid ---
+    mu = source_plane_data_grid.mean(axis=0)
+    scale = source_plane_data_grid.std(axis=0).min()
+    source_grid_scaled = (source_plane_data_grid - mu) / scale
+
+    # --- Step 2. Build transforms ---
+    transform, inv_transform = create_transforms(source_grid_scaled)
+
+    # --- Step 3. Transform oversampled grid into index space ---
+    grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
+    grid_over_sampled_transformed = transform(grid_over_sampled_scaled)
+    grid_over_index = source_grid_size * grid_over_sampled_transformed
+
+    # --- Step 4. Floor/ceil indices ---
+    ix_down = jnp.floor(grid_over_index[:, 0])
+    ix_up = jnp.ceil(grid_over_index[:, 0])
+    iy_down = jnp.floor(grid_over_index[:, 1])
+    iy_up = jnp.ceil(grid_over_index[:, 1])
+
+    # --- Step 5. Four corners ---
+    idx_tl = jnp.stack([ix_up, iy_down], axis=1)
+    idx_tr = jnp.stack([ix_up, iy_up], axis=1)
+    idx_br = jnp.stack([ix_down, iy_up], axis=1)
+    idx_bl = jnp.stack([ix_down, iy_down], axis=1)
+
+    # --- Step 6. Flatten indices ---
+    def flatten(idx, n):
+        row = n - idx[:, 0]
+        col = idx[:, 1]
+        return row * n + col
+
+    flat_tl = flatten(idx_tl, source_grid_size)
+    flat_tr = flatten(idx_tr, source_grid_size)
+    flat_bl = flatten(idx_bl, source_grid_size)
+    flat_br = flatten(idx_br, source_grid_size)
+
+    flat_indices = jnp.stack([flat_tl, flat_tr, flat_bl, flat_br], axis=1).astype(
+        "int64"
+    )
+
+    # --- Step 7. Bilinear interpolation weights ---
+    t_row = (grid_over_index[:, 0] - ix_down) / (ix_up - ix_down + 1e-12)
+    t_col = (grid_over_index[:, 1] - iy_down) / (iy_up - iy_down + 1e-12)
+
+    # Weights
+    w_tl = (1 - t_row) * (1 - t_col)
+    w_tr = (1 - t_row) * t_col
+    w_bl = t_row * (1 - t_col)
+    w_br = t_row * t_col
+    weights = jnp.stack([w_tl, w_tr, w_bl, w_br], axis=1)
+
+    return flat_indices, weights
+
+
 def rectangular_mappings_weights_via_interpolation_from(
     shape_native: Tuple[int, int],
     source_plane_data_grid: jnp.ndarray,
