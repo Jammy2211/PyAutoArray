@@ -6,6 +6,7 @@ from typing import Optional
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
 
+
 class RectangularUniform(Rectangular):
 
     def mesh_grid_from(

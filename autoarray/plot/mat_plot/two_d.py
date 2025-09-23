@@ -568,8 +568,12 @@ class MatPlot2D(AbstractMatPlot):
 
         if pixel_values is not None:
 
-            from autoarray.inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
-            from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
+            from autoarray.inversion.pixelization.mappers.rectangular_uniform import (
+                MapperRectangularUniform,
+            )
+            from autoarray.inversion.pixelization.mappers.rectangular import (
+                MapperRectangular,
+            )
 
             if isinstance(mapper, MapperRectangularUniform):
 
