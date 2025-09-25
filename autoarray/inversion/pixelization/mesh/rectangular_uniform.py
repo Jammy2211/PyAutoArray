@@ -3,6 +3,7 @@ from autoarray.inversion.pixelization.mesh.rectangular import Rectangular
 from typing import Optional
 
 
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
 
@@ -28,5 +29,6 @@ class RectangularUniform(Rectangular):
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         """
         return Mesh2DRectangularUniform.overlay_grid(
-            shape_native=self.shape, grid=source_plane_data_grid.over_sampled
+            shape_native=self.shape,
+            grid=Grid2DIrregular(source_plane_data_grid.over_sampled),
         )

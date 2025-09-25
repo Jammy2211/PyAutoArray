@@ -237,6 +237,7 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
     grid_over_sampled_transformed = transform(grid_over_sampled_scaled)
     grid_over_index = source_grid_size * grid_over_sampled_transformed
+    grid_over_index = (source_grid_size - 3) * grid_over_sampled_transformed + 1
 
     # --- Step 4. Floor/ceil indices ---
     ix_down = jnp.floor(grid_over_index[:, 0])

@@ -89,6 +89,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         buffer
             The size of the extra spacing placed between the edges of the rectangular pixelization and input grid.
         """
+        grid = grid.array
 
         y_min = jnp.min(grid[:, 0]) - buffer
         y_max = jnp.max(grid[:, 0]) + buffer

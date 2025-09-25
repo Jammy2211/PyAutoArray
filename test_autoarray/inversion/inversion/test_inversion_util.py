@@ -81,7 +81,6 @@ def test__reconstruction_positive_negative_from():
     reconstruction = aa.util.inversion.reconstruction_positive_negative_from(
         data_vector=data_vector,
         curvature_reg_matrix=curvature_reg_matrix,
-        mapper_param_range_list=[[0, 3]],
     )
 
     assert reconstruction == pytest.approx(np.array([1.0, -1.0, 3.0]), 1.0e-4)

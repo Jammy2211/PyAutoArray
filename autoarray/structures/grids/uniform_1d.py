@@ -1,6 +1,5 @@
 from __future__ import annotations
 import numpy as np
-import jax.numpy as jnp
 from typing import List, Union, Tuple
 
 from autoarray.structures.abstract_structure import Structure
@@ -312,8 +311,8 @@ class Grid1D(Structure):
             The projected and rotated 2D grid of (y,x) coordinates.
         """
 
-        grid = jnp.zeros((self.mask.pixels_in_mask, 2))
-        grid = grid.at[:, 1].set(self.slim.array)
+        grid = np.zeros((self.mask.pixels_in_mask, 2))
+        grid[:, 1] = self.slim.array
 
         grid = geometry_util.transform_grid_2d_to_reference_frame(
             grid_2d=grid, centre=(0.0, 0.0), angle=angle
