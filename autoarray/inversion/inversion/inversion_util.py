@@ -56,16 +56,9 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix
         The curvature matrix which is being constructed in order to solve a linear system of equations.
     """
-    try:
-        return curvature_matrix.at[
-            no_regularization_index_list, no_regularization_index_list
-        ].add(value)
-    except AttributeError:
-        return curvature_matrix_with_added_to_diag_from_numba(
-            curvature_matrix=curvature_matrix,
-            value=value,
-            no_regularization_index_list=no_regularization_index_list,
-        )
+    return curvature_matrix.at[
+        no_regularization_index_list, no_regularization_index_list
+    ].add(value)
 
 
 @numba_util.jit()
@@ -218,8 +211,6 @@ def mapped_reconstructed_data_via_w_tilde_from(
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
-    mapper_param_range_list,
-    force_check_reconstruction: bool = False,
 ):
     """
     Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -262,7 +253,6 @@ def reconstruction_positive_negative_from(
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
-    settings: SettingsInversion = SettingsInversion(),
 ):
     """
     Solve the linear system Eq.(2) (in terms of minimizing the quadratic value) of
@@ -308,21 +298,7 @@ def reconstruction_positive_only_from(
     """
     import jaxnnls
 
-    try:
-        reconstruction = jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
-    except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
-        raise exc.InversionException() from e
-
-    def handle_nan(reconstruction):
-        return jnp.zeros_like(reconstruction)
-
-    def handle_valid(reconstruction):
-        return reconstruction
-
-    has_nan = jnp.isnan(reconstruction).any()
-    reconstruction = lax.cond(has_nan, handle_nan, handle_valid, reconstruction)
-
-    return reconstruction
+    return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
 
 
 def preconditioner_matrix_via_mapping_matrix_from(
