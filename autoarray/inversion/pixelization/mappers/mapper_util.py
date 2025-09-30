@@ -236,7 +236,6 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     # --- Step 3. Transform oversampled grid into index space ---
     grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
     grid_over_sampled_transformed = transform(grid_over_sampled_scaled)
-    grid_over_index = source_grid_size * grid_over_sampled_transformed
     grid_over_index = (source_grid_size - 3) * grid_over_sampled_transformed + 1
 
     # --- Step 4. Floor/ceil indices ---

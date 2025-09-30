@@ -1,5 +1,6 @@
 import numpy as np
 import jax.numpy as jnp
+import jax
 from typing import Union
 
 from autoconf import conf
@@ -164,6 +165,14 @@ class OverSampler:
         # Ensure correct concatenation by making 0 a JAX array
         self.start_indices = np.concatenate((np.array([0]), self.split_indices[:-1]))
 
+        # Compute segment ids for each element in the flattened array
+        self.segment_ids = np.empty(np.sum(sub_size**2), dtype=np.int32)
+
+        for seg_id, (start, end) in enumerate(zip(self.start_indices, self.split_indices)):
+            self.segment_ids[start:end] = seg_id
+
+        self.segment_ids = jnp.array(self.segment_ids)
+
     @property
     def sub_is_uniform(self) -> bool:
         """
@@ -234,18 +243,18 @@ class OverSampler:
             pass
 
         if self.sub_is_uniform:
+
             binned_array_2d = array.reshape(
                 self.mask.shape_slim, self.sub_size[0] ** 2
             ).mean(axis=1)
+
         else:
 
             # Compute the group means
-            binned_array_2d = jnp.array(
-                [
-                    array[start:end].mean()
-                    for start, end in zip(self.start_indices, self.split_indices)
-                ]
-            )
+
+            sums = jax.ops.segment_sum(array, self.segment_ids, self.mask.pixels_in_mask)
+            counts = jax.ops.segment_sum(jnp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask)
+            binned_array_2d = sums / counts
 
         return Array2D(
             values=binned_array_2d,

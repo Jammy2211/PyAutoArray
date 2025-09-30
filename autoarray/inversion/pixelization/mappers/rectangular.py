@@ -97,15 +97,6 @@ class MapperRectangular(AbstractMapper):
         dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
         are equal to 1.0.
         """
-
-        # mappings, weights = (
-        #     mapper_util.rectangular_mappings_weights_via_interpolation_from(
-        #         shape_native=self.shape_native,
-        #         source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-        #         source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-        #     )
-        # )
-
         mappings, weights = (
             mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
                 source_grid_size=self.shape_native[0],

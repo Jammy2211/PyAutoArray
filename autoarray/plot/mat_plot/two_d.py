@@ -564,7 +564,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-            shape_native = mapper.source_plane_mesh_grid.shape_native
+        shape_native = mapper.source_plane_mesh_grid.shape_native
 
         if pixel_values is not None:
 
