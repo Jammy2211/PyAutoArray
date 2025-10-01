@@ -612,3 +612,31 @@ def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
     assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
+
+# def test__data_linear_func_matrix_dict(masked_imaging_7x7,
+#     rectangular_mapper_7x7_3x3,
+# ):
+#
+#     mask = masked_imaging_7x7.mask
+#
+#     grid = aa.Grid2D.from_mask(mask=mask)
+#
+#     mapping_matrix = np.full(fill_value=0.5, shape=(9, 2))
+#     mapping_matrix[0, 0] = 0.8
+#     mapping_matrix[1, 1] = 0.4
+#
+#     linear_obj = aa.m.MockLinearObjFuncList(
+#         parameters=2, grid=grid, mapping_matrix=mapping_matrix
+#     )
+#
+#     inversion_mapping = aa.Inversion(
+#         dataset=masked_imaging_7x7,
+#         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
+#         settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+#     )
+#
+#     print(inversion_mapping.data_linear_func_matrix_dict)
+#
+#     assert inversion_mapping.data_linear_func_matrix_dict == pytest.approx(
+#         None, 1.0e-4
+#     )

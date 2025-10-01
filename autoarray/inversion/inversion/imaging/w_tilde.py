@@ -207,7 +207,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             ]
 
             diag = inversion_imaging_numba_util.data_vector_via_blurred_mapping_matrix_from(
-                blurred_mapping_matrix=operated_mapping_matrix,
+                blurred_mapping_matrix=np.array(operated_mapping_matrix),
                 image=self.data.array,
                 noise_map=self.noise_map.array,
             )
