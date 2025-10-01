@@ -192,6 +192,8 @@ def data_linear_func_matrix_from(
         A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum of
         the values of a linear object function convolved with the PSF kernel at the data pixel.
     """
+    ggg
+
     data_pixels = curvature_weights_matrix.shape[0]
     linear_func_pixels = curvature_weights_matrix.shape[1]
 

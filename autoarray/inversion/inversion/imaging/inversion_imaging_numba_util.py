@@ -5,6 +5,73 @@ from autoarray import numba_util
 import numpy as np
 
 @numba_util.jit()
+def w_tilde_data_imaging_from(
+    image_native: np.ndarray,
+    noise_map_native: np.ndarray,
+    kernel_native: np.ndarray,
+    native_index_for_slim_index,
+) -> np.ndarray:
+    """
+    The matrix w_tilde is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF convolution of
+    every pair of image pixels given the noise map. This can be used to efficiently compute the curvature matrix via
+    the mappings between image and source pixels, in a way that omits having to perform the PSF convolution on every
+    individual source pixel. This provides a significant speed up for inversions of imaging datasets.
+
+    When w_tilde is used to perform an inversion, the mapping matrices are not computed, meaning that they cannot be
+    used to compute the data vector. This method creates the vector `w_tilde_data` which allows for the data
+    vector to be computed efficiently without the mapping matrix.
+
+    The matrix w_tilde_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
+    where the weights are the image-pixel values divided by the noise-map values squared:
+
+    weight = image / noise**2.0
+
+    Parameters
+    ----------
+    image_native
+        The two dimensional masked image of values which `w_tilde_data` is computed from.
+    noise_map_native
+        The two dimensional masked noise-map of values which `w_tilde_data` is computed from.
+    kernel_native
+        The two dimensional PSF kernel that `w_tilde_data` encodes the convolution of.
+    native_index_for_slim_index
+        An array of shape [total_x_pixels*sub_size] that maps pixels from the slimmed array to the native array.
+
+    Returns
+    -------
+    ndarray
+        A matrix that encodes the PSF convolution values between the imaging divided by the noise map**2 that enables
+        efficient calculation of the data vector.
+    """
+
+    kernel_shift_y = -(kernel_native.shape[1] // 2)
+    kernel_shift_x = -(kernel_native.shape[0] // 2)
+
+    image_pixels = len(native_index_for_slim_index)
+
+    w_tilde_data = np.zeros((image_pixels,))
+
+    weight_map_native = image_native / noise_map_native**2.0
+
+    for ip0 in range(image_pixels):
+        ip0_y, ip0_x = native_index_for_slim_index[ip0]
+
+        value = 0.0
+
+        for k0_y in range(kernel_native.shape[0]):
+            for k0_x in range(kernel_native.shape[1]):
+                weight_value = weight_map_native[
+                    ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
+                ]
+
+                if not np.isnan(weight_value):
+                    value += kernel_native[k0_y, k0_x] * weight_value
+
+        w_tilde_data[ip0] = value
+
+    return w_tilde_data
+
+@numba_util.jit()
 def w_tilde_curvature_imaging_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
 ) -> np.ndarray:
@@ -270,7 +337,37 @@ def w_tilde_curvature_value_from(
 
     return curvature_value
 
+@numba_util.jit()
+def data_vector_via_blurred_mapping_matrix_from(
+    blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the data vector `D` from a blurred mapping matrix `f` and the 1D image `d` and 1D noise-map $\sigma$`
+    (see Warren & Dye 2003).
 
+    Parameters
+    ----------
+    blurred_mapping_matrix
+        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
+    image
+        Flattened 1D array of the observed image the inversion is fitting.
+    noise_map
+        Flattened 1D array of the noise-map used by the inversion during the fit.
+    """
+
+    data_shape = blurred_mapping_matrix.shape
+
+    data_vector = np.zeros(data_shape[1])
+
+    for data_index in range(data_shape[0]):
+        for pix_index in range(data_shape[1]):
+            data_vector[pix_index] += (
+                image[data_index]
+                * blurred_mapping_matrix[data_index, pix_index]
+                / (noise_map[data_index] ** 2.0)
+            )
+
+    return data_vector
 
 @numba_util.jit()
 def data_vector_via_w_tilde_data_imaging_from(
