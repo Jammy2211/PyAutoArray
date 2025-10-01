@@ -151,7 +151,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         linear_obj = self.linear_obj_list[0]
 
         return inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
-            w_tilde_data=self.w_tilde_data,
+            w_tilde_data=np.array(self.w_tilde_data),
             data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
             data_weights=linear_obj.unique_mappings.data_weights,
             pix_lengths=linear_obj.unique_mappings.pix_lengths,
