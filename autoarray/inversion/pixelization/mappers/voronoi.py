@@ -7,7 +7,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray.inversion.pixelization.mappers import mapper_util
+from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 
 class MapperVoronoi(AbstractMapper):
@@ -75,7 +75,7 @@ class MapperVoronoi(AbstractMapper):
         This property returns a unique set of `PixSubWeights` used for these regularization schemes which compute
         mappings and weights at each point on the split cross.
         """
-        (mappings, sizes, weights) = mapper_util.pix_size_weights_voronoi_nn_from(
+        (mappings, sizes, weights) = mapper_numba_util.pix_size_weights_voronoi_nn_from(
             grid=self.source_plane_mesh_grid.split_cross,
             mesh_grid=self.source_plane_mesh_grid,
         )
@@ -125,7 +125,7 @@ class MapperVoronoi(AbstractMapper):
         The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
         """
 
-        mappings, sizes, weights = mapper_util.pix_size_weights_voronoi_nn_from(
+        mappings, sizes, weights = mapper_numba_util.pix_size_weights_voronoi_nn_from(
             grid=self.source_plane_data_grid.over_sampled,
             mesh_grid=self.source_plane_mesh_grid,
         )

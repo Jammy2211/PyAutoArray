@@ -12,13 +12,17 @@ from autoarray.layout import layout_util as layout
 from autoarray.fit import fit_util as fit
 from autoarray.inversion.pixelization.mesh import mesh_util as mesh
 from autoarray.inversion.pixelization.mappers import mapper_util as mapper
+from autoarray.inversion.pixelization.mappers import mapper_numba_util as mapper_numba
 from autoarray.inversion.regularization import regularization_util as regularization
 from autoarray.inversion.inversion import inversion_util as inversion
 from autoarray.inversion.inversion.imaging import (
     inversion_imaging_util as inversion_imaging,
 )
 from autoarray.inversion.inversion.imaging import (
-    inversion_imaging_numba_util as inversion_imaging,
+    inversion_imaging_util as inversion_imaging,
+)
+from autoarray.inversion.inversion.imaging import (
+    inversion_imaging_numba_util as inversion_imaging_numba,
 )
 from autoarray.inversion.inversion.interferometer import (
     inversion_interferometer_util as inversion_interferometer,

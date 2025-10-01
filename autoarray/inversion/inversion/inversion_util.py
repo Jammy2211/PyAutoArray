@@ -60,34 +60,6 @@ def curvature_matrix_with_added_to_diag_from(
         no_regularization_index_list, no_regularization_index_list
     ].add(value)
 
-
-@numba_util.jit()
-def curvature_matrix_with_added_to_diag_from_numba(
-    curvature_matrix: np.ndarray,
-    value: float,
-    no_regularization_index_list: Optional[List] = None,
-) -> np.ndarray:
-    """
-    It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
-    via `np.linalg.solve` to fail and raise a `LinAlgError`.
-
-    In many circumstances, adding a small numerical value of `1.0e-8` to the diagonal of the `curvature_matrix`
-    makes it positive definite, such that the inversion is performed without raising an error.
-
-    This function adds this numerical value to the diagonal of the curvature matrix.
-
-    Parameters
-    ----------
-    curvature_matrix
-        The curvature matrix which is being constructed in order to solve a linear system of equations.
-    """
-
-    for i in no_regularization_index_list:
-        curvature_matrix[i, i] += value
-
-    return curvature_matrix
-
-
 def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray,
 ) -> np.ndarray:
@@ -131,38 +103,6 @@ def curvature_matrix_via_mapping_matrix_from(
         )
 
     return curvature_matrix
-
-
-@numba_util.jit()
-def mapped_reconstructed_data_via_image_to_pix_unique_from(
-    data_to_pix_unique: np.ndarray,
-    data_weights: np.ndarray,
-    pix_lengths: np.ndarray,
-    reconstruction: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
-
-    Parameters
-    ----------
-    mapping_matrix
-        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-
-    """
-
-    data_pixels = data_to_pix_unique.shape[0]
-
-    mapped_reconstructed_data = np.zeros(data_pixels)
-
-    for data_0 in range(data_pixels):
-        for pix_0 in range(pix_lengths[data_0]):
-            pix_for_data = data_to_pix_unique[data_0, pix_0]
-
-            mapped_reconstructed_data[data_0] += (
-                data_weights[data_0, pix_0] * reconstruction[pix_for_data]
-            )
-
-    return mapped_reconstructed_data
 
 
 def mapped_reconstructed_data_via_mapping_matrix_from(

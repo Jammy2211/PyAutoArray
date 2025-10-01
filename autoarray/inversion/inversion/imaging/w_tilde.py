@@ -15,7 +15,6 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray import exc
-from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
 
@@ -247,12 +246,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         else:
             curvature_matrix = self._curvature_matrix_multi_mapper
 
-        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
+        curvature_matrix = inversion_imaging_numba_util.curvature_matrix_mirrored_from(
             curvature_matrix=curvature_matrix
         )
 
         if len(self.no_regularization_index_list) > 0:
-            curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
+            curvature_matrix = inversion_imaging_numba_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
                 value=self.settings.no_regularization_add_to_curvature_diag_value,
                 no_regularization_index_list=self.no_regularization_index_list,
@@ -512,7 +511,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 cls=AbstractLinearObjFuncList
             ):
 
-                mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+                mapped_reconstructed_image = inversion_imaging_numba_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
@@ -522,22 +521,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
                     image=mapped_reconstructed_image, mask=self.mask
                 ).array
-
-                mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image, mask=self.mask
-                )
-
-            elif isinstance(linear_obj, AbstractMapper) and not self.has(
-                cls=AbstractLinearObjFuncList
-            ):
-
-                mapped_reconstructed_image = (
-                    inversion_util.mapped_reconstructed_data_via_w_tilde_from(
-                        w_tilde=self.w_tilde.psf_operator_matrix_dense,
-                        mapping_matrix=self.mapping_matrix,
-                        reconstruction=reconstruction,
-                    )
-                )
 
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask

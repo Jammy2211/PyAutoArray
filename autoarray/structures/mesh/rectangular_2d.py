@@ -8,12 +8,10 @@ from autoconf import cached_property
 from autoarray import type as ty
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
-from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids import grid_2d_util
 

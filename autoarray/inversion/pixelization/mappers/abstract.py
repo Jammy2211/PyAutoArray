@@ -16,7 +16,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray.inversion.pixelization.mappers import mapper_util
-
+from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 class AbstractMapper(LinearObj):
     def __init__(
@@ -225,7 +225,7 @@ class AbstractMapper(LinearObj):
             data_to_pix_unique,
             data_weights,
             pix_lengths,
-        ) = mapper_util.data_slim_to_pixelization_unique_from(
+        ) = mapper_numba_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.over_sampler.mask.pixels_in_mask,
             pix_indexes_for_sub_slim_index=np.array(
                 self.pix_indexes_for_sub_slim_index
