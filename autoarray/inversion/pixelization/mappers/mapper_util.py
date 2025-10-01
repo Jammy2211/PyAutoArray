@@ -6,9 +6,7 @@ from typing import Tuple
 
 from autoconf import conf
 
-from autoarray import numba_util
 from autoarray import exc
-from autoarray.inversion.pixelization.mesh import mesh_util
 
 
 def forward_interp(xp, yp, x):

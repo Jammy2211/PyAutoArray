@@ -11,6 +11,7 @@ from autoarray.structures.grids import sparse_2d_util as sparse
 from autoarray.layout import layout_util as layout
 from autoarray.fit import fit_util as fit
 from autoarray.inversion.pixelization.mesh import mesh_util as mesh
+from autoarray.inversion.pixelization.mesh import mesh_numba_util as mesh_numba
 from autoarray.inversion.pixelization.mappers import mapper_util as mapper
 from autoarray.inversion.pixelization.mappers import mapper_numba_util as mapper_numba
 from autoarray.inversion.regularization import regularization_util as regularization

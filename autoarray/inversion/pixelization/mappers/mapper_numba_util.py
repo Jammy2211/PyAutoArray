@@ -2,7 +2,7 @@ import numpy as np
 from typing import Tuple
 
 from autoarray import numba_util
-from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
 @numba_util.jit()
@@ -176,17 +176,17 @@ def pixel_weights_delaunay_from(
 
             sub_gird_coordinate_on_source_place = source_plane_data_grid[sub_slim_index]
 
-            area_0 = mesh_util.delaunay_triangle_area_from(
+            area_0 = mesh_numba_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[1],
                 corner_1=vertices_of_the_simplex[2],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
-            area_1 = mesh_util.delaunay_triangle_area_from(
+            area_1 = mesh_numba_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[0],
                 corner_1=vertices_of_the_simplex[2],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
-            area_2 = mesh_util.delaunay_triangle_area_from(
+            area_2 = mesh_numba_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[0],
                 corner_1=vertices_of_the_simplex[1],
                 corner_2=sub_gird_coordinate_on_source_place,

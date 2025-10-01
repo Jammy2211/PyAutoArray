@@ -133,7 +133,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
     reconstruction = np.array([1.0, 1.0, 2.0])
 
     mapped_reconstructed_data = (
-        aa.util.inversion.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        aa.util.inversion_imaging_numba.mapped_reconstructed_data_via_image_to_pix_unique_from(
             data_to_pix_unique=data_to_pix_unique.astype("int"),
             data_weights=data_weights,
             pix_lengths=pix_lengths.astype("int"),
@@ -165,7 +165,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
     reconstruction = np.array([1.0, 1.0, 2.0])
 
     mapped_reconstructed_data = (
-        aa.util.inversion.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        aa.util.inversion_imaging_numba.mapped_reconstructed_data_via_image_to_pix_unique_from(
             data_to_pix_unique=data_to_pix_unique.astype("int"),
             data_weights=data_weights,
             pix_lengths=pix_lengths.astype("int"),

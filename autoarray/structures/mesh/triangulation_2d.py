@@ -2,14 +2,13 @@ import numpy as np
 
 from typing import List, Union, Tuple
 
-from autoarray.structures.abstract_structure import Structure
 from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray import exc
-from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.inversion.pixelization.mesh import mesh_numba_util
 from autoarray.structures.grids import grid_2d_util
 
 
@@ -126,7 +125,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
         """
 
-        return mesh_util.voronoi_edge_pixels_from(
+        return mesh_numba_util.voronoi_edge_pixels_from(
             regions=self.voronoi.regions, point_region=self.voronoi.point_region
         )
 

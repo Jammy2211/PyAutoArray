@@ -507,10 +507,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         for linear_obj in self.linear_obj_list:
             reconstruction = reconstruction_dict[linear_obj]
 
-            if isinstance(linear_obj, AbstractMapper) and self.has(
-                cls=AbstractLinearObjFuncList
-            ):
-
+            if isinstance(linear_obj, AbstractMapper):
                 mapped_reconstructed_image = inversion_imaging_numba_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
@@ -518,16 +515,15 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     reconstruction=reconstruction,
                 )
 
-                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
-                    image=mapped_reconstructed_image, mask=self.mask
-                ).array
-
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
                 )
 
-            else:
+                mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
+                    image=mapped_reconstructed_image
+                )
 
+            else:
                 operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
                     linear_obj
                 ]
@@ -539,6 +535,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
                 )
+
 
             mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
 
