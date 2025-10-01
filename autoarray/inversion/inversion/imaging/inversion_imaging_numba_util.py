@@ -655,74 +655,81 @@ def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
 
 
 @numba_util.jit()
+def convolve_with_kernel_native(curvature_native, psf_kernel):
+    """
+    Convolve each function slice of curvature_native with psf_kernel using direct sliding window.
+
+    Parameters
+    ----------
+    curvature_native : ndarray (ny, nx, n_funcs)
+        Curvature weights expanded to the native grid, 0 in masked regions.
+    psf_kernel : ndarray (ky, kx)
+        The PSF kernel.
+
+    Returns
+    -------
+    blurred_native : ndarray (ny, nx, n_funcs)
+        The curvature weights convolved with the PSF.
+    """
+    ny, nx, n_funcs = curvature_native.shape
+    ky, kx = psf_kernel.shape
+    cy, cx = ky // 2, kx // 2  # kernel center
+
+    blurred_native = np.zeros_like(curvature_native)
+
+    for f in range(n_funcs):  # parallelize over functions
+        for y in range(ny):
+            for x in range(nx):
+                acc = 0.0
+                for dy in range(ky):
+                    for dx in range(kx):
+                        yy = y + dy - cy
+                        xx = x + dx - cx
+                        if 0 <= yy < ny and 0 <= xx < nx:
+                            acc += psf_kernel[dy, dx] * curvature_native[yy, xx, f]
+                blurred_native[y, x, f] = acc
+    return blurred_native
+
+@numba_util.jit()
 def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
     pix_pixels: int,
-    curvature_weights: np.ndarray,
-    image_frame_1d_lengths: np.ndarray,
-    image_frame_1d_indexes: np.ndarray,
-    image_frame_1d_kernels: np.ndarray,
+    curvature_weights: np.ndarray,   # shape (n_unmasked, n_funcs)
+    mask: np.ndarray,                # shape (ny, nx), bool
+    psf_kernel: np.ndarray           # shape (ky, kx)
 ) -> np.ndarray:
     """
-    Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
-    and a linear func object, using the unique mappings between data pixels and pixelization pixels.
-
-    This takes as input the curvature weights of the linear function object, which are the values of the linear
-    function convolved with the PSF and divided by the noise-map squared.
-
-    For each unique mapping between a data pixel and a pixelization pixel, the pixels which that pixel convolves
-    light into are computed, multiplied by their corresponding curvature weights and summed. This process also
-    accounts the sub-pixel mapping of each data pixel to the pixelization pixel
-
-    This is done for every unique mapping of a data pixel to a pixelization pixel, giving the off-diagonal terms in
-    the curvature matrix.
-
-    Parameters
-    ----------
-    data_to_pix_unique
-        An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D) to its unique set of
-        pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
-    data_weights
-        For every unique mapping between a set of data sub-pixels and a pixelization pixel, the weight of these mapping
-        based on the number of sub-pixels that map to pixelization pixel.
-    pix_lengths
-        A 1D array describing how many unique pixels each data pixel maps too, which is used to iterate over
-        `data_to_pix_unique` and `data_weights`.
-    pix_pixels
-        The total number of pixels in the pixelization that reconstructs the data.
-    curvature_weights
-        The operated values of the linear func divided by the noise-map squared.
-    image_frame_indexes
-        The indexes of all masked pixels that the PSF blurs light into (see the `Convolver` object).
-    image_frame_kernels
-        The kernel values of all masked pixels that the PSF blurs light into (see the `Convolver` object).
-    image_frame_length
-        The number of masked pixels it will blur light into (unmasked pixels are excluded, see the `Convolver` object).
-
-    Returns
-    -------
-    ndarray
-        The curvature matrix `F` (see Warren & Dye 2003).
+    Compute the off-diagonal curvature terms using the PSF kernel directly (Numba version).
     """
-
     data_pixels = data_weights.shape[0]
-    linear_func_pixels = curvature_weights.shape[1]
+    n_funcs = curvature_weights.shape[1]
+    ny, nx = mask.shape
 
-    off_diag = np.zeros((pix_pixels, linear_func_pixels))
+    # Expand curvature weights into native grid
+    curvature_native = np.zeros((ny, nx, n_funcs))
+    unmasked_coords = np.argwhere(~mask)
+    for i, (y, x) in enumerate(unmasked_coords):
+        for f in range(n_funcs):
+            curvature_native[y, x, f] = curvature_weights[i, f]
 
+    # Convolve in native space
+    blurred_native = convolve_with_kernel_native(curvature_native, psf_kernel)
+
+    # Map back to slim representation
+    blurred_slim = np.zeros((data_pixels, n_funcs))
+    for i, (y, x) in enumerate(unmasked_coords):
+        for f in range(n_funcs):
+            blurred_slim[i, f] = blurred_native[y, x, f]
+
+    # Accumulate into off_diag
+    off_diag = np.zeros((pix_pixels, n_funcs))
     for data_0 in range(data_pixels):
         for pix_0_index in range(pix_lengths[data_0]):
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
-
-            for psf_index in range(image_frame_1d_lengths[data_0]):
-                data_index = image_frame_1d_indexes[data_0, psf_index]
-                kernel_value = image_frame_1d_kernels[data_0, psf_index]
-
-                off_diag[pix_0, :] += (
-                    data_0_weight * curvature_weights[data_index, :] * kernel_value
-                )
+            for f in range(n_funcs):
+                off_diag[pix_0, f] += data_0_weight * blurred_slim[data_0, f]
 
     return off_diag
