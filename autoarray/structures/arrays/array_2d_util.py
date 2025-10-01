@@ -224,8 +224,6 @@ def extracted_array_2d_from(
     In the example below, an array of size (5,5) is extracted using the coordinates y0=1, y1=4, x0=1, x1=4. This
     extracts an array of dimensions (3,3) and is equivalent to array_2d[1:4, 1:4].
 
-    This function is necessary work with numba jit tags and is why a standard Numpy array extraction is not used.
-
     Parameters
     ----------
     array_2d
@@ -283,9 +281,6 @@ def resized_array_2d_from(
     If the origin (e.g. the central pixel) of the resized array is not specified, the central pixel of the array is
     calculated automatically. For example, a (5,5) array's central pixel is (2,2). For even dimensions the central
     pixel is assumed to be the lower indexed value, e.g. a (6,4) array's central pixel is calculated as (2,1).
-
-    The default origin is (-1, -1) because numba requires that the function input is the same type throughout the
-    function, thus a default 'None' value cannot be used.
 
     Parameters
     ----------
