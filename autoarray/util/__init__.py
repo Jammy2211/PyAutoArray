@@ -17,6 +17,9 @@ from autoarray.inversion.inversion import inversion_util as inversion
 from autoarray.inversion.inversion.imaging import (
     inversion_imaging_util as inversion_imaging,
 )
+from autoarray.inversion.inversion.imaging import (
+    inversion_imaging_numba_util as inversion_imaging,
+)
 from autoarray.inversion.inversion.interferometer import (
     inversion_interferometer_util as inversion_interferometer,
 )

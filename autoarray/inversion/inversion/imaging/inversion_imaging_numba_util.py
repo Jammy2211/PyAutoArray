@@ -271,6 +271,55 @@ def w_tilde_curvature_value_from(
     return curvature_value
 
 
+
+@numba_util.jit()
+def data_vector_via_w_tilde_data_imaging_from(
+    w_tilde_data: np.ndarray,
+    data_to_pix_unique: np.ndarray,
+    data_weights: np.ndarray,
+    pix_lengths: np.ndarray,
+    pix_pixels: int,
+) -> np.ndarray:
+    """
+    Returns the data vector `D` from the `w_tilde_data` matrix (see `w_tilde_data_imaging_from`), which encodes the
+    the 1D image `d` and 1D noise-map values `\sigma` (see Warren & Dye 2003).
+
+    This uses the array `data_to_pix_unique`, which describes the unique mappings of every set of image sub-pixels to
+    pixelization pixels and `data_weights`, which describes how many sub-pixels uniquely map to each pixelization
+    pixels (see `data_slim_to_pixelization_unique_from`).
+
+    Parameters
+    ----------
+    w_tilde_data
+        A matrix that encodes the PSF convolution values between the imaging divided by the noise map**2 that enables
+        efficient calculation of the data vector.
+    data_to_pix_unique
+        An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D) to its unique set of
+        pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
+    data_weights
+        For every unique mapping between a set of data sub-pixels and a pixelization pixel, the weight of these mapping
+        based on the number of sub-pixels that map to pixelization pixel.
+    pix_lengths
+        A 1D array describing how many unique pixels each data pixel maps too, which is used to iterate over
+        `data_to_pix_unique` and `data_weights`.
+    pix_pixels
+        The total number of pixels in the pixelization that reconstructs the data.
+    """
+
+    data_pixels = w_tilde_data.shape[0]
+
+    data_vector = np.zeros(pix_pixels)
+
+    for data_0 in range(data_pixels):
+        for pix_0_index in range(pix_lengths[data_0]):
+            data_0_weight = data_weights[data_0, pix_0_index]
+            pix_0 = data_to_pix_unique[data_0, pix_0_index]
+
+            data_vector[pix_0] += data_0_weight * w_tilde_data[data_0]
+
+    return data_vector
+
+
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     curvature_preload: np.ndarray,
@@ -451,71 +500,6 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_index += 1
 
     return curvature_matrix
-
-@numba_util.jit()
-def data_linear_func_matrix_from(
-    curvature_weights_matrix: np.ndarray,
-    image_frame_1d_lengths: np.ndarray,
-    image_frame_1d_indexes: np.ndarray,
-    image_frame_1d_kernels: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns a matrix that for each data pixel, maps it to the sum of the values of a linear object function convolved
-    with the PSF kernel at the data pixel.
-
-    If a linear function in an inversion is fixed, its values can be evaluated and preloaded beforehand. For every
-    data pixel, the PSF convolution with this preloaded linear function can also be preloaded, in a matrix of
-    shape [data_pixels, 1].
-
-    Given that multiple linear functions can be used and fixed in an inversion, this matrix is extended to have
-    dimensions [data_pixels, total_fixed_linear_functions].
-
-    When mapper objects and linear functions are used simultaneously in an inversion, this preloaded matrix
-    significantly speed up the computation of their off-diagonal terms in the curvature matrix.
-
-    This is similar to the preloading performed via the w-tilde formalism, except that there it is the PSF convolved
-    values of each noise-map value pair that are preloaded.
-
-    In **PyAutoGalaxy** and **PyAutoLens**, this preload is used when linear light profiles are fixed in the model.
-    For example, when using a multi Gaussian expansion, the values defining how those Gaussians are evaluated
-    (e.g. `centre`, `ell_comps` and `sigma`) are often fixed in a model, meaning this matrix can be preloaded and
-    used for speed up.
-
-    Parameters
-    ----------
-    curvature_weights_matrix
-        The operated values of each linear function divided by the noise-map squared, in a matrix of shape
-        [data_pixels, total_fixed_linear_functions].
-    image_frame_indexes
-        The indexes of all masked pixels that the PSF blurs light into (see the `Convolver` object).
-    image_frame_kernels
-        The kernel values of all masked pixels that the PSF blurs light into (see the `Convolver` object).
-    image_frame_length
-        The number of masked pixels it will blur light into (unmasked pixels are excluded, see the `Convolver` object).
-
-    Returns
-    -------
-    ndarray
-        A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum of
-        the values of a linear object function convolved with the PSF kernel at the data pixel.
-    """
-    data_pixels = curvature_weights_matrix.shape[0]
-    linear_func_pixels = curvature_weights_matrix.shape[1]
-
-    data_linear_func_matrix_dict = np.zeros(shape=(data_pixels, linear_func_pixels))
-
-    for data_0 in range(data_pixels):
-        for psf_index in range(image_frame_1d_lengths[data_0]):
-            data_index = image_frame_1d_indexes[data_0, psf_index]
-            kernel_value = image_frame_1d_kernels[data_0, psf_index]
-
-            for linear_index in range(linear_func_pixels):
-                data_linear_func_matrix_dict[data_0, linear_index] += (
-                    kernel_value * curvature_weights_matrix[data_index, linear_index]
-                )
-
-    return data_linear_func_matrix_dict
-
 
 @numba_util.jit()
 def curvature_matrix_off_diags_via_data_linear_func_matrix_from(

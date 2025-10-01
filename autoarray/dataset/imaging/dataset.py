@@ -15,7 +15,7 @@ from autoarray import type as ty
 
 from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
-from autoarray.inversion.inversion.imaging import inversion_imaging_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
 logger = logging.getLogger(__name__)
 
@@ -239,7 +239,7 @@ class Imaging(AbstractDataset):
             curvature_preload,
             indexes,
             lengths,
-        ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
+        ) = inversion_imaging_numba_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
             kernel_native=np.array(self.psf.native.array).astype("float64"),
             native_index_for_slim_index=np.array(

@@ -5,6 +5,7 @@ from autoconf import cached_property
 
 from autoarray.dataset.abstract.w_tilde import AbstractWTilde
 
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
 logger = logging.getLogger(__name__)
