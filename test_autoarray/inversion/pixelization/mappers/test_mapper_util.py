@@ -278,7 +278,7 @@ def test__data_to_pix_unique_from():
         data_to_pix_unique,
         data_weights,
         pix_lengths,
-    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
         data_pixels=image_pixels,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
@@ -314,7 +314,7 @@ def test__data_to_pix_unique_from():
         data_to_pix_unique,
         data_weights,
         pix_lengths,
-    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
         data_pixels=image_pixels,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
@@ -343,7 +343,7 @@ def test__weights():
 
     pix_indexes_for_sub_slim_index = np.array([[0, 1, 2], [2, -1, -1]])
 
-    pixel_weights = aa.util.mapper.pixel_weights_delaunay_from(
+    pixel_weights = aa.util.mapper_numba.pixel_weights_delaunay_from(
         source_plane_data_grid=source_plane_data_grid,
         source_plane_mesh_grid=source_plane_mesh_grid,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,

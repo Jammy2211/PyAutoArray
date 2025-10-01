@@ -60,6 +60,7 @@ def curvature_matrix_with_added_to_diag_from(
         no_regularization_index_list, no_regularization_index_list
     ].add(value)
 
+
 def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray,
 ) -> np.ndarray:

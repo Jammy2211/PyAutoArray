@@ -18,6 +18,7 @@ from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
+
 class AbstractMapper(LinearObj):
     def __init__(
         self,

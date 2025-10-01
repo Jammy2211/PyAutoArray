@@ -17,7 +17,7 @@ def test__w_tilde_imaging_from():
 
     native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-    w_tilde = aa.util.inversion_imaging.w_tilde_curvature_imaging_from(
+    w_tilde = aa.util.inversion_imaging_numba.w_tilde_curvature_imaging_from(
         noise_map_native=noise_map_2d,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
@@ -87,7 +87,7 @@ def test__w_tilde_curvature_preload_imaging_from():
         w_tilde_preload,
         w_tilde_indexes,
         w_tilde_lengths,
-    ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
+    ) = aa.util.inversion_imaging_numba.w_tilde_curvature_preload_imaging_from(
         noise_map_native=noise_map_2d,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
@@ -228,7 +228,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             data_to_pix_unique,
             data_weights,
             pix_lengths,
-        ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+        ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde_data.shape[0],
             pix_indexes_for_sub_slim_index=np.array(
                 mapper.pix_indexes_for_sub_slim_index
@@ -242,7 +242,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
         )
 
         data_vector_via_w_tilde = (
-            aa.util.inversion_imaging.data_vector_via_w_tilde_data_imaging_from(
+            aa.util.inversion_imaging_numba.data_vector_via_w_tilde_data_imaging_from(
                 w_tilde_data=np.array(w_tilde_data),
                 data_to_pix_unique=data_to_pix_unique.astype("int"),
                 data_weights=data_weights,
@@ -278,7 +278,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
     mapping_matrix = mapper.mapping_matrix
 
-    w_tilde = aa.util.inversion_imaging.w_tilde_curvature_imaging_from(
+    w_tilde = aa.util.inversion_imaging_numba.w_tilde_curvature_imaging_from(
         noise_map_native=np.array(noise_map.native.array),
         kernel_native=np.array(kernel.native.array),
         native_index_for_slim_index=np.array(
@@ -335,7 +335,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             w_tilde_preload,
             w_tilde_indexes,
             w_tilde_lengths,
-        ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
+        ) = aa.util.inversion_imaging_numba.w_tilde_curvature_preload_imaging_from(
             noise_map_native=np.array(noise_map.native.array),
             kernel_native=np.array(kernel.native.array),
             native_index_for_slim_index=np.array(
@@ -347,7 +347,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             data_to_pix_unique,
             data_weights,
             pix_lengths,
-        ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+        ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde_lengths.shape[0],
             pix_indexes_for_sub_slim_index=np.array(
                 mapper.pix_indexes_for_sub_slim_index
@@ -360,7 +360,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             sub_size=np.array(grid.over_sample_size),
         )
 
-        curvature_matrix_via_w_tilde = aa.util.inversion_imaging.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+        curvature_matrix_via_w_tilde = aa.util.inversion_imaging_numba.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=w_tilde_preload,
             curvature_indexes=w_tilde_indexes.astype("int"),
             curvature_lengths=w_tilde_lengths.astype("int"),

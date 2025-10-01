@@ -251,10 +251,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
         if len(self.no_regularization_index_list) > 0:
-            curvature_matrix = inversion_imaging_numba_util.curvature_matrix_with_added_to_diag_from(
-                curvature_matrix=curvature_matrix,
-                value=self.settings.no_regularization_add_to_curvature_diag_value,
-                no_regularization_index_list=self.no_regularization_index_list,
+            curvature_matrix = (
+                inversion_imaging_numba_util.curvature_matrix_with_added_to_diag_from(
+                    curvature_matrix=curvature_matrix,
+                    value=self.settings.no_regularization_add_to_curvature_diag_value,
+                    no_regularization_index_list=self.no_regularization_index_list,
+                )
             )
 
         return curvature_matrix
@@ -515,15 +517,16 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     reconstruction=reconstruction,
                 )
 
+                mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
+                    image=mapped_reconstructed_image, mask=self.mask
+                ).array
+
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
                 )
 
-                mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
-                    image=mapped_reconstructed_image
-                )
-
             else:
+
                 operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
                     linear_obj
                 ]
@@ -535,7 +538,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
                 )
-
 
             mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
 
