@@ -613,7 +613,9 @@ def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
     assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
 
-def test__data_linear_func_matrix_dict(masked_imaging_7x7,
+
+def test__data_linear_func_matrix_dict(
+    masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
 ):
 
@@ -635,12 +637,12 @@ def test__data_linear_func_matrix_dict(masked_imaging_7x7,
         settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
     )
 
-    assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][0] == pytest.approx(
-        [0.075, 0.05972222], 1.0e-4
-    )
-    assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][1] == pytest.approx(
-        [0.09166667, 0.07847222], 1.0e-4
-    )
-    assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][2] == pytest.approx(
-        [0.06458333, 0.05972222], 1.0e-4
-    )
+    assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][
+        0
+    ] == pytest.approx([0.075, 0.05972222], 1.0e-4)
+    assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][
+        1
+    ] == pytest.approx([0.09166667, 0.07847222], 1.0e-4)
+    assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][
+        2
+    ] == pytest.approx([0.06458333, 0.05972222], 1.0e-4)

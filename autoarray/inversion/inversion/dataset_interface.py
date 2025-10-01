@@ -5,7 +5,6 @@ class DatasetInterface:
         noise_map,
         grids=None,
         psf=None,
-        convolver=None,
         transformer=None,
         w_tilde=None,
         noise_covariance_matrix=None,
@@ -61,7 +60,6 @@ class DatasetInterface:
         self.noise_map = noise_map
         self.grids = grids
         self.psf = psf
-        self.convolver = convolver
         self.transformer = transformer
         self.w_tilde = w_tilde
         self.noise_covariance_matrix = noise_covariance_matrix

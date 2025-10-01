@@ -3,6 +3,7 @@ import jax.numpy as jnp
 import numpy as np
 from scipy.signal import fftconvolve
 
+
 def psf_operator_matrix_dense_from(
     kernel_native: np.ndarray,
     native_index_for_slim_index: np.ndarray,  # shape (N_pix, 2), native (y,x) coords of masked pixels
@@ -146,6 +147,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     """
     return (image / noise_map**2.0) @ blurred_mapping_matrix
 
+
 def data_linear_func_matrix_from(
     curvature_weights_matrix: np.ndarray, kernel_native, mask
 ) -> np.ndarray:
@@ -176,12 +178,8 @@ def data_linear_func_matrix_from(
     curvature_weights_matrix
         The operated values of each linear function divided by the noise-map squared, in a matrix of shape
         [data_pixels, total_fixed_linear_functions].
-    image_frame_indexes
-        The indexes of all masked pixels that the PSF blurs light into (see the `Convolver` object).
-    image_frame_kernels
-        The kernel values of all masked pixels that the PSF blurs light into (see the `Convolver` object).
-    image_frame_length
-        The number of masked pixels it will blur light into (unmasked pixels are excluded, see the `Convolver` object).
+    kernel_native
+        The 2D PSf kernel.
 
     Returns
     -------
@@ -199,6 +197,7 @@ def data_linear_func_matrix_from(
 
     # Convolve each function with PSF kernel
     from scipy.signal import fftconvolve
+
     blurred_list = []
     for i in range(n_funcs):
         blurred = fftconvolve(native[..., i], kernel_native, mode="same")

@@ -437,7 +437,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     pix_pixels=mapper.params,
                     curvature_weights=np.array(curvature_weights),
                     mask=self.mask.array,
-                    psf_kernel=self.psf.native.array
+                    psf_kernel=self.psf.native.array,
                 )
 
                 curvature_matrix[

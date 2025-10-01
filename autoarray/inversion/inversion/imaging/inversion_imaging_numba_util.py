@@ -4,6 +4,7 @@ from autoarray import numba_util
 
 import numpy as np
 
+
 @numba_util.jit()
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
@@ -70,6 +71,7 @@ def w_tilde_data_imaging_from(
         w_tilde_data[ip0] = value
 
     return w_tilde_data
+
 
 @numba_util.jit()
 def w_tilde_curvature_imaging_from(
@@ -337,6 +339,7 @@ def w_tilde_curvature_value_from(
 
     return curvature_value
 
+
 @numba_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
@@ -368,6 +371,7 @@ def data_vector_via_blurred_mapping_matrix_from(
             )
 
     return data_vector
+
 
 @numba_util.jit()
 def data_vector_via_w_tilde_data_imaging_from(
@@ -598,6 +602,7 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
 
     return curvature_matrix
 
+
 @numba_util.jit()
 def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
     data_linear_func_matrix: np.ndarray,
@@ -690,15 +695,16 @@ def convolve_with_kernel_native(curvature_native, psf_kernel):
                 blurred_native[y, x, f] = acc
     return blurred_native
 
+
 @numba_util.jit()
 def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
     pix_pixels: int,
-    curvature_weights: np.ndarray,   # shape (n_unmasked, n_funcs)
-    mask: np.ndarray,                # shape (ny, nx), bool
-    psf_kernel: np.ndarray           # shape (ky, kx)
+    curvature_weights: np.ndarray,  # shape (n_unmasked, n_funcs)
+    mask: np.ndarray,  # shape (ny, nx), bool
+    psf_kernel: np.ndarray,  # shape (ky, kx)
 ) -> np.ndarray:
     """
     Returns the off-diagonal terms in the curvature matrix `F` (see Warren & Dye 2003)
@@ -717,23 +723,23 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
 
     Parameters
     ----------
-    data_to_pix_unique : ndarray
+    data_to_pix_unique
         An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D)
         to its unique set of pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
-    data_weights : ndarray
+    data_weights
         For every unique mapping between a set of data sub-pixels and a pixelization pixel,
         the weight of this mapping based on the number of sub-pixels that map to the pixelization pixel.
-    pix_lengths : ndarray
+    pix_lengths
         A 1D array describing how many unique pixels each data pixel maps to. Used to iterate over
         `data_to_pix_unique` and `data_weights`.
-    pix_pixels : int
+    pix_pixels
         The total number of pixels in the pixelization that reconstructs the data.
-    curvature_weights : ndarray
+    curvature_weights
         The operated values of the linear function divided by the noise-map squared, with shape
         [n_unmasked_data_pixels, n_linear_func_pixels].
-    mask : ndarray
+    mask
         A 2D boolean mask of shape (ny, nx) indicating which pixels are in the data region.
-    psf_kernel : ndarray
+    psf_kernel
         The PSF kernel in its native 2D form, centered (odd dimensions recommended).
 
     Returns
