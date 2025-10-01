@@ -701,7 +701,46 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     psf_kernel: np.ndarray           # shape (ky, kx)
 ) -> np.ndarray:
     """
-    Compute the off-diagonal curvature terms using the PSF kernel directly (Numba version).
+    Returns the off-diagonal terms in the curvature matrix `F` (see Warren & Dye 2003)
+    between a mapper object and a linear func object, using the unique mappings between
+    data pixels and pixelization pixels.
+
+    This version applies the PSF directly as a 2D convolution kernel. The curvature
+    weights of the linear function object (values of the linear function divided by the
+    noise-map squared) are expanded into the native 2D image grid, convolved with the PSF
+    kernel, and then remapped back to the 1D slim representation.
+
+    For each unique mapping between a data pixel and a pixelization pixel, the convolved
+    curvature weights at that data pixel are multiplied by the mapping weights and
+    accumulated into the off-diagonal block of the curvature matrix. This accounts for
+    sub-pixel mappings between data pixels and pixelization pixels.
+
+    Parameters
+    ----------
+    data_to_pix_unique : ndarray
+        An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D)
+        to its unique set of pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
+    data_weights : ndarray
+        For every unique mapping between a set of data sub-pixels and a pixelization pixel,
+        the weight of this mapping based on the number of sub-pixels that map to the pixelization pixel.
+    pix_lengths : ndarray
+        A 1D array describing how many unique pixels each data pixel maps to. Used to iterate over
+        `data_to_pix_unique` and `data_weights`.
+    pix_pixels : int
+        The total number of pixels in the pixelization that reconstructs the data.
+    curvature_weights : ndarray
+        The operated values of the linear function divided by the noise-map squared, with shape
+        [n_unmasked_data_pixels, n_linear_func_pixels].
+    mask : ndarray
+        A 2D boolean mask of shape (ny, nx) indicating which pixels are in the data region.
+    psf_kernel : ndarray
+        The PSF kernel in its native 2D form, centered (odd dimensions recommended).
+
+    Returns
+    -------
+    ndarray
+        The off-diagonal block of the curvature matrix `F` (see Warren & Dye 2003),
+        with shape [pix_pixels, n_linear_func_pixels].
     """
     data_pixels = data_weights.shape[0]
     n_funcs = curvature_weights.shape[1]
