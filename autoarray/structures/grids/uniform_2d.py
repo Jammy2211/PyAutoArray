@@ -689,8 +689,6 @@ class Grid2D(Structure):
         )
 
     def subtracted_from(self, offset: Tuple[(float, float), np.ndarray]) -> "Grid2D":
-        if offset[0] == 0.0 and offset[1] == 0.0:
-            return self
 
         mask = Mask2D(
             mask=self.mask,
@@ -699,10 +697,10 @@ class Grid2D(Structure):
         )
 
         return Grid2D(
-            values=self - np.array(offset),
+            values=self - jnp.array(offset),
             mask=mask,
             over_sample_size=self.over_sample_size,
-            over_sampled=self.over_sampled - np.array(offset),
+            over_sampled=self.over_sampled - jnp.array(offset),
         )
 
     @property

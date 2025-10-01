@@ -168,7 +168,9 @@ class OverSampler:
         # Compute segment ids for each element in the flattened array
         self.segment_ids = np.empty(np.sum(sub_size**2), dtype=np.int32)
 
-        for seg_id, (start, end) in enumerate(zip(self.start_indices, self.split_indices)):
+        for seg_id, (start, end) in enumerate(
+            zip(self.start_indices, self.split_indices)
+        ):
             self.segment_ids[start:end] = seg_id
 
         self.segment_ids = jnp.array(self.segment_ids)
@@ -252,8 +254,12 @@ class OverSampler:
 
             # Compute the group means
 
-            sums = jax.ops.segment_sum(array, self.segment_ids, self.mask.pixels_in_mask)
-            counts = jax.ops.segment_sum(jnp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask)
+            sums = jax.ops.segment_sum(
+                array, self.segment_ids, self.mask.pixels_in_mask
+            )
+            counts = jax.ops.segment_sum(
+                jnp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
+            )
             binned_array_2d = sums / counts
 
         return Array2D(

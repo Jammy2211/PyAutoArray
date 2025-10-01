@@ -154,15 +154,6 @@ class FitDataset(AbstractFit):
 
     @cached_property
     def grids(self) -> GridsInterface:
-        offset = self.dataset_model.grid_offset
-
-        if offset[0] == 0.0 and offset[1] == 0.0:
-            return GridsInterface(
-                lp=self.dataset.grids.lp,
-                pixelization=self.dataset.grids.pixelization,
-                blurring=self.dataset.grids.blurring,
-                border_relocator=self.dataset.grids.border_relocator,
-            )
 
         def subtracted_from(grid, offset):
             if grid is None:
