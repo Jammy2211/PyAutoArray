@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 
 import numpy as np
-
+from scipy.signal import fftconvolve
 
 def psf_operator_matrix_dense_from(
     kernel_native: np.ndarray,
@@ -147,10 +147,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     return (image / noise_map**2.0) @ blurred_mapping_matrix
 
 def data_linear_func_matrix_from(
-    curvature_weights_matrix: np.ndarray,
-    image_frame_1d_lengths: np.ndarray,
-    image_frame_1d_indexes: np.ndarray,
-    image_frame_1d_kernels: np.ndarray,
+    curvature_weights_matrix: np.ndarray, kernel_native, mask
 ) -> np.ndarray:
     """
     Returns a matrix that for each data pixel, maps it to the sum of the values of a linear object function convolved
@@ -193,19 +190,19 @@ def data_linear_func_matrix_from(
         the values of a linear object function convolved with the PSF kernel at the data pixel.
     """
 
-    data_pixels = curvature_weights_matrix.shape[0]
-    linear_func_pixels = curvature_weights_matrix.shape[1]
+    ny, nx = mask.shape_native
+    n_unmasked, n_funcs = curvature_weights_matrix.shape
 
-    data_linear_func_matrix_dict = np.zeros(shape=(data_pixels, linear_func_pixels))
+    # Expand masked -> native grid
+    native = np.zeros((ny, nx, n_funcs))
+    native[~mask] = curvature_weights_matrix  # put values into unmasked positions
 
-    for data_0 in range(data_pixels):
-        for psf_index in range(image_frame_1d_lengths[data_0]):
-            data_index = image_frame_1d_indexes[data_0, psf_index]
-            kernel_value = image_frame_1d_kernels[data_0, psf_index]
+    # Convolve each function with PSF kernel
+    from scipy.signal import fftconvolve
+    blurred_list = []
+    for i in range(n_funcs):
+        blurred = fftconvolve(native[..., i], kernel_native, mode="same")
+        # Re-mask: only keep unmasked pixels
+        blurred_list.append(blurred[~mask])
 
-            for linear_index in range(linear_func_pixels):
-                data_linear_func_matrix_dict[data_0, linear_index] += (
-                    kernel_value * curvature_weights_matrix[data_index, linear_index]
-                )
-
-    return data_linear_func_matrix_dict
+    return np.stack(blurred_list, axis=1)  # shape (n_unmasked, n_funcs)
