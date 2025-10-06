@@ -74,8 +74,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @cached_property
     def w_tilde_data(self):
+
         return inversion_imaging_numba_util.w_tilde_data_imaging_from(
-            image_native=self.data.native.array,
+            image_native=np.array(self.data.native.array),
             noise_map_native=self.noise_map.native.array,
             kernel_native=self.psf.native.array,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
