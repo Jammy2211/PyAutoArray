@@ -56,6 +56,7 @@ local_scheme = "no-local-version"
 
 [project.optional-dependencies]
 optional=[
+    "numba",
     "pynufft"
 ]
 test = ["pytest"]
