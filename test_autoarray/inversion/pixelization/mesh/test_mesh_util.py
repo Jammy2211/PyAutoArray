@@ -110,7 +110,7 @@ def test__voronoi_neighbors_from():
     points = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (neighbors, neighbors_sizes) = aa.util.mesh.voronoi_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh_numba.voronoi_neighbors_from(
         pixels=5, ridge_points=np.array(voronoi.ridge_points)
     )
 
@@ -139,7 +139,7 @@ def test__voronoi_neighbors_from():
     )
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (neighbors, neighbors_sizes) = aa.util.mesh.voronoi_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh_numba.voronoi_neighbors_from(
         pixels=9, ridge_points=np.array(voronoi.ridge_points)
     )
 
@@ -171,7 +171,7 @@ def test__delaunay_interpolated_grid_from():
 
     values = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
 
-    interpolated_grid = aa.util.mesh.delaunay_interpolated_array_from(
+    interpolated_grid = aa.util.mesh_numba.delaunay_interpolated_array_from(
         shape_native=shape_native,
         interpolation_grid_slim=grid_interpolate_slim,
         pixel_values=values,

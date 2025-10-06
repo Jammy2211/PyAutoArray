@@ -35,7 +35,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         pix_indexes_for_sub_slim_index_util,
         sizes,
         weights,
-    ) = aa.util.mapper.pix_size_weights_voronoi_nn_from(
+    ) = aa.util.mapper_numba.pix_size_weights_voronoi_nn_from(
         grid=grid_2d_sub_1_7x7, mesh_grid=source_plane_mesh_grid
     )
 

@@ -27,7 +27,7 @@ def test__data_to_pix_unique_from():
         data_to_pix_unique,
         data_weights,
         pix_lengths,
-    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
         data_pixels=image_pixels,
         pix_indexes_for_sub_slim_index=pix_index_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_sizes_for_sub_slim_index,

@@ -6,6 +6,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
 from autoarray.inversion.pixelization.mappers import mapper_util
+from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 
 class MapperDelaunay(AbstractMapper):
@@ -103,7 +104,7 @@ class MapperDelaunay(AbstractMapper):
         The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
 
         For the Delaunay pixelization these mappings are calculated using the Scipy spatial library
-        (see `mapper_util.pix_indexes_for_sub_slim_index_delaunay_from`).
+        (see `mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from`).
         """
         delaunay = self.delaunay
 
@@ -112,17 +113,21 @@ class MapperDelaunay(AbstractMapper):
         )
         pix_indexes_for_simplex_index = delaunay.simplices
 
-        mappings, sizes = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            source_plane_data_grid=np.array(self.source_plane_data_grid.over_sampled),
-            simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
-            pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
-            delaunay_points=delaunay.points,
+        mappings, sizes = (
+            mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from(
+                source_plane_data_grid=np.array(
+                    self.source_plane_data_grid.over_sampled
+                ),
+                simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
+                pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
+                delaunay_points=delaunay.points,
+            )
         )
 
         mappings = mappings.astype("int")
         sizes = sizes.astype("int")
 
-        weights = mapper_util.pixel_weights_delaunay_from(
+        weights = mapper_numba_util.pixel_weights_delaunay_from(
             source_plane_data_grid=np.array(self.source_plane_data_grid.over_sampled),
             source_plane_mesh_grid=np.array(self.source_plane_mesh_grid),
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
@@ -154,14 +159,14 @@ class MapperDelaunay(AbstractMapper):
         (
             splitted_mappings,
             splitted_sizes,
-        ) = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
+        ) = mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from(
             source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
             simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
         )
 
-        splitted_weights = mapper_util.pixel_weights_delaunay_from(
+        splitted_weights = mapper_numba_util.pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
             source_plane_mesh_grid=np.array(self.source_plane_mesh_grid),
             slim_index_for_sub_slim_index=self.source_plane_mesh_grid.split_cross,

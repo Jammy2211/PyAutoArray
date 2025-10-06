@@ -6,7 +6,7 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.mesh.triangulation_2d import Abstract2DMeshTriangulation
-from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
 class Mesh2DDelaunay(Abstract2DMeshTriangulation):
@@ -69,7 +69,7 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
             shape_native=shape_native, extent=extent
         )
 
-        interpolated_array = mesh_util.delaunay_interpolated_array_from(
+        interpolated_array = mesh_numba_util.delaunay_interpolated_array_from(
             shape_native=shape_native,
             interpolation_grid_slim=np.array(interpolation_grid.slim.array),
             delaunay=self.delaunay,

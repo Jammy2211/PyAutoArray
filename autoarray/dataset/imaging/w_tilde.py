@@ -1,4 +1,3 @@
-import copy
 import logging
 import numpy as np
 
@@ -7,6 +6,7 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.w_tilde import AbstractWTilde
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class WTildeImaging(AbstractWTilde):
             the curvature matrix.
         """
 
-        return inversion_imaging_util.w_tilde_curvature_imaging_from(
+        return inversion_imaging_numba_util.w_tilde_curvature_imaging_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
             kernel_native=np.array(self.psf.native.array).astype("float64"),
             native_index_for_slim_index=np.array(

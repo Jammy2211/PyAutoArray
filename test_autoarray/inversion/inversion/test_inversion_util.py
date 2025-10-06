@@ -121,7 +121,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
         data_to_pix_unique,
         data_weights,
         pix_lengths,
-    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
         data_pixels=3,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
@@ -132,13 +132,11 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
 
     reconstruction = np.array([1.0, 1.0, 2.0])
 
-    mapped_reconstructed_data = (
-        aa.util.inversion.mapped_reconstructed_data_via_image_to_pix_unique_from(
-            data_to_pix_unique=data_to_pix_unique.astype("int"),
-            data_weights=data_weights,
-            pix_lengths=pix_lengths.astype("int"),
-            reconstruction=reconstruction,
-        )
+    mapped_reconstructed_data = aa.util.inversion_imaging_numba.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        data_to_pix_unique=data_to_pix_unique.astype("int"),
+        data_weights=data_weights,
+        pix_lengths=pix_lengths.astype("int"),
+        reconstruction=reconstruction,
     )
 
     assert (mapped_reconstructed_data == np.array([1.0, 1.0, 2.0])).all()
@@ -153,7 +151,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
         data_to_pix_unique,
         data_weights,
         pix_lengths,
-    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
         data_pixels=3,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
@@ -164,13 +162,11 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
 
     reconstruction = np.array([1.0, 1.0, 2.0])
 
-    mapped_reconstructed_data = (
-        aa.util.inversion.mapped_reconstructed_data_via_image_to_pix_unique_from(
-            data_to_pix_unique=data_to_pix_unique.astype("int"),
-            data_weights=data_weights,
-            pix_lengths=pix_lengths.astype("int"),
-            reconstruction=reconstruction,
-        )
+    mapped_reconstructed_data = aa.util.inversion_imaging_numba.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        data_to_pix_unique=data_to_pix_unique.astype("int"),
+        data_weights=data_weights,
+        pix_lengths=pix_lengths.astype("int"),
+        reconstruction=reconstruction,
     )
 
     assert (mapped_reconstructed_data == np.array([1.25, 1.0, 1.75])).all()

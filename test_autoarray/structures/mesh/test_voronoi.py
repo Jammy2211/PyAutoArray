@@ -29,7 +29,7 @@ def test__neighbors__compare_to_mesh_util():
         np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
     )
 
-    (neighbors_util, neighbors_sizes_util) = aa.util.mesh.voronoi_neighbors_from(
+    (neighbors_util, neighbors_sizes_util) = aa.util.mesh_numba.voronoi_neighbors_from(
         pixels=9, ridge_points=np.array(voronoi.ridge_points)
     )
 

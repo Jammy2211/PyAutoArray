@@ -15,7 +15,7 @@ from autoarray import type as ty
 
 from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
-from autoarray.inversion.inversion.imaging import inversion_imaging_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
 logger = logging.getLogger(__name__)
 
@@ -195,27 +195,6 @@ class Imaging(AbstractDataset):
         )
 
     @cached_property
-    def convolver(self):
-        """
-        Returns a `Convolver` from a mask and 2D PSF kernel.
-
-        The `Convolver` stores in memory the array indexing between the mask and PSF, enabling efficient 2D PSF
-        convolution of images and matrices used for linear algebra calculations (see `operators.convolver`).
-
-        This uses lazy allocation such that the calculation is only performed when the convolver is used, ensuring
-        efficient set up of the `Imaging` class.
-
-        Returns
-        -------
-        Convolver
-            The convolver given the masked imaging data's mask and PSF.
-        """
-
-        from autoarray.inversion.convolver import Convolver
-
-        return Convolver(mask=self.mask, kernel=self.psf)
-
-    @cached_property
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
@@ -239,7 +218,7 @@ class Imaging(AbstractDataset):
             curvature_preload,
             indexes,
             lengths,
-        ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
+        ) = inversion_imaging_numba_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
             kernel_native=np.array(self.psf.native.array).astype("float64"),
             native_index_for_slim_index=np.array(

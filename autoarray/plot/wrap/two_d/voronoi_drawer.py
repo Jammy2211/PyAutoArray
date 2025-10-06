@@ -6,7 +6,7 @@ from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.plot.wrap.base.units import Units
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 
-from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 from autoarray.plot.wrap import base as wb
 
@@ -59,7 +59,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         if ax is None:
             ax = plt.gca()
 
-        regions, vertices = mesh_util.voronoi_revised_from(voronoi=mapper.voronoi)
+        regions, vertices = mesh_numba_util.voronoi_revised_from(voronoi=mapper.voronoi)
 
         if pixel_values is not None:
             norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)

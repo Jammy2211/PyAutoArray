@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 from autoarray import exc
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
-from autoarray import numba_util
 from autoarray import type as ty
 
 
@@ -535,7 +534,7 @@ def grid_scaled_2d_slim_radial_projected_from(
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     shape_slim
         Manually choose the shape of the 1D projected grid that is returned. If 0, the border based on the 2D grid is
-        used (due to numba None cannot be used as a default value).
+        used.
 
     Returns
     -------

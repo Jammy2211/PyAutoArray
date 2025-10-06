@@ -85,10 +85,6 @@ class AbstractInversion:
     def noise_map(self):
         return self.dataset.noise_map
 
-    @property
-    def convolver(self):
-        return self.dataset.convolver
-
     def has(self, cls: Type) -> bool:
         """
         Does this `Inversion` have an attribute which is of type `cls`?

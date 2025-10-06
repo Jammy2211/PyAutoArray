@@ -188,9 +188,8 @@ class AbstractInversionImaging(AbstractInversion):
             data_linear_func_matrix = (
                 inversion_imaging_util.data_linear_func_matrix_from(
                     curvature_weights_matrix=curvature_weights,
-                    image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
-                    image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
-                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                    kernel_native=self.psf.native,
+                    mask=self.mask,
                 )
             )
 

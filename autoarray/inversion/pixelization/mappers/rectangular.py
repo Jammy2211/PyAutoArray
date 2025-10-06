@@ -1,10 +1,8 @@
 import jax.numpy as jnp
-import numpy as np
 from typing import Tuple
 
 from autoconf import cached_property
 
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 

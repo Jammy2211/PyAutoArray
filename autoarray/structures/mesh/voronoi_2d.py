@@ -8,7 +8,7 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.mesh.triangulation_2d import Abstract2DMeshTriangulation
 
-from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
 class Mesh2DVoronoi(Abstract2DMeshTriangulation):
@@ -36,10 +36,10 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
         see `Neighbors` for a complete description of the neighboring scheme.
 
         The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
-        object, as described in the method `mesh_util.voronoi_neighbors_from`.
+        object, as described in the method `mesh_numba_util.voronoi_neighbors_from`.
         """
 
-        neighbors, sizes = mesh_util.voronoi_neighbors_from(
+        neighbors, sizes = mesh_numba_util.voronoi_neighbors_from(
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
         )
 
@@ -83,7 +83,7 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
         )
 
         if use_nn:
-            interpolated_array = mesh_util.voronoi_nn_interpolated_array_from(
+            interpolated_array = mesh_numba_util.voronoi_nn_interpolated_array_from(
                 shape_native=shape_native,
                 interpolation_grid_slim=interpolation_grid.slim,
                 pixel_values=values,
