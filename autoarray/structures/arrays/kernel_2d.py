@@ -553,7 +553,7 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=mask)
 
-    def convolve_image(self, image, blurring_image, jax_method="direct"):
+    def convolve_image_via_real_space(self, image, blurring_image, jax_method="direct"):
         """
         For a given 1D array and blurring array, convolve the two using this psf.
 
