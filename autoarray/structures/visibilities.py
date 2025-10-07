@@ -85,11 +85,11 @@ class AbstractVisibilities(Structure, ABC):
 
     @cached_property
     def amplitudes(self) -> np.ndarray:
-        return np.sqrt(np.square(self.real) + np.square(self.imag))
+        return np.sqrt(np.square(self.array.real) + np.square(self.array.imag))
 
     @cached_property
     def phases(self) -> np.ndarray:
-        return np.arctan2(self.imag, self.real)
+        return np.arctan2(self.array.imag, self.array.real)
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
@@ -113,14 +113,14 @@ class AbstractVisibilities(Structure, ABC):
         """
         The maximum values of the visibilities if they are treated as a 2D grid in the complex plane.
         """
-        return np.max(self.real), np.max(self.imag)
+        return np.max(self.array.real), np.max(self.array.imag)
 
     @property
     def scaled_minima(self) -> Tuple[float, float]:
         """
         The minimum values of the visibilities if they are treated as a 2D grid in the complex plane.
         """
-        return np.min(self.real), np.min(self.imag)
+        return np.min(self.array.real), np.min(self.array.imag)
 
 
 class Visibilities(AbstractVisibilities):

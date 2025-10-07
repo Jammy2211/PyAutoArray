@@ -253,11 +253,11 @@ class Interferometer(AbstractDataset):
     @property
     def signal_to_noise_map(self):
         signal_to_noise_map_real = np.divide(
-            np.real(self.data), np.real(self.noise_map)
+            np.real(self.data.array), np.real(self.noise_map.array)
         )
         signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
         signal_to_noise_map_imag = np.divide(
-            np.imag(self.data), np.imag(self.noise_map)
+            np.imag(self.data.array), np.imag(self.noise_map.array)
         )
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
