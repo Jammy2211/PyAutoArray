@@ -129,7 +129,7 @@ class MapperDelaunay(AbstractMapper):
 
         weights = mapper_numba_util.pixel_weights_delaunay_from(
             source_plane_data_grid=np.array(self.source_plane_data_grid.over_sampled),
-            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid),
+            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid.array),
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=mappings,
         )
