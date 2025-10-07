@@ -77,7 +77,7 @@ class MapperVoronoi(AbstractMapper):
         """
         (mappings, sizes, weights) = mapper_numba_util.pix_size_weights_voronoi_nn_from(
             grid=self.source_plane_mesh_grid.split_cross,
-            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid.array),
+            mesh_grid=np.array(self.source_plane_mesh_grid.array),
         )
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
