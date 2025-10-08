@@ -92,48 +92,46 @@ class Imaging(AbstractDataset):
         self.pad_for_psf = pad_for_psf
 
         if pad_for_psf and psf is not None:
-            try:
-                data.mask.derive_mask.blurring_from(
-                    kernel_shape_native=psf.shape_native
-                )
-            except exc.MaskException:
-                over_sample_size_lp = (
-                    over_sample_util.over_sample_size_convert_to_array_2d_from(
-                        over_sample_size=over_sample_size_lp, mask=data.mask
-                    )
-                )
-                over_sample_size_lp = (
-                    over_sample_size_lp.padded_before_convolution_from(
-                        kernel_shape=psf.shape_native, mask_pad_value=1
-                    )
-                )
 
-                over_sample_size_pixelization = (
-                    over_sample_util.over_sample_size_convert_to_array_2d_from(
-                        over_sample_size=over_sample_size_pixelization, mask=data.mask
-                    )
-                )
-                over_sample_size_pixelization = (
-                    over_sample_size_pixelization.padded_before_convolution_from(
-                        kernel_shape=psf.shape_native, mask_pad_value=1
-                    )
-                )
+            pad_shape = (300, 300)
 
-                data = data.padded_before_convolution_from(
-                    kernel_shape=psf.shape_native, mask_pad_value=1
+            over_sample_size_lp = (
+                over_sample_util.over_sample_size_convert_to_array_2d_from(
+                    over_sample_size=over_sample_size_lp, mask=data.mask
                 )
-                if noise_map is not None:
-                    noise_map = noise_map.padded_before_convolution_from(
-                        kernel_shape=psf.shape_native, mask_pad_value=1
-                    )
-                logger.info(
-                    f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
-                    f"{data.shape}. This is because the blurring region around the mask (which defines where"
-                    f"PSF flux may be convolved into the masked region) extended beyond the edge of the image."
-                    f""
-                    f"This can be prevented by using a smaller mask, smaller PSF kernel size or manually padding"
-                    f"the image and noise-map yourself."
+            )
+            over_sample_size_lp = (
+                over_sample_size_lp.resized_from(
+                    new_shape=pad_shape, mask_pad_value=1
                 )
+            )
+
+            over_sample_size_pixelization = (
+                over_sample_util.over_sample_size_convert_to_array_2d_from(
+                    over_sample_size=over_sample_size_pixelization, mask=data.mask
+                )
+            )
+            over_sample_size_pixelization = (
+                over_sample_size_pixelization.resized_from(
+                    new_shape=pad_shape, mask_pad_value=1
+                )
+            )
+
+            data = data.resized_from(
+                new_shape=pad_shape, mask_pad_value=1
+            )
+            if noise_map is not None:
+                noise_map = noise_map.resized_from(
+                    new_shape=pad_shape, mask_pad_value=1
+                )
+            logger.info(
+                f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
+                f"{data.shape_native}. This is because the blurring region around the mask (which defines where"
+                f"PSF flux may be convolved into the masked region) extended beyond the edge of the image."
+                f""
+                f"This can be prevented by using a smaller mask, smaller PSF kernel size or manually padding"
+                f"the image and noise-map yourself."
+            )
 
         super().__init__(
             data=data,
