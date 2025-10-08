@@ -126,8 +126,8 @@ class MapperVoronoi(AbstractMapper):
         """
 
         mappings, sizes, weights = mapper_numba_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_plane_data_grid.over_sampled,
-            mesh_grid=self.source_plane_mesh_grid,
+            grid=np.array(self.source_plane_data_grid.over_sampled),
+            mesh_grid=np.array(self.source_plane_mesh_grid.array),
         )
 
         mappings = mappings.astype("int")

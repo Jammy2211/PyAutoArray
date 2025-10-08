@@ -383,7 +383,7 @@ class TransformerNUFFT(NUFFT_cpu):
 
         return Visibilities(
             visibilities=self.forward(
-                image.native[::-1, :]
+                image.native.array[::-1, :]
             )  # flip due to PyNUFFT internal flip
         )
 

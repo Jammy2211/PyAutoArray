@@ -168,7 +168,7 @@ class MapperDelaunay(AbstractMapper):
 
         splitted_weights = mapper_numba_util.pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
-            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid),
+            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid.array),
             slim_index_for_sub_slim_index=self.source_plane_mesh_grid.split_cross,
             pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
         )

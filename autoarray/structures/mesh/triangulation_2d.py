@@ -114,7 +114,8 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         try:
             return scipy.spatial.Voronoi(
-                np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
+                np.asarray([self.array[:, 1], self.array[:, 0]]).T,
+                qhull_options="Qbb Qc Qx Qm",
             )
         except (ValueError, OverflowError, QhullError) as e:
             raise exc.MeshException() from e
@@ -152,17 +153,17 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         splitted_array = np.zeros((self.pixels, 4, 2))
 
-        splitted_array[:, 0][:, 0] = self[:, 0] + half_region_area_sqrt_lengths
-        splitted_array[:, 0][:, 1] = self[:, 1]
+        splitted_array[:, 0][:, 0] = self.array[:, 0] + half_region_area_sqrt_lengths
+        splitted_array[:, 0][:, 1] = self.array[:, 1]
 
-        splitted_array[:, 1][:, 0] = self[:, 0] - half_region_area_sqrt_lengths
-        splitted_array[:, 1][:, 1] = self[:, 1]
+        splitted_array[:, 1][:, 0] = self.array[:, 0] - half_region_area_sqrt_lengths
+        splitted_array[:, 1][:, 1] = self.array[:, 1]
 
-        splitted_array[:, 2][:, 0] = self[:, 0]
-        splitted_array[:, 2][:, 1] = self[:, 1] + half_region_area_sqrt_lengths
+        splitted_array[:, 2][:, 0] = self.array[:, 0]
+        splitted_array[:, 2][:, 1] = self.array[:, 1] + half_region_area_sqrt_lengths
 
-        splitted_array[:, 3][:, 0] = self[:, 0]
-        splitted_array[:, 3][:, 1] = self[:, 1] - half_region_area_sqrt_lengths
+        splitted_array[:, 3][:, 0] = self.array[:, 0]
+        splitted_array[:, 3][:, 1] = self.array[:, 1] - half_region_area_sqrt_lengths
 
         return splitted_array.reshape((self.pixels * 4, 2))
 

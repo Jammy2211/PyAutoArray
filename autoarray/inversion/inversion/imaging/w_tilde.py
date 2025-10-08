@@ -515,7 +515,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    reconstruction=reconstruction,
+                    reconstruction=np.array(reconstruction),
                 )
 
                 mapped_reconstructed_image = self.psf.convolve_image_no_blurring(
