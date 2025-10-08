@@ -104,8 +104,8 @@ class DelaunayDrawer(AbstractMatWrap2D):
                 colorbar_tickparams.set(cb=cb)
 
         ax.tripcolor(
-            source_pixelization_grid[:, 1],
-            source_pixelization_grid[:, 0],
+            source_pixelization_grid.array[:, 1],
+            source_pixelization_grid.array[:, 0],
             simplices,
             facecolors=facecolors,
             edgecolors="None",

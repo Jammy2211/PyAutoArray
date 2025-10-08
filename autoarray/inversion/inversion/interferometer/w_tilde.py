@@ -53,6 +53,17 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             the simultaneous linear equations are combined and solved simultaneously.
         """
 
+        try:
+            import numba
+        except ModuleNotFoundError:
+            raise exc.InversionException(
+                "Inversion w-tilde functionality (pixelized reconstructions) is "
+                "disabled if numba is not installed.\n\n"
+                "This is because the run-times without numba are too slow.\n\n"
+                "Please install numba, which is described at the following web page:\n\n"
+                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            )
+
         self.w_tilde = w_tilde
         self.w_tilde.check_noise_map(noise_map=dataset.noise_map)
 

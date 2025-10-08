@@ -1,9 +1,8 @@
 import jax
 import jax.numpy as jnp
-from jax import lax
 import numpy as np
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from autoconf.fitsable import header_obj_from
 
@@ -85,6 +84,7 @@ class Kernel2D(AbstractArray2D):
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
+        header: Optional[Header] = None,
         normalize: bool = False,
         image_mask=None,
         blurring_mask=None,
@@ -118,6 +118,7 @@ class Kernel2D(AbstractArray2D):
         return Kernel2D(
             values=values,
             mask=values.mask,
+            header=header,
             normalize=normalize,
             image_mask=image_mask,
             blurring_mask=blurring_mask,

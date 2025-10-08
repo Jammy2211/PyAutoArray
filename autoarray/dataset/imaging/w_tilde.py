@@ -86,8 +86,8 @@ class WTildeImaging(AbstractWTilde):
         """
 
         return inversion_imaging_numba_util.w_tilde_curvature_imaging_from(
-            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            noise_map_native=self.noise_map.native.array,
+            kernel_native=self.psf.native.array,
             native_index_for_slim_index=np.array(
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),
@@ -97,7 +97,7 @@ class WTildeImaging(AbstractWTilde):
     def psf_operator_matrix_dense(self):
 
         return inversion_imaging_util.psf_operator_matrix_dense_from(
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            kernel_native=self.psf.native.array,
             native_index_for_slim_index=np.array(
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),

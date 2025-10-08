@@ -53,7 +53,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             import numba
         except ModuleNotFoundError:
             raise exc.InversionException(
-                "Inversion functionality (linear light profiles, pixelized reconstructions) is "
+                "Inversion w-tilde functionality (pixelized reconstructions) is "
                 "disabled if numba is not installed.\n\n"
                 "This is because the run-times without numba are too slow.\n\n"
                 "Please install numba, which is described at the following web page:\n\n"
@@ -515,7 +515,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    reconstruction=reconstruction,
+                    reconstruction=np.array(reconstruction),
                 )
 
                 mapped_reconstructed_image = self.psf.convolve_image_no_blurring(

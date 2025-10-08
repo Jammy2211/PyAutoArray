@@ -1,4 +1,5 @@
 from matplotlib import patches as ptch
+import numpy as np
 from typing import List, Optional, Union
 
 from autoarray.mask.mask_2d import Mask2D
@@ -91,6 +92,6 @@ class Visuals2D(AbstractVisuals):
         if self.indexes is not None and grid_indexes is not None:
 
             plotter.index_scatter.scatter_grid_indexes(
-                grid=grid_indexes,
+                grid=np.array(grid_indexes),
                 indexes=self.indexes,
             )

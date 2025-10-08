@@ -186,6 +186,17 @@ class Interferometer(AbstractDataset):
 
         logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
+        try:
+            import numba
+        except ModuleNotFoundError:
+            raise exc.InversionException(
+                "Inversion w-tilde functionality (pixelized reconstructions) is "
+                "disabled if numba is not installed.\n\n"
+                "This is because the run-times without numba are too slow.\n\n"
+                "Please install numba, which is described at the following web page:\n\n"
+                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            )
+
         curvature_preload = (
             inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
                 noise_map_real=np.array(self.noise_map.real),
@@ -253,11 +264,11 @@ class Interferometer(AbstractDataset):
     @property
     def signal_to_noise_map(self):
         signal_to_noise_map_real = np.divide(
-            np.real(self.data), np.real(self.noise_map)
+            np.real(self.data.array), np.real(self.noise_map.array)
         )
         signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
         signal_to_noise_map_imag = np.divide(
-            np.imag(self.data), np.imag(self.noise_map)
+            np.imag(self.data.array), np.imag(self.noise_map.array)
         )
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
