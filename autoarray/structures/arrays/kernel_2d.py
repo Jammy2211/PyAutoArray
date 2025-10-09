@@ -19,6 +19,7 @@ from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 
 
+
 class Kernel2D(AbstractArray2D):
     def __init__(
         self,
@@ -120,6 +121,7 @@ class Kernel2D(AbstractArray2D):
         mask_shape=None,
         full_shape=None,
         fft_shape=None,
+        use_fft: Optional[bool] = None,
     ):
         """
         Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
@@ -157,6 +159,7 @@ class Kernel2D(AbstractArray2D):
             mask_shape=mask_shape,
             full_shape=full_shape,
             fft_shape=fft_shape,
+            use_fft=use_fft,
         )
 
     @classmethod
@@ -629,6 +632,24 @@ class Kernel2D(AbstractArray2D):
                 image=image, blurring_image=blurring_image, jax_method=jax_method
             )
 
+        if self.fft_shape is None:
+
+            full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=image.mask)
+            fft_psf = jnp.fft.rfft2(self.stored_native.array, s=fft_shape)
+
+            image = image.resized_from(new_shape=fft_shape, mask_pad_value=1)
+            if blurring_image is not None:
+                blurring_image = blurring_image.resized_from(
+                    new_shape=fft_shape, mask_pad_value=1
+                )
+
+        else:
+
+            fft_shape = self.fft_shape
+            full_shape = self.full_shape
+            mask_shape = self.mask_shape
+            fft_psf = self.fft_psf
+
         slim_to_native_tuple = self.slim_to_native_tuple
         slim_to_native_blurring_tuple = self.slim_to_native_blurring_tuple
 
@@ -661,20 +682,20 @@ class Kernel2D(AbstractArray2D):
 
         # FFT the combined image
         fft_image_native = jnp.fft.rfft2(
-            image_both_native, s=self.fft_shape, axes=(0, 1)
+            image_both_native, s=fft_shape, axes=(0, 1)
         )
 
         # Multiply by PSF in Fourier space and invert
         blurred_image_full = jnp.fft.irfft2(
-            self.fft_psf * fft_image_native, s=self.fft_shape, axes=(0, 1)
+            fft_psf * fft_image_native, s=fft_shape, axes=(0, 1)
         )
 
         # Crop back to mask_shape
         start_indices = tuple(
             (full_size - out_size) // 2
-            for full_size, out_size in zip(self.full_shape, self.mask_shape)
+            for full_size, out_size in zip(full_shape, mask_shape)
         )
-        out_shape_full = self.mask_shape
+        out_shape_full = mask_shape
         blurred_image_native = jax.lax.dynamic_slice(
             blurred_image_full, start_indices, out_shape_full
         )
@@ -719,7 +740,27 @@ class Kernel2D(AbstractArray2D):
                 jax_method=jax_method,
             )
 
+        if self.fft_shape is None:
+
+            full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=mask)
+
+            raise ValueError(
+                f"FFT convolution requires precomputed padded shapes, but `self.fft_shape` is None.\n"
+                f"Expected mapping matrix padded to match FFT shape of PSF.\n"
+                f"PSF fft_shape: {fft_shape}, mask shape: {mask.shape}, "
+                f"mapping_matrix shape: {getattr(mapping_matrix, 'shape', 'unknown')}."
+            )
+
+        else:
+
+            fft_shape = self.fft_shape
+            full_shape = self.full_shape
+            mask_shape = self.mask_shape
+            fft_psf = self.fft_psf
+            fft_psf_mapping = self.fft_psf_mapping
+
         slim_to_native_tuple = self.slim_to_native_tuple
+
         if slim_to_native_tuple is None:
             slim_to_native_tuple = jnp.nonzero(
                 jnp.logical_not(mask.array), size=mask.shape[0]
@@ -746,20 +787,20 @@ class Kernel2D(AbstractArray2D):
 
         # FFT convolution
         fft_mapping_matrix_native = jnp.fft.rfft2(
-            mapping_matrix_native, s=self.fft_shape, axes=(0, 1)
+            mapping_matrix_native, s=fft_shape, axes=(0, 1)
         )
         blurred_mapping_matrix_full = jnp.fft.irfft2(
-            self.fft_psf_mapping * fft_mapping_matrix_native,
-            s=self.fft_shape,
+            fft_psf_mapping * fft_mapping_matrix_native,
+            s=fft_shape,
             axes=(0, 1),
         )
 
         # crop back
         start_indices = tuple(
             (full_size - out_size) // 2
-            for full_size, out_size in zip(self.full_shape, self.mask_shape)
+            for full_size, out_size in zip(full_shape, mask_shape)
         ) + (0,)
-        out_shape_full = self.mask_shape + (blurred_mapping_matrix_full.shape[2],)
+        out_shape_full = mask_shape + (blurred_mapping_matrix_full.shape[2],)
         blurred_mapping_matrix_native = jax.lax.dynamic_slice(
             blurred_mapping_matrix_full, start_indices, out_shape_full
         )
