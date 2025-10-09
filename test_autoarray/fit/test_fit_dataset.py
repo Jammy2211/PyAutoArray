@@ -64,7 +64,10 @@ def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(
     assert fit.chi_squared != pytest.approx(chi_squared, 1.0e-4)
 
 
-def test__grid_offset_via_data_model(masked_imaging_7x7, model_image_7x7):
+def test__grid_offset_via_data_model(imaging_7x7, mask_2d_7x7, model_image_7x7):
+
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7, disable_fft_pad=True)
+
     fit = aa.m.MockFitImaging(
         dataset=masked_imaging_7x7,
         use_mask_in_fit=False,
