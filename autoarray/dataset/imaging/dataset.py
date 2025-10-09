@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from pathlib import Path
+import scipy
 from typing import Optional, Union
 
 from autoconf import cached_property
@@ -91,9 +92,17 @@ class Imaging(AbstractDataset):
 
         self.pad_for_psf = pad_for_psf
 
-        if pad_for_psf and psf is not None:
+        if pad_for_psf:
+            full_shape, fft_shape, mask_shape = psf.fft_shape_from(mask=data.mask)
 
-            pad_shape = (300, 300)
+            print(data.mask.shape, full_shape, fft_shape, mask_shape, psf.shape_native)
+
+        else:
+            full_shape = psf.full_shape
+            fft_shape = psf.fft_shape
+            mask_shape = psf.mask_shape
+
+        if pad_for_psf and psf is not None:
 
             over_sample_size_lp = (
                 over_sample_util.over_sample_size_convert_to_array_2d_from(
@@ -102,7 +111,7 @@ class Imaging(AbstractDataset):
             )
             over_sample_size_lp = (
                 over_sample_size_lp.resized_from(
-                    new_shape=pad_shape, mask_pad_value=1
+                    new_shape=fft_shape, mask_pad_value=1
                 )
             )
 
@@ -113,16 +122,16 @@ class Imaging(AbstractDataset):
             )
             over_sample_size_pixelization = (
                 over_sample_size_pixelization.resized_from(
-                    new_shape=pad_shape, mask_pad_value=1
+                    new_shape=fft_shape, mask_pad_value=1
                 )
             )
 
             data = data.resized_from(
-                new_shape=pad_shape, mask_pad_value=1
+                new_shape=fft_shape, mask_pad_value=1
             )
             if noise_map is not None:
                 noise_map = noise_map.resized_from(
-                    new_shape=pad_shape, mask_pad_value=1
+                    new_shape=fft_shape, mask_pad_value=1
                 )
             logger.info(
                 f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
@@ -177,6 +186,9 @@ class Imaging(AbstractDataset):
                 normalize=use_normalized_psf,
                 image_mask=image_mask,
                 blurring_mask=blurring_mask,
+                mask_shape=mask_shape,
+                full_shape=full_shape,
+                fft_shape=fft_shape
             )
 
         self.psf = psf
