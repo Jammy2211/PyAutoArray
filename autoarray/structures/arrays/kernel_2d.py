@@ -6,6 +6,7 @@ import scipy
 from typing import List, Optional, Tuple, Union
 import warnings
 
+from autoconf import conf
 from autoconf.fitsable import header_obj_from
 
 from autoarray.structures.arrays.uniform_2d import AbstractArray2D
@@ -31,7 +32,7 @@ class Kernel2D(AbstractArray2D):
         mask_shape=None,
         full_shape=None,
         fft_shape=None,
-        use_real_space : bool = False
+        use_fft: Optional[bool] = None,
         *args,
         **kwargs,
     ):
@@ -96,7 +97,14 @@ class Kernel2D(AbstractArray2D):
             self.fft_psf = jnp.fft.rfft2(self.native.array, s=self.fft_shape)
             self.fft_psf_mapping = jnp.expand_dims(self.fft_psf, 2)
 
-        self.use_real_space = use_real_space
+        self._use_fft = use_fft
+
+    @property
+    def use_fft(self):
+        if self._use_fft is None:
+            return conf.instance["general"]["psf"]["use_fft_default"]
+
+        return self._use_fft
 
     @classmethod
     def no_mask(
@@ -111,7 +119,7 @@ class Kernel2D(AbstractArray2D):
         blurring_mask=None,
         mask_shape=None,
         full_shape=None,
-        fft_shape=None
+        fft_shape=None,
     ):
         """
         Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
@@ -148,7 +156,7 @@ class Kernel2D(AbstractArray2D):
             blurring_mask=blurring_mask,
             mask_shape=mask_shape,
             full_shape=full_shape,
-            fft_shape=fft_shape
+            fft_shape=fft_shape,
         )
 
     @classmethod
@@ -426,7 +434,10 @@ class Kernel2D(AbstractArray2D):
 
         (pad_y, pad_x) = self.shape_native
 
-        mask_shape = ((y_max + pad_y // 2) - (y_min - pad_y // 2), (x_max + pad_x // 2) - (x_min - pad_x // 2))
+        mask_shape = (
+            (y_max + pad_y // 2) - (y_min - pad_y // 2),
+            (x_max + pad_x // 2) - (x_min - pad_x // 2),
+        )
 
         full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.shape_native))
         fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
@@ -613,7 +624,7 @@ class Kernel2D(AbstractArray2D):
             kernels that are more than about 5x5. Default is `fft`.
         """
 
-        if self.use_real_space:
+        if not self.use_fft:
             return self.convolve_image_via_real_space(
                 image=image, blurring_image=blurring_image, jax_method=jax_method
             )
@@ -636,7 +647,8 @@ class Kernel2D(AbstractArray2D):
         if blurring_image is not None:
             if slim_to_native_blurring_tuple is None:
                 slim_to_native_blurring_tuple = jnp.nonzero(
-                    jnp.logical_not(blurring_image.mask.array), size=blurring_image.shape[0]
+                    jnp.logical_not(blurring_image.mask.array),
+                    size=blurring_image.shape[0],
                 )
             image_both_native = image_both_native.at[slim_to_native_blurring_tuple].set(
                 jnp.asarray(blurring_image.array)
@@ -648,7 +660,9 @@ class Kernel2D(AbstractArray2D):
             )
 
         # FFT the combined image
-        fft_image_native = jnp.fft.rfft2(image_both_native, s=self.fft_shape, axes=(0, 1))
+        fft_image_native = jnp.fft.rfft2(
+            image_both_native, s=self.fft_shape, axes=(0, 1)
+        )
 
         # Multiply by PSF in Fourier space and invert
         blurred_image_full = jnp.fft.irfft2(
@@ -665,7 +679,9 @@ class Kernel2D(AbstractArray2D):
             blurred_image_full, start_indices, out_shape_full
         )
 
-        return Array2D(values=blurred_image_native[slim_to_native_tuple], mask=image.mask)
+        return Array2D(
+            values=blurred_image_native[slim_to_native_tuple], mask=image.mask
+        )
 
     def convolve_mapping_matrix(
         self,
@@ -695,8 +711,13 @@ class Kernel2D(AbstractArray2D):
         (N_masked_pixels, N_src)
             Blurred mapping matrix in slim form (only unmasked pixels).
         """
-        if self.use_real_space:
-            return self.convolve_image_no_blurring_for_mapping_via_real_space(image=mapping_matrix, mask=mask, jax_method=jax_method)
+        if not self.use_fft:
+            return self.convolve_mapping_matrix_via_real_space(
+                mapping_matrix=mapping_matrix,
+                mask=mask,
+                blurring_mapping_matrix=blurring_mapping_matrix,
+                jax_method=jax_method,
+            )
 
         slim_to_native_tuple = self.slim_to_native_tuple
         if slim_to_native_tuple is None:
@@ -728,7 +749,9 @@ class Kernel2D(AbstractArray2D):
             mapping_matrix_native, s=self.fft_shape, axes=(0, 1)
         )
         blurred_mapping_matrix_full = jnp.fft.irfft2(
-            self.fft_psf_mapping * fft_mapping_matrix_native, s=self.fft_shape, axes=(0, 1)
+            self.fft_psf_mapping * fft_mapping_matrix_native,
+            s=self.fft_shape,
+            axes=(0, 1),
         )
 
         # crop back
@@ -744,7 +767,9 @@ class Kernel2D(AbstractArray2D):
         # return slim form
         return blurred_mapping_matrix_native[slim_to_native_tuple]
 
-    def convolve_image_via_real_space(self, image, blurring_image=None, jax_method="direct"):
+    def convolve_image_via_real_space(
+        self, image, blurring_image=None, jax_method="direct"
+    ):
         """
         Convolve an input image with this PSF in real space.
 
@@ -784,11 +809,11 @@ class Kernel2D(AbstractArray2D):
             if slim_to_native_blurring_tuple is None:
                 slim_to_native_blurring_tuple = jnp.nonzero(
                     jnp.logical_not(blurring_image.mask.array),
-                    size=blurring_image.shape[0]
+                    size=blurring_image.shape[0],
                 )
-            expanded_array_native = expanded_array_native.at[slim_to_native_blurring_tuple].set(
-                jnp.asarray(blurring_image.array)
-            )
+            expanded_array_native = expanded_array_native.at[
+                slim_to_native_blurring_tuple
+            ].set(jnp.asarray(blurring_image.array))
         else:
             warnings.warn(
                 "No blurring_image provided. Only the direct image will be convolved. "
@@ -805,14 +830,63 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
-    def convolve_mapping_matrix_via_real_space(self, mapping_matrix, mask, jax_method="direct"):
-        """For a given 1D array and blurring array, convolve the two using this psf.
+    def convolve_mapping_matrix_via_real_space(
+        self, mapping_matrix, mask, blurring_mapping_matrix=None, jax_method="direct"
+    ):
+        # 1) Indices of unmasked (image) pixels — no `size=` to avoid wrong lengths
+        ys, xs = self.slim_to_native_tuple or jnp.nonzero(jnp.logical_not(mask.array))
+        n_pix, n_src = mapping_matrix.shape
 
-        Parameters
-        ----------
-        image
-            1D array of the values which are to be blurred with the psf's PSF.
-        """
-        return jax.vmap(
-            self.convolve_image_no_blurring_for_mapping_via_real_space, in_axes=(1, None, None)
-        )(mapping_matrix, mask, jax_method).T
+        # Sanity check
+        if ys.shape[0] != n_pix:
+            raise ValueError(
+                f"Mapping rows ({n_pix}) != unmasked pixels ({ys.shape[0]}). "
+                "Make sure you’re using the image (not blurring) index tuple."
+            )
+
+        # 2) Allocate native cube (ny, nx, n_src)
+        mapping_matrix_native = jnp.zeros(
+            mask.shape + (n_src,), dtype=mapping_matrix.dtype
+        )
+
+        # 3) Build index grids with identical shape (n_pix, n_src)
+        ys_exp = jnp.broadcast_to(ys[:, None], (n_pix, n_src))
+        xs_exp = jnp.broadcast_to(xs[:, None], (n_pix, n_src))
+        src_exp = jnp.broadcast_to(jnp.arange(n_src)[None, :], (n_pix, n_src))
+
+        # 4) Scatter all at once (values also shape (n_pix, n_src))
+        mapping_matrix_native = mapping_matrix_native.at[(ys_exp, xs_exp, src_exp)].set(
+            mapping_matrix
+        )
+
+        # 5) Optional blurring mapping matrix
+        if blurring_mapping_matrix is not None:
+            ys_b, xs_b = self.slim_to_native_blurring_tuple or jnp.nonzero(
+                jnp.logical_not(
+                    mask.array
+                )  # use the correct blurring grid mask here if different
+            )
+            n_blur, n_src_b = blurring_mapping_matrix.shape
+            if n_src_b != n_src:
+                raise ValueError(
+                    "blurring_mapping_matrix columns must match mapping_matrix columns (n_src)."
+                )
+
+            ys_b_exp = jnp.broadcast_to(ys_b[:, None], (n_blur, n_src))
+            xs_b_exp = jnp.broadcast_to(xs_b[:, None], (n_blur, n_src))
+            src_b_exp = jnp.broadcast_to(jnp.arange(n_src)[None, :], (n_blur, n_src))
+
+            mapping_matrix_native = mapping_matrix_native.at[
+                (ys_b_exp, xs_b_exp, src_b_exp)
+            ].set(blurring_mapping_matrix)
+
+        # 6) Real-space convolution, broadcast kernel over source axis
+        kernel = self.stored_native.array
+        convolved_native = jax.scipy.signal.convolve(
+            mapping_matrix_native, kernel[..., None], mode="same", method=jax_method
+        )
+
+        # 7) Pull back to slim (n_pix, n_src)
+        blurred_mapping_matrix = convolved_native[ys, xs, :]
+
+        return blurred_mapping_matrix

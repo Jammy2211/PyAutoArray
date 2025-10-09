@@ -30,7 +30,7 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
-        disable_fft_pad : bool = True,
+        disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
     ):
@@ -111,10 +111,8 @@ class Imaging(AbstractDataset):
                     over_sample_size=over_sample_size_lp, mask=data.mask
                 )
             )
-            over_sample_size_lp = (
-                over_sample_size_lp.resized_from(
-                    new_shape=fft_shape, mask_pad_value=1
-                )
+            over_sample_size_lp = over_sample_size_lp.resized_from(
+                new_shape=fft_shape, mask_pad_value=1
             )
 
             over_sample_size_pixelization = (
@@ -122,15 +120,11 @@ class Imaging(AbstractDataset):
                     over_sample_size=over_sample_size_pixelization, mask=data.mask
                 )
             )
-            over_sample_size_pixelization = (
-                over_sample_size_pixelization.resized_from(
-                    new_shape=fft_shape, mask_pad_value=1
-                )
-            )
-
-            data = data.resized_from(
+            over_sample_size_pixelization = over_sample_size_pixelization.resized_from(
                 new_shape=fft_shape, mask_pad_value=1
             )
+
+            data = data.resized_from(new_shape=fft_shape, mask_pad_value=1)
             if noise_map is not None:
                 noise_map = noise_map.resized_from(
                     new_shape=fft_shape, mask_pad_value=1
@@ -182,7 +176,7 @@ class Imaging(AbstractDataset):
                 blurring_mask=blurring_mask,
                 mask_shape=mask_shape,
                 full_shape=full_shape,
-                fft_shape=fft_shape
+                fft_shape=fft_shape,
             )
 
         self.psf = psf

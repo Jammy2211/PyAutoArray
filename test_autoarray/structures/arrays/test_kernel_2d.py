@@ -420,9 +420,7 @@ def test__convolve_image_no_blurring():
 
     masked_image = aa.Array2D(values=image.native, mask=mask)
 
-    blurred_masked_im_1 = kernel.convolve_image_no_blurring(
-        image=masked_image, mask=mask
-    )
+    blurred_masked_im_1 = kernel.convolve_image(image=masked_image, blurring_image=None)
 
     assert blurred_masked_image_via_scipy == pytest.approx(
         blurred_masked_im_1.array, 1e-4
