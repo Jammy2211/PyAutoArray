@@ -92,7 +92,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return [
             (
-                self.psf.convolve_mapping_matrix(
+                self.psf.convolved_mapping_matrix_from(
                     mapping_matrix=linear_obj.mapping_matrix, mask=self.mask
                 )
                 if linear_obj.operated_mapping_matrix_override is None
@@ -134,7 +134,7 @@ class AbstractInversionImaging(AbstractInversion):
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
-                operated_mapping_matrix = self.psf.convolve_mapping_matrix(
+                operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
                     mapping_matrix=linear_func.mapping_matrix,
                     mask=self.mask,
                 )
@@ -215,7 +215,7 @@ class AbstractInversionImaging(AbstractInversion):
         mapper_operated_mapping_matrix_dict = {}
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-            operated_mapping_matrix = self.psf.convolve_mapping_matrix(
+            operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
                 mapping_matrix=mapper.mapping_matrix,
                 mask=self.mask,
             )

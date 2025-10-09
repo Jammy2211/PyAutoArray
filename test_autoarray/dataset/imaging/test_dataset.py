@@ -33,22 +33,24 @@ def make_test_data_path():
     return test_data_path
 
 
-def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
+def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map_for_fft():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
-    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, pad_for_psf=False)
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, disable_fft_pad=True)
 
     assert dataset.data.shape_native == (3, 3)
     assert dataset.noise_map.shape_native == (3, 3)
 
-    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, pad_for_psf=True)
+    dataset = aa.Imaging(
+        data=image, noise_map=noise_map, psf=psf, disable_fft_pad=False
+    )
 
-    assert dataset.data.shape_native == (5, 5)
-    assert dataset.noise_map.shape_native == (5, 5)
+    assert dataset.data.shape_native == (6, 6)
+    assert dataset.noise_map.shape_native == (6, 6)
     assert dataset.data.mask[0, 0] == True
-    assert dataset.data.mask[1, 1] == False
+    assert dataset.data.mask[2, 2] == False
 
 
 def test__noise_covariance_input__noise_map_uses_diag():
@@ -126,7 +128,7 @@ def test__output_to_fits(imaging_7x7, test_data_path):
 
 
 def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7, disable_fft_pad=True)
 
     assert (masked_imaging_7x7.data.slim == np.ones(9)).all()
 
@@ -263,5 +265,5 @@ def test__psf_not_odd_x_odd_kernel__raises_error():
         psf = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
 
         dataset = aa.Imaging(
-            data=image, noise_map=noise_map, psf=psf, pad_for_psf=False
+            data=image, noise_map=noise_map, psf=psf, disable_fft_pad=True
         )

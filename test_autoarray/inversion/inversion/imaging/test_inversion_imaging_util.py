@@ -203,7 +203,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
         mapping_matrix = mapper.mapping_matrix
 
-        blurred_mapping_matrix = psf.convolve_mapping_matrix(
+        blurred_mapping_matrix = psf.convolved_mapping_matrix_from(
             mapping_matrix=mapping_matrix, mask=mask
         )
 
@@ -290,7 +290,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         w_tilde=w_tilde, mapping_matrix=mapping_matrix
     )
 
-    blurred_mapping_matrix = psf.convolve_mapping_matrix(
+    blurred_mapping_matrix = psf.convolved_mapping_matrix_from(
         mapping_matrix=mapping_matrix, mask=mask
     )
 
@@ -370,7 +370,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             pix_pixels=pixelization.pixels,
         )
 
-        blurred_mapping_matrix = psf.convolve_mapping_matrix(
+        blurred_mapping_matrix = psf.convolved_mapping_matrix_from(
             mapping_matrix=mapping_matrix,
             mask=mask,
         )
