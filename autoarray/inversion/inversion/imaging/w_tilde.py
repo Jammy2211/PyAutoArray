@@ -522,7 +522,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     values=mapped_reconstructed_image, mask=self.mask
                 )
 
-                mapped_reconstructed_image = self.psf.convolve_image(
+                mapped_reconstructed_image = self.psf.convolved_image_from(
                     image=mapped_reconstructed_image,
                     blurring_image=None,
                 ).array

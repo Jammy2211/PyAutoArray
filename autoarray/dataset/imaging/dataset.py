@@ -335,7 +335,7 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=over_sample_size_pixelization,
         )
 
-    def apply_mask(self, mask: Mask2D, disable_fft_pad : bool = False) -> "Imaging":
+    def apply_mask(self, mask: Mask2D, disable_fft_pad: bool = False) -> "Imaging":
         """
         Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
         quantities one-by-one.
@@ -398,7 +398,7 @@ class Imaging(AbstractDataset):
         self,
         mask: Mask2D,
         noise_value: float = 1e8,
-        disable_fft_pad : bool = False,
+        disable_fft_pad: bool = False,
         signal_to_noise_value: Optional[float] = None,
         should_zero_data: bool = True,
     ) -> "Imaging":
@@ -496,7 +496,7 @@ class Imaging(AbstractDataset):
         self,
         over_sample_size_lp: Union[int, Array2D] = None,
         over_sample_size_pixelization: Union[int, Array2D] = None,
-        disable_fft_pad : bool = False,
+        disable_fft_pad: bool = False,
     ) -> "AbstractDataset":
         """
         Apply new over sampling objects to the grid and grid pixelization of the dataset.

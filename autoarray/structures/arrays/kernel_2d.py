@@ -19,7 +19,6 @@ from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 
 
-
 class Kernel2D(AbstractArray2D):
     def __init__(
         self,
@@ -482,7 +481,9 @@ class Kernel2D(AbstractArray2D):
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
-    def fft_shape_from(self, mask : np.ndarray) -> Union[Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
+    def fft_shape_from(
+        self, mask: np.ndarray
+    ) -> Union[Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
         """
         Compute the padded shapes required for FFT-based convolution with this kernel.
 
@@ -541,7 +542,7 @@ class Kernel2D(AbstractArray2D):
         """
         return Kernel2D(values=self, mask=self.mask, normalize=True)
 
-    def convolve_image(self, image, blurring_image, jax_method="direct"):
+    def convolved_image_from(self, image, blurring_image, jax_method="direct"):
         """
         Convolve an input masked image with this PSF.
 
@@ -563,7 +564,7 @@ class Kernel2D(AbstractArray2D):
         ``fft_shape``, ``full_shape``, and ``mask_shape`` on the kernel.
 
         If ``use_fft=False``, convolution falls back to
-        :meth:`Kernel2D.convolve_image_via_real_space`.
+        :meth:`Kernel2D.convolved_image_via_real_space_from`.
 
         Parameters
         ----------
@@ -585,7 +586,7 @@ class Kernel2D(AbstractArray2D):
         """
 
         if not self.use_fft:
-            return self.convolve_image_via_real_space(
+            return self.convolved_image_via_real_space_from(
                 image=image, blurring_image=blurring_image, jax_method=jax_method
             )
 
@@ -638,9 +639,7 @@ class Kernel2D(AbstractArray2D):
             )
 
         # FFT the combined image
-        fft_image_native = jnp.fft.rfft2(
-            image_both_native, s=fft_shape, axes=(0, 1)
-        )
+        fft_image_native = jnp.fft.rfft2(image_both_native, s=fft_shape, axes=(0, 1))
 
         # Multiply by PSF in Fourier space and invert
         blurred_image_full = jnp.fft.irfft2(
@@ -661,7 +660,7 @@ class Kernel2D(AbstractArray2D):
             values=blurred_image_native[slim_to_native_tuple], mask=image.mask
         )
 
-    def convolve_mapping_matrix(
+    def convolved_mapping_matrix_from(
         self,
         mapping_matrix,
         mask,
@@ -684,7 +683,7 @@ class Kernel2D(AbstractArray2D):
         - The slim (masked 1D) representation is returned.
 
         If ``use_fft=False``, convolution falls back to
-        :meth:`Kernel2D.convolve_mapping_matrix_via_real_space`.
+        :meth:`Kernel2D.convolved_mapping_matrix_via_real_space_from`.
 
         Notes
         -----
@@ -693,7 +692,7 @@ class Kernel2D(AbstractArray2D):
           expected vs actual shapes. This ensures the mapping matrix is padded
           consistently with the PSF.
         - The optional ``blurring_mapping_matrix`` plays the same role as
-          ``blurring_image`` in :meth:`convolve_image`, accounting for PSF flux
+          ``blurring_image`` in :meth:`convolved_image_from`, accounting for PSF flux
           that falls into the masked region from outside.
 
         Parameters
@@ -713,7 +712,7 @@ class Kernel2D(AbstractArray2D):
             Convolved mapping matrix in slim form.
         """
         if not self.use_fft:
-            return self.convolve_mapping_matrix_via_real_space(
+            return self.convolved_mapping_matrix_via_real_space_from(
                 mapping_matrix=mapping_matrix,
                 mask=mask,
                 blurring_mapping_matrix=blurring_mapping_matrix,
@@ -882,8 +881,11 @@ class Kernel2D(AbstractArray2D):
             values=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
         )
 
-    def convolve_image_via_real_space(
-        self, image : np.ndarray, blurring_image : Optional[np.ndarray] = None, jax_method : str = "direct"
+    def convolved_image_via_real_space_from(
+        self,
+        image: np.ndarray,
+        blurring_image: Optional[np.ndarray] = None,
+        jax_method: str = "direct",
     ):
         """
         Convolve an input masked image with this PSF in real space.
@@ -920,9 +922,7 @@ class Kernel2D(AbstractArray2D):
             )
 
         # start with native array padded with zeros
-        image_native = jnp.zeros(
-            image.mask.shape, dtype=jnp.asarray(image.array).dtype
-        )
+        image_native = jnp.zeros(image.mask.shape, dtype=jnp.asarray(image.array).dtype)
 
         # set image pixels
         image_native = image_native.at[slim_to_native_tuple].set(
@@ -936,9 +936,9 @@ class Kernel2D(AbstractArray2D):
                     jnp.logical_not(blurring_image.mask.array),
                     size=blurring_image.shape[0],
                 )
-            image_native = image_native.at[
-                slim_to_native_blurring_tuple
-            ].set(jnp.asarray(blurring_image.array))
+            image_native = image_native.at[slim_to_native_blurring_tuple].set(
+                jnp.asarray(blurring_image.array)
+            )
         else:
             warnings.warn(
                 "No blurring_image provided. Only the direct image will be convolved. "
@@ -955,13 +955,17 @@ class Kernel2D(AbstractArray2D):
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
-    def convolve_mapping_matrix_via_real_space(
-        self, mapping_matrix : np.ndarray, mask, blurring_mapping_matrix : Optional[np.ndarray] = None, jax_method : str = "direct"
+    def convolved_mapping_matrix_via_real_space_from(
+        self,
+        mapping_matrix: np.ndarray,
+        mask,
+        blurring_mapping_matrix: Optional[np.ndarray] = None,
+        jax_method: str = "direct",
     ):
         """
         Convolve a source-plane mapping matrix with this PSF in real space.
 
-        Equivalent to :meth:`convolve_mapping_matrix`, but using explicit
+        Equivalent to :meth:`convolved_mapping_matrix_from`, but using explicit
         real-space convolution rather than FFTs. This avoids FFT padding issues
         but is slower for large kernels.
 

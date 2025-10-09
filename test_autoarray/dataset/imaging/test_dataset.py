@@ -43,7 +43,9 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map_for_fft(
     assert dataset.data.shape_native == (3, 3)
     assert dataset.noise_map.shape_native == (3, 3)
 
-    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, disable_fft_pad=False)
+    dataset = aa.Imaging(
+        data=image, noise_map=noise_map, psf=psf, disable_fft_pad=False
+    )
 
     assert dataset.data.shape_native == (6, 6)
     assert dataset.noise_map.shape_native == (6, 6)

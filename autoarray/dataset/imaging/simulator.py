@@ -126,7 +126,7 @@ class SimulatorImaging:
             pixel_scales=image.pixel_scales,
         )
 
-        image = self.psf.convolve_image(image=image, blurring_image=None)
+        image = self.psf.convolved_image_from(image=image, blurring_image=None)
 
         image = image + background_sky_map
 

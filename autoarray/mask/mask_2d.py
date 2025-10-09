@@ -653,7 +653,9 @@ class Mask2D(Mask):
             The 1D unmasked image which is blurred.
         """
 
-        blurred_image = psf.convolve_image(image=padded_array, blurring_image=None)
+        blurred_image = psf.convolved_image_from(
+            image=padded_array, blurring_image=None
+        )
 
         return self.trimmed_array_from(
             padded_array=blurred_image, image_shape=image_shape
