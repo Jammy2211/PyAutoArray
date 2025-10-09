@@ -30,7 +30,7 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
-        pad_for_psf: bool = False,
+        disable_fft_pad : bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
     ):
@@ -77,10 +77,10 @@ class Imaging(AbstractDataset):
         over_sample_size_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
-        pad_for_psf
-            The PSF convolution may extend beyond the edges of the image mask, which can lead to edge effects in the
-            convolved image. If `True`, the image and noise-map are padded to ensure the PSF convolution does not
-            extend beyond the edge of the image.
+        disable_fft_pad
+            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming, which places the fewest zeros
+            around the image. If this is set to `True`, this optimal padding is not performed and the image is used
+            as-is.
         use_normalized_psf
             If `True`, the PSF kernel values are rescaled such that they sum to 1.0. This can be important for ensuring
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
@@ -90,19 +90,21 @@ class Imaging(AbstractDataset):
 
         self.unmasked = None
 
-        self.pad_for_psf = pad_for_psf
+        self.disable_fft_pad = disable_fft_pad
 
-        if pad_for_psf:
+        if psf is not None:
+
             full_shape, fft_shape, mask_shape = psf.fft_shape_from(mask=data.mask)
 
-            print(data.mask.shape, full_shape, fft_shape, mask_shape, psf.shape_native)
+        if psf is not None and not disable_fft_pad and data.mask.shape != fft_shape:
 
-        else:
-            full_shape = psf.full_shape
-            fft_shape = psf.fft_shape
-            mask_shape = psf.mask_shape
-
-        if pad_for_psf and psf is not None:
+            logger.info(
+                f"Imaging data has been trimmed or padded for FFT convolution.\n"
+                f"  - Original shape : {data.mask.shape}\n"
+                f"  - FFT shape    : {fft_shape}\n"
+                f"Padding ensures accurate PSF convolution in Fourier space. "
+                f"Set `disable_fft_pad=True` in Imaging object to turn off automatic padding."
+            )
 
             over_sample_size_lp = (
                 over_sample_util.over_sample_size_convert_to_array_2d_from(
@@ -133,14 +135,6 @@ class Imaging(AbstractDataset):
                 noise_map = noise_map.resized_from(
                     new_shape=fft_shape, mask_pad_value=1
                 )
-            logger.info(
-                f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
-                f"{data.shape_native}. This is because the blurring region around the mask (which defines where"
-                f"PSF flux may be convolved into the masked region) extended beyond the edge of the image."
-                f""
-                f"This can be prevented by using a smaller mask, smaller PSF kernel size or manually padding"
-                f"the image and noise-map yourself."
-            )
 
         super().__init__(
             data=data,
@@ -395,7 +389,7 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=noise_covariance_matrix,
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
-            pad_for_psf=True,
+            disable_fft_pad=False,
         )
 
         dataset.unmasked = unmasked_dataset
@@ -488,7 +482,7 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            pad_for_psf=False,
+            disable_fft_pad=False,
             check_noise_map=False,
         )
 
@@ -536,7 +530,7 @@ class Imaging(AbstractDataset):
             over_sample_size_lp=over_sample_size_lp or self.over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization
             or self.over_sample_size_pixelization,
-            pad_for_psf=False,
+            disable_fft_pad=False,
             check_noise_map=False,
         )
 
