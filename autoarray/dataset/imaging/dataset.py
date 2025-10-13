@@ -88,8 +88,6 @@ class Imaging(AbstractDataset):
             If True, the noise-map is checked to ensure all values are above zero.
         """
 
-        self.unmasked = None
-
         self.disable_fft_pad = disable_fft_pad
 
         if psf is not None:
@@ -340,26 +338,26 @@ class Imaging(AbstractDataset):
         Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
         quantities one-by-one.
 
-        The original unmasked imaging data is stored as the `self.unmasked` attribute. This is used to ensure that if
-        the `apply_mask` function is called multiple times, every mask is always applied to the original unmasked
-        imaging dataset.
+        The `apply_mask` function cannot be called multiple times, if it is a mask may remove data, therefore
+        an exception is raised. If you wish to apply a new mask, reload the dataset from .fits files.
 
         Parameters
         ----------
         mask
             The 2D mask that is applied to the image.
         """
-        if self.data.mask.is_all_false:
-            unmasked_dataset = self
-        else:
-            unmasked_dataset = self.unmasked
+        if not self.data.mask.is_all_false:
+            raise exc.DatasetException(
+                "The mask has already been applied to the dataset, therefore a new mask cannot be applied. "
+                "If you wish to apply a new mask, please reload the dataset from .fits files."
+            )
 
-        data = Array2D(values=unmasked_dataset.data.native, mask=mask)
+        data = Array2D(values=self.data.native, mask=mask)
 
-        noise_map = Array2D(values=unmasked_dataset.noise_map.native, mask=mask)
+        noise_map = Array2D(values=self.noise_map.native, mask=mask)
 
-        if unmasked_dataset.noise_covariance_matrix is not None:
-            noise_covariance_matrix = unmasked_dataset.noise_covariance_matrix
+        if self..noise_covariance_matrix is not None:
+            noise_covariance_matrix = self..noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
                 noise_covariance_matrix, mask.derive_indexes.masked_slim, 0
@@ -385,8 +383,6 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=over_sample_size_pixelization,
             disable_fft_pad=disable_fft_pad,
         )
-
-        dataset.unmasked = unmasked_dataset
 
         logger.info(
             f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels"
@@ -454,18 +450,6 @@ class Imaging(AbstractDataset):
         else:
             data = self.data.native.array
 
-        data_unmasked = Array2D.no_mask(
-            values=data,
-            shape_native=self.data.shape_native,
-            pixel_scales=self.data.pixel_scales,
-        )
-
-        noise_map_unmasked = Array2D.no_mask(
-            values=noise_map,
-            shape_native=self.noise_map.shape_native,
-            pixel_scales=self.noise_map.pixel_scales,
-        )
-
         data = Array2D(values=data, mask=self.data.mask)
 
         noise_map = Array2D(values=noise_map, mask=self.data.mask)
@@ -480,11 +464,6 @@ class Imaging(AbstractDataset):
             disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
         )
-
-        if self.unmasked is not None:
-            dataset.unmasked = self.unmasked
-            dataset.unmasked.data = data_unmasked
-            dataset.unmasked.noise_map = noise_map_unmasked
 
         logger.info(
             f"IMAGING - Data noise scaling applied, a total of {mask.pixels_in_mask} pixels were scaled to large noise values."
