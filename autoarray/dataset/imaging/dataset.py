@@ -357,7 +357,7 @@ class Imaging(AbstractDataset):
         noise_map = Array2D(values=self.noise_map.native, mask=mask)
 
         if self.noise_covariance_matrix is not None:
-            noise_covariance_matrix = self..noise_covariance_matrix
+            noise_covariance_matrix = self.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
                 noise_covariance_matrix, mask.derive_indexes.masked_slim, 0
