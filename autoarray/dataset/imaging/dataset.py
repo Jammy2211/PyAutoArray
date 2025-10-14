@@ -1,7 +1,6 @@
 import logging
 import numpy as np
 from pathlib import Path
-import scipy
 from typing import Optional, Union
 
 from autoconf import cached_property
