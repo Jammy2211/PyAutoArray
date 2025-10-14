@@ -290,66 +290,7 @@ def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy
     assert kernel_astropy == pytest.approx(kernel_2d.native._array, abs=1e-4)
 
 
-def test__convolved_array_from():
-
-    array_2d = aa.Array2D.no_mask(
-        [
-            [0.0, 0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-            [0.0, 0.0, 0.0, 0.0],
-        ],
-        pixel_scales=1.0,
-    )
-
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
-    )
-
-    blurred_array_2d = kernel_2d.convolved_array_from(array_2d)
-
-    assert (
-        blurred_array_2d.native
-        == np.array(
-            [
-                [1.0, 1.0, 0.0, 0.0],
-                [2.0, 1.0, 1.0, 1.0],
-                [3.0, 3.0, 2.0, 2.0],
-                [0.0, 0.0, 1.0, 3.0],
-            ]
-        )
-    ).all()
-
-    array_2d = aa.Array2D.no_mask(
-        values=[
-            [1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ],
-        pixel_scales=1.0,
-    )
-
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
-    )
-
-    blurred_array_2d = kernel_2d.convolved_array_from(array_2d)
-
-    assert (
-        blurred_array_2d.native
-        == np.array(
-            [
-                [2.0, 1.0, 0.0, 0.0],
-                [3.0, 3.0, 0.0, 0.0],
-                [0.0, 0.0, 1.0, 1.0],
-                [0.0, 0.0, 2.0, 2.0],
-            ]
-        )
-    ).all()
-
-
-def test__convolve_image():
+def test__convolved_image_from():
 
     mask = aa.Mask2D.circular(
         shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
@@ -390,7 +331,7 @@ def test__convolve_image():
     )
 
 
-def test__convolve_image_no_blurring():
+def test__convolve_imaged_from__no_blurring():
     # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
 
     mask = aa.Mask2D.circular(
@@ -429,7 +370,7 @@ def test__convolve_image_no_blurring():
     )
 
 
-def test__convolve_mapping_matrix():
+def test__convolved_mapping_matrix_from():
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -558,7 +499,7 @@ def test__convolve_mapping_matrix():
     )
 
 
-def test__convolve_image__via_fft__sizes_not_precomputed__compare_numerical_value():
+def test__convolve_imaged_from__via_fft__sizes_not_precomputed__compare_numerical_value():
 
     # -------------------------------
     # Case 1: direct image convolution
