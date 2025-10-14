@@ -677,6 +677,8 @@ class Kernel2D(AbstractArray2D):
             full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=image.mask)
             fft_psf = jnp.fft.rfft2(self.stored_native.array, s=fft_shape)
 
+            image_shape_original = image.shape_native
+
             image = image.resized_from(new_shape=fft_shape, mask_pad_value=1)
             if blurring_image is not None:
                 blurring_image = blurring_image.resized_from(
@@ -738,9 +740,17 @@ class Kernel2D(AbstractArray2D):
             blurred_image_full, start_indices, out_shape_full
         )
 
-        return Array2D(
+        blurred_image = Array2D(
             values=blurred_image_native[slim_to_native_tuple], mask=image.mask
         )
+
+        if self.fft_shape is None:
+
+            blurred_image = blurred_image.resized_from(
+                new_shape=image_shape_original, mask_pad_value=0
+            )
+
+        return blurred_image
 
     def convolved_mapping_matrix_from(
         self,
