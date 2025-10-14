@@ -1,11 +1,6 @@
 from __future__ import annotations
 import logging
-import numpy as np
-from typing import TYPE_CHECKING, List, Tuple, Union
-
-if TYPE_CHECKING:
-    from autoarray.structures.grids.uniform_1d import Grid1D
-    from autoarray.mask.mask_2d import Mask2D
+from typing import Tuple
 
 from autoarray import type as ty
 

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import copy
 import numpy as np
 from typing import TYPE_CHECKING, Tuple
 
@@ -10,7 +9,6 @@ if TYPE_CHECKING:
 from autoarray import exc
 from autoarray.mask.derive.indexes_2d import DeriveIndexes2D
 
-from autoarray.structures.arrays import array_2d_util
 from autoarray.mask import mask_2d_util
 
 logging.basicConfig()
