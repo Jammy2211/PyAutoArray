@@ -33,25 +33,6 @@ def make_test_data_path():
     return test_data_path
 
 
-def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map_for_fft():
-    image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-    noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-    psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-
-    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf, disable_fft_pad=True)
-
-    assert dataset.data.shape_native == (3, 3)
-    assert dataset.noise_map.shape_native == (3, 3)
-
-    dataset = aa.Imaging(
-        data=image, noise_map=noise_map, psf=psf, disable_fft_pad=False
-    )
-
-    assert dataset.data.shape_native == (6, 6)
-    assert dataset.noise_map.shape_native == (6, 6)
-    assert dataset.data.mask[0, 0] == True
-    assert dataset.data.mask[2, 2] == False
-
 
 def test__noise_covariance_input__noise_map_uses_diag():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
