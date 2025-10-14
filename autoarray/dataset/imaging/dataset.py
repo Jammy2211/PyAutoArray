@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from autoconf import cached_property
+from autoconf import instance
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
@@ -94,6 +95,10 @@ class Imaging(AbstractDataset):
             full_shape, fft_shape, mask_shape = psf.fft_shape_from(mask=data.mask)
 
         if psf is not None and not disable_fft_pad and data.mask.shape != fft_shape:
+
+            # If using real-space convolution instead of FFT, enforce odd-odd shapes
+            if not psf.use_fft:
+                fft_shape = tuple(s + 1 if s % 2 == 0 else s for s in fft_shape)
 
             logger.info(
                 f"Imaging data has been trimmed or padded for FFT convolution.\n"
@@ -345,10 +350,13 @@ class Imaging(AbstractDataset):
         mask
             The 2D mask that is applied to the image.
         """
-        if not self.data.mask.is_all_false:
+        invalid = np.logical_and(self.data.mask, np.logical_not(mask))
+
+        if np.any(invalid):
             raise exc.DatasetException(
-                "The mask has already been applied to the dataset, therefore a new mask cannot be applied. "
-                "If you wish to apply a new mask, please reload the dataset from .fits files."
+                "The new mask overlaps with pixels that are already unmasked in the dataset. "
+                "You cannot apply a new mask on top of an existing one. "
+                "If you wish to apply a different mask, please reload the dataset from .fits files."
             )
 
         data = Array2D(values=self.data.native, mask=mask)
