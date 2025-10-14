@@ -14,9 +14,6 @@ from autoarray import fixtures
 from autoconf import conf
 
 
-
-
-
 class PlotPatch:
     def __init__(self):
         self.paths = []
