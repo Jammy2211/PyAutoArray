@@ -340,7 +340,7 @@ def adaptive_pixel_signals_from(
     )  # send invalid indices to an out-of-bounds slot
 
     # 4) Look up data & multiply by mapping weights:
-    flat_data_vals = adapt_data[slim_index_for_sub_slim_index][I_sub]  # (M_sub*B,)
+    flat_data_vals = jnp.take(adapt_data[slim_index_for_sub_slim_index], I_sub, axis=0)
     flat_contrib = flat_data_vals * flat_weights  # (M_sub*B,)
 
     # 5) Scatter‐add into signal sums and counts:
