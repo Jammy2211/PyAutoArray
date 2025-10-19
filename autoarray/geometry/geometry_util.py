@@ -381,7 +381,7 @@ def transform_grid_2d_to_reference_frame(
 
     shifted_grid_2d = grid_2d - jnp.array(centre)
 
-    radius = jnp.sqrt(jnp.sum(shifted_grid_2d**2.0, axis=1))
+    radius = jnp.sqrt(jnp.sum(jnp.square(shifted_grid_2d), axis=1))
     theta_coordinate_to_profile = jnp.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - jnp.radians(angle)
