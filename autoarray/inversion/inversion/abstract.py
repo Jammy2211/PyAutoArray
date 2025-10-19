@@ -11,6 +11,7 @@ from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -416,10 +417,17 @@ class AbstractInversion:
         """
         if self.settings.use_positive_only_solver:
 
-            if self.preloads.source_pixel_zeroed_indices is not None:
+            if (
+                self.preloads.source_pixel_zeroed_indices is not None
+                and self.settings.force_edge_pixels_to_zeros
+            ):
 
                 # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
                 ids_to_keep = self.preloads.source_pixel_zeroed_indices_to_keep
+
+                total_linear_light_profiles = self.cls_list_from(
+                    cls=AbstractLinearObjFuncList
+                )
 
                 # Use advanced indexing to select rows/columns
                 data_vector = self.data_vector[ids_to_keep]

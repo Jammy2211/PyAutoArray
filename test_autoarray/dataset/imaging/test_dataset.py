@@ -33,7 +33,6 @@ def make_test_data_path():
     return test_data_path
 
 
-
 def test__noise_covariance_input__noise_map_uses_diag():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_covariance_matrix = np.ones(shape=(9, 9))

@@ -157,7 +157,9 @@ class Output:
                             overwrite=True,
                         )
 
-    def subplot_to_figure(self, auto_filename: Optional[str] = None):
+    def subplot_to_figure(
+        self, auto_filename: Optional[str] = None, also_show: bool = False
+    ):
         """
         Output a subplot figure, either as an image on the screen or to the hard-disk as a png or fits file.
 
@@ -183,6 +185,9 @@ class Output:
                 plt.show()
             elif format == "png" or format == "pdf":
                 self.savefig(filename, output_path, format)
+
+        if also_show:
+            plt.show()
 
     def to_figure_output_mode(self, filename: str):
         global COUNT

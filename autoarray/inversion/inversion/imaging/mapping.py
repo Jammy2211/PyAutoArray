@@ -62,7 +62,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         """
 
         if not self.has(cls=AbstractMapper):
-            return None
+            return
 
         data_vector = np.zeros(self.total_params)
 

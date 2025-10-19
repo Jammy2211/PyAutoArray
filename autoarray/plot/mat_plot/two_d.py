@@ -65,6 +65,7 @@ class MatPlot2D(AbstractMatPlot):
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
         use_log10: bool = False,
         plot_mask: bool = True,
+        quick_update: bool = False,
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -227,6 +228,7 @@ class MatPlot2D(AbstractMatPlot):
         self.plot_mask = plot_mask
 
         self.is_for_subplot = False
+        self.quick_update = quick_update
 
     def plot_array(
         self,
