@@ -374,17 +374,13 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    try:
-        grid_2d = grid_2d.array
-    except AttributeError:
-        pass
-
     shifted_grid_2d = grid_2d - jnp.array(centre)
 
     radius = jnp.sqrt(jnp.sum(jnp.square(shifted_grid_2d), axis=1))
     theta_coordinate_to_profile = jnp.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - jnp.radians(angle)
+
     return jnp.vstack(
         [
             radius * jnp.sin(theta_coordinate_to_profile),
