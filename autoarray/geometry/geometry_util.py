@@ -374,20 +374,18 @@ def transform_grid_2d_to_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
-    grid_2d = jnp.asarray(grid_2d)
-    centre = jnp.asarray(centre)
 
-    # Inject a tiny dynamic dependency on `angle` to prevent heavy constant folding
-    # (adds zero at runtime; negligible cost)
-    dynamic_zero = jnp.zeros_like(grid_2d) * angle
-    shifted = (grid_2d + dynamic_zero) - centre
+    shifted_grid_2d = grid_2d - jnp.array(centre)
 
-    radius = jnp.sqrt(jnp.sum(shifted * shifted, axis=1))
-    theta  = jnp.arctan2(shifted[:, 0], shifted[:, 1]) - jnp.deg2rad(angle)
+    radius = jnp.sqrt(jnp.sum(jnp.square(shifted_grid_2d), axis=1))
+    theta_coordinate_to_profile = jnp.arctan2(
+        shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
+    ) - jnp.radians(angle)
+
     return jnp.vstack(
         [
-            radius * jnp.sin(theta),
-            radius * jnp.cos(theta),
+            radius * jnp.sin(theta_coordinate_to_profile),
+            radius * jnp.cos(theta_coordinate_to_profile),
         ]
     ).T
 
