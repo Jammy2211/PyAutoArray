@@ -115,7 +115,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         )
         return centres
 
-    @cached_property
+    @property
     def vertex_coordinates(self) -> np.ndarray:
         """
         The vertices of the triangles as an Nx3x2 array.
@@ -130,7 +130,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
             dtype=np.int32,
         )
 
-    @cached_property
+    @property
     def triangles(self) -> np.ndarray:
         """
         The vertices of the triangles as an Nx3x2 array.
@@ -157,7 +157,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
             axis=1,
         )
 
-    @cached_property
+    @property
     def flip_mask(self) -> jnp.ndarray:
         """
         A mask for the triangles that are flipped.
@@ -169,7 +169,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
             mask = ~mask
         return mask
 
-    @cached_property
+    @property
     def flip_array(self) -> jnp.ndarray:
         """
         An array of 1s and -1s to flip the triangles.
@@ -247,7 +247,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
             x_offset=self.x_offset,
         )
 
-    @cached_property
+    @property
     def _vertices_and_indices(self):
         flat_triangles = self.triangles.reshape(-1, 2)
         vertices, inverse_indices = jnp.unique(
