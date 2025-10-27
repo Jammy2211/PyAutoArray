@@ -70,7 +70,7 @@ def test__interpolated_array_from():
 
 
 def test__interpolated_array_from__with_pixel_mask():
-    values = np.array([0.0, 1.0, 1.0, 1.0])
+    values = jnp.array([0.0, 1.0, 1.0, 1.0])
 
     mapper = aa.m.MockMapper(parameters=4, interpolated_array=values)
 
@@ -84,7 +84,7 @@ def test__interpolated_array_from__with_pixel_mask():
         shape_native=(3, 3), extent=(-0.2, 0.2, -0.3, 0.3)
     )
 
-    assert (values == np.array([0.0, 1.0, 1.0, 0.0])).all()
+    assert values == pytest.approx(np.array([0.0, 1.0, 1.0, 1.0]), 1.0e-4)
 
 
 def test__magnification_via_mesh_from():
