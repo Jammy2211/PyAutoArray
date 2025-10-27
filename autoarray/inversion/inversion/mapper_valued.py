@@ -57,7 +57,7 @@ class MapperValued:
         values = self.values
 
         if self.mesh_pixel_mask is not None:
-            values[self.mesh_pixel_mask] = 0.0
+            values = values.at[self.mesh_pixel_mask].set(0.0)
 
         return values
 
@@ -187,7 +187,7 @@ class MapperValued:
         mapping_matrix = self.mapper.mapping_matrix
 
         if self.mesh_pixel_mask is not None:
-            mapping_matrix[:, self.mesh_pixel_mask] = 0.0
+            mapping_matrix = mapping_matrix.at[:, self.mesh_pixel_mask].set(0.0)
 
         return Array2D(
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(

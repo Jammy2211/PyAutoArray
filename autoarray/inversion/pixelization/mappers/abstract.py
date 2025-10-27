@@ -282,6 +282,7 @@ class AbstractMapper(LinearObj):
             A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
             low signal regions.
         """
+
         return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,
             signal_scale=signal_scale,
