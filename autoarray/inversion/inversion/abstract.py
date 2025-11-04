@@ -19,7 +19,6 @@ from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 
-from autoarray import exc
 from autoarray.util import misc_util
 from autoarray.inversion.inversion import inversion_util
 
@@ -639,14 +638,9 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        try:
-            return 2.0 * np.sum(
-                jnp.log(
-                    jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced))
-                )
-            )
-        except np.linalg.LinAlgError as e:
-            raise exc.InversionException() from e
+        return 2.0 * jnp.sum(
+            jnp.log(jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+        )
 
     @cached_property
     def log_det_regularization_matrix_term(self) -> float:
@@ -665,14 +659,9 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        try:
-            return 2.0 * np.sum(
-                jnp.log(
-                    jnp.diag(jnp.linalg.cholesky(self.regularization_matrix_reduced))
-                )
-            )
-        except np.linalg.LinAlgError as e:
-            raise exc.InversionException() from e
+        return 2.0 * jnp.sum(
+            jnp.log(jnp.diag(jnp.linalg.cholesky(self.regularization_matrix_reduced)))
+        )
 
     @property
     def reconstruction_noise_map_with_covariance(self) -> np.ndarray:

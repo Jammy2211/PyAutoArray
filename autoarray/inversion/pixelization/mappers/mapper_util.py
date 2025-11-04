@@ -4,10 +4,6 @@ import jax.numpy as jnp
 import numpy as np
 from typing import Tuple
 
-from autoconf import conf
-
-from autoarray import exc
-
 
 def forward_interp(xp, yp, x):
     return jax.vmap(jnp.interp, in_axes=(1, 1, None, None, None))(x, xp, yp, 0, 1).T
