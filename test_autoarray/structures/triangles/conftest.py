@@ -1,4 +1,4 @@
-from autoarray.numpy_wrapper import np
+from autoconf.jax_wrapper import np
 from autoarray.structures.triangles.array import ArrayTriangles
 from autoarray.structures.triangles.coordinate_array import CoordinateArrayTriangles
 

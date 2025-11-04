@@ -2,11 +2,11 @@ from abc import ABC
 
 import numpy as np
 import jax.numpy as jnp
+from jax._src.tree_util import register_pytree_node_class
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.structures.triangles.array import ArrayTriangles
-from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 @register_pytree_node_class

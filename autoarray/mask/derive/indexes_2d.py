@@ -4,7 +4,7 @@ import numpy as np
 
 from autoconf import cached_property
 
-from autoarray.numpy_wrapper import register_pytree_node_class
+from jax._src.tree_util import register_pytree_node_class
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

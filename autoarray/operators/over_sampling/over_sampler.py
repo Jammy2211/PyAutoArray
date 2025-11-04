@@ -1,6 +1,7 @@
 import numpy as np
 import jax.numpy as jnp
 import jax
+from jax._src.tree_util import register_pytree_node_class
 from typing import Union
 
 from autoconf import conf
@@ -11,7 +12,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.operators.over_sampling import over_sample_util
 
-from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 @register_pytree_node_class

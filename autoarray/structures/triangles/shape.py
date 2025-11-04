@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
+from jax._src.tree_util import register_pytree_node_class
 from typing import List, Tuple
 
 import numpy as np
-
-from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 class Shape(ABC):

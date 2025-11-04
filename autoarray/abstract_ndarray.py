@@ -5,10 +5,10 @@ from copy import copy
 from abc import ABC
 from abc import abstractmethod
 import jax.numpy as jnp
+from jax._src.tree_util import register_pytree_node
+from jax import Array
 
 from autoconf.fitsable import output_to_fits
-
-from autoarray.numpy_wrapper import register_pytree_node, Array
 
 from typing import TYPE_CHECKING
 
