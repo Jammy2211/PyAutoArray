@@ -29,7 +29,6 @@ dependencies = [
     "astropy>=5.0,<=6.1.2",
     "decorator>=4.0.0",
     "dill>=0.3.1.1",
-    "jaxnnls==1.0.1",
     "matplotlib>=3.7.0",
     "scipy<=1.14.0",
     "scikit-image<=0.24.0",
