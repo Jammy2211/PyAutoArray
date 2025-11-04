@@ -638,7 +638,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * np.sum(
+        return 2.0 * jnp.sum(
             jnp.log(jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
         )
 
@@ -659,7 +659,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * np.sum(
+        return 2.0 * jnp.sum(
             jnp.log(jnp.diag(jnp.linalg.cholesky(self.regularization_matrix_reduced)))
         )
 
