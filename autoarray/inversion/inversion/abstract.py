@@ -451,9 +451,12 @@ class AbstractInversion:
                 reconstruction = xp.zeros(self.data_vector.shape[0])
 
                 # Scatter the partial solution back to the full shape
-                reconstruction = reconstruction.at[ids_to_keep].set(
-                    reconstruction_partial
-                )
+                if xp.__name__.startswith("jax"):
+                    reconstruction = reconstruction.at[ids_to_keep].set(
+                        reconstruction_partial
+                    )
+                else:
+                    reconstruction[ids_to_keep] = reconstruction_partial
 
                 return reconstruction
 
