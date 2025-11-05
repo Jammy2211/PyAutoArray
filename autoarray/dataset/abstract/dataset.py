@@ -141,14 +141,6 @@ class AbstractDataset:
         return self.grids.lp
 
     @property
-    def grids(self):
-        return GridsDataset(
-            mask=self.data.mask,
-            over_sample_size_lp=self.over_sample_size_lp,
-            over_sample_size_pixelization=self.over_sample_size_pixelization,
-        )
-
-    @property
     def shape_native(self):
         return self.mask.shape_native
 

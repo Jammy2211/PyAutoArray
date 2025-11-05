@@ -3,9 +3,11 @@ import jax.numpy as jnp
 from jax.scipy.linalg import block_diag
 import numpy as np
 
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    import numpy as xp
 
-from autoconf import cached_property
+from autoconf.xp_import import auto_xp
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
@@ -270,6 +272,7 @@ class AbstractInversion:
         return self.data.mask
 
     @property
+    @auto_xp
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
@@ -285,7 +288,7 @@ class AbstractInversion:
         If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
         equations are solved simultaneously. This property returns the stacked mapping matrix.
         """
-        return jnp.hstack(
+        return xp.hstack(
             [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
         )
 
