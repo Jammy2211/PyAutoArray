@@ -83,11 +83,11 @@ class AbstractVisibilities(Structure, ABC):
     def mask(self):
         return np.full(fill_value=False, shape=self.shape)
 
-    @cached_property
+    @property
     def amplitudes(self) -> np.ndarray:
         return np.sqrt(np.square(self.array.real) + np.square(self.array.imag))
 
-    @cached_property
+    @property
     def phases(self) -> np.ndarray:
         return np.arctan2(self.array.imag, self.array.real)
 

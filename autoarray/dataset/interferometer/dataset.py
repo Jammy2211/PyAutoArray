@@ -166,7 +166,7 @@ class Interferometer(AbstractDataset):
 
                 fits.writeto(filename, data=curvature_preload)
 
-    @cached_property
+    @property
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities

@@ -27,7 +27,7 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
 
         return areas
 
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         Returns a ndarray describing the neighbors of every pixel in a Voronoi mesh, where a neighbor is defined as

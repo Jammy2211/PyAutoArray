@@ -62,7 +62,7 @@ class MapperDelaunay(AbstractMapper):
     def delaunay(self):
         return self.source_plane_mesh_grid.delaunay
 
-    @cached_property
+    @property
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data

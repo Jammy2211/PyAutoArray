@@ -267,7 +267,7 @@ class OverSampler:
             mask=self.mask,
         )
 
-    @cached_property
+    @property
     def slim_for_sub_slim(self) -> np.ndarray:
         """
         Derives a 1D ``ndarray`` which maps every subgridded 1D ``slim`` index of the ``Mask2D`` to its

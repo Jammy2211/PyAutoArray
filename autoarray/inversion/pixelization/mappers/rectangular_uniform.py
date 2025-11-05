@@ -56,7 +56,7 @@ class MapperRectangularUniform(MapperRectangular):
         which for a mapper smooths neighboring pixels on the mesh.
     """
 
-    @cached_property
+    @property
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data

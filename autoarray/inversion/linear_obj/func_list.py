@@ -45,7 +45,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
         self.grid = grid
 
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         An object describing how the different parameters in the linear object neighbor one another, which is used
@@ -77,7 +77,7 @@ class AbstractLinearObjFuncList(LinearObj):
             arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int")
         )
 
-    @cached_property
+    @property
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)

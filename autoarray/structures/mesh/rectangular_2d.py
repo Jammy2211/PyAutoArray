@@ -115,7 +115,7 @@ class Mesh2DRectangular(Abstract2DMesh):
             origin=origin,
         )
 
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
@@ -130,7 +130,7 @@ class Mesh2DRectangular(Abstract2DMesh):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @cached_property
+    @property
     def edge_pixel_list(self) -> List:
         return mesh_util.rectangular_edge_pixel_list_from(
             shape_native=self.shape_native

@@ -72,7 +72,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         else:
             self.w_tilde = None
 
-    @cached_property
+    @property
     def w_tilde_data(self):
 
         return inversion_imaging_numba_util.w_tilde_data_imaging_from(
@@ -118,7 +118,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return data_vector
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
@@ -218,7 +218,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return data_vector
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to

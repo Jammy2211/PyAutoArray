@@ -75,7 +75,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         self.settings = settings
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -91,7 +91,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         """
         return np.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to

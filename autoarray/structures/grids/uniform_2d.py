@@ -1120,7 +1120,7 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(mask=padded_mask, over_sample_size=over_sample_size)
 
-    @cached_property
+    @property
     def is_uniform(self) -> bool:
         """
         Returns if the grid is uniform, where a uniform grid is defined as a grid where all pixels are separated by

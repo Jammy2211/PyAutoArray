@@ -72,7 +72,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             scaled_minima=scaled_minima,
         )
 
-    @cached_property
+    @property
     def delaunay(self) -> "scipy.spatial.Delaunay":
         """
         Returns a `scipy.spatial.Delaunay` object from the 2D (y,x) grid of irregular coordinates, which correspond to
@@ -96,7 +96,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
             raise exc.MeshException() from e
 
-    @cached_property
+    @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
         """
         Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
@@ -120,7 +120,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         except (ValueError, OverflowError, QhullError) as e:
             raise exc.MeshException() from e
 
-    @cached_property
+    @property
     def edge_pixel_list(self) -> List:
         """
         Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
@@ -130,7 +130,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             regions=self.voronoi.regions, point_region=self.voronoi.point_region
         )
 
-    @cached_property
+    @property
     def split_cross(self) -> np.ndarray:
         """
         For every 2d (y,x) coordinate corresponding to a Voronoi pixel centre, this property splits them into a cross
@@ -192,7 +192,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         return region_areas
 
-    @cached_property
+    @property
     def voronoi_pixel_areas_for_split(self) -> np.ndarray:
         """
         Returns the area of every Voronoi pixel in the Voronoi mesh.

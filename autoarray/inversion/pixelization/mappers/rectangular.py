@@ -61,7 +61,7 @@ class MapperRectangular(AbstractMapper):
     def shape_native(self) -> Tuple[int, ...]:
         return self.source_plane_mesh_grid.shape_native
 
-    @cached_property
+    @property
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
@@ -111,7 +111,7 @@ class MapperRectangular(AbstractMapper):
             weights=weights,
         )
 
-    @cached_property
+    @property
     def areas_transformed(self):
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
@@ -125,7 +125,7 @@ class MapperRectangular(AbstractMapper):
             source_plane_data_grid=self.source_plane_data_grid.array,
         )
 
-    @cached_property
+    @property
     def edges_transformed(self):
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see

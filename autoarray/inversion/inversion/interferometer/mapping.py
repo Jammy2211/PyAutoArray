@@ -54,7 +54,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             settings=settings,
         )
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -75,7 +75,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             noise_map=np.array(self.noise_map),
         )
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to

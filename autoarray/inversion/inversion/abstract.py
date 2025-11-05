@@ -176,7 +176,7 @@ class AbstractInversion:
             cls_filtered=cls_filtered,
         )
 
-    @cached_property
+    @property
     def total_params(self) -> int:
         """
         Returns the total number of parameters used by this `Inversion`, where:
@@ -269,7 +269,7 @@ class AbstractInversion:
     def mask(self) -> Array2D:
         return self.data.mask
 
-    @cached_property
+    @property
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
@@ -293,7 +293,7 @@ class AbstractInversion:
     def operated_mapping_matrix_list(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -306,15 +306,15 @@ class AbstractInversion:
         """
         return jnp.hstack(self.operated_mapping_matrix_list)
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def regularization_matrix(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -335,7 +335,7 @@ class AbstractInversion:
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
 
-    @cached_property
+    @property
     def regularization_matrix_reduced(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -359,7 +359,7 @@ class AbstractInversion:
         # Zero rows and columns in the matrix we want to ignore
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
 
-    @cached_property
+    @property
     def curvature_reg_matrix(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
@@ -374,7 +374,7 @@ class AbstractInversion:
 
         return jnp.add(self.curvature_matrix, self.regularization_matrix)
 
-    @cached_property
+    @property
     def curvature_reg_matrix_reduced(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -398,7 +398,7 @@ class AbstractInversion:
         # Zero rows and columns in the matrix we want to ignore
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
-    @cached_property
+    @property
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -464,7 +464,7 @@ class AbstractInversion:
             curvature_reg_matrix=self.curvature_reg_matrix,
         )
 
-    @cached_property
+    @property
     def reconstruction_reduced(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -544,7 +544,7 @@ class AbstractInversion:
         """
         return self.mapped_reconstructed_data_dict
 
-    @cached_property
+    @property
     def mapped_reconstructed_data(self) -> Union[Array2D, Visibilities]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -560,7 +560,7 @@ class AbstractInversion:
         """
         return sum(self.mapped_reconstructed_data_dict.values())
 
-    @cached_property
+    @property
     def mapped_reconstructed_image(self) -> Array2D:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -576,7 +576,7 @@ class AbstractInversion:
         """
         return sum(self.mapped_reconstructed_image_dict.values())
 
-    @cached_property
+    @property
     def data_subtracted_dict(self) -> Dict[LinearObj, Array2D]:
         """
         Returns a dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
@@ -604,7 +604,7 @@ class AbstractInversion:
 
         return data_subtracted_dict
 
-    @cached_property
+    @property
     def regularization_term(self) -> float:
         """
         Returns the regularization term of an inversion. This term represents the sum of the difference in flux
@@ -628,7 +628,7 @@ class AbstractInversion:
             jnp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
-    @cached_property
+    @property
     def log_det_curvature_reg_matrix_term(self) -> float:
         """
         The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
@@ -642,7 +642,7 @@ class AbstractInversion:
             jnp.log(jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
         )
 
-    @cached_property
+    @property
     def log_det_regularization_matrix_term(self) -> float:
         """
         The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant

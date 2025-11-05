@@ -140,7 +140,7 @@ class AbstractDataset:
     def grid(self):
         return self.grids.lp
 
-    @cached_property
+    @property
     def grids(self):
         return GridsDataset(
             mask=self.data.mask,
@@ -188,7 +188,7 @@ class AbstractDataset:
         """
         return np.max(self.signal_to_noise_map)
 
-    @cached_property
+    @property
     def noise_covariance_matrix_inv(self) -> np.ndarray:
         """
         Returns the inverse of the noise covariance matrix, which is used when computing a chi-squared which accounts

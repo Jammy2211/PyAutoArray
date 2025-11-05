@@ -82,7 +82,7 @@ class MapperVoronoi(AbstractMapper):
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
-    @cached_property
+    @property
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data

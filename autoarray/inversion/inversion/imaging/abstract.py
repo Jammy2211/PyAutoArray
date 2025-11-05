@@ -112,7 +112,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return cls_dict
 
-    @cached_property
+    @property
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -197,7 +197,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return data_linear_func_matrix_dict
 
-    @cached_property
+    @property
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values

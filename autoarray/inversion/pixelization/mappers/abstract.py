@@ -128,7 +128,7 @@ class AbstractMapper(LinearObj):
     def pix_sub_weights(self) -> "PixSubWeights":
         raise NotImplementedError
 
-    @cached_property
+    @property
     def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
         """
         The mapping of every data pixel (given its `sub_slim_index`) to pixelization pixels (given their `pix_indexes`).
@@ -144,7 +144,7 @@ class AbstractMapper(LinearObj):
         """
         return self.pix_sub_weights.mappings
 
-    @cached_property
+    @property
     def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
         """
         The number of mappings of every data pixel to pixelization pixels.
@@ -160,7 +160,7 @@ class AbstractMapper(LinearObj):
         """
         return self.pix_sub_weights.sizes
 
-    @cached_property
+    @property
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         """
         The interoplation weights of the mapping of every data pixel (given its `sub_slim_index`) to pixelization
@@ -208,7 +208,7 @@ class AbstractMapper(LinearObj):
 
         return sub_slim_indexes_for_pix_index
 
-    @cached_property
+    @property
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
@@ -245,7 +245,7 @@ class AbstractMapper(LinearObj):
             pix_lengths=pix_lengths,
         )
 
-    @cached_property
+    @property
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels

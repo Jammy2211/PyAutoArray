@@ -152,7 +152,7 @@ class FitDataset(AbstractFit):
     def mask(self) -> Mask2D:
         return self.dataset.mask
 
-    @cached_property
+    @property
     def grids(self) -> GridsInterface:
 
         def subtracted_from(grid, offset):

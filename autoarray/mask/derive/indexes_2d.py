@@ -365,7 +365,7 @@ class DeriveIndexes2D:
         """
         return self.native_for_slim[self.border_slim].astype("int")
 
-    @cached_property
+    @property
     def native_for_slim(self) -> np.ndarray:
         """
         Derives a 1D ``ndarray`` which maps every 1D ``slim`` index of the ``Mask2D`` to its

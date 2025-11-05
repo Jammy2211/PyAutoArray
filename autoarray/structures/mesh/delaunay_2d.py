@@ -10,7 +10,7 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
 class Mesh2DDelaunay(Abstract2DMeshTriangulation):
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is

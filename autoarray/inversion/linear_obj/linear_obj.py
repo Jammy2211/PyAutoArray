@@ -68,7 +68,7 @@ class LinearObj:
         """
         raise NotImplementedError
 
-    @cached_property
+    @property
     def unique_mappings(self):
         """
         An object describing the unique mappings between data points / pixels in the data and the parameters of the

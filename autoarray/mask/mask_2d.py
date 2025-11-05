@@ -215,7 +215,7 @@ class Mask2D(Mask):
             pixel_scales=pixel_scales,
         )
 
-    @cached_property
+    @property
     def native_for_slim(self):
         return self.derive_indexes.native_for_slim
 
@@ -243,7 +243,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    @cached_property
+    @property
     def derive_indexes(self) -> DeriveIndexes2D:
         return DeriveIndexes2D(mask=self)
 
@@ -850,7 +850,7 @@ class Mask2D(Mask):
 
         return central_row_pixels == central_column_pixels
 
-    @cached_property
+    @property
     def circular_radius(self) -> float:
         """
         Returns the radius in scaled units of a circular mask.
