@@ -1,7 +1,12 @@
-import jax.numpy as jnp
 import numpy as np
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    import numpy as xp
 
+from autoconf.xp_import import auto_xp
+
+@auto_xp
 def native_index_for_slim_index_1d_from(
     mask_1d: np.ndarray,
 ) -> np.ndarray:
@@ -33,7 +38,4 @@ def native_index_for_slim_index_1d_from(
     native_index_for_slim_index_1d =  native_index_for_slim_index_1d_from(mask_2d=mask_2d)
 
     """
-
-    if isinstance(mask_1d, np.ndarray):
-        return np.flatnonzero(~mask_1d)
-    return jnp.flatnonzero(~mask_1d)
+    return xp.flatnonzero(~mask_1d)
