@@ -297,6 +297,7 @@ class AbstractInversion:
         raise NotImplementedError
 
     @property
+    @auto_xp
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -307,7 +308,7 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return jnp.hstack(self.operated_mapping_matrix_list)
+        return xp.hstack(self.operated_mapping_matrix_list)
 
     @property
     def data_vector(self) -> np.ndarray:
@@ -363,6 +364,7 @@ class AbstractInversion:
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
 
     @property
+    @auto_xp
     def curvature_reg_matrix(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
@@ -375,7 +377,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        return jnp.add(self.curvature_matrix, self.regularization_matrix)
+        return xp.add(self.curvature_matrix, self.regularization_matrix)
 
     @property
     def curvature_reg_matrix_reduced(self) -> Optional[np.ndarray]:
@@ -402,6 +404,7 @@ class AbstractInversion:
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
     @property
+    @auto_xp
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -446,7 +449,7 @@ class AbstractInversion:
                 )
 
                 # Allocate full solution array
-                reconstruction = jnp.zeros(self.data_vector.shape[0])
+                reconstruction = xp.zeros(self.data_vector.shape[0])
 
                 # Scatter the partial solution back to the full shape
                 reconstruction = reconstruction.at[ids_to_keep].set(
@@ -608,6 +611,7 @@ class AbstractInversion:
         return data_subtracted_dict
 
     @property
+    @auto_xp
     def regularization_term(self) -> float:
         """
         Returns the regularization term of an inversion. This term represents the sum of the difference in flux
@@ -626,12 +630,13 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return jnp.matmul(
+        return xp.matmul(
             self.reconstruction_reduced.T,
-            jnp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
     @property
+    @auto_xp
     def log_det_curvature_reg_matrix_term(self) -> float:
         """
         The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
@@ -641,11 +646,12 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * jnp.sum(
-            jnp.log(jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+        return 2.0 * xp.sum(
+            xp.log(xp.diag(xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
         )
 
     @property
+    @auto_xp
     def log_det_regularization_matrix_term(self) -> float:
         """
         The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
@@ -662,8 +668,8 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * jnp.sum(
-            jnp.log(jnp.diag(jnp.linalg.cholesky(self.regularization_matrix_reduced)))
+        return 2.0 * xp.sum(
+            xp.log(xp.diag(xp.linalg.cholesky(self.regularization_matrix_reduced)))
         )
 
     @property
