@@ -1,12 +1,16 @@
 import numpy as np
-import jax.numpy as jnp
-from typing import Tuple
 import warnings
+from typing import Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import numpy as xp
+
+from autoconf.xp_import import auto_xp
 
 from autoarray import exc
 
 
-#@auto_xp
+@auto_xp
 def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray,
 ) -> np.ndarray:
@@ -51,14 +55,8 @@ def native_index_for_slim_index_2d_from(
 
     native_index_for_slim_index_2d = native_index_for_slim_index_2d_from(mask_2d=mask_2d)
     """
-
-    if isinstance(mask_2d, jnp.ndarray):
-        # JAX branch (assume jnp.ndarray)
-        rows, cols = jnp.where(~mask_2d.astype(bool))
-        return jnp.stack([rows, cols], axis=1)
-
-    rows, cols = np.where(~mask_2d.astype(bool))
-    return np.stack([rows, cols], axis=1)
+    rows, cols = xp.where(~mask_2d.astype(bool))
+    return xp.stack([rows, cols], axis=1)
 
 
 def mask_2d_centres_from(
