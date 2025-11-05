@@ -69,6 +69,7 @@ def to_vector_yx(func):
     def wrapper(
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        xp=np,
         *args,
         **kwargs,
     ) -> Union[np.ndarray, VectorYX2D, VectorYX2DIrregular, List]:
@@ -106,6 +107,6 @@ def to_vector_yx(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        return VectorYXMaker(func=func, obj=obj, grid=grid, *args, **kwargs).result
+        return VectorYXMaker(func=func, obj=obj, grid=grid, xp=xp, *args, **kwargs).result
 
     return wrapper

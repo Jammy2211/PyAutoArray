@@ -4,7 +4,10 @@ import numpy as np
 from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
+    import numpy as xp
     from autoarray.mask.mask_2d import Mask2D
+
+from autoconf.xp_import import auto_xp
 
 from autoarray.mask import mask_2d_util
 
@@ -120,8 +123,6 @@ def convert_array_2d(
     """
     array_2d = convert_array(array=array_2d)
 
-    is_numpy = True if isinstance(array_2d, np.ndarray) else False
-
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
     is_native = len(array_2d.shape) == 2
@@ -130,18 +131,16 @@ def convert_array_2d(
         array_2d *= ~mask_2d
 
     if is_native == store_native:
-        array_2d = array_2d
+        return array_2d
     elif not store_native:
-        array_2d = array_2d_slim_from(
+        return array_2d_slim_from(
             array_2d_native=array_2d,
             mask_2d=mask_2d,
         )
-    else:
-        array_2d = array_2d_native_from(
-            array_2d_slim=array_2d,
-            mask_2d=mask_2d,
-        )
-    return np.array(array_2d) if is_numpy else jnp.array(array_2d)
+    return array_2d_native_from(
+        array_2d_slim=array_2d,
+        mask_2d=mask_2d,
+    )
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
@@ -520,7 +519,7 @@ def array_2d_native_from(
         native_index_for_slim_index_2d=native_index_for_slim_index_2d,
     )
 
-
+@auto_xp
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
     shape: Tuple[int, int],
@@ -553,10 +552,11 @@ def array_2d_via_indexes_from(
     ndarray
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
-    if isinstance(array_2d_slim, np.ndarray):
-        array = np.zeros(shape)
+    array = xp.zeros(shape, dtype=array_2d_slim.dtype)
+
+    if xp.__name__.startswith("jax"):
+        array = array.at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
+    else:
         array[tuple(native_index_for_slim_index_2d.T)] = array_2d_slim
-        return array
-    return (
-        jnp.zeros(shape).at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
-    )
+
+    return array

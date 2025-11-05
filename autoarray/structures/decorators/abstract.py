@@ -10,7 +10,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 class AbstractMaker:
-    def __init__(self, func, obj, grid, *args, **kwargs):
+    def __init__(self, func, obj, grid, xp=np, *args, **kwargs):
         """
         Makes 2D data structures from an input function and grid, ensuring that the structure of the input grid is
         paired to the structure of the output data structure.
@@ -52,6 +52,7 @@ class AbstractMaker:
         self.func = func
         self.obj = obj
         self.grid = grid
+        self.xp = xp
         self.args = args
         self.kwargs = kwargs
 
@@ -92,8 +93,8 @@ class AbstractMaker:
 
         if isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
-            return self.func(self.obj, grid, *self.args, **self.kwargs)
-        return self.func(self.obj, self.grid, *self.args, **self.kwargs)
+            return self.func(self.obj, grid, self.xp, *self.args, **self.kwargs)
+        return self.func(self.obj, self.grid, self.xp, *self.args, **self.kwargs)
 
     @property
     def result(self):

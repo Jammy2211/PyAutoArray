@@ -1,12 +1,8 @@
 import copy
 from jax.scipy.linalg import block_diag
 import numpy as np
+import jax.numpy as xp
 from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    import numpy as xp
-
-from autoconf.xp_import import auto_xp
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
@@ -271,7 +267,6 @@ class AbstractInversion:
         return self.data.mask
 
     @property
-    @auto_xp
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
@@ -296,7 +291,6 @@ class AbstractInversion:
         raise NotImplementedError
 
     @property
-    @auto_xp
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -363,7 +357,6 @@ class AbstractInversion:
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
 
     @property
-    @auto_xp
     def curvature_reg_matrix(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
@@ -373,6 +366,7 @@ class AbstractInversion:
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
@@ -403,7 +397,6 @@ class AbstractInversion:
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
     @property
-    @auto_xp
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -419,6 +412,7 @@ class AbstractInversion:
             ZTZ := np.dot(Z.T, Z)
             ZTx := np.dot(Z.T, x)
         """
+
         if self.settings.use_positive_only_solver:
 
             if (
@@ -613,7 +607,6 @@ class AbstractInversion:
         return data_subtracted_dict
 
     @property
-    @auto_xp
     def regularization_term(self) -> float:
         """
         Returns the regularization term of an inversion. This term represents the sum of the difference in flux
@@ -628,7 +621,6 @@ class AbstractInversion:
         The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens,
         this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
         """
-
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
@@ -638,7 +630,6 @@ class AbstractInversion:
         )
 
     @property
-    @auto_xp
     def log_det_curvature_reg_matrix_term(self) -> float:
         """
         The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
@@ -653,7 +644,6 @@ class AbstractInversion:
         )
 
     @property
-    @auto_xp
     def log_det_regularization_matrix_term(self) -> float:
         """
         The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
