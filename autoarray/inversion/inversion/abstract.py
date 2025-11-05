@@ -1,9 +1,8 @@
 import copy
-import jax.numpy as jnp
 from jax.scipy.linalg import block_diag
 import numpy as np
-
 from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
+
 if TYPE_CHECKING:
     import numpy as xp
 

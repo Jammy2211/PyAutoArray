@@ -6,6 +6,7 @@ import warnings
 from autoarray import exc
 
 
+#@auto_xp
 def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray,
 ) -> np.ndarray:

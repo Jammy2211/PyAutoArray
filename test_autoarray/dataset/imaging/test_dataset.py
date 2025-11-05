@@ -33,6 +33,72 @@ def make_test_data_path():
     return test_data_path
 
 
+
+def test__grid__uses_mask_and_settings(
+    image_7x7,
+    noise_map_7x7,
+    mask_2d_7x7,
+    grid_2d_7x7,
+):
+    masked_image_7x7 = aa.Array2D(
+        values=image_7x7.native,
+        mask=mask_2d_7x7,
+    )
+
+    masked_noise_map_7x7 = aa.Array2D(values=noise_map_7x7.native, mask=mask_2d_7x7)
+
+    masked_imaging_7x7 = aa.Imaging(
+        data=masked_image_7x7,
+        noise_map=masked_noise_map_7x7,
+        over_sample_size_lp=2,
+    )
+
+    assert isinstance(masked_imaging_7x7.grids.lp, aa.Grid2D)
+    assert (masked_imaging_7x7.grids.lp == grid_2d_7x7).all()
+    assert (masked_imaging_7x7.grids.lp.slim == grid_2d_7x7).all()
+
+
+def test__grids_pixelization__uses_mask_and_settings(
+    image_7x7,
+    noise_map_7x7,
+    mask_2d_7x7,
+    grid_2d_7x7,
+):
+    masked_image_7x7 = aa.Array2D(values=image_7x7.native, mask=mask_2d_7x7)
+
+    masked_noise_map_7x7 = aa.Array2D(values=noise_map_7x7.native, mask=mask_2d_7x7)
+
+    masked_imaging_7x7 = aa.Imaging(
+        data=masked_image_7x7,
+        noise_map=masked_noise_map_7x7,
+    )
+
+    assert (masked_imaging_7x7.grids.pixelization == grid_2d_7x7).all()
+    assert (masked_imaging_7x7.grids.pixelization.slim == grid_2d_7x7).all()
+
+    masked_imaging_7x7 = aa.Imaging(
+        data=masked_image_7x7,
+        noise_map=masked_noise_map_7x7,
+        over_sample_size_lp=2,
+        over_sample_size_pixelization=4,
+    )
+
+    assert isinstance(masked_imaging_7x7.grids.pixelization, aa.Grid2D)
+    assert masked_imaging_7x7.grids.over_sample_size_pixelization[0] == 4
+
+
+def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
+    dataset_7x7 = aa.Imaging(
+        data=image_7x7,
+        noise_map=noise_map_7x7,
+        over_sample_size_lp=2,
+        over_sample_size_pixelization=4,
+    )
+
+    assert dataset_7x7.grids.over_sample_size_lp[0] == 2
+    assert dataset_7x7.grids.over_sample_size_pixelization[0] == 4
+
+
 def test__noise_covariance_input__noise_map_uses_diag():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_covariance_matrix = np.ones(shape=(9, 9))
