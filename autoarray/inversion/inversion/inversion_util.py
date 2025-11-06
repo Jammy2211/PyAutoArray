@@ -1,17 +1,14 @@
-import jax.numpy as jnp
-import jax.lax as lax
 import numpy as np
 
 from typing import List, Optional, Type
 
 from autoarray.inversion.inversion.settings import SettingsInversion
 
-from autoarray import numba_util
 from autoarray import exc
-
+from autoarray.util.fnnls import fnnls_cholesky
 
 def curvature_matrix_via_w_tilde_from(
-    w_tilde: np.ndarray, mapping_matrix: np.ndarray
+    w_tilde: np.ndarray, mapping_matrix: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` (see Warren & Dye 2003) from `w_tilde`.
@@ -34,13 +31,14 @@ def curvature_matrix_via_w_tilde_from(
     ndarray
         The curvature matrix `F` (see Warren & Dye 2003).
     """
-    return jnp.dot(mapping_matrix.T, jnp.dot(w_tilde, mapping_matrix))
+    return xp.dot(mapping_matrix.T, xp.dot(w_tilde, mapping_matrix))
 
 
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix: np.ndarray,
     value: float,
     no_regularization_index_list: Optional[List] = None,
+    xp=np
 ) -> np.ndarray:
     """
     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
@@ -56,20 +54,23 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix
         The curvature matrix which is being constructed in order to solve a linear system of equations.
     """
-    return curvature_matrix.at[
-        no_regularization_index_list, no_regularization_index_list
-    ].add(value)
+    if xp.__name__.startswith("jax"):
+        return curvature_matrix.at[
+            no_regularization_index_list, no_regularization_index_list
+        ].add(value)
+    curvature_matrix[no_regularization_index_list, no_regularization_index_list] += value
+    return curvature_matrix
 
 
 def curvature_matrix_mirrored_from(
-    curvature_matrix: np.ndarray,
+    curvature_matrix: np.ndarray, xp=np
 ) -> np.ndarray:
     # Copy the original matrix and its transpose
     m1 = curvature_matrix
     m2 = curvature_matrix.T
 
     # For each entry, prefer the non-zero value from either the matrix or its transpose
-    mirrored = jnp.where(m1 != 0, m1, m2)
+    mirrored = xp.where(m1 != 0, m1, m2)
 
     return mirrored
 
@@ -80,6 +81,7 @@ def curvature_matrix_via_mapping_matrix_from(
     add_to_curvature_diag: bool = False,
     no_regularization_index_list: Optional[List] = None,
     settings: SettingsInversion = SettingsInversion(),
+    xp=np
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
@@ -94,20 +96,21 @@ def curvature_matrix_via_mapping_matrix_from(
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
     array = mapping_matrix / noise_map[:, None]
-    curvature_matrix = jnp.dot(array.T, array)
+    curvature_matrix = xp.dot(array.T, array)
 
     if add_to_curvature_diag and len(no_regularization_index_list) > 0:
         curvature_matrix = curvature_matrix_with_added_to_diag_from(
             curvature_matrix=curvature_matrix,
             value=settings.no_regularization_add_to_curvature_diag_value,
             no_regularization_index_list=no_regularization_index_list,
+            xp=xp
         )
 
     return curvature_matrix
 
 
 def mapped_reconstructed_data_via_mapping_matrix_from(
-    mapping_matrix: np.ndarray, reconstruction: np.ndarray
+    mapping_matrix: np.ndarray, reconstruction: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
@@ -118,7 +121,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    return jnp.dot(mapping_matrix, reconstruction)
+    return xp.dot(mapping_matrix, reconstruction)
 
 
 def mapped_reconstructed_data_via_w_tilde_from(
@@ -152,6 +155,7 @@ def mapped_reconstructed_data_via_w_tilde_from(
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
+    xp=np,
 ):
     """
     Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -188,12 +192,14 @@ def reconstruction_positive_negative_from(
     curvature_reg_matrix
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
-    return jnp.linalg.solve(curvature_reg_matrix, data_vector)
+    return xp.linalg.solve(curvature_reg_matrix, data_vector)
 
 
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
+    settings: SettingsInversion = SettingsInversion(),
+    xp=np,
 ):
     """
     Solve the linear system Eq.(2) (in terms of minimizing the quadratic value) of
@@ -237,9 +243,27 @@ def reconstruction_positive_only_from(
     -------
     Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
-    import jaxnnls
+    if xp.__name__.startswith("jax"):
 
-    return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
+        import jaxnnls
+        return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
+
+    try:
+        if settings.positive_only_uses_p_initial:
+            P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
+        else:
+            P_initial = np.zeros(0, dtype=int)
+
+        return fnnls_cholesky(
+            curvature_reg_matrix,
+            (data_vector).T,
+            P_initial=P_initial,
+        )
+
+    except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
+        raise exc.InversionException() from e
+
+
 
 
 def preconditioner_matrix_via_mapping_matrix_from(

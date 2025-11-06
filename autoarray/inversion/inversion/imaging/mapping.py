@@ -142,6 +142,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 settings=self.settings,
                 add_to_curvature_diag=True,
                 no_regularization_index_list=self.no_regularization_index_list,
+                xp=self.xp
             )
 
             curvature_matrix[
@@ -150,7 +151,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             ] = diag
 
         curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
+            curvature_matrix=curvature_matrix, xp=self.xp
         )
 
         return curvature_matrix
@@ -180,6 +181,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             settings=self.settings,
             add_to_curvature_diag=True,
             no_regularization_index_list=self.no_regularization_index_list,
+            xp=self.xp
         )
 
     @property
@@ -222,6 +224,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=operated_mapping_matrix_list[index],
                     reconstruction=reconstruction,
+                    xp=self.xp
                 )
             )
 

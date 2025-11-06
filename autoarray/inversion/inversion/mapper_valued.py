@@ -191,7 +191,9 @@ class MapperValued:
 
         return Array2D(
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=mapping_matrix, reconstruction=self.values_masked
+                mapping_matrix=mapping_matrix,
+                reconstruction=self.values_masked,
+                xp=self.xp
             ),
             mask=self.mapper.mapper_grids.mask,
         )

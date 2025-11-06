@@ -257,6 +257,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     curvature_matrix=curvature_matrix,
                     value=self.settings.no_regularization_add_to_curvature_diag_value,
                     no_regularization_index_list=self.no_regularization_index_list,
+                    xp=self.xp
                 )
             )
 

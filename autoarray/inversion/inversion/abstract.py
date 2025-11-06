@@ -438,6 +438,8 @@ class AbstractInversion:
                     inversion_util.reconstruction_positive_only_from(
                         data_vector=data_vector,
                         curvature_reg_matrix=curvature_reg_matrix,
+                        settings=self.settings,
+                        xp=self.xp
                     )
                 )
 
@@ -459,11 +461,14 @@ class AbstractInversion:
                 return inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix,
+                    settings=self.settings,
+                    xp=self.xp
                 )
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
             curvature_reg_matrix=self.curvature_reg_matrix,
+            xp=self.xp
         )
 
     @property
