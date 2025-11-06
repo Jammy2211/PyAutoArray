@@ -17,6 +17,8 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 
+from autoarray import exc
+
 
 class InversionInterferometerWTilde(AbstractInversionInterferometer):
     def __init__(
@@ -25,6 +27,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         w_tilde: WTildeInterferometer,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -71,6 +74,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            xp=xp,
         )
 
         self.settings = settings

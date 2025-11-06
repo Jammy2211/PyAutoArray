@@ -23,6 +23,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -52,6 +53,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            xp=xp
         )
 
     @property

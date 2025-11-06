@@ -23,6 +23,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -49,6 +50,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
+            xp=xp
         )
 
     @property

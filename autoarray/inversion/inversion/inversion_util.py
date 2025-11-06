@@ -65,6 +65,7 @@ def curvature_matrix_with_added_to_diag_from(
 def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray, xp=np
 ) -> np.ndarray:
+
     # Copy the original matrix and its transpose
     m1 = curvature_matrix
     m2 = curvature_matrix.T

@@ -27,6 +27,7 @@ class AbstractInversion:
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
+        xp=np
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -73,6 +74,8 @@ class AbstractInversion:
         self.settings = settings
 
         self.preloads = preloads or Preloads()
+
+        self.xp = xp
 
     @property
     def data(self):

@@ -25,6 +25,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -64,6 +65,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            xp=xp
         )
 
         if self.settings.use_w_tilde:
@@ -257,7 +259,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     curvature_matrix=curvature_matrix,
                     value=self.settings.no_regularization_add_to_curvature_diag_value,
                     no_regularization_index_list=self.no_regularization_index_list,
-                    xp=self.xp
                 )
             )
 
