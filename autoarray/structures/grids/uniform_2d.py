@@ -558,7 +558,7 @@ class Grid2D(Structure):
         )
 
         return Grid2D(
-            values=np.array(grid_2d),
+            values=grid_2d,
             mask=mask,
             over_sample_size=over_sample_size,
         )

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class DeriveGrid2D:
-    def __init__(self, mask: Mask2D):
+    def __init__(self, mask: Mask2D, xp=np):
         """
         Derives ``Grid2D`` objects from a ``Mask2D``.
 
@@ -60,6 +60,7 @@ class DeriveGrid2D:
             print(derive_grid_2d.border)
         """
         self.mask = mask
+        self.xp = xp
 
     @property
     def all_false(self) -> Grid2D:
@@ -162,6 +163,7 @@ class DeriveGrid2D:
             mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
+            xp=self.xp
         )
         return Grid2D(values=grid_2d, mask=self.mask)
 
