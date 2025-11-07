@@ -13,7 +13,7 @@ from autoarray import type as ty
 
 
 def convert_grid_1d(
-    grid_1d: Union[np.ndarray, List], mask_1d: Mask1D, store_native: bool = False
+    grid_1d: Union[np.ndarray, List], mask_1d: Mask1D, store_native: bool = False, xp=np
 ) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -55,6 +55,7 @@ def convert_grid_1d(
         grid_1d = grid_1d_native_from(
             grid_1d_slim=grid_1d,
             mask_1d=mask_1d,
+            xp=xp
         )
     return np.array(grid_1d) if is_numpy else jnp.array(grid_1d)
 
@@ -179,6 +180,7 @@ def grid_1d_slim_from(
 def grid_1d_native_from(
     grid_1d_slim: np.ndarray,
     mask_1d: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     """
     For a slimmed 1D grid of shape [total_unmasked_pixels], that was computed by extracting the unmasked values
@@ -208,4 +210,5 @@ def grid_1d_native_from(
     return array_1d_util.array_1d_native_from(
         array_1d_slim=grid_1d_slim,
         mask_1d=mask_1d,
+        xp=xp
     )

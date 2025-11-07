@@ -24,6 +24,7 @@ class Mask(AbstractNDArray, ABC):
         mask: np.ndarray,
         origin: tuple,
         pixel_scales: ty.PixelScales,
+        xp=np,
         *args,
         **kwargs,
     ):
@@ -55,6 +56,7 @@ class Mask(AbstractNDArray, ABC):
 
         self.pixel_scales = pixel_scales
         self.origin = origin
+        self.xp = xp
 
     @property
     def mask(self):

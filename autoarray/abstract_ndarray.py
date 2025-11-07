@@ -7,6 +7,7 @@ from abc import abstractmethod
 import jax.numpy as jnp
 from jax._src.tree_util import register_pytree_node
 from jax import Array
+import numpy as np
 
 from autoconf.fitsable import output_to_fits
 
@@ -64,8 +65,10 @@ def unwrap_array(func):
 
 
 class AbstractNDArray(ABC):
-    def __init__(self, array):
+    def __init__(self, array, xp=np):
+
         self._is_transformed = False
+        self.xp = xp
 
         while isinstance(array, AbstractNDArray):
             array = array.array

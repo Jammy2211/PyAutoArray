@@ -10,7 +10,7 @@ from autoarray.structures.abstract_structure import Structure
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoconf import cached_property
+
 from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.abstract_mask import Mask
@@ -47,6 +47,7 @@ class Mask2D(Mask):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
+        xp=np,
         *args,
         **kwargs,
     ):
@@ -199,7 +200,7 @@ class Mask2D(Mask):
         """
 
         if type(mask) is list:
-            mask = np.asarray(mask).astype("bool")
+            mask = xp.asarray(mask).astype("bool")
 
         if invert:
             mask = ~mask
@@ -213,6 +214,7 @@ class Mask2D(Mask):
             mask=mask,
             origin=origin,
             pixel_scales=pixel_scales,
+            xp=xp,
         )
 
     @property
@@ -245,7 +247,7 @@ class Mask2D(Mask):
 
     @property
     def derive_indexes(self) -> DeriveIndexes2D:
-        return DeriveIndexes2D(mask=self)
+        return DeriveIndexes2D(mask=self, xp=self.xp)
 
     @property
     def derive_mask(self) -> DeriveMask2D:

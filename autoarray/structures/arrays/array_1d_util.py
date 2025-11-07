@@ -13,6 +13,7 @@ def convert_array_1d(
     array_1d: Union[np.ndarray, List],
     mask_1d: Mask1D,
     store_native: bool = False,
+    xp=np
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -110,17 +111,20 @@ def array_1d_slim_from(
 def array_1d_native_from(
     array_1d_slim: np.ndarray,
     mask_1d: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     shape = mask_1d.shape[0]
 
     native_index_for_slim_index_1d = mask_1d_util.native_index_for_slim_index_1d_from(
         mask_1d=mask_1d,
+        xp=xp,
     ).astype("int")
 
     return array_1d_via_indexes_1d_from(
         array_1d_slim=array_1d_slim,
         shape=shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
+        xp=xp
     )
 
 
@@ -166,8 +170,8 @@ def array_1d_via_indexes_1d_from(
     array = xp.zeros(shape, dtype=array_1d_slim.dtype)
 
     if xp.__name__.startswith("jax"):
-        array = array.at[tuple(native_index_for_slim_index_1d.T)].set(array_1d_slim)
+        array = array.at[native_index_for_slim_index_1d].set(array_1d_slim)
     else:
-        array[tuple(native_index_for_slim_index_1d.T)] = array_1d_slim
+        array[native_index_for_slim_index_1d] = array_1d_slim
 
     return array
