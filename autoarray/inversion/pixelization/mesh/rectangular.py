@@ -97,6 +97,7 @@ class Rectangular(AbstractMesh):
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
+            xp=xp
         )
 
         mesh_grid = self.mesh_grid_from(

@@ -57,7 +57,11 @@ class MapperValued:
         values = self.values
 
         if self.mesh_pixel_mask is not None:
-            values = values.at[self.mesh_pixel_mask].set(0.0)
+            if self.mapper.xp.__name__.startswith("jax"):
+                values = values.at[self.mesh_pixel_mask].set(0.0)
+            else:
+                values = values.copy()
+                values[self.mesh_pixel_mask] = 0.0
 
         return values
 
