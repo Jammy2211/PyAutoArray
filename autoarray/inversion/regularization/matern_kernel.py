@@ -139,7 +139,7 @@ class MaternKernel(AbstractRegularization):
         self.nu = float(nu)
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -158,9 +158,9 @@ class MaternKernel(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.params)
+        return self.coefficient * xp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -175,8 +175,8 @@ class MaternKernel(AbstractRegularization):
         """
         covariance_matrix = matern_cov_matrix_from(
             scale=self.scale,
-            pixel_points=np.array(linear_obj.source_plane_mesh_grid),
+            pixel_points=xp.array(linear_obj.source_plane_mesh_grid),
             nu=self.nu,
         )
 
-        return self.coefficient * np.linalg.inv(covariance_matrix)
+        return self.coefficient * xp.linalg.inv(covariance_matrix)

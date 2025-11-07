@@ -730,7 +730,7 @@ class AbstractInversion:
 
             return np.zeros((pixels,))
 
-        return regularization.regularization_weights_from(linear_obj=linear_obj)
+        return regularization.regularization_weights_from(linear_obj=linear_obj, xp=self.xp)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
@@ -738,7 +738,8 @@ class AbstractInversion:
 
         for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
             regularization_weights_dict[mapper] = self.regularization_weights_from(
-                index=index
+                index=index,
+                xp=self.xp
             )
 
         return regularization_weights_dict

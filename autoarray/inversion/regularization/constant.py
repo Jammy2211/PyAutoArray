@@ -1,5 +1,5 @@
 from __future__ import annotations
-import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -10,9 +10,10 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 def constant_regularization_matrix_from(
     coefficient: float,
-    neighbors: jnp.ndarray[[int, int], jnp.int64],
-    neighbors_sizes: jnp.ndarray[[int], jnp.int64],
-) -> jnp.ndarray[[int, int], jnp.float64]:
+    neighbors: np.ndarray,
+    neighbors_sizes: np.ndarray,
+    xp=np
+) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
 
@@ -47,17 +48,23 @@ def constant_regularization_matrix_from(
     # flatten it for feeding into the matrix as j indices
     neighbors = neighbors.flatten()
     # now create the corresponding i indices
-    I_IDX = jnp.repeat(jnp.arange(S), P)
+    I_IDX = xp.repeat(xp.arange(S), P)
     # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
     # This ensures that JAX can efficiently drop these entries during matrix updates.
-    neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
-    return (
-        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
-            I_IDX, neighbors
-        ]
-        # unique indices should be guranteed by neighbors-spec
-        .add(-regularization_coefficient, mode="drop", unique_indices=True)
-    )
+    neighbors = xp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+
+    if xp.__name__.startswith("jax"):
+        return (
+            xp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+                I_IDX, neighbors
+            ]
+            # unique indices should be guranteed by neighbors-spec
+            .add(-regularization_coefficient, mode="drop", unique_indices=True)
+        )
+    mat = xp.diag(1e-8 + regularization_coefficient * neighbors_sizes)
+    # No .at, so mutate in-place
+    mat[I_IDX, neighbors] += -regularization_coefficient
+    return mat
 
 
 class Constant(AbstractRegularization):
@@ -88,7 +95,7 @@ class Constant(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -107,9 +114,9 @@ class Constant(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * jnp.ones(linear_obj.params)
+        return self.coefficient * xp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -127,4 +134,5 @@ class Constant(AbstractRegularization):
             coefficient=self.coefficient,
             neighbors=linear_obj.neighbors,
             neighbors_sizes=linear_obj.neighbors.sizes,
+            xp=xp
         )

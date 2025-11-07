@@ -1,5 +1,5 @@
 from __future__ import annotations
-import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -11,9 +11,10 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 def constant_zeroth_regularization_matrix_from(
     coefficient: float,
     coefficient_zeroth: float,
-    neighbors: jnp.ndarray,
-    neighbors_sizes: jnp.ndarray[[int], jnp.int64],
-) -> jnp.ndarray:
+    neighbors: np.ndarray,
+    neighbors_sizes,
+    xp=np
+) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
 
@@ -33,7 +34,7 @@ def constant_zeroth_regularization_matrix_from(
 
     Returns
     -------
-    jnp.ndarray
+    np.ndarray
         The regularization matrix computed using Regularization where the effective regularization
         coefficient of every source pixel is the same.
     """
@@ -45,21 +46,26 @@ def constant_zeroth_regularization_matrix_from(
     # flatten it for feeding into the matrix as j indices
     neighbors = neighbors.flatten()
     # now create the corresponding i indices
-    I_IDX = jnp.repeat(jnp.arange(S), P)
+    I_IDX = xp.repeat(xp.arange(S), P)
     # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
     # This ensures that JAX can efficiently drop these entries during matrix updates.
-    neighbors = jnp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
-    const = (
-        jnp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
-            I_IDX, neighbors
-        ]
-        # unique indices should be guranteed by neighbors-spec
-        .add(-regularization_coefficient, mode="drop", unique_indices=True)
-    )
+    neighbors = xp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+    if xp.__name__.startswith("jax"):
+        const = (
+            xp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+                I_IDX, neighbors
+            ]
+            # unique indices should be guranteed by neighbors-spec
+            .add(-regularization_coefficient, mode="drop", unique_indices=True)
+        )
+    else:
+        diag_vals = 1e-8 + regularization_coefficient * neighbors_sizes
+        const = xp.diag(diag_vals)
+        const[I_IDX, neighbors] += -regularization_coefficient
 
     reg_coeff = coefficient_zeroth**2.0
     # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
-    zeroth = jnp.eye(P) * reg_coeff
+    zeroth = xp.eye(P) * reg_coeff
 
     return const + zeroth
 
@@ -71,7 +77,7 @@ class ConstantZeroth(AbstractRegularization):
         self.coefficient_neighbor = coefficient_neighbor
         self.coefficient_zeroth = coefficient_zeroth
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -90,9 +96,9 @@ class ConstantZeroth(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient_neighbor * jnp.ones(linear_obj.params)
+        return self.coefficient_neighbor * xp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -109,4 +115,5 @@ class ConstantZeroth(AbstractRegularization):
             coefficient=self.coefficient_neighbor,
             coefficient_zeroth=self.coefficient_zeroth,
             neighbors=linear_obj.neighbors,
+            xp=xp
         )

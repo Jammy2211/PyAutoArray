@@ -39,6 +39,7 @@ def mapper_from(
     -------
     A mapper whose type is determined by the input `mapper_grids` mesh type.
     """
+
     from autoarray.inversion.pixelization.mappers.rectangular import (
         MapperRectangular,
     )

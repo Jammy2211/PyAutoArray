@@ -84,11 +84,10 @@ class AbstractMapper(LinearObj):
            edge.
         """
 
-        super().__init__(regularization=regularization)
+        super().__init__(regularization=regularization, xp=xp)
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
-        self.xp = xp
 
     @property
     def params(self) -> int:
@@ -271,7 +270,7 @@ class AbstractMapper(LinearObj):
             sub_fraction=self.over_sampler.sub_fraction.array,
         )
 
-    def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
+    def pixel_signals_from(self, signal_scale: float, xp=np) -> np.ndarray:
         """
         Returns the signal in each pixelization pixel, where this signal is an estimate of the expected signal
         each pixelization pixel contains given the data pixels it maps too.
@@ -293,6 +292,7 @@ class AbstractMapper(LinearObj):
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
             adapt_data=self.adapt_data.array,
+            xp=xp
         )
 
     def slim_indexes_for_pix_indexes(self, pix_indexes: List) -> List[List]:
