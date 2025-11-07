@@ -1,3 +1,5 @@
+import numpy as np
+
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
@@ -10,5 +12,5 @@ class MockRegularization(AbstractRegularization):
     def regularization_matrix_via_neighbors_from(self, neighbors, neighbors_sizes):
         return self.regularization_matrix
 
-    def regularization_matrix_from(self, linear_obj):
+    def regularization_matrix_from(self, linear_obj, xp=np):
         return self.regularization_matrix

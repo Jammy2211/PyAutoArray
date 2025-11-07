@@ -338,9 +338,16 @@ def adaptive_pixel_signals_from(
     flat_data_vals = xp.take(adapt_data[slim_index_for_sub_slim_index], I_sub, axis=0)
     flat_contrib = flat_data_vals * flat_weights  # (M_sub*B,)
 
+    pixel_signals = xp.zeros((pixels + 1,))
+    pixel_counts = xp.zeros((pixels + 1,))
+
     # 5) Scatter‐add into signal sums and counts:
-    pixel_signals = xp.zeros((pixels + 1,)).at[flat_pixidx].add(flat_contrib)
-    pixel_counts = xp.zeros((pixels + 1,)).at[flat_pixidx].add(valid.astype(float))
+    if xp.__name__.startswith("jax"):
+        pixel_signals = pixel_signals.at[flat_pixidx].add(flat_contrib)
+        pixel_counts = pixel_counts.at[flat_pixidx].add(valid.astype(float))
+    else:
+        xp.add.at(pixel_signals, flat_pixidx, flat_contrib)
+        xp.add.at(pixel_counts, flat_pixidx, valid.astype(float))
 
     # 6) Drop the extra “out-of-bounds” slot:
     pixel_signals = pixel_signals[:pixels]

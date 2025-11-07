@@ -61,10 +61,13 @@ def constant_regularization_matrix_from(
             # unique indices should be guranteed by neighbors-spec
             .add(-regularization_coefficient, mode="drop", unique_indices=True)
         )
-    mat = xp.diag(1e-8 + regularization_coefficient * neighbors_sizes)
-    # No .at, so mutate in-place
-    mat[I_IDX, neighbors] += -regularization_coefficient
-    return mat
+    else:
+        diag_vals = 1e-8 + regularization_coefficient * neighbors_sizes
+        mat = xp.diag(diag_vals).copy()
+
+        # Equivalent to: mat = mat.at[I_IDX, neighbors].add(-regularization_coefficient)
+        xp.add.at(mat, (I_IDX, neighbors), -regularization_coefficient)
+        return mat
 
 
 class Constant(AbstractRegularization):
