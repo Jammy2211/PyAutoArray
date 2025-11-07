@@ -1,17 +1,57 @@
 from functools import partial
-import jax
-import jax.numpy as jnp
 import numpy as np
 from typing import Tuple
 
 
 def forward_interp(xp, yp, x):
+    import jax
+    import jax.numpy as jnp
     return jax.vmap(jnp.interp, in_axes=(1, 1, None, None, None))(x, xp, yp, 0, 1).T
 
 
 def reverse_interp(xp, yp, x):
+    import jax
+    import jax.numpy as jnp
     return jax.vmap(jnp.interp, in_axes=(1, None, 1))(x, xp, yp).T
 
+def forward_interp_np(xp, yp, x):
+    """
+    xp: (N, M)
+    yp: (N, M)
+    x : (M,)  ← one x per column
+    """
+    N, M = xp.shape
+
+    out = np.empty((N, M), dtype=xp.dtype)
+
+    for j in range(M):
+        out[:, j] = np.interp(x[j], xp[:, j], yp[:, j], left=0, right=1)
+
+    return out
+
+def reverse_interp_np(xp, yp, x):
+    # xp can be (N,) or (N,M)
+    # yp can be (N,M)
+    # x  is expected to be (K,M)
+
+    # Make xp 2D so each column has its own xp
+    if xp.ndim == 1:
+        # broadcast xp to shape (N, M)
+        N, M = yp.shape
+        xp2 = np.broadcast_to(xp[:, None], (N, M))
+    else:
+        xp2 = xp
+
+    N, M = yp.shape
+    K, Mx = x.shape
+    assert M == Mx, "x must have same second dimension as yp"
+
+    out = np.empty((K, M), dtype=yp.dtype)
+
+    for j in range(M):
+        out[:, j] = np.interp(x[:, j], xp2[:, j], yp[:, j])
+
+    return out
 
 def create_transforms(traced_points, xp=np):
     # make functions that takes a set of traced points
@@ -23,9 +63,15 @@ def create_transforms(traced_points, xp=np):
 
     sort_points = xp.sort(traced_points, axis=0)  # [::2]
 
-    transform = partial(forward_interp, sort_points, t)
-    inv_transform = partial(reverse_interp, t, sort_points)
-    return transform, inv_transform
+    if xp.__name__.startswith("jax"):
+        transform = partial(forward_interp, sort_points, t)
+        inv_transform = partial(reverse_interp, t, sort_points)
+        return transform, inv_transform
+    else:
+        transform = partial(forward_interp_np, sort_points, t)
+        inv_transform = partial(reverse_interp_np, t, sort_points)
+        return transform, inv_transform
+
 
 
 def adaptive_rectangular_transformed_grid_from(source_plane_data_grid, grid, xp=np):
