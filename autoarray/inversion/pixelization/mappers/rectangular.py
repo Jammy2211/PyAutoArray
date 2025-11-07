@@ -99,15 +99,16 @@ class MapperRectangular(AbstractMapper):
             mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
                 source_grid_size=self.shape_native[0],
                 source_plane_data_grid=self.source_plane_data_grid.array,
-                source_plane_data_grid_over_sampled=jnp.array(
+                source_plane_data_grid_over_sampled=self.xp.array(
                     self.source_plane_data_grid.over_sampled
                 ),
+                xp=self.xp
             )
         )
 
         return PixSubWeights(
             mappings=mappings,
-            sizes=4 * jnp.ones(len(mappings), dtype="int"),
+            sizes=4 * self.xp.ones(len(mappings), dtype="int"),
             weights=weights,
         )
 
@@ -123,6 +124,7 @@ class MapperRectangular(AbstractMapper):
         return mapper_util.adaptive_rectangular_areas_from(
             source_grid_size=self.shape_native[0],
             source_plane_data_grid=self.source_plane_data_grid.array,
+            xp=self.xp
         )
 
     @property
@@ -136,10 +138,11 @@ class MapperRectangular(AbstractMapper):
         """
 
         # edges defined in 0 -> 1 space, there is one more edge than pixel centers on each side
-        edges = jnp.linspace(0, 1, self.shape_native[0] + 1)
-        edges_reshaped = jnp.stack([edges, edges]).T
+        edges = self.xp.linspace(0, 1, self.shape_native[0] + 1)
+        edges_reshaped = self.xp.stack([edges, edges]).T
 
         return mapper_util.adaptive_rectangular_transformed_grid_from(
             source_plane_data_grid=self.source_plane_data_grid.array,
             grid=edges_reshaped,
+            xp=self.xp
         )

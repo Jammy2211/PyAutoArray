@@ -1,7 +1,4 @@
-import jax.numpy as jnp
-
 import numpy as np
-from scipy.signal import fftconvolve
 
 
 def psf_operator_matrix_dense_from(
@@ -64,6 +61,7 @@ def w_tilde_data_imaging_from(
     noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
+    xp=np
 ) -> np.ndarray:
     """
     The matrix w_tilde is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF convolution of
@@ -99,7 +97,7 @@ def w_tilde_data_imaging_from(
     """
 
     # 1) weight map = image / noise^2 (safe where noise==0)
-    weight_map = jnp.where(
+    weight_map = xp.where(
         noise_map_native > 0.0, image_native / (noise_map_native**2), 0.0
     )
 
@@ -107,7 +105,7 @@ def w_tilde_data_imaging_from(
     ph, pw = Ky // 2, Kx // 2
 
     # 2) pad so neighbourhood gathers never go OOB
-    padded = jnp.pad(
+    padded = xp.pad(
         weight_map, ((ph, ph), (pw, pw)), mode="constant", constant_values=0.0
     )
 
@@ -117,8 +115,8 @@ def w_tilde_data_imaging_from(
     xs = native_index_for_slim_index[:, 1] + pw  # (N,)
 
     # kernel-relative offsets
-    dy = jnp.arange(Ky) - ph  # (Ky,)
-    dx = jnp.arange(Kx) - pw  # (Kx,)
+    dy = xp.arange(Ky) - ph  # (Ky,)
+    dx = xp.arange(Kx) - pw  # (Kx,)
 
     # broadcast to (N, Ky, Kx)
     Y = ys[:, None, None] + dy[None, :, None]
@@ -126,7 +124,7 @@ def w_tilde_data_imaging_from(
 
     # 4) gather patches and correlate (no kernel flip)
     patches = padded[Y, X]  # (N, Ky, Kx)
-    return jnp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
+    return xp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
 
 
 def data_vector_via_blurred_mapping_matrix_from(
