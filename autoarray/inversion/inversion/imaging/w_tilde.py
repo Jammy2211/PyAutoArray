@@ -1,8 +1,5 @@
-import jax.numpy as jnp
 import numpy as np
 from typing import Dict, List, Optional, Union
-
-from autoconf import cached_property
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging

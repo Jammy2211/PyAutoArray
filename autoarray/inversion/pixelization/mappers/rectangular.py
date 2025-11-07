@@ -1,7 +1,4 @@
-import jax.numpy as jnp
 from typing import Tuple
-
-from autoconf import cached_property
 
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights

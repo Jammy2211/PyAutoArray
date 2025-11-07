@@ -1,7 +1,3 @@
-import jax.numpy as jnp
-
-from autoconf import cached_property
-
 from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
