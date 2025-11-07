@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional
+from typing import Optional
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
@@ -97,6 +97,7 @@ class AbstractMesh:
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: np.ndarray = None,
+        xp=np,
     ) -> MapperGrids:
         raise NotImplementedError
 
@@ -104,6 +105,7 @@ class AbstractMesh:
         self,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
+        xp=np,
     ):
         raise NotImplementedError
 

@@ -60,6 +60,7 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,
+        xp=np,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
@@ -98,7 +99,10 @@ class Rectangular(AbstractMesh):
             source_plane_data_grid=source_plane_data_grid,
         )
 
-        mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
+        mesh_grid = self.mesh_grid_from(
+            source_plane_data_grid=relocated_grid,
+            xp=xp
+        )
 
         return MapperGrids(
             mask=mask,
@@ -112,6 +116,7 @@ class Rectangular(AbstractMesh):
         self,
         source_plane_data_grid: Optional[Grid2D] = None,
         source_plane_mesh_grid: Optional[Grid2D] = None,
+        xp=np,
     ) -> Mesh2DRectangular:
         """
         Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
@@ -129,6 +134,8 @@ class Rectangular(AbstractMesh):
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape,
             grid=Grid2DIrregular(source_plane_data_grid.over_sampled),
+            xp=xp
+
         )
 
     @property

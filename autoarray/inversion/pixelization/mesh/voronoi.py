@@ -1,3 +1,5 @@
+import numpy as np
+
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 
@@ -35,6 +37,7 @@ class Voronoi(Triangulation):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
+        xp=np,
     ) -> Mesh2DVoronoi:
         """
         Return the Voronoi `source_plane_mesh_grid` as a `Mesh2DVoronoi` object, which provides additional

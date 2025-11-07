@@ -2,8 +2,6 @@ from __future__ import annotations
 import logging
 import numpy as np
 
-from autoconf import cached_property
-
 from jax._src.tree_util import register_pytree_node_class
 from typing import TYPE_CHECKING
 
@@ -18,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 @register_pytree_node_class
 class DeriveIndexes2D:
+
     def __init__(self, mask: Mask2D, xp=np):
         """
         Derives 1D and 2D indexes of significance from a ``Mask2D``.

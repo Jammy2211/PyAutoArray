@@ -538,6 +538,7 @@ class Grid2D(Structure):
         cls,
         mask: Mask2D,
         over_sample_size: Union[int, Array2D] = 4,
+        xp=np,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -555,12 +556,14 @@ class Grid2D(Structure):
             mask_2d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
+            xp=xp
         )
 
         return Grid2D(
             values=grid_2d,
             mask=mask,
             over_sample_size=over_sample_size,
+            xp=xp
         )
 
     @classmethod

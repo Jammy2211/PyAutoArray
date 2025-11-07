@@ -221,7 +221,7 @@ class TransformerDFT:
 
 
 class TransformerNUFFT(NUFFT_cpu):
-    def __init__(self, uv_wavelengths: np.ndarray, real_space_mask: Mask2D, **kwargs):
+    def __init__(self, uv_wavelengths: np.ndarray, real_space_mask: Mask2D, xp=np, **kwargs):
         """
         Performs the Non-Uniform Fast Fourier Transform (NUFFT) for interferometric image reconstruction.
 
@@ -310,6 +310,8 @@ class TransformerNUFFT(NUFFT_cpu):
         self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
             2.0 * self.grid.shape_native[1]
         )
+
+        self.xp = xp
 
     def initialize_plan(self, ratio: int = 2, interp_kernel: Tuple[int, int] = (6, 6)):
         """

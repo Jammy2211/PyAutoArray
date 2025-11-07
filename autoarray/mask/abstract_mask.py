@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class Mask(AbstractNDArray, ABC):
+
     pixel_scales = None
 
     # noinspection PyUnusedLocal

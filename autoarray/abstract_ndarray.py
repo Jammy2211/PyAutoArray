@@ -65,10 +65,12 @@ def unwrap_array(func):
 
 
 class AbstractNDArray(ABC):
+
+    __no_flatten__ = ()
+
     def __init__(self, array, xp=np):
 
         self._is_transformed = False
-        self.xp = xp
 
         while isinstance(array, AbstractNDArray):
             array = array.array
@@ -82,7 +84,7 @@ class AbstractNDArray(ABC):
         except ValueError:
             pass
 
-    __no_flatten__ = ()
+        self.xp = xp
 
     def invert(self):
         new = self.copy()
@@ -104,12 +106,6 @@ class AbstractNDArray(ABC):
             )
         )
         return values, keys
-
-    @staticmethod
-    def flip_hdu_for_ds9(values):
-        if conf.instance["general"]["fits"]["flip_for_ds9"]:
-            return jnp.flipud(values)
-        return values
 
     @classmethod
     def instance_unflatten(cls, aux_data, children):
@@ -140,6 +136,12 @@ class AbstractNDArray(ABC):
         new_array = self.copy()
         new_array._array = array
         return new_array
+
+    @staticmethod
+    def flip_hdu_for_ds9(values):
+        if conf.instance["general"]["fits"]["flip_for_ds9"]:
+            return jnp.flipud(values)
+        return values
 
     def copy(self):
         new = copy(self)

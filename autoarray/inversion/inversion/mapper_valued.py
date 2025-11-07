@@ -187,13 +187,16 @@ class MapperValued:
         mapping_matrix = self.mapper.mapping_matrix
 
         if self.mesh_pixel_mask is not None:
-            mapping_matrix = mapping_matrix.at[:, self.mesh_pixel_mask].set(0.0)
+            if self.mapper.xp.__name__.startswith("jax"):
+                mapping_matrix = mapping_matrix.at[:, self.mesh_pixel_mask].set(0.0)
+            else:
+                mapping_matrix[:, self.mesh_pixel_mask] = 0.0
 
         return Array2D(
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=mapping_matrix,
                 reconstruction=self.values_masked,
-                xp=self.xp
+                xp=self.mapper.xp
             ),
             mask=self.mapper.mapper_grids.mask,
         )

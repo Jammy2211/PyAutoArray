@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class DeriveGrid2D:
+
     def __init__(self, mask: Mask2D, xp=np):
         """
         Derives ``Grid2D`` objects from a ``Mask2D``.
@@ -61,6 +62,13 @@ class DeriveGrid2D:
         """
         self.mask = mask
         self.xp = xp
+
+    def tree_flatten(self):
+        return (self.mask,), ()
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        return cls(mask=children[0])
 
     @property
     def all_false(self) -> Grid2D:

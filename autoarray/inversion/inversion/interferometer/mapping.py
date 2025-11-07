@@ -103,7 +103,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             xp=self.xp
         )
 
-        curvature_matrix = jnp.add(real_curvature_matrix, imag_curvature_matrix)
+        curvature_matrix = self.xp.add(real_curvature_matrix, imag_curvature_matrix)
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(

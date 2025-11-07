@@ -25,6 +25,7 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
+        xp=np
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -87,6 +88,7 @@ class AbstractMapper(LinearObj):
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
+        self.xp = xp
 
     @property
     def params(self) -> int:
