@@ -116,12 +116,7 @@ def convert_grid_2d(
     is_native = len(grid_2d.shape) == 3
 
     if is_native:
-        if not is_numpy:
-            grid_2d = grid_2d.at[:, :, 0].multiply(~mask_2d)
-            grid_2d = grid_2d.at[:, :, 1].multiply(~mask_2d)
-        else:
-            grid_2d[:, :, 0] *= ~mask_2d
-            grid_2d[:, :, 1] *= ~mask_2d
+        grid_2d = grid_2d * (~mask_2d)[..., None]
 
     if is_native == store_native:
         return grid_2d
