@@ -50,18 +50,22 @@ def constant_zeroth_regularization_matrix_from(
     # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
     # This ensures that JAX can efficiently drop these entries during matrix updates.
     neighbors = xp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+    diag_vals = 1e-8 + regularization_coefficient * neighbors_sizes
+
     if xp.__name__.startswith("jax"):
         const = (
-            xp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+            xp.diag(diag_vals).at[
                 I_IDX, neighbors
             ]
             # unique indices should be guranteed by neighbors-spec
             .add(-regularization_coefficient, mode="drop", unique_indices=True)
         )
     else:
-        diag_vals = 1e-8 + regularization_coefficient * neighbors_sizes
         const = xp.diag(diag_vals)
-        const[I_IDX, neighbors] += -regularization_coefficient
+        valid_mask = (neighbors >= 0) & (neighbors < const.shape[1])
+        I_valid = I_IDX[valid_mask]
+        neigh_valid = neighbors[valid_mask]
+        xp.add.at(const, (I_valid, neigh_valid), -regularization_coefficient)
 
     reg_coeff = coefficient_zeroth**2.0
     # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T

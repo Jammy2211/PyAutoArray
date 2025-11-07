@@ -11,6 +11,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 def exp_cov_matrix_from(
     scale: float,
     pixel_points: np.ndarray,  # shape (N, 2)
+    xp=np,
 ) -> np.ndarray:  # shape (N, N)
     """
     Construct the source brightness covariance matrix using an exponential kernel:

@@ -52,23 +52,23 @@ def constant_regularization_matrix_from(
     # Entries of `-1` in `neighbors` (indicating no neighbor) are replaced with an out-of-bounds index.
     # This ensures that JAX can efficiently drop these entries during matrix updates.
     neighbors = xp.where(neighbors == -1, OUT_OF_BOUND_IDX, neighbors)
+    diag_vals = 1e-8 + regularization_coefficient * neighbors_sizes
 
     if xp.__name__.startswith("jax"):
         return (
-            xp.diag(1e-8 + regularization_coefficient * neighbors_sizes).at[
+            xp.diag(diag_vals).at[
                 I_IDX, neighbors
-            ]
-            # unique indices should be guranteed by neighbors-spec
-            .add(-regularization_coefficient, mode="drop", unique_indices=True)
+            ].add(-regularization_coefficient, mode="drop", unique_indices=True)
         )
     else:
-        diag_vals = 1e-8 + regularization_coefficient * neighbors_sizes
         mat = xp.diag(diag_vals).copy()
+        valid_mask = (neighbors >= 0) & (neighbors < mat.shape[1])
+        I_valid = I_IDX[valid_mask]
+        neigh_valid = neighbors[valid_mask]
 
-        # Equivalent to: mat = mat.at[I_IDX, neighbors].add(-regularization_coefficient)
-        xp.add.at(mat, (I_IDX, neighbors), -regularization_coefficient)
+        # scatter-add
+        xp.add.at(mat, (I_valid, neigh_valid), -regularization_coefficient)
         return mat
-
 
 class Constant(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):

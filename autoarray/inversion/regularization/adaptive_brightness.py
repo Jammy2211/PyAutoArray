@@ -116,12 +116,13 @@ def weighted_regularization_matrix_from(
         mat = mat.at[I, J].add(-w_ij)
         mat = mat.at[J, I].add(-w_ij)
     else:
-        mat[xp.diag_indices(S + 1)] += diag_updates_i
-        mat[I, I] += w_ij
-        mat[J, J] += w_ij
+        np.add.at(mat, np.diag_indices(S+1), diag_updates_i)
 
-        mat[I, J] -= w_ij
-        mat[J, I] -= w_ij
+        xp.add.at(mat, (I, I), w_ij)
+        xp.add.at(mat, (J, J), w_ij)
+
+        np.add.at(mat, (I, J), -w_ij)
+        np.add.at(mat, (J, I), -w_ij)
 
     # 7) Drop the extra row/column S and return the S×S result
     return mat[:S, :S]

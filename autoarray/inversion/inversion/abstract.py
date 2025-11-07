@@ -739,7 +739,6 @@ class AbstractInversion:
         for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
             regularization_weights_dict[mapper] = self.regularization_weights_from(
                 index=index,
-                xp=self.xp
             )
 
         return regularization_weights_dict
