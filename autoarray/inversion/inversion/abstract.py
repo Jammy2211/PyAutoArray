@@ -1,7 +1,6 @@
 import copy
 from jax.scipy.linalg import block_diag
 import numpy as np
-import jax.numpy as xp
 from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
 
 from autoarray.dataset.imaging.dataset import Imaging
@@ -18,7 +17,6 @@ from autoarray.structures.visibilities import Visibilities
 
 from autoarray.util import misc_util
 from autoarray.inversion.inversion import inversion_util
-
 
 class AbstractInversion:
     def __init__(
@@ -285,7 +283,7 @@ class AbstractInversion:
         If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
         equations are solved simultaneously. This property returns the stacked mapping matrix.
         """
-        return xp.hstack(
+        return self.xp.hstack(
             [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
         )
 
@@ -304,7 +302,7 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return xp.hstack(self.operated_mapping_matrix_list)
+        return self.xp.hstack(self.operated_mapping_matrix_list)
 
     @property
     def data_vector(self) -> np.ndarray:
@@ -373,7 +371,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        return xp.add(self.curvature_matrix, self.regularization_matrix)
+        return self.xp.add(self.curvature_matrix, self.regularization_matrix)
 
     @property
     def curvature_reg_matrix_reduced(self) -> Optional[np.ndarray]:
@@ -447,10 +445,10 @@ class AbstractInversion:
                 )
 
                 # Allocate full solution array
-                reconstruction = xp.zeros(self.data_vector.shape[0])
+                reconstruction = self.xp.zeros(self.data_vector.shape[0])
 
                 # Scatter the partial solution back to the full shape
-                if xp.__name__.startswith("jax"):
+                if self.xp.__name__.startswith("jax"):
                     reconstruction = reconstruction.at[ids_to_keep].set(
                         reconstruction_partial
                     )
@@ -632,9 +630,9 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return xp.matmul(
+        return self.xp.matmul(
             self.reconstruction_reduced.T,
-            xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            self.xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
     @property
@@ -647,8 +645,8 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * xp.sum(
-            xp.log(xp.diag(xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+        return 2.0 * self.xp.sum(
+            self.xp.log(self.xp.diag(self.xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
         )
 
     @property
@@ -668,8 +666,8 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * xp.sum(
-            xp.log(xp.diag(xp.linalg.cholesky(self.regularization_matrix_reduced)))
+        return 2.0 * self.xp.sum(
+            self.xp.log(self.xp.diag(self.xp.linalg.cholesky(self.regularization_matrix_reduced)))
         )
 
     @property

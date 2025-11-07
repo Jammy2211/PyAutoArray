@@ -41,6 +41,7 @@ class TransformerDFT:
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         preload_transform: bool = True,
+        xp=np
     ):
         """
         A direct Fourier transform (DFT) operator for radio interferometric imaging.
@@ -113,6 +114,8 @@ class TransformerDFT:
             2.0 * self.grid.shape_native[1]
         )
 
+        self.xp = xp
+
     def visibilities_from(self, image: Array2D) -> Visibilities:
         """
         Computes the visibilities from a real-space image using the direct Fourier transform (DFT).
@@ -178,6 +181,7 @@ class TransformerDFT:
         image_native = array_2d_util.array_2d_native_from(
             array_2d_slim=image_slim,
             mask_2d=self.real_space_mask,
+            xp=self.xp
         )
 
         return Array2D(values=image_native, mask=self.real_space_mask)
@@ -447,6 +451,7 @@ class TransformerNUFFT(NUFFT_cpu):
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
+                xp=self.xp
             )
 
             image = Array2D(values=image_2d, mask=self.grid.mask)

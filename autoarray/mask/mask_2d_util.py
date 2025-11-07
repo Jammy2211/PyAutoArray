@@ -1,18 +1,12 @@
 import numpy as np
 import warnings
-from typing import Tuple, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    import numpy as xp
-
-from autoconf.xp_import import auto_xp
+from typing import Tuple
 
 from autoarray import exc
 
-
-@auto_xp
 def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray,
+    xp=np
 ) -> np.ndarray:
     """
     Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
