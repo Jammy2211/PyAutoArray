@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-import jax.numpy as jnp
 from typing import List, Tuple, Union
 
 from autoarray.structures.vectors.abstract import AbstractVectorYX2D
@@ -120,13 +119,13 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         squared_distances = self.grid.distances_to_coordinate_from(coordinate=centre)
         mask = squared_distances < radius
 
-        if jnp.all(mask == False):
+        if np.all(mask == False):
             raise exc.VectorYXException(
                 "The input radius removed all vectors / points on the grid."
             )
 
         return VectorYX2DIrregular(
-            values=jnp.array(self.array)[mask], grid=Grid2DIrregular(self.grid[mask])
+            values=np.array(self.array)[mask], grid=Grid2DIrregular(self.grid[mask])
         )
 
     def vectors_within_annulus(

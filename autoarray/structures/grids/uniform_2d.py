@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
-from autoconf import cached_property
 from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.mask_2d import Mask2D
