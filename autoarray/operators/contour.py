@@ -56,6 +56,7 @@ class Grid2DContour:
         # make sure to use base numpy to convert JAX array back to a normal array
 
         from skimage import measure
+        import jax.numpy as jnp
 
         if isinstance(self.contour_array, jnp.ndarray):
             contour_array = np.array(self.contour_array)

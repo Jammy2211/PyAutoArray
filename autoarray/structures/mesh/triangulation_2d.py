@@ -2,8 +2,6 @@ import numpy as np
 
 from typing import List, Union, Tuple
 
-from autoconf import cached_property
-
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 

@@ -4,10 +4,6 @@ import numpy as np
 import warnings
 from typing import Optional, Union
 
-from autoconf import cached_property
-
-from autoarray.dataset.grids import GridsDataset
-
 from autoarray import exc
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D

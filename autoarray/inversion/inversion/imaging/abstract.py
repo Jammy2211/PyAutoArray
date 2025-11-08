@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Union, Type
 
-from autoconf import cached_property
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList

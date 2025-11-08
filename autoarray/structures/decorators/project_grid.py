@@ -1,5 +1,5 @@
 from functools import wraps
-
+import numpy as np
 from typing import Union
 
 from autoarray import exc
@@ -29,6 +29,7 @@ def project_grid(func):
     def wrapper(
         obj: object,
         grid: Union[Grid1D, Grid2D, Grid2DIrregular],
+        xp=np,
         *args,
         **kwargs,
     ) -> Union[Array1D, ArrayIrregular, Grid2DIrregular]:

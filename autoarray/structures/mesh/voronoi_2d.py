@@ -2,8 +2,6 @@ import numpy as np
 
 from typing import Optional, Tuple
 
-from autoconf import cached_property
-
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.mesh.triangulation_2d import Abstract2DMeshTriangulation

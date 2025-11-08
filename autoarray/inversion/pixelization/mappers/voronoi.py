@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Optional, Tuple
 
-from autoconf import cached_property
-
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.uniform_2d import Array2D

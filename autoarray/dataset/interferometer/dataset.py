@@ -2,7 +2,6 @@ import logging
 import numpy as np
 from pathlib import Path
 
-from autoconf import cached_property
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.dataset.abstract.dataset import AbstractDataset

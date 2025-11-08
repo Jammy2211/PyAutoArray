@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.interferometer.abstract import (

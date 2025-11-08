@@ -5,8 +5,6 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from autoconf import cached_property
-
 from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util

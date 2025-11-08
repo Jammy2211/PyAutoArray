@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging

@@ -1,11 +1,8 @@
 import numpy as np
 
-from autoconf import cached_property
-
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
-from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 

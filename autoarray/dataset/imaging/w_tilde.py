@@ -1,8 +1,6 @@
 import logging
 import numpy as np
 
-from autoconf import cached_property
-
 from autoarray.dataset.abstract.w_tilde import AbstractWTilde
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util

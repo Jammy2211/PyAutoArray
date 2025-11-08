@@ -1,9 +1,8 @@
 import itertools
 import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from autoconf import conf
-from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
