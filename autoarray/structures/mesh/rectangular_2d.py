@@ -1,9 +1,6 @@
-import jax.numpy as jnp
 import numpy as np
 
 from typing import List, Optional, Tuple
-
-from autoconf import cached_property
 
 from autoarray import type as ty
 from autoarray.inversion.linear_obj.neighbors import Neighbors
@@ -89,18 +86,18 @@ class Mesh2DRectangular(Abstract2DMesh):
         """
         grid = grid.array
 
-        y_min = jnp.min(grid[:, 0]) - buffer
-        y_max = jnp.max(grid[:, 0]) + buffer
-        x_min = jnp.min(grid[:, 1]) - buffer
-        x_max = jnp.max(grid[:, 1]) + buffer
+        y_min = xp.min(grid[:, 0]) - buffer
+        y_max = xp.max(grid[:, 0]) + buffer
+        x_min = xp.min(grid[:, 1]) - buffer
+        x_max = xp.max(grid[:, 1]) + buffer
 
-        pixel_scales = jnp.array(
+        pixel_scales = xp.array(
             (
                 (y_max - y_min) / shape_native[0],
                 (x_max - x_min) / shape_native[1],
             )
         )
-        origin = jnp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
+        origin = xp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
 
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(
             shape_native=shape_native,
