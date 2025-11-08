@@ -30,26 +30,28 @@ def forward_interp_np(xp, yp, x):
     return out
 
 def reverse_interp_np(xp, yp, x):
-    # xp can be (N,) or (N,M)
-    # yp can be (N,M)
-    # x  is expected to be (K,M)
+    """
+    xp : (N,) or (N, M)
+    yp : (N, M)
+    x  : (K, M)   query points per column
+    """
 
-    # Make xp 2D so each column has its own xp
+    # Ensure xp is 2D: (N, M)
     if xp.ndim == 1:
-        # broadcast xp to shape (N, M)
-        N, M = yp.shape
-        xp2 = np.broadcast_to(xp[:, None], (N, M))
+        xp = xp[:, None]         # (N, 1)
+        xp = np.broadcast_to(xp, yp.shape)
     else:
-        xp2 = xp
+        assert xp.shape == yp.shape, "xp and yp must have identical shapes"
 
-    N, M = yp.shape
-    K, Mx = x.shape
-    assert M == Mx, "x must have same second dimension as yp"
+    # Shapes
+    K, M = x.shape
 
+    # Output
     out = np.empty((K, M), dtype=yp.dtype)
 
+    # Column-wise interpolation (cannot avoid this loop in pure NumPy)
     for j in range(M):
-        out[:, j] = np.interp(x[:, j], xp2[:, j], yp[:, j])
+        out[:, j] = np.interp(x[:, j], xp[:, j], yp[:, j])
 
     return out
 
@@ -75,6 +77,7 @@ def create_transforms(traced_points, xp=np):
 
 
 def adaptive_rectangular_transformed_grid_from(source_plane_data_grid, grid, xp=np):
+
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
@@ -165,7 +168,6 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
         The bilinear interpolation weights for each of the four neighboring pixels.
         Order: [w_bl, w_br, w_tl, w_tr].
     """
-
     # --- Step 1. Normalize grid ---
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()

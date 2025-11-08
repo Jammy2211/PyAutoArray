@@ -1,11 +1,9 @@
 import numpy as np
-import jax.numpy as jnp
-import jax
+
 from jax._src.tree_util import register_pytree_node_class
 from typing import Union
 
 from autoconf import conf
-from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -16,7 +14,7 @@ from autoarray.operators.over_sampling import over_sample_util
 
 @register_pytree_node_class
 class OverSampler:
-    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D], xp=np):
         """
          Over samples grid calculations using a uniform sub-grid.
 
@@ -151,7 +149,7 @@ class OverSampler:
         self.sub_total = int(np.sum(self.sub_size**2))
         self.sub_length = self.sub_size**self.mask.dimensions
         self.sub_fraction = Array2D(
-            values=jnp.array(1.0 / self.sub_length.array), mask=self.mask
+            values=xp.array(1.0 / self.sub_length.array), mask=self.mask
         )
 
         # Used for JAX based adaptive over sampling.
@@ -173,7 +171,9 @@ class OverSampler:
         ):
             self.segment_ids[start:end] = seg_id
 
-        self.segment_ids = jnp.array(self.segment_ids)
+        self.segment_ids = xp.array(self.segment_ids)
+
+        self.xp = xp
 
     @property
     def sub_is_uniform(self) -> bool:
@@ -252,15 +252,19 @@ class OverSampler:
 
         else:
 
+            import jax
+
             # Compute the group means
 
             sums = jax.ops.segment_sum(
                 array, self.segment_ids, self.mask.pixels_in_mask
             )
             counts = jax.ops.segment_sum(
-                jnp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
+                self.xp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
             )
             binned_array_2d = sums / counts
+
+            binned_array_2d = self.xp.array(binned_array_2d)
 
         return Array2D(
             values=binned_array_2d,

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import numpy as np
-import jax.numpy as jnp
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -35,8 +34,11 @@ class Grid2DContour:
 
     @property
     def contour_array(self):
+
         if self._contour_array is not None:
             return self._contour_array
+
+        import jax.numpy as jnp
 
         pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=np.array(self.grid),

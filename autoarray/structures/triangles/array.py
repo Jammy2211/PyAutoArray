@@ -1,10 +1,9 @@
 import numpy as np
-import jax.numpy as jnp
+
 from jax.tree_util import register_pytree_node_class
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 
-from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.structures.triangles.shape import Shape
 
@@ -57,6 +56,9 @@ class ArrayTriangles(AbstractTriangles):
         scale: float,
         max_containing_size=MAX_CONTAINING_SIZE,
     ) -> "AbstractTriangles":
+
+        import jax.numpy as jnp
+        
         height = scale * HEIGHT_FACTOR
 
         vertices = []
@@ -127,10 +129,12 @@ class ArrayTriangles(AbstractTriangles):
         return self._vertices
 
     @property
-    def triangles(self) -> jnp.ndarray:
+    def triangles(self) -> np.ndarray:
         """
         The triangles as a 3x2 array of vertices.
         """
+
+        import jax.numpy as jnp
 
         invalid_mask = jnp.any(self.indices == -1, axis=1)
         nan_array = jnp.full(
@@ -143,13 +147,14 @@ class ArrayTriangles(AbstractTriangles):
         return jnp.where(invalid_mask[:, None, None], nan_array, triangle_vertices)
 
     @property
-    def means(self) -> jnp.ndarray:
+    def means(self) -> np.ndarray:
         """
         The mean of each triangle.
         """
+        import jax.numpy as jnp
         return jnp.mean(self.triangles, axis=1)
 
-    def containing_indices(self, shape: Shape) -> jnp.ndarray:
+    def containing_indices(self, shape: Shape) -> np.ndarray:
         """
         Find the triangles that insect with a given shape.
 
@@ -162,6 +167,7 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The triangles that intersect the shape.
         """
+        import jax.numpy as jnp
         inside = shape.mask(self.triangles)
 
         return jnp.where(
@@ -170,7 +176,7 @@ class ArrayTriangles(AbstractTriangles):
             fill_value=-1,
         )[0]
 
-    def for_indexes(self, indexes: jnp.ndarray) -> "ArrayTriangles":
+    def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
         """
         Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
         but without duplicate vertices.
@@ -184,6 +190,7 @@ class ArrayTriangles(AbstractTriangles):
         -------
         The new ArrayTriangles instance.
         """
+        import jax.numpy as jnp
         selected_indices = select_and_handle_invalid(
             data=self.indices,
             indices=indexes,
@@ -230,6 +237,7 @@ class ArrayTriangles(AbstractTriangles):
         )
 
     def _up_sample_triangle(self):
+        import jax.numpy as jnp
         triangles = self.triangles
 
         m01 = (triangles[:, 0] + triangles[:, 1]) / 2
@@ -261,6 +269,7 @@ class ArrayTriangles(AbstractTriangles):
         )
 
     def _neighborhood_triangles(self):
+        import jax.numpy as jnp
         triangles = self.triangles
 
         new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
@@ -291,7 +300,7 @@ class ArrayTriangles(AbstractTriangles):
             max_containing_size=self.max_containing_size,
         )
 
-    def with_vertices(self, vertices: jnp.ndarray) -> "ArrayTriangles":
+    def with_vertices(self, vertices: np.ndarray) -> "ArrayTriangles":
         """
         Create a new set of triangles with the vertices replaced.
 
@@ -347,8 +356,8 @@ class ArrayTriangles(AbstractTriangles):
 
 
 def select_and_handle_invalid(
-    data: jnp.ndarray,
-    indices: jnp.ndarray,
+    data: np.ndarray,
+    indices: np.ndarray,
     invalid_value,
     invalid_replacement,
 ):
@@ -370,6 +379,7 @@ def select_and_handle_invalid(
     -------
     An array with selected data, where invalid indices are replaced with `invalid_replacement`.
     """
+    import jax.numpy as jnp
     invalid_mask = indices == invalid_value
     safe_indices = jnp.where(invalid_mask, 0, indices)
     selected_data = data[safe_indices]
@@ -383,6 +393,7 @@ def select_and_handle_invalid(
 
 
 def remove_duplicates(new_triangles):
+    import jax.numpy as jnp
     unique_vertices, inverse_indices = jnp.unique(
         new_triangles.reshape(-1, 2),
         axis=0,

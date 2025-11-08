@@ -1,8 +1,5 @@
-import jax.numpy as jnp
 import numpy as np
-from typing import Dict, List, Optional, Union
-
-from autoconf import cached_property
+from typing import Dict, List, Union
 
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface

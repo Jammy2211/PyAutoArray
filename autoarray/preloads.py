@@ -1,6 +1,5 @@
 import logging
 
-import jax.numpy as jnp
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -44,6 +43,7 @@ class Preloads:
             is fixed to the maximum likelihood solution, allowing the blurred mapping matrix to be preloaded, but
             the intensity values will still be solved for during the inversion.
         """
+        import jax.numpy as jnp
 
         self.mapper_indices = None
         self.source_pixel_zeroed_indices = None

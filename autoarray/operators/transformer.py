@@ -1,6 +1,4 @@
 import copy
-import jax
-import jax.numpy as jnp
 import numpy as np
 import warnings
 from typing import Tuple
@@ -140,6 +138,7 @@ class TransformerDFT:
                 image_1d=image.array,
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
+                xp=self.xp
             )
         else:
             visibilities = transformer_util.visibilities_from(
@@ -148,7 +147,7 @@ class TransformerDFT:
                 uv_wavelengths=self.uv_wavelengths,
             )
 
-        return Visibilities(visibilities=jnp.array(visibilities))
+        return Visibilities(visibilities=self.xp.array(visibilities))
 
     def image_from(
         self, visibilities: Visibilities, use_adjoint_scaling: bool = False
