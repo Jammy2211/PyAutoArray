@@ -13,7 +13,7 @@ inversion:
   reconstruction_vmax_factor: 0.5     # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
 numba:
   use_numba: true
-  cache: false
+  cache: true
   nopython: true
   parallel: false
 pixelization:

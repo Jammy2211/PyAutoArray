@@ -1,5 +1,5 @@
 import copy
-from jax.scipy.linalg import block_diag
+
 import numpy as np
 from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
 
@@ -331,6 +331,12 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
+        if self.xp.__name__.startswith("jax"):
+            from jax.scipy.linalg import block_diag
+            return block_diag(
+                *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
+            )
+        from scipy.linalg import block_diag
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )

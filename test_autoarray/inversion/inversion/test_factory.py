@@ -63,6 +63,7 @@ def test__inversion_imaging__via_mapper(
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
 ):
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
@@ -114,7 +115,6 @@ def test__inversion_imaging__via_mapper(
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6674, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    fff
 
 
 def test__inversion_imaging__via_regularizations(
