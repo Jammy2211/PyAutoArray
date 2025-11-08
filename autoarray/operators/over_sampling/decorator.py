@@ -31,6 +31,7 @@ def over_sample(func):
     def wrapper(
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        xp=np,
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Array1D, Array2D, ArrayIrregular, List]:
@@ -49,12 +50,12 @@ def over_sample(func):
         """
 
         if isinstance(grid, Grid2DIrregular) or isinstance(grid, Grid1D):
-            return func(obj=obj, grid=grid, *args, **kwargs)
+            return func(obj=obj, grid=grid, xp=xp, *args, **kwargs)
 
         if obj is not None:
-            values = func(obj, grid.over_sampled, *args, **kwargs)
+            values = func(obj, grid.over_sampled, xp, *args, **kwargs)
         else:
-            values = func(grid.over_sampled, *args, **kwargs)
+            values = func(grid.over_sampled, xp, *args, **kwargs)
 
         return grid.over_sampler.binned_array_2d_from(array=values)
 

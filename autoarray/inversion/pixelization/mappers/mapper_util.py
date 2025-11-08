@@ -516,7 +516,7 @@ def mapping_matrix_from(
     flat_pixidx = xp.where(flat_pixidx < 0, OUT, flat_pixidx)
 
     # 5) Multiply by sub_fraction of the slim row
-    flat_frac = sub_fraction[flat_parent]  # (M_sub*B,)
+    flat_frac = xp.take(sub_fraction, flat_parent, axis=0)  # (M_sub*B,)
     flat_contrib = flat_w * flat_frac  # (M_sub*B,)
 
     # 6) Scatter into (M × (S+1)), summing duplicates

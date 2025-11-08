@@ -14,7 +14,7 @@ from autoarray.operators.over_sampling import over_sample_util
 
 @register_pytree_node_class
 class OverSampler:
-    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D], xp=np):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         """
          Over samples grid calculations using a uniform sub-grid.
 
@@ -149,7 +149,7 @@ class OverSampler:
         self.sub_total = int(np.sum(self.sub_size**2))
         self.sub_length = self.sub_size**self.mask.dimensions
         self.sub_fraction = Array2D(
-            values=xp.array(1.0 / self.sub_length.array), mask=self.mask
+            values=1.0 / self.sub_length.array, mask=self.mask
         )
 
         # Used for JAX based adaptive over sampling.
@@ -170,10 +170,6 @@ class OverSampler:
             zip(self.start_indices, self.split_indices)
         ):
             self.segment_ids[start:end] = seg_id
-
-        self.segment_ids = xp.array(self.segment_ids)
-
-        self.xp = xp
 
     @property
     def sub_is_uniform(self) -> bool:
@@ -260,11 +256,9 @@ class OverSampler:
                 array, self.segment_ids, self.mask.pixels_in_mask
             )
             counts = jax.ops.segment_sum(
-                self.xp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
+                np.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
             )
             binned_array_2d = sums / counts
-
-            binned_array_2d = self.xp.array(binned_array_2d)
 
         return Array2D(
             values=binned_array_2d,
