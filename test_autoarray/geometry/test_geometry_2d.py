@@ -115,7 +115,7 @@ def test__grid_pixels_2d_slim_from():
     )
 
     grid_pixels_util = aa.util.geometry.grid_pixels_2d_slim_from(
-        grid_scaled_2d_slim=np.array(grid_scaled_2d),
+        grid_scaled_2d_slim=grid_scaled_2d,
         shape_native=(2, 2),
         pixel_scales=geometry.pixel_scales,
     )
@@ -134,7 +134,7 @@ def test__grid_pixel_centres_2d_from():
     )
 
     grid_pixels_util = aa.util.geometry.grid_pixel_centres_2d_slim_from(
-        grid_scaled_2d_slim=np.array(grid_scaled_2d),
+        grid_scaled_2d_slim=grid_scaled_2d,
         shape_native=(2, 2),
         pixel_scales=(7.0, 2.0),
     )
@@ -153,7 +153,7 @@ def test__grid_pixel_indexes_2d_from():
     )
 
     grid_pixels_util = aa.util.geometry.grid_pixel_indexes_2d_slim_from(
-        grid_scaled_2d_slim=np.array(grid_scaled_2d),
+        grid_scaled_2d_slim=grid_scaled_2d,
         shape_native=(2, 2),
         pixel_scales=(2.0, 4.0),
     )
@@ -172,7 +172,7 @@ def test__grid_scaled_2d_from():
     )
 
     grid_pixels_util = aa.util.geometry.grid_scaled_2d_slim_from(
-        grid_pixels_2d_slim=np.array(grid_pixels),
+        grid_pixels_2d_slim=grid_pixels,
         shape_native=(2, 2),
         pixel_scales=(2.0, 2.0),
     )

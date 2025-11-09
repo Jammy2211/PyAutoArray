@@ -125,7 +125,7 @@ def test__magnification_via_mesh_from():
         mapping_matrix=np.ones((12, 10)),
     )
 
-    mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
+    mapper_valued = aa.MapperValued(values=magnification, mapper=mapper)
 
     magnification = mapper_valued.magnification_via_mesh_from()
 

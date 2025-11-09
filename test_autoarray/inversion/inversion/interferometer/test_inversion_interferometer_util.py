@@ -75,9 +75,9 @@ def test__w_tilde_curvature_interferometer_from():
     grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.0005)
 
     w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
-        noise_map_real=np.array(noise_map),
-        uv_wavelengths=np.array(uv_wavelengths),
-        grid_radians_slim=np.array(grid),
+        noise_map_real=noise_map,
+        uv_wavelengths=uv_wavelengths,
+        grid_radians_slim=grid.array,
     )
 
     assert w_tilde == pytest.approx(
@@ -102,9 +102,9 @@ def test__curvature_matrix_via_w_tilde_preload_from():
     grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.0005)
 
     w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
-        noise_map_real=np.array(noise_map),
-        uv_wavelengths=np.array(uv_wavelengths),
-        grid_radians_slim=np.array(grid),
+        noise_map_real=noise_map,
+        uv_wavelengths=uv_wavelengths,
+        grid_radians_slim=grid.array,
     )
 
     mapping_matrix = np.array(
@@ -127,8 +127,8 @@ def test__curvature_matrix_via_w_tilde_preload_from():
 
     w_tilde_preload = (
         aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
-            noise_map_real=np.array(noise_map),
-            uv_wavelengths=np.array(uv_wavelengths),
+            noise_map_real=noise_map,
+            uv_wavelengths=uv_wavelengths,
             shape_masked_pixels_2d=(3, 3),
             grid_radians_2d=np.array(grid.native),
         )
@@ -168,9 +168,9 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.0005)
 
     w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
-        noise_map_real=np.array(noise_map),
-        uv_wavelengths=np.array(uv_wavelengths),
-        grid_radians_slim=np.array(grid),
+        noise_map_real=noise_map,
+        uv_wavelengths=uv_wavelengths,
+        grid_radians_slim=grid.array,
     )
 
     w_tilde_preload = (
