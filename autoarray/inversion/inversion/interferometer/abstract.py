@@ -113,7 +113,7 @@ class AbstractInversionInterferometer(AbstractInversion):
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=linear_obj.mapping_matrix,
                     reconstruction=reconstruction,
-                    xp=self.xp
+                    xp=self._xp
                 )
             )
 

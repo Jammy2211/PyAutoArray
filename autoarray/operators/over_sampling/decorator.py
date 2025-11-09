@@ -57,6 +57,6 @@ def over_sample(func):
         else:
             values = func(grid.over_sampled, xp, *args, **kwargs)
 
-        return grid.over_sampler.binned_array_2d_from(array=values)
+        return grid.over_sampler.binned_array_2d_from(array=values, xp=xp)
 
     return wrapper

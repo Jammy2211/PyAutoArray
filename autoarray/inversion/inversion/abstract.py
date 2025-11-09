@@ -73,7 +73,7 @@ class AbstractInversion:
 
         self.preloads = preloads or Preloads()
 
-        self.xp = xp
+        self._xp = xp
 
 
 
@@ -285,7 +285,7 @@ class AbstractInversion:
         If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
         equations are solved simultaneously. This property returns the stacked mapping matrix.
         """
-        return self.xp.hstack(
+        return self._xp.hstack(
             [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
         )
 
@@ -304,7 +304,7 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return self.xp.hstack(self.operated_mapping_matrix_list)
+        return self._xp.hstack(self.operated_mapping_matrix_list)
 
     @property
     def data_vector(self) -> np.ndarray:
@@ -331,7 +331,7 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
-        if self.xp.__name__.startswith("jax"):
+        if self._xp.__name__.startswith("jax"):
             from jax.scipy.linalg import block_diag
             return block_diag(
                 *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
@@ -379,7 +379,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        return self.xp.add(self.curvature_matrix, self.regularization_matrix)
+        return self._xp.add(self.curvature_matrix, self.regularization_matrix)
 
     @property
     def curvature_reg_matrix_reduced(self) -> Optional[np.ndarray]:
@@ -448,15 +448,15 @@ class AbstractInversion:
                         data_vector=data_vector,
                         curvature_reg_matrix=curvature_reg_matrix,
                         settings=self.settings,
-                        xp=self.xp
+                        xp=self._xp
                     )
                 )
 
                 # Allocate full solution array
-                reconstruction = self.xp.zeros(self.data_vector.shape[0])
+                reconstruction = self._xp.zeros(self.data_vector.shape[0])
 
                 # Scatter the partial solution back to the full shape
-                if self.xp.__name__.startswith("jax"):
+                if self._xp.__name__.startswith("jax"):
                     reconstruction = reconstruction.at[ids_to_keep].set(
                         reconstruction_partial
                     )
@@ -471,13 +471,13 @@ class AbstractInversion:
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix,
                     settings=self.settings,
-                    xp=self.xp
+                    xp=self._xp
                 )
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
             curvature_reg_matrix=self.curvature_reg_matrix,
-            xp=self.xp
+            xp=self._xp
         )
 
     @property
@@ -638,9 +638,9 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return self.xp.matmul(
+        return self._xp.matmul(
             self.reconstruction_reduced.T,
-            self.xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            self._xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
     @property
@@ -653,8 +653,8 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * self.xp.sum(
-            self.xp.log(self.xp.diag(self.xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+        return 2.0 * self._xp.sum(
+            self._xp.log(self._xp.diag(self._xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
         )
 
     @property
@@ -674,8 +674,8 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * self.xp.sum(
-            self.xp.log(self.xp.diag(self.xp.linalg.cholesky(self.regularization_matrix_reduced)))
+        return 2.0 * self._xp.sum(
+            self._xp.log(self._xp.diag(self._xp.linalg.cholesky(self.regularization_matrix_reduced)))
         )
 
     @property
@@ -738,7 +738,7 @@ class AbstractInversion:
 
             return np.zeros((pixels,))
 
-        return regularization.regularization_weights_from(linear_obj=linear_obj, xp=self.xp)
+        return regularization.regularization_weights_from(linear_obj=linear_obj, xp=self._xp)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:

@@ -91,23 +91,23 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.real,
             noise_map=self.noise_map.real,
-            xp=self.xp
+            xp=self._xp
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
-            xp=self.xp
+            xp=self._xp
         )
 
-        curvature_matrix = self.xp.add(real_curvature_matrix, imag_curvature_matrix)
+        curvature_matrix = self._xp.add(real_curvature_matrix, imag_curvature_matrix)
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
                 value=self.settings.no_regularization_add_to_curvature_diag_value,
                 no_regularization_index_list=self.no_regularization_index_list,
-                xp=self.xp
+                xp=self._xp
             )
 
         return curvature_matrix

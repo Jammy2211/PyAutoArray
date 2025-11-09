@@ -74,7 +74,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             param_range = mapper_param_range_list[i]
 
             operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix, mask=self.mask, xp=self.xp
+                mapping_matrix=mapper.mapping_matrix, mask=self.mask, xp=self._xp
             )
 
             data_vector_mapper = (
@@ -133,7 +133,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper_param_range_i = mapper_param_range_list[i]
 
             operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
-                mapping_matrix=mapper_i.mapping_matrix, mask=self.mask, xp=self.xp
+                mapping_matrix=mapper_i.mapping_matrix, mask=self.mask, xp=self._xp
             )
 
             diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
@@ -142,7 +142,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 settings=self.settings,
                 add_to_curvature_diag=True,
                 no_regularization_index_list=self.no_regularization_index_list,
-                xp=self.xp
+                xp=self._xp
             )
 
             curvature_matrix[
@@ -151,7 +151,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             ] = diag
 
         curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix, xp=self.xp
+            curvature_matrix=curvature_matrix, xp=self._xp
         )
 
         return curvature_matrix
@@ -181,7 +181,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             settings=self.settings,
             add_to_curvature_diag=True,
             no_regularization_index_list=self.no_regularization_index_list,
-            xp=self.xp
+            xp=self._xp
         )
 
     @property
@@ -224,7 +224,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=operated_mapping_matrix_list[index],
                     reconstruction=reconstruction,
-                    xp=self.xp
+                    xp=self._xp
                 )
             )
 

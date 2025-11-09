@@ -31,7 +31,7 @@ class LinearObj:
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
         """
         self.regularization = regularization
-        self.xp = xp
+        self._xp = xp
 
     @property
     def params(self) -> int:
@@ -150,6 +150,6 @@ class LinearObj:
         """
 
         if self.regularization is None:
-            return self.xp.zeros((self.params, self.params))
+            return self._xp.zeros((self.params, self.params))
 
-        return self.regularization.regularization_matrix_from(linear_obj=self, xp=self.xp)
+        return self.regularization.regularization_matrix_from(linear_obj=self, xp=self._xp)

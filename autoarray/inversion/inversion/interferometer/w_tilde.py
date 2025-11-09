@@ -122,7 +122,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         if self.settings.use_w_tilde_numpy:
             return inversion_util.curvature_matrix_via_w_tilde_from(
-                w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix, xp=self.xp
+                w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix, xp=self._xp
             )
 
         mapper = self.cls_list_from(cls=AbstractMapper)[0]

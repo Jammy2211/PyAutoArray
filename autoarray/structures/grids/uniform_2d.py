@@ -848,7 +848,7 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        squared_distances = self.xp.square(self.array[:, 0] - coordinate[0]) + self.xp.square(
+        squared_distances = self._xp.square(self.array[:, 0] - coordinate[0]) + self._xp.square(
             self.array[:, 1] - coordinate[1]
         )
 
@@ -868,7 +868,7 @@ class Grid2D(Structure):
         squared_distance = self.squared_distances_to_coordinate_from(
             coordinate=coordinate
         )
-        distances = self.xp.sqrt(squared_distance.array)
+        distances = self._xp.sqrt(squared_distance.array)
         return Array2D(values=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(

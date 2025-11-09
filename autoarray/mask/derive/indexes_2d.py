@@ -64,7 +64,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.edge_native)
         """
         self.mask = mask
-        self.xp = xp
+        self._xp = xp
 
     def tree_flatten(self):
         return (self.mask,), ()
@@ -410,5 +410,5 @@ class DeriveIndexes2D:
         """
         return mask_2d_util.native_index_for_slim_index_2d_from(
             mask_2d=self.mask,
-            xp=self.xp
+            xp=self._xp
         ).astype("int")

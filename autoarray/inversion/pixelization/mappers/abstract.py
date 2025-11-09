@@ -267,7 +267,7 @@ class AbstractMapper(LinearObj):
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.over_sampler.sub_fraction.array,
-            xp=self.xp
+            xp=self._xp
         )
 
     def pixel_signals_from(self, signal_scale: float, xp=np) -> np.ndarray:

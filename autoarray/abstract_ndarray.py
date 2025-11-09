@@ -84,7 +84,7 @@ class AbstractNDArray(ABC):
         except ValueError:
             pass
 
-        self.xp = xp
+        self._xp = xp
 
     def invert(self):
         new = self.copy()

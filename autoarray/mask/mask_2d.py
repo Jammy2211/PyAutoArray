@@ -247,7 +247,7 @@ class Mask2D(Mask):
 
     @property
     def derive_indexes(self) -> DeriveIndexes2D:
-        return DeriveIndexes2D(mask=self, xp=self.xp)
+        return DeriveIndexes2D(mask=self, xp=self._xp)
 
     @property
     def derive_mask(self) -> DeriveMask2D:

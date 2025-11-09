@@ -7,6 +7,17 @@ logger = logging.getLogger(__name__)
 logger.setLevel(level="INFO")
 
 
+def mapper_indices_from(total_linear_light_profiles, total_mapper_pixels):
+
+    import jax.numpy as jnp
+
+    return jnp.arange(
+        total_linear_light_profiles,
+        total_linear_light_profiles + total_mapper_pixels,
+        dtype=int,
+    )
+
+
 class Preloads:
 
     def __init__(

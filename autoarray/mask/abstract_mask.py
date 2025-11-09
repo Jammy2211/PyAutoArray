@@ -57,7 +57,7 @@ class Mask(AbstractNDArray, ABC):
 
         self.pixel_scales = pixel_scales
         self.origin = origin
-        self.xp = xp
+        self._xp = xp
 
     @property
     def mask(self):

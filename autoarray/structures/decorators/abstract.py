@@ -52,7 +52,7 @@ class AbstractMaker:
         self.func = func
         self.obj = obj
         self.grid = grid
-        self.xp = xp
+        self._xp = xp
         self.args = args
         self.kwargs = kwargs
 
@@ -93,8 +93,8 @@ class AbstractMaker:
 
         if isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
-            return self.func(self.obj, grid, self.xp, *self.args, **self.kwargs)
-        return self.func(self.obj, self.grid, self.xp, *self.args, **self.kwargs)
+            return self.func(self.obj, grid, self._xp, *self.args, **self.kwargs)
+        return self.func(self.obj, self.grid, self._xp, *self.args, **self.kwargs)
 
     @property
     def result(self):

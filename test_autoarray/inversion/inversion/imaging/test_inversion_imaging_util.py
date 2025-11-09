@@ -298,7 +298,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         mapping_matrix=blurred_mapping_matrix,
         noise_map=np.array(noise_map),
     )
-    assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
+    assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, abs=1.0e-4)
 
 
 def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
@@ -380,4 +380,4 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             noise_map=np.array(noise_map),
         )
 
-        assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
+        assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, abs=1.0e-4)

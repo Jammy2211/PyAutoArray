@@ -57,7 +57,7 @@ class MapperValued:
         values = self.values
 
         if self.mesh_pixel_mask is not None:
-            if self.mapper.xp.__name__.startswith("jax"):
+            if self.mapper._xp.__name__.startswith("jax"):
                 values = values.at[self.mesh_pixel_mask].set(0.0)
             else:
                 values = values.copy()
@@ -191,7 +191,7 @@ class MapperValued:
         mapping_matrix = self.mapper.mapping_matrix
 
         if self.mesh_pixel_mask is not None:
-            if self.mapper.xp.__name__.startswith("jax"):
+            if self.mapper._xp.__name__.startswith("jax"):
                 mapping_matrix = mapping_matrix.at[:, self.mesh_pixel_mask].set(0.0)
             else:
                 mapping_matrix[:, self.mesh_pixel_mask] = 0.0
@@ -200,7 +200,7 @@ class MapperValued:
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=mapping_matrix,
                 reconstruction=self.values_masked,
-                xp=self.mapper.xp
+                xp=self.mapper._xp
             ),
             mask=self.mapper.mapper_grids.mask,
         )

@@ -203,7 +203,7 @@ class OverSampler:
 
         return sub_pixel_areas
 
-    def binned_array_2d_from(self, array: Array2D) -> "Array2D":
+    def binned_array_2d_from(self, array: Array2D, xp=np) -> "Array2D":
         """
         Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
         ``ndarray`` of shape [total_unmasked_pixels, 2].
@@ -256,7 +256,7 @@ class OverSampler:
                 array, self.segment_ids, self.mask.pixels_in_mask
             )
             counts = jax.ops.segment_sum(
-                np.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
+                xp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
             )
             binned_array_2d = sums / counts
 

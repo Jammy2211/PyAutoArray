@@ -185,7 +185,7 @@ class Grid2DIrregular(AbstractNDArray):
         coordinate
             The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
         """
-        squared_distances = self.xp.square(self.array[:, 0] - coordinate[0]) + self.xp.square(
+        squared_distances = self._xp.square(self.array[:, 0] - coordinate[0]) + self._xp.square(
             self.array[:, 1] - coordinate[1]
         )
         return ArrayIrregular(values=squared_distances)
@@ -201,7 +201,7 @@ class Grid2DIrregular(AbstractNDArray):
         coordinate
             The (y,x) coordinate from which the distance of every coordinate is computed.
         """
-        distances = self.xp.sqrt(
+        distances = self._xp.sqrt(
             self.squared_distances_to_coordinate_from(coordinate=coordinate).array
         )
         return ArrayIrregular(values=distances)
@@ -233,10 +233,10 @@ class Grid2DIrregular(AbstractNDArray):
         deltas = self.array[:, None, :] - self.array[None, :, :]
 
         # Squared distances: shape (N, N)
-        sq_dists = self.xp.sum(deltas * deltas, axis=-1)
+        sq_dists = self._xp.sum(deltas * deltas, axis=-1)
 
         # Furthest distance for each point: shape (N,)
-        furthest = self.xp.sqrt(self.xp.nanmax(sq_dists, axis=1))
+        furthest = self._xp.sqrt(self._xp.nanmax(sq_dists, axis=1))
 
         return ArrayIrregular(values=furthest)
 
@@ -259,10 +259,10 @@ class Grid2DIrregular(AbstractNDArray):
         deltas = grid_pair.array[:, None, :] - self.array[None, :, :]
 
         # squared distances: shape (N2, N1)
-        sq_dists = self.xp.sum(deltas * deltas, axis=-1)
+        sq_dists = self._xp.sum(deltas * deltas, axis=-1)
 
         # argmin along grid1: shape (N2,)
-        closest_idx = self.xp.argmin(sq_dists, axis=1)
+        closest_idx = self._xp.argmin(sq_dists, axis=1)
 
         # select closest points: shape (N2, 2)
         closest_points = self.array[closest_idx]

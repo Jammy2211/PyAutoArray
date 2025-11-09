@@ -4,6 +4,7 @@ from typing import Tuple
 
 
 def forward_interp(xp, yp, x):
+
     import jax
     import jax.numpy as jnp
     return jax.vmap(jnp.interp, in_axes=(1, 1, None, None, None))(x, xp, yp, 0, 1).T
@@ -20,12 +21,16 @@ def forward_interp_np(xp, yp, x):
     yp: (N, M)
     x : (M,)  ← one x per column
     """
-    N, M = xp.shape
 
-    out = np.empty((N, M), dtype=xp.dtype)
+    if yp.ndim == 1 and xp.ndim == 2:
+        yp = np.broadcast_to(yp[:, None], xp.shape)
 
-    for j in range(M):
-        out[:, j] = np.interp(x[j], xp[:, j], yp[:, j], left=0, right=1)
+    K, M = x.shape
+
+    out = np.empty((K, 2), dtype=xp.dtype)
+
+    for j in range(2):
+        out[:, j] = np.interp(x[:, j], xp[:, j], yp[:, j], left=0, right=1)
 
     return out
 
@@ -37,20 +42,17 @@ def reverse_interp_np(xp, yp, x):
     """
 
     # Ensure xp is 2D: (N, M)
-    if xp.ndim == 1:
-        xp = xp[:, None]         # (N, 1)
-        xp = np.broadcast_to(xp, yp.shape)
-    else:
-        assert xp.shape == yp.shape, "xp and yp must have identical shapes"
+    if xp.ndim == 1 and yp.ndim == 2:   # (N, 1)
+        xp = np.broadcast_to(xp[:, None] , yp.shape)
 
     # Shapes
     K, M = x.shape
 
     # Output
-    out = np.empty((K, M), dtype=yp.dtype)
+    out = np.empty((K, 2), dtype=yp.dtype)
 
     # Column-wise interpolation (cannot avoid this loop in pure NumPy)
-    for j in range(M):
+    for j in range(2):
         out[:, j] = np.interp(x[:, j], xp[:, j], yp[:, j])
 
     return out
