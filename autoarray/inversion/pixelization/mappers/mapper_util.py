@@ -57,13 +57,22 @@ def reverse_interp_np(xp, yp, x):
 
     return out
 
-def create_transforms(traced_points, xp=np):
+def create_transforms(traced_points, adapt_data = None, xp=np):
     # make functions that takes a set of traced points
     # stored in a (N, 2) array and return functions that
     # take in (N, 2) arrays and transform the values into
     # the range (0, 1) and the inverse transform
     N = traced_points.shape[0]  # // 2
-    t = xp.arange(1, N + 1) / (N + 1)
+
+    if adapt_data is None:
+        t = xp.arange(1, N + 1) / (N + 1)
+    else:
+        # weighted behaviour
+        w = xp.asarray(adapt_data.array)
+        w = xp.clip(w, 1e-12, None)
+        w = w
+        w = w / xp.sum(w)
+        t = xp.cumsum(w)
 
     sort_points = xp.sort(traced_points, axis=0)  # [::2]
 
@@ -118,6 +127,7 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     source_grid_size: int,
     source_plane_data_grid,
     source_plane_data_grid_over_sampled,
+    adapt_data = None,
     xp=np,
 ):
     """
@@ -176,7 +186,7 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
     # --- Step 2. Build transforms ---
-    transform, inv_transform = create_transforms(source_grid_scaled, xp=xp)
+    transform, inv_transform = create_transforms(source_grid_scaled, adapt_data=adapt_data, xp=xp)
 
     # --- Step 3. Transform oversampled grid into index space ---
     grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
