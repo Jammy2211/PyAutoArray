@@ -57,22 +57,17 @@ def reverse_interp_np(xp, yp, x):
 
     return out
 
-def create_transforms(traced_points, adapt_data = None, xp=np):
+def create_transforms(traced_points, mesh_weight_map = None, xp=np):
     # make functions that takes a set of traced points
     # stored in a (N, 2) array and return functions that
     # take in (N, 2) arrays and transform the values into
     # the range (0, 1) and the inverse transform
     N = traced_points.shape[0]  # // 2
 
-    if adapt_data is None:
+    if mesh_weight_map is None:
         t = xp.arange(1, N + 1) / (N + 1)
     else:
-        # weighted behaviour
-        w = xp.asarray(adapt_data.array)
-        w = xp.clip(w, 1e-12, None)
-        w = w
-        w = w / xp.sum(w)
-        t = xp.cumsum(w)
+        t = xp.cumsum(mesh_weight_map)
 
     sort_points = xp.sort(traced_points, axis=0)  # [::2]
 
@@ -127,7 +122,7 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     source_grid_size: int,
     source_plane_data_grid,
     source_plane_data_grid_over_sampled,
-    adapt_data = None,
+    mesh_weight_map = None,
     xp=np,
 ):
     """
@@ -170,6 +165,9 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
         The base source-plane coordinates, used to define normalization and transforms.
     source_plane_data_grid_over_sampled : (N, 2) ndarray
         Oversampled source-plane coordinates to be interpolated onto the rectangular grid.
+    mesh_weight_map
+        The weight map used to weight the creation of the rectangular mesh grid, which is used for the
+        `RectangularBrightness` mesh which adapts the size of its pixels to where the source is reconstructed.
 
     Returns
     -------
@@ -186,7 +184,7 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
     # --- Step 2. Build transforms ---
-    transform, inv_transform = create_transforms(source_grid_scaled, adapt_data=adapt_data, xp=xp)
+    transform, inv_transform = create_transforms(source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp)
 
     # --- Step 3. Transform oversampled grid into index space ---
     grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
@@ -348,7 +346,7 @@ def adaptive_pixel_signals_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    adapt_data: np.ndarray,
+    mesh_weight_map: np.ndarray,
     xp=np
 ) -> np.ndarray:
     """
@@ -375,7 +373,7 @@ def adaptive_pixel_signals_from(
         low signal regions.
     regular_to_pix
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    adapt_data
+    mesh_weight_map
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
@@ -397,7 +395,7 @@ def adaptive_pixel_signals_from(
     )  # send invalid indices to an out-of-bounds slot
 
     # 4) Look up data & multiply by mapping weights:
-    flat_data_vals = xp.take(adapt_data[slim_index_for_sub_slim_index], I_sub, axis=0)
+    flat_data_vals = xp.take(mesh_weight_map[slim_index_for_sub_slim_index], I_sub, axis=0)
     flat_contrib = flat_data_vals * flat_weights  # (M_sub*B,)
 
     pixel_signals = xp.zeros((pixels + 1,))

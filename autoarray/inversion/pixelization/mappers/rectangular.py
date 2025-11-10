@@ -37,7 +37,7 @@ class MapperRectangular(AbstractMapper):
     `Delaunay` triangulation, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
     triangles) with varying interpolation weights .
 
-    For a `Rectangular` mesh every pixel in the masked data maps to only one pixel, thus the second
+    For a `RectangularMagnification` mesh every pixel in the masked data maps to only one pixel, thus the second
     dimension of `pix_indexes_for_sub_slim_index` is always of size 1.
 
     The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
@@ -62,7 +62,7 @@ class MapperRectangular(AbstractMapper):
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
-        and pixel in the `Rectangular` mesh.
+        and pixel in the `RectangularMagnification` mesh.
 
         - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
         to mesh pixels (given their `pix_indexes`).
@@ -77,10 +77,10 @@ class MapperRectangular(AbstractMapper):
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the mesh pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the RectangularMagnification
         mesh's third (index 2) pixel.
 
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the RectangularMagnification
         mesh's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
@@ -88,10 +88,12 @@ class MapperRectangular(AbstractMapper):
         where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
         are stored in the array `pix_weights_for_sub_slim_index`.
 
-        For a Rectangular pixelization each data sub-pixel maps to a single mesh pixel, thus the second
+        For a RectangularMagnification pixelization each data sub-pixel maps to a single mesh pixel, thus the second
         dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
         are equal to 1.0.
         """
+
+        weight_map = self.mapper_grids
 
         mappings, weights = (
             mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
@@ -100,7 +102,7 @@ class MapperRectangular(AbstractMapper):
                 source_plane_data_grid_over_sampled=self._xp.array(
                     self.source_plane_data_grid.over_sampled
                 ),
-                adapt_data=self.mapper_grids.adapt_data,
+                mesh_weight_map=self.mapper_grids.mesh_weight_map,
                 xp=self._xp
             )
         )
