@@ -206,7 +206,7 @@ class RectangularSource(RectangularMagnification):
         xp
             The array library to use.
         """
-        mesh_weight_map = xp.asarray(mesh_weight_map.array)
+        mesh_weight_map = xp.asarray(adapt_data.array)
         mesh_weight_map = xp.clip(mesh_weight_map, 1e-12, None)
         mesh_weight_map = mesh_weight_map ** self.weight_power
         mesh_weight_map /= xp.sum(mesh_weight_map)
