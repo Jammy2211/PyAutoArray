@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 
 from typing import List, Tuple
@@ -300,7 +299,7 @@ def rectangular_central_neighbors(
     return neighbors, neighbors_sizes
 
 
-def rectangular_edges_from(shape_native, pixel_scales):
+def rectangular_edges_from(shape_native, pixel_scales, xp=np):
     """
     Returns all pixel edges for a rectangular grid as a JAX array of shape (N, 4, 2, 2),
     where N = Ny * Nx. Edge order per pixel matches the user's convention:
@@ -319,8 +318,8 @@ def rectangular_edges_from(shape_native, pixel_scales):
     dy, dx = pixel_scales
 
     # Grid edge coordinates. Flip x so leftmost column has largest +x, matching your convention.
-    x_edges = ((jnp.arange(Nx + 1) - Nx / 2) * dx)[::-1]
-    y_edges = (jnp.arange(Ny + 1) - Ny / 2) * dy
+    x_edges = ((xp.arange(Nx + 1) - Nx / 2) * dx)[::-1]
+    y_edges = (xp.arange(Ny + 1) - Ny / 2) * dy
 
     edges_list = []
 
@@ -334,22 +333,22 @@ def rectangular_edges_from(shape_native, pixel_scales):
             )  # xa is the "right" boundary in your convention
 
             # Edge order to match your pytest: [(xa,y0)->(xa,y1), (xa,y1)->(xb,y1), (xb,y1)->(xb,y0), (xb,y0)->(xa,y0)]
-            e0 = jnp.array(
+            e0 = xp.array(
                 [[xa, y0], [xa, y1]]
             )  # "top" in your test (vertical at x=xa)
-            e1 = jnp.array(
+            e1 = xp.array(
                 [[xa, y1], [xb, y1]]
             )  # "right" in your test (horizontal at y=y1)
-            e2 = jnp.array(
+            e2 = xp.array(
                 [[xb, y1], [xb, y0]]
             )  # "bottom" in your test (vertical at x=xb)
-            e3 = jnp.array(
+            e3 = xp.array(
                 [[xb, y0], [xa, y0]]
             )  # "left" in your test (horizontal at y=y0)
 
-            edges_list.append(jnp.stack([e0, e1, e2, e3], axis=0))
+            edges_list.append(xp.stack([e0, e1, e2, e3], axis=0))
 
-    return jnp.stack(edges_list, axis=0)
+    return xp.stack(edges_list, axis=0)
 
 
 def rectangular_edge_pixel_list_from(

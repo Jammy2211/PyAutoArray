@@ -1,7 +1,5 @@
 import numpy as np
-from typing import Dict, Optional
-
-from autoconf import cached_property
+from typing import Optional
 
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.regularization.abstract import AbstractRegularization
@@ -11,6 +9,7 @@ class LinearObj:
     def __init__(
         self,
         regularization: Optional[AbstractRegularization],
+        xp=np
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -32,6 +31,7 @@ class LinearObj:
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
         """
         self.regularization = regularization
+        self._xp = xp
 
     @property
     def params(self) -> int:
@@ -68,7 +68,7 @@ class LinearObj:
         """
         raise NotImplementedError
 
-    @cached_property
+    @property
     def unique_mappings(self):
         """
         An object describing the unique mappings between data points / pixels in the data and the parameters of the
@@ -150,6 +150,6 @@ class LinearObj:
         """
 
         if self.regularization is None:
-            return np.zeros((self.params, self.params))
+            return self._xp.zeros((self.params, self.params))
 
-        return self.regularization.regularization_matrix_from(linear_obj=self)
+        return self.regularization.regularization_matrix_from(linear_obj=self, xp=self._xp)

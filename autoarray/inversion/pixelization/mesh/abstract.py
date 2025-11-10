@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional
+from typing import Optional
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
@@ -15,6 +15,7 @@ class AbstractMesh:
         self,
         border_relocator: BorderRelocator,
         source_plane_data_grid: Grid2D,
+        xp=np
     ) -> Grid2D:
         """
         Relocates all coordinates of the input `source_plane_data_grid` that are outside of a
@@ -40,13 +41,14 @@ class AbstractMesh:
             A 2D (y,x) grid of coordinates, whose coordinates outside the border are relocated to its edge.
         """
         if border_relocator is not None:
-            return border_relocator.relocated_grid_from(grid=source_plane_data_grid)
+            return border_relocator.relocated_grid_from(grid=source_plane_data_grid, xp=xp)
 
         return Grid2D(
             values=source_plane_data_grid.array,
             mask=source_plane_data_grid.mask,
             over_sample_size=source_plane_data_grid.over_sampler.sub_size,
             over_sampled=source_plane_data_grid.over_sampled.array,
+            xp=xp
         )
 
     def relocated_mesh_grid_from(
@@ -54,6 +56,7 @@ class AbstractMesh:
         border_relocator: Optional[BorderRelocator],
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
+        xp=np
     ):
         """
         Relocates all coordinates of the input `source_plane_mesh_grid` that are outside of a border (which
@@ -85,7 +88,7 @@ class AbstractMesh:
         """
         if border_relocator is not None:
             return border_relocator.relocated_mesh_grid_from(
-                grid=source_plane_data_grid, mesh_grid=source_plane_mesh_grid
+                grid=source_plane_data_grid, mesh_grid=source_plane_mesh_grid, xp=xp
             )
         return source_plane_mesh_grid
 
@@ -97,6 +100,7 @@ class AbstractMesh:
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: np.ndarray = None,
+        xp=np,
     ) -> MapperGrids:
         raise NotImplementedError
 
@@ -104,6 +108,7 @@ class AbstractMesh:
         self,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
+        xp=np,
     ):
         raise NotImplementedError
 

@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
@@ -23,6 +21,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -49,6 +48,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
+            xp=xp
         )
 
     @property
@@ -74,7 +74,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             param_range = mapper_param_range_list[i]
 
             operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix, mask=self.mask
+                mapping_matrix=mapper.mapping_matrix, mask=self.mask, xp=self._xp
             )
 
             data_vector_mapper = (
@@ -89,7 +89,7 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         return data_vector
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -133,7 +133,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             mapper_param_range_i = mapper_param_range_list[i]
 
             operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
-                mapping_matrix=mapper_i.mapping_matrix, mask=self.mask
+                mapping_matrix=mapper_i.mapping_matrix, mask=self.mask, xp=self._xp
             )
 
             diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
@@ -142,6 +142,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 settings=self.settings,
                 add_to_curvature_diag=True,
                 no_regularization_index_list=self.no_regularization_index_list,
+                xp=self._xp
             )
 
             curvature_matrix[
@@ -150,12 +151,12 @@ class InversionImagingMapping(AbstractInversionImaging):
             ] = diag
 
         curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
+            curvature_matrix=curvature_matrix, xp=self._xp
         )
 
         return curvature_matrix
 
-    @cached_property
+    @property
     def curvature_matrix(self):
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -180,6 +181,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             settings=self.settings,
             add_to_curvature_diag=True,
             no_regularization_index_list=self.no_regularization_index_list,
+            xp=self._xp
         )
 
     @property
@@ -222,6 +224,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=operated_mapping_matrix_list[index],
                     reconstruction=reconstruction,
+                    xp=self._xp
                 )
             )
 

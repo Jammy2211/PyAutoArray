@@ -1,3 +1,5 @@
+import numpy as np
+
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 
@@ -33,6 +35,7 @@ class Delaunay(Triangulation):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
+        xp=np,
     ):
         """
         Return the Delaunay ``source_plane_mesh_grid`` as a ``Mesh2DDelaunay`` object, which provides additional

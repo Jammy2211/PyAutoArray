@@ -1,8 +1,5 @@
-import jax.numpy as jnp
 import numpy as np
-from typing import Dict, List, Optional, Union
-
-from autoconf import cached_property
+from typing import Dict, List, Union
 
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
@@ -23,6 +20,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -52,9 +50,10 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            xp=xp
         )
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -75,7 +74,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             noise_map=np.array(self.noise_map),
         )
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -92,20 +91,23 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.real,
             noise_map=self.noise_map.real,
+            xp=self._xp
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
+            xp=self._xp
         )
 
-        curvature_matrix = jnp.add(real_curvature_matrix, imag_curvature_matrix)
+        curvature_matrix = self._xp.add(real_curvature_matrix, imag_curvature_matrix)
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
                 value=self.settings.no_regularization_add_to_curvature_diag_value,
                 no_regularization_index_list=self.no_regularization_index_list,
+                xp=self._xp
             )
 
         return curvature_matrix

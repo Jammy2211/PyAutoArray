@@ -1,9 +1,8 @@
-import jax.numpy as jnp
 import numpy as np
-
 
 def native_index_for_slim_index_1d_from(
     mask_1d: np.ndarray,
+    xp=np
 ) -> np.ndarray:
     """
     Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
@@ -33,7 +32,4 @@ def native_index_for_slim_index_1d_from(
     native_index_for_slim_index_1d =  native_index_for_slim_index_1d_from(mask_2d=mask_2d)
 
     """
-
-    if isinstance(mask_1d, np.ndarray):
-        return np.flatnonzero(~mask_1d)
-    return jnp.flatnonzero(~mask_1d)
+    return xp.flatnonzero(~mask_1d)

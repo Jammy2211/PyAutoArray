@@ -35,8 +35,8 @@ def cls_list_from(
 
     - If the input is `cls=aa.mesh.Mesh`, a list containing all pixelizations in the class are returned.
 
-    - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.Rectangular`, a list of all pixelizations
-    excluding those which are `Rectangular` pixelizations will be returned.
+    - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.RectangularMagnification`, a list of all pixelizations
+    excluding those which are `RectangularMagnification` pixelizations will be returned.
 
     Parameters
     ----------

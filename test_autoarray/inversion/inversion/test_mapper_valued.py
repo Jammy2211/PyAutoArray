@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 import pytest
 
@@ -70,7 +69,7 @@ def test__interpolated_array_from():
 
 
 def test__interpolated_array_from__with_pixel_mask():
-    values = jnp.array([0.0, 1.0, 1.0, 1.0])
+    values = np.array([0.0, 1.0, 1.0, 1.0])
 
     mapper = aa.m.MockMapper(parameters=4, interpolated_array=values)
 
@@ -126,7 +125,7 @@ def test__magnification_via_mesh_from():
         mapping_matrix=np.ones((12, 10)),
     )
 
-    mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)
+    mapper_valued = aa.MapperValued(values=magnification, mapper=mapper)
 
     magnification = mapper_valued.magnification_via_mesh_from()
 
@@ -146,7 +145,7 @@ def test__magnification_via_mesh_from__with_pixel_mask():
         pixel_scales=(0.5, 0.5),
     )
 
-    magnification = jnp.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    magnification = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
     source_plane_mesh_grid = aa.Mesh2DVoronoi(
         values=np.array(
@@ -169,7 +168,7 @@ def test__magnification_via_mesh_from__with_pixel_mask():
         parameters=3,
         source_plane_mesh_grid=source_plane_mesh_grid,
         mask=mask,
-        mapping_matrix=jnp.ones((12, 10)),
+        mapping_matrix=np.ones((12, 10)),
     )
 
     mesh_pixel_mask = np.array(
@@ -200,7 +199,7 @@ def test__magnification_via_interpolation_from():
         parameters=4,
         mask=mask,
         interpolated_array=magnification,
-        mapping_matrix=jnp.ones((4, 4)),
+        mapping_matrix=np.ones((4, 4)),
     )
 
     mapper_valued = aa.MapperValued(values=np.array(magnification), mapper=mapper)

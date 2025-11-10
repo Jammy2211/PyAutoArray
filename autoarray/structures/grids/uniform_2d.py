@@ -1,11 +1,9 @@
 from __future__ import annotations
-import jax.numpy as jnp
 import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
-from autoconf import cached_property
 from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.mask_2d import Mask2D
@@ -29,6 +27,7 @@ class Grid2D(Structure):
         store_native: bool = False,
         over_sample_size: Union[int, Array2D] = 4,
         over_sampled: Optional[Grid2D] = None,
+        xp=np,
         *args,
         **kwargs,
     ):
@@ -164,9 +163,10 @@ class Grid2D(Structure):
             grid_2d=values,
             mask_2d=mask,
             store_native=store_native,
+            xp=xp
         )
 
-        super().__init__(values)
+        super().__init__(values, xp=xp)
 
         self.mask = mask
 
@@ -538,6 +538,7 @@ class Grid2D(Structure):
         cls,
         mask: Mask2D,
         over_sample_size: Union[int, Array2D] = 4,
+        xp=np,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -555,12 +556,14 @@ class Grid2D(Structure):
             mask_2d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
+            xp=xp
         )
 
         return Grid2D(
-            values=np.array(grid_2d),
+            values=grid_2d,
             mask=mask,
             over_sample_size=over_sample_size,
+            xp=xp
         )
 
     @classmethod
@@ -688,7 +691,7 @@ class Grid2D(Structure):
             over_sample_size=over_sample_size,
         )
 
-    def subtracted_from(self, offset: Tuple[(float, float), np.ndarray]) -> "Grid2D":
+    def subtracted_from(self, offset: Tuple[(float, float), np.ndarray], xp=np) -> "Grid2D":
 
         mask = Mask2D(
             mask=self.mask,
@@ -697,10 +700,10 @@ class Grid2D(Structure):
         )
 
         return Grid2D(
-            values=self - jnp.array(offset),
+            values=self - xp.array(offset),
             mask=mask,
             over_sample_size=self.over_sample_size,
-            over_sampled=self.over_sampled - jnp.array(offset),
+            over_sampled=self.over_sampled - xp.array(offset),
         )
 
     @property
@@ -845,7 +848,7 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        squared_distances = jnp.square(self.array[:, 0] - coordinate[0]) + jnp.square(
+        squared_distances = self._xp.square(self.array[:, 0] - coordinate[0]) + self._xp.square(
             self.array[:, 1] - coordinate[1]
         )
 
@@ -865,7 +868,7 @@ class Grid2D(Structure):
         squared_distance = self.squared_distances_to_coordinate_from(
             coordinate=coordinate
         )
-        distances = jnp.sqrt(squared_distance.array)
+        distances = self._xp.sqrt(squared_distance.array)
         return Array2D(values=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(
@@ -1015,16 +1018,10 @@ class Grid2D(Structure):
         of the grid's (y,x) values, whereas the `shape_native_scaled` uses the uniform geometry of the grid and its
         ``pixel_scales``, which means it has a buffer at each edge of half a ``pixel_scale``.
         """
-        if isinstance(self, jnp.ndarray):
-            return (
-                np.amax(self.array[:, 0]) - np.amin(self.array[:, 0]),
-                np.amax(self.array[:, 1]) - np.amin(self.array[:, 1]),
-            )
-        else:
-            return (
-                np.amax(self[:, 0]) - np.amin(self[:, 0]),
-                np.amax(self[:, 1]) - np.amin(self[:, 1]),
-            )
+        return (
+            np.amax(self[:, 0]) - np.amin(self[:, 0]),
+            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+        )
 
     @property
     def scaled_minima(self) -> Tuple:
@@ -1032,16 +1029,10 @@ class Grid2D(Structure):
         The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        if isinstance(self, jnp.ndarray):
-            return (
-                jnp.amin(self.array[:, 0]).astype("float"),
-                jnp.amin(self.array[:, 1]).astype("float"),
-            )
-        else:
-            return (
-                np.amin(self[:, 0]).astype("float"),
-                np.amin(self[:, 1]).astype("float"),
-            )
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
 
     @property
     def scaled_maxima(self) -> Tuple:
@@ -1049,16 +1040,10 @@ class Grid2D(Structure):
         The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
         extent.
         """
-        if isinstance(self, jnp.ndarray):
-            return (
-                jnp.amax(self.array[:, 0]).astype("float"),
-                jnp.amax(self.array[:, 1]).astype("float"),
-            )
-        else:
-            return (
-                np.amax(self[:, 0]).astype("float"),
-                np.amax(self[:, 1]).astype("float"),
-            )
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
 
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
         """
@@ -1120,7 +1105,7 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(mask=padded_mask, over_sample_size=over_sample_size)
 
-    @cached_property
+    @property
     def is_uniform(self) -> bool:
         """
         Returns if the grid is uniform, where a uniform grid is defined as a grid where all pixels are separated by

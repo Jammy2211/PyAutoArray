@@ -1,5 +1,4 @@
 from __future__ import annotations
-import jax.numpy as jnp
 import numpy as np
 from typing import TYPE_CHECKING, List, Tuple, Union
 
@@ -94,6 +93,7 @@ def convert_array_2d(
     mask_2d: Mask2D,
     store_native: bool = False,
     skip_mask: bool = False,
+    xp=np
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -120,8 +120,6 @@ def convert_array_2d(
     """
     array_2d = convert_array(array=array_2d)
 
-    is_numpy = True if isinstance(array_2d, np.ndarray) else False
-
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
     is_native = len(array_2d.shape) == 2
@@ -130,18 +128,17 @@ def convert_array_2d(
         array_2d *= ~mask_2d
 
     if is_native == store_native:
-        array_2d = array_2d
+        return array_2d
     elif not store_native:
-        array_2d = array_2d_slim_from(
+        return array_2d_slim_from(
             array_2d_native=array_2d,
             mask_2d=mask_2d,
         )
-    else:
-        array_2d = array_2d_native_from(
-            array_2d_slim=array_2d,
-            mask_2d=mask_2d,
-        )
-    return np.array(array_2d) if is_numpy else jnp.array(array_2d)
+    return array_2d_native_from(
+        array_2d_slim=array_2d,
+        mask_2d=mask_2d,
+        xp=xp
+    )
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
@@ -172,7 +169,7 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarra
     )
 
 
-def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
+def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D, xp=np) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
@@ -209,6 +206,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
     return array_2d_native_from(
         array_2d_slim=array_2d,
         mask_2d=mask_2d,
+        xp=xp
     )
 
 
@@ -472,6 +470,7 @@ def array_2d_slim_from(
 def array_2d_native_from(
     array_2d_slim: np.ndarray,
     mask_2d: np.ndarray,
+    xp=np
 ) -> np.ndarray:
     """
     For a slimmed 2D array that was computed by mapping unmasked values from a native 2D array of shape
@@ -511,20 +510,22 @@ def array_2d_native_from(
     shape = (mask_2d.shape[0], mask_2d.shape[1])
 
     native_index_for_slim_index_2d = mask_2d_util.native_index_for_slim_index_2d_from(
-        mask_2d=np.array(mask_2d),
+        mask_2d=mask_2d,
+        xp=xp
     ).astype("int")
 
     return array_2d_via_indexes_from(
         array_2d_slim=array_2d_slim,
         shape=shape,
         native_index_for_slim_index_2d=native_index_for_slim_index_2d,
+        xp=xp
     )
-
 
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
     shape: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     """
     For a slimmed array with indexes mapping the slimmed array values to their native array, return the native 2D
@@ -553,10 +554,11 @@ def array_2d_via_indexes_from(
     ndarray
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
-    if isinstance(array_2d_slim, np.ndarray):
-        array = np.zeros(shape)
+    array = xp.zeros(shape, dtype=array_2d_slim.dtype)
+
+    if xp.__name__.startswith("jax"):
+        array = array.at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
+    else:
         array[tuple(native_index_for_slim_index_2d.T)] = array_2d_slim
-        return array
-    return (
-        jnp.zeros(shape).at[tuple(native_index_for_slim_index_2d.T)].set(array_2d_slim)
-    )
+
+    return array

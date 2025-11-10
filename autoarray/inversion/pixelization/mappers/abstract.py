@@ -1,9 +1,8 @@
 import itertools
 import numpy as np
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from autoconf import conf
-from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
@@ -25,6 +24,7 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
+        xp=np
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -83,7 +83,7 @@ class AbstractMapper(LinearObj):
            edge.
         """
 
-        super().__init__(regularization=regularization)
+        super().__init__(regularization=regularization, xp=xp)
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
@@ -128,7 +128,7 @@ class AbstractMapper(LinearObj):
     def pix_sub_weights(self) -> "PixSubWeights":
         raise NotImplementedError
 
-    @cached_property
+    @property
     def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
         """
         The mapping of every data pixel (given its `sub_slim_index`) to pixelization pixels (given their `pix_indexes`).
@@ -144,7 +144,7 @@ class AbstractMapper(LinearObj):
         """
         return self.pix_sub_weights.mappings
 
-    @cached_property
+    @property
     def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
         """
         The number of mappings of every data pixel to pixelization pixels.
@@ -160,7 +160,7 @@ class AbstractMapper(LinearObj):
         """
         return self.pix_sub_weights.sizes
 
-    @cached_property
+    @property
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         """
         The interoplation weights of the mapping of every data pixel (given its `sub_slim_index`) to pixelization
@@ -208,7 +208,7 @@ class AbstractMapper(LinearObj):
 
         return sub_slim_indexes_for_pix_index
 
-    @cached_property
+    @property
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
@@ -245,7 +245,7 @@ class AbstractMapper(LinearObj):
             pix_lengths=pix_lengths,
         )
 
-    @cached_property
+    @property
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
@@ -267,9 +267,10 @@ class AbstractMapper(LinearObj):
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.over_sampler.sub_fraction.array,
+            xp=self._xp
         )
 
-    def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
+    def pixel_signals_from(self, signal_scale: float, xp=np) -> np.ndarray:
         """
         Returns the signal in each pixelization pixel, where this signal is an estimate of the expected signal
         each pixelization pixel contains given the data pixels it maps too.
@@ -291,6 +292,7 @@ class AbstractMapper(LinearObj):
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
             adapt_data=self.adapt_data.array,
+            xp=xp
         )
 
     def slim_indexes_for_pix_indexes(self, pix_indexes: List) -> List[List]:

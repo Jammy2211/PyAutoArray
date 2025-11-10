@@ -1,8 +1,6 @@
-from jax import numpy as np
-import jax
+
 import numpy as np
 
-jax.config.update("jax_log_compiles", True)
 import pytest
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
@@ -318,33 +316,12 @@ def one_triangle():
     )
 
 
-@jax.jit
-def full_routine(triangles):
-    neighborhood = triangles.neighborhood()
-    up_sampled = neighborhood.up_sample()
-    with_vertices = up_sampled.with_vertices(up_sampled.vertices)
-    indexes = with_vertices.containing_indices(Point(0.1, 0.1))
-    return up_sampled.for_indexes(indexes)
 
-
-# def test_full_routine(one_triangle, compare_with_nans):
-#     result = full_routine(one_triangle)
-#
-#     assert compare_with_nans(
-#         result.triangles,
-#         np.array(
-#             [
-#                 [
-#                     [0.0, 0.4330126941204071],
-#                     [0.25, 0.0],
-#                     [-0.25, 0.0],
-#                 ]
-#             ]
-#         ),
-#     )
 
 
 def test_neighborhood(one_triangle):
+    import jax
+
     assert np.allclose(
         np.array(jax.jit(one_triangle.neighborhood)().triangles),
         np.array(
@@ -375,6 +352,8 @@ def test_neighborhood(one_triangle):
 
 
 def test_up_sample(one_triangle):
+    import jax
+
     up_sampled = jax.jit(one_triangle.up_sample)()
     assert np.allclose(
         np.array(up_sampled.triangles),

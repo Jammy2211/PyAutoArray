@@ -45,7 +45,7 @@ class MockMapper(AbstractMapper):
         self._pixel_signals = pixel_signals
         self._interpolated_array = interpolated_array
 
-    def pixel_signals_from(self, signal_scale):
+    def pixel_signals_from(self, signal_scale, xp=np):
         if self._pixel_signals is None:
             return super().pixel_signals_from(signal_scale=signal_scale)
         return self._pixel_signals

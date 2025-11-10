@@ -6,7 +6,8 @@ from abc import ABC
 from abc import abstractmethod
 import jax.numpy as jnp
 from jax._src.tree_util import register_pytree_node
-from jax import Array
+
+import numpy as np
 
 from autoconf.fitsable import output_to_fits
 
@@ -64,7 +65,11 @@ def unwrap_array(func):
 
 
 class AbstractNDArray(ABC):
-    def __init__(self, array):
+
+    __no_flatten__ = ()
+
+    def __init__(self, array, xp=np):
+
         self._is_transformed = False
 
         while isinstance(array, AbstractNDArray):
@@ -79,7 +84,7 @@ class AbstractNDArray(ABC):
         except ValueError:
             pass
 
-    __no_flatten__ = ()
+        self._xp = xp
 
     def invert(self):
         new = self.copy()
@@ -101,12 +106,6 @@ class AbstractNDArray(ABC):
             )
         )
         return values, keys
-
-    @staticmethod
-    def flip_hdu_for_ds9(values):
-        if conf.instance["general"]["fits"]["flip_for_ds9"]:
-            return jnp.flipud(values)
-        return values
 
     @classmethod
     def instance_unflatten(cls, aux_data, children):
@@ -137,6 +136,12 @@ class AbstractNDArray(ABC):
         new_array = self.copy()
         new_array._array = array
         return new_array
+
+    @staticmethod
+    def flip_hdu_for_ds9(values):
+        if conf.instance["general"]["fits"]["flip_for_ds9"]:
+            return jnp.flipud(values)
+        return values
 
     def copy(self):
         new = copy(self)
@@ -336,6 +341,7 @@ class AbstractNDArray(ABC):
         return result
 
     def __setitem__(self, key, value):
+        from jax import Array
         if isinstance(key, (jnp.ndarray, AbstractNDArray, Array)):
             self._array = jnp.where(key, value, self._array)
         else:

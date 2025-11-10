@@ -1,9 +1,6 @@
-import jax.numpy as jnp
 import numpy as np
 
 from typing import List, Optional, Tuple
-
-from autoconf import cached_property
 
 from autoarray import type as ty
 from autoarray.inversion.linear_obj.neighbors import Neighbors
@@ -65,7 +62,7 @@ class Mesh2DRectangular(Abstract2DMesh):
 
     @classmethod
     def overlay_grid(
-        cls, shape_native: Tuple[int, int], grid: np.ndarray, buffer: float = 1e-8
+        cls, shape_native: Tuple[int, int], grid: np.ndarray, buffer: float = 1e-8, xp=np
     ) -> "Mesh2DRectangular":
         """
         Creates a `Grid2DRecntagular` by overlaying the rectangular pixelization over an input grid of (y,x)
@@ -89,23 +86,24 @@ class Mesh2DRectangular(Abstract2DMesh):
         """
         grid = grid.array
 
-        y_min = jnp.min(grid[:, 0]) - buffer
-        y_max = jnp.max(grid[:, 0]) + buffer
-        x_min = jnp.min(grid[:, 1]) - buffer
-        x_max = jnp.max(grid[:, 1]) + buffer
+        y_min = xp.min(grid[:, 0]) - buffer
+        y_max = xp.max(grid[:, 0]) + buffer
+        x_min = xp.min(grid[:, 1]) - buffer
+        x_max = xp.max(grid[:, 1]) + buffer
 
-        pixel_scales = jnp.array(
+        pixel_scales = xp.array(
             (
                 (y_max - y_min) / shape_native[0],
                 (x_max - x_min) / shape_native[1],
             )
         )
-        origin = jnp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
+        origin = xp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
 
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
+            xp=xp
         )
 
         return cls(
@@ -115,7 +113,7 @@ class Mesh2DRectangular(Abstract2DMesh):
             origin=origin,
         )
 
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
@@ -130,7 +128,7 @@ class Mesh2DRectangular(Abstract2DMesh):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @cached_property
+    @property
     def edge_pixel_list(self) -> List:
         return mesh_util.rectangular_edge_pixel_list_from(
             shape_native=self.shape_native

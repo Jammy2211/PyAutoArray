@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+import numpy as np
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.dataset_model import DatasetModel
@@ -14,6 +14,7 @@ class FitImaging(FitDataset):
         dataset: Imaging,
         use_mask_in_fit: bool = False,
         dataset_model: DatasetModel = None,
+        xp=np
     ):
         """
         Class to fit a masked imaging dataset.
@@ -49,6 +50,7 @@ class FitImaging(FitDataset):
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
             dataset_model=dataset_model,
+            xp=xp
         )
 
     @property

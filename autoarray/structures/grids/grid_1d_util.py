@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-import jax.numpy as jnp
+
 from typing import TYPE_CHECKING, List, Union, Tuple
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ from autoarray import type as ty
 
 
 def convert_grid_1d(
-    grid_1d: Union[np.ndarray, List], mask_1d: Mask1D, store_native: bool = False
+    grid_1d: Union[np.ndarray, List], mask_1d: Mask1D, store_native: bool = False, xp=np
 ) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -40,29 +40,27 @@ def convert_grid_1d(
 
     grid_1d = grid_2d_util.convert_grid(grid=grid_1d)
 
-    is_numpy = True if isinstance(grid_1d, np.ndarray) else False
-
     is_native = grid_1d.shape[0] == mask_1d.shape_native[0]
 
     if is_native == store_native:
-        grid_1d = grid_1d
+        return grid_1d
     elif not store_native:
-        grid_1d = grid_1d_slim_from(
+        return grid_1d_slim_from(
             grid_1d_native=grid_1d,
             mask_1d=mask_1d,
         )
-    else:
-        grid_1d = grid_1d_native_from(
-            grid_1d_slim=grid_1d,
-            mask_1d=mask_1d,
-        )
-    return np.array(grid_1d) if is_numpy else jnp.array(grid_1d)
+    return grid_1d_native_from(
+        grid_1d_slim=grid_1d,
+        mask_1d=mask_1d,
+        xp=xp
+    )
 
 
 def grid_1d_slim_via_shape_slim_from(
     shape_slim: Tuple[int],
     pixel_scales: ty.PixelScales,
     origin: Tuple[float] = (0.0,),
+    xp=np
 ) -> np.ndarray:
     """
     This routine computes the (x) scaled coordinates at the centre of every pixel defined by a 1D shape of the
@@ -95,6 +93,7 @@ def grid_1d_slim_via_shape_slim_from(
         mask_1d=np.full(fill_value=False, shape=shape_slim),
         pixel_scales=pixel_scales,
         origin=origin,
+        xp=xp
     )
 
 
@@ -102,6 +101,7 @@ def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
     pixel_scales: ty.PixelScales,
     origin: Tuple[float] = (0.0,),
+    xp=np
 ) -> np.ndarray:
     """
     For a grid, every unmasked pixel of its 1D mask with shape (total_pixels,) is divided into a finer uniform
@@ -136,8 +136,8 @@ def grid_1d_slim_via_mask_from(
     centres_scaled = geometry_util.central_scaled_coordinate_1d_from(
         shape_slim=mask_1d.shape, pixel_scales=pixel_scales, origin=origin
     )
-    indices = jnp.arange(mask_1d.shape[0])
-    unmasked = jnp.logical_not(mask_1d)
+    indices = xp.arange(mask_1d.shape[0])
+    unmasked = xp.logical_not(mask_1d)
     coords = (indices - centres_scaled[0]) * pixel_scales[0]
     return coords[unmasked]
 
@@ -179,6 +179,7 @@ def grid_1d_slim_from(
 def grid_1d_native_from(
     grid_1d_slim: np.ndarray,
     mask_1d: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     """
     For a slimmed 1D grid of shape [total_unmasked_pixels], that was computed by extracting the unmasked values
@@ -208,4 +209,5 @@ def grid_1d_native_from(
     return array_1d_util.array_1d_native_from(
         array_1d_slim=grid_1d_slim,
         mask_1d=mask_1d,
+        xp=xp
     )

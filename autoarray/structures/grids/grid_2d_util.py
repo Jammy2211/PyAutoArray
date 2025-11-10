@@ -1,6 +1,5 @@
 from __future__ import annotations
 import numpy as np
-import jax.numpy as jnp
 
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
@@ -85,7 +84,7 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
 
 
 def convert_grid_2d(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D, store_native: bool = False
+    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D, store_native: bool = False, xp=np
 ) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -112,37 +111,30 @@ def convert_grid_2d(
 
     grid_2d = convert_grid(grid=grid_2d)
 
-    is_numpy = True if isinstance(grid_2d, np.ndarray) else False
-
     check_grid_2d_and_mask_2d(grid_2d=grid_2d, mask_2d=mask_2d)
 
     is_native = len(grid_2d.shape) == 3
 
     if is_native:
-        if not is_numpy:
-            grid_2d = grid_2d.at[:, :, 0].multiply(~mask_2d)
-            grid_2d = grid_2d.at[:, :, 1].multiply(~mask_2d)
-        else:
-            grid_2d[:, :, 0] *= ~mask_2d
-            grid_2d[:, :, 1] *= ~mask_2d
+        grid_2d = grid_2d * (~mask_2d)[..., None]
 
     if is_native == store_native:
-        grid_2d = grid_2d
+        return grid_2d
     elif not store_native:
-        grid_2d = grid_2d_slim_from(
+        return grid_2d_slim_from(
             grid_2d_native=grid_2d,
             mask=mask_2d,
+            xp=xp
         )
-    else:
-        grid_2d = grid_2d_native_from(
+    return grid_2d_native_from(
             grid_2d_slim=grid_2d,
-            mask_2d=mask_2d,
+            mask_2d=mask_2d,#
+            xp=xp
         )
-    return np.array(grid_2d) if is_numpy else jnp.array(grid_2d)
 
 
 def convert_grid_2d_to_slim(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
+    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D, xp=np
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -163,11 +155,12 @@ def convert_grid_2d_to_slim(
     return grid_2d_slim_from(
         grid_2d_native=grid_2d,
         mask=mask_2d,
+        xp=xp
     )
 
 
 def convert_grid_2d_to_native(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
+    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D,
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -214,6 +207,7 @@ def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
+    xp=np,
 ) -> np.ndarray:
     """
     For a grid, every unmasked pixel is on a 2D mask with shape (total_y_pixels, total_x_pixels). This routine
@@ -253,27 +247,14 @@ def grid_2d_slim_via_mask_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 
-    # JAX branch
-    if isinstance(mask_2d, jnp.ndarray):
-        centres_scaled = jnp.asarray(centres_scaled)
-        pixel_scales = jnp.asarray(pixel_scales)
-        sign = jnp.array([-1.0, 1.0])
+    centres_scaled = xp.asarray(centres_scaled)
+    pixel_scales = xp.asarray(pixel_scales)
+    sign = xp.array([-1.0, 1.0])
 
-        # use jnp.where instead of jnp.nonzero
-        rows, cols = jnp.where(~mask_2d.astype(bool))
-        indices = jnp.stack([rows, cols], axis=1)  # shape (N_unmasked, 2)
+    rows, cols = xp.where(~mask_2d.astype(bool))
+    indices = xp.stack([rows, cols], axis=1)  # shape (N_unmasked, 2)
 
-        # (indices - centre) -> pixel offsets; apply sign and scale to get physical coords
-        return (indices - centres_scaled) * sign * pixel_scales
-
-    # NumPy branch (kept consistent)
-    centres_scaled = np.asarray(centres_scaled)
-    pixel_scales = np.asarray(pixel_scales)
-    sign = np.array([-1.0, 1.0])
-
-    rows, cols = np.where(~mask_2d.astype(bool))
-    indices = np.stack([rows, cols], axis=1)
-
+    # (indices - centre) -> pixel offsets; apply sign and scale to get physical coords
     return (indices - centres_scaled) * sign * pixel_scales
 
 
@@ -281,6 +262,7 @@ def grid_2d_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
+    xp=np,
 ) -> np.ndarray:
     """
     For a grid, every unmasked pixel is on a 2D mask with shape (total_y_pixels, total_x_pixels). This routine computes
@@ -317,12 +299,13 @@ def grid_2d_via_mask_from(
     """
 
     grid_2d_slim = grid_2d_slim_via_mask_from(
-        mask_2d=mask_2d, pixel_scales=pixel_scales, origin=origin
+        mask_2d=mask_2d, pixel_scales=pixel_scales, origin=origin, xp=xp
     )
 
     return grid_2d_native_from(
         grid_2d_slim=grid_2d_slim,
         mask_2d=mask_2d,
+        xp=xp
     )
 
 
@@ -330,6 +313,7 @@ def grid_2d_slim_via_shape_native_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
+    xp=np,
 ) -> np.ndarray:
     """
     For a grid, every unmasked pixel is in a 2D mask with shape (total_y_pixels, total_x_pixels). This routine computes
@@ -363,9 +347,10 @@ def grid_2d_slim_via_shape_native_from(
     grid_2d_slim = grid_2d_slim_via_shape_native_from(shape_native=(3,3), pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
     return grid_2d_slim_via_mask_from(
-        mask_2d=np.full(fill_value=False, shape=shape_native),
+        mask_2d=xp.full(fill_value=False, shape=shape_native),
         pixel_scales=pixel_scales,
         origin=origin,
+        xp=xp
     )
 
 
@@ -585,6 +570,7 @@ def grid_scaled_2d_slim_radial_projected_from(
 def grid_2d_slim_from(
     grid_2d_native: np.ndarray,
     mask: np.ndarray,
+    xp=np
 ) -> np.ndarray:
     """
     For a native 2D grid and mask of shape [total_y_pixels, total_x_pixels, 2], map the values of all unmasked
@@ -619,14 +605,13 @@ def grid_2d_slim_from(
         array_2d_native=grid_2d_native[:, :, 1],
         mask_2d=mask,
     )
-    if isinstance(grid_2d_native, np.ndarray):
-        return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
-    return jnp.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
+    return xp.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
 
 
 def grid_2d_native_from(
     grid_2d_slim: np.ndarray,
     mask_2d: np.ndarray,
+    xp=np
 ) -> np.ndarray:
     """
     For a slimmed 2D grid of shape [total_unmasked_pixels, 2], that was computed by extracting the unmasked values
@@ -657,16 +642,16 @@ def grid_2d_native_from(
     grid_2d_native_y = array_2d_util.array_2d_native_from(
         array_2d_slim=grid_2d_slim[:, 0],
         mask_2d=mask_2d,
+        xp=xp
     )
 
     grid_2d_native_x = array_2d_util.array_2d_native_from(
         array_2d_slim=grid_2d_slim[:, 1],
         mask_2d=mask_2d,
+        xp=xp
     )
 
-    if isinstance(grid_2d_slim, np.ndarray):
-        return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
-    return jnp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
+    return xp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 
 def grid_2d_of_points_within_radius(
@@ -736,6 +721,7 @@ def grid_2d_slim_via_shape_native_not_mask_from(
     shape_native: Tuple[int, int],
     pixel_scales: Tuple[float, float],
     origin: Tuple[float, float] = (0.0, 0.0),
+    xp=np
 ) -> np.ndarray:
     """
     Build the slim (flattened) grid of all (y, x) pixel centres for a rectangular grid
@@ -766,9 +752,9 @@ def grid_2d_slim_via_shape_native_not_mask_from(
 
     # compute the integer pixel‐centre coordinates in array index space
     # row indices 0..Ny-1, col indices 0..Nx-1
-    arange = jnp.arange
-    meshy, meshx = jnp.meshgrid(arange(Ny), arange(Nx), indexing="ij")
-    coords = jnp.stack([meshy, meshx], axis=-1).reshape(-1, 2)
+    arange = xp.arange
+    meshy, meshx = xp.meshgrid(arange(Ny), arange(Nx), indexing="ij")
+    coords = xp.stack([meshy, meshx], axis=-1).reshape(-1, 2)
 
     # convert to physical coordinates: subtract array‐centre, flip y, scale, then add origin
     # array‐centre in index space is at ((Ny-1)/2, (Nx-1)/2)
@@ -781,4 +767,4 @@ def grid_2d_slim_via_shape_native_not_mask_from(
     phys_y = (cy - idx_y) * sy + y0
     phys_x = (idx_x - cx) * sx + x0
 
-    return jnp.stack([phys_y, phys_x], axis=1)
+    return xp.stack([phys_y, phys_x], axis=1)

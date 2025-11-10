@@ -33,6 +33,7 @@ class Mask1D(Mask):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float,] = (0.0,),
         invert: bool = False,
+        xp=np,
     ):
         """
         A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
@@ -72,6 +73,7 @@ class Mask1D(Mask):
             mask=mask,
             pixel_scales=pixel_scales,
             origin=origin,
+            xp=xp,
         )
 
     def __array_finalize__(self, obj):

@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Union, Type
 
-from autoconf import cached_property
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
@@ -22,6 +20,7 @@ class AbstractInversionImaging(AbstractInversion):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
+        xp=np
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -69,6 +68,7 @@ class AbstractInversionImaging(AbstractInversion):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
+            xp=xp,
         )
 
     @property
@@ -93,7 +93,7 @@ class AbstractInversionImaging(AbstractInversion):
         return [
             (
                 self.psf.convolved_mapping_matrix_from(
-                    mapping_matrix=linear_obj.mapping_matrix, mask=self.mask
+                    mapping_matrix=linear_obj.mapping_matrix, mask=self.mask, xp=self._xp
                 )
                 if linear_obj.operated_mapping_matrix_override is None
                 else self.linear_func_operated_mapping_matrix_dict[linear_obj]
@@ -112,7 +112,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return cls_dict
 
-    @cached_property
+    @property
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -137,6 +137,7 @@ class AbstractInversionImaging(AbstractInversion):
                 operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
                     mapping_matrix=linear_func.mapping_matrix,
                     mask=self.mask,
+                    xp=self._xp
                 )
 
             linear_func_operated_mapping_matrix_dict[linear_func] = (
@@ -197,7 +198,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return data_linear_func_matrix_dict
 
-    @cached_property
+    @property
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values
@@ -218,6 +219,7 @@ class AbstractInversionImaging(AbstractInversion):
             operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
                 mapping_matrix=mapper.mapping_matrix,
                 mask=self.mask,
+                xp=self._xp
             )
 
             mapper_operated_mapping_matrix_dict[mapper] = operated_mapping_matrix

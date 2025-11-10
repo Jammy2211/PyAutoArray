@@ -37,7 +37,7 @@ class Pixelization:
         - **Left:** Observed image of a galaxy.
         - **Centre:** The (y,x) grid of coordinates corresponding to the centre of each pixel in the observed image.
           The centre of each pixel is shown by a magenta point.
-        - **Right:** An overlaid ``Rectangular`` ``mesh``, where the square pixel boundaries of this mesh are shown by
+        - **Right:** An overlaid ``RectangularMagnification`` ``mesh``, where the square pixel boundaries of this mesh are shown by
           dashed black lines.
 
         Red points highlight a subset of points. They are used below to illustrate additional behaviour
@@ -45,7 +45,7 @@ class Pixelization:
 
         The **centre** and **right** panels show the core functionality of a ``Pixelization``. It represents the
         mappings between an image's (y,x) grid of coordinates and a ``Mesh``'s (y,x) grid of coordinates (in the
-        example above the centres of ``Rectangular`` pixels, shown by the dashed black lines).
+        example above the centres of ``RectangularMagnification`` pixels, shown by the dashed black lines).
 
 
         **Image-Plane Example (Masked)**
@@ -64,7 +64,7 @@ class Pixelization:
           :width: 240
 
         The behaviour is analogous to the non-masked case, however only unmasked pixel's in the image's (y,x) grid
-        of coordinates are included when pairing with the ``Rectangular`` mesh.
+        of coordinates are included when pairing with the ``RectangularMagnification`` mesh.
 
 
         **Source-Plane Example (Masked)**
@@ -95,7 +95,7 @@ class Pixelization:
         - ``Inversion``: Use the ``Pixelization`` to reconstruct the data on the mesh via linear algebra.
         - ``Regularization``: Apply smoothing to the solutions computed using an ``Inversion``.
 
-        In the example above, a ``Rectangular`` ``Mesh`` object is used. Other meshes are available (e.g.
+        In the example above, a ``RectangularMagnification`` ``Mesh`` object is used. Other meshes are available (e.g.
         ``Delaunay``, ``Voronoi``).
 
         **Source Code API**
@@ -113,7 +113,7 @@ class Pixelization:
         Parameters
         ----------
         mesh
-            The mesh object (e.g. Rectangular grid of pixels, Delaunay triangulation, Voronoi mesh) describing the
+            The mesh object (e.g. RectangularMagnification grid of pixels, Delaunay triangulation, Voronoi mesh) describing the
             pixels of the `Pixelization`.
         regularization
             The regularization object that can smooth ``Pixelization`` pixels with one another when it is used to
@@ -131,7 +131,7 @@ class Pixelization:
 
             grid_2d = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.1)
 
-            mesh = al.mesh.Rectangular(shape=(10, 10))
+            mesh = al.mesh.RectangularMagnification(shape=(10, 10))
 
             pixelization = al.Pixelization(mesh=mesh)
 
@@ -141,7 +141,7 @@ class Pixelization:
 
             import autogalaxy as ag
 
-            mesh = af.Model(ag.mesh.Rectangular)
+            mesh = af.Model(ag.mesh.RectangularMagnification)
             mesh.shape_0 = af.UniformPrior(lower_limit=10, upper_limit=20)
             mesh.shape_1 = af.UniformPrior(lower_limit=10, upper_limit=20)
 

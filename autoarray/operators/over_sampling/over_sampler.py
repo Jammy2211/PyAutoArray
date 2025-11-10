@@ -1,11 +1,9 @@
 import numpy as np
-import jax.numpy as jnp
-import jax
+
 from jax._src.tree_util import register_pytree_node_class
 from typing import Union
 
 from autoconf import conf
-from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -151,7 +149,7 @@ class OverSampler:
         self.sub_total = int(np.sum(self.sub_size**2))
         self.sub_length = self.sub_size**self.mask.dimensions
         self.sub_fraction = Array2D(
-            values=jnp.array(1.0 / self.sub_length.array), mask=self.mask
+            values=1.0 / self.sub_length.array, mask=self.mask
         )
 
         # Used for JAX based adaptive over sampling.
@@ -172,8 +170,6 @@ class OverSampler:
             zip(self.start_indices, self.split_indices)
         ):
             self.segment_ids[start:end] = seg_id
-
-        self.segment_ids = jnp.array(self.segment_ids)
 
     @property
     def sub_is_uniform(self) -> bool:
@@ -207,7 +203,7 @@ class OverSampler:
 
         return sub_pixel_areas
 
-    def binned_array_2d_from(self, array: Array2D) -> "Array2D":
+    def binned_array_2d_from(self, array: Array2D, xp=np) -> "Array2D":
         """
         Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
         ``ndarray`` of shape [total_unmasked_pixels, 2].
@@ -252,13 +248,15 @@ class OverSampler:
 
         else:
 
+            import jax
+
             # Compute the group means
 
             sums = jax.ops.segment_sum(
                 array, self.segment_ids, self.mask.pixels_in_mask
             )
             counts = jax.ops.segment_sum(
-                jnp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
+                xp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
             )
             binned_array_2d = sums / counts
 
@@ -267,7 +265,7 @@ class OverSampler:
             mask=self.mask,
         )
 
-    @cached_property
+    @property
     def slim_for_sub_slim(self) -> np.ndarray:
         """
         Derives a 1D ``ndarray`` which maps every subgridded 1D ``slim`` index of the ``Mask2D`` to its

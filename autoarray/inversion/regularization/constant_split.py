@@ -43,7 +43,7 @@ class ConstantSplit(Constant):
 
         super().__init__(coefficient=coefficient)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 

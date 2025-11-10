@@ -69,7 +69,7 @@ class Zoom2D:
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self.mask),
+            mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )

@@ -1,4 +1,5 @@
-from typing import Dict, Optional
+import numpy as np
+from typing import Optional
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
@@ -13,6 +14,7 @@ def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
     border_relocator: Optional[BorderRelocator] = None,
+    xp=np
 ):
     """
     Factory which given input `MapperGrids` and `Regularization` objects creates a `Mapper`.
@@ -37,6 +39,7 @@ def mapper_from(
     -------
     A mapper whose type is determined by the input `mapper_grids` mesh type.
     """
+
     from autoarray.inversion.pixelization.mappers.rectangular import (
         MapperRectangular,
     )
@@ -51,22 +54,26 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            xp=xp
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
         return MapperRectangular(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            xp=xp
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
         return MapperDelaunay(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            xp=xp
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DVoronoi):
         return MapperVoronoi(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            xp=xp
         )

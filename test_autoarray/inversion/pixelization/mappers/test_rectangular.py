@@ -137,7 +137,7 @@ def test__edges_transformed(mask_2d_7x7):
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    assert mapper.edges_transformed[4] == pytest.approx(
+    assert mapper.edges_transformed[3] == pytest.approx(
         np.array(
             [1.5, 1.5],  # left
         ),

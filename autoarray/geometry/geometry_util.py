@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 from typing import Tuple, Union
 
@@ -359,7 +358,7 @@ def scaled_coordinates_2d_from(
 
 
 def transform_grid_2d_to_reference_frame(
-    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float
+    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float, xp=np
 ) -> np.ndarray:
     """
     Transform a 2D grid of (y,x) coordinates to a new reference frame.
@@ -375,23 +374,23 @@ def transform_grid_2d_to_reference_frame(
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
 
-    shifted_grid_2d = grid_2d - jnp.array(centre)
+    shifted_grid_2d = grid_2d - xp.array(centre)
 
-    radius = jnp.sqrt(jnp.sum(jnp.square(shifted_grid_2d), axis=1))
-    theta_coordinate_to_profile = jnp.arctan2(
+    radius = xp.sqrt(xp.sum(xp.square(shifted_grid_2d), axis=1))
+    theta_coordinate_to_profile = xp.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
-    ) - jnp.radians(angle)
+    ) - xp.radians(angle)
 
-    return jnp.vstack(
+    return xp.vstack(
         [
-            radius * jnp.sin(theta_coordinate_to_profile),
-            radius * jnp.cos(theta_coordinate_to_profile),
+            radius * xp.sin(theta_coordinate_to_profile),
+            radius * xp.cos(theta_coordinate_to_profile),
         ]
     ).T
 
 
 def transform_grid_2d_from_reference_frame(
-    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float
+    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float, xp=np
 ) -> np.ndarray:
     """
     Transform a 2D grid of (y,x) coordinates to a new reference frame, which is the reverse frame computed via the
@@ -407,25 +406,24 @@ def transform_grid_2d_from_reference_frame(
     grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
+    cos_angle = xp.cos(xp.radians(angle))
+    sin_angle = xp.sin(xp.radians(angle))
 
-    cos_angle = jnp.cos(jnp.radians(angle))
-    sin_angle = jnp.sin(jnp.radians(angle))
-
-    y = jnp.add(
-        jnp.add(
-            jnp.multiply(grid_2d[:, 1], sin_angle),
-            jnp.multiply(grid_2d[:, 0], cos_angle),
+    y = xp.add(
+        xp.add(
+            xp.multiply(grid_2d[:, 1], sin_angle),
+            xp.multiply(grid_2d[:, 0], cos_angle),
         ),
         centre[0],
     )
-    x = jnp.add(
-        jnp.add(
-            jnp.multiply(grid_2d[:, 1], cos_angle),
-            -jnp.multiply(grid_2d[:, 0], sin_angle),
+    x = xp.add(
+        xp.add(
+            xp.multiply(grid_2d[:, 1], cos_angle),
+            -xp.multiply(grid_2d[:, 0], sin_angle),
         ),
         centre[1],
     )
-    return jnp.vstack((y, x)).T
+    return xp.vstack((y, x)).T
 
 
 def grid_pixels_2d_slim_from(

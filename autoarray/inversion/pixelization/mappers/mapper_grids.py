@@ -19,6 +19,7 @@ class MapperGrids:
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
+        mesh_weight_map : Optional[Array2D] = None,
     ):
         """
         Groups the different grids used by `Mesh` objects, the `mesh` package and the `pixelization` package, which
@@ -54,6 +55,9 @@ class MapperGrids:
         adapt_data
             An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
+        mesh_weight_map
+            The weight map used to weight the creation of the rectangular mesh grid, which is used for the
+            `RectangularBrightness` mesh which adapts the size of its pixels to where the source is reconstructed.
         """
 
         self.mask = mask
@@ -61,6 +65,7 @@ class MapperGrids:
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid
         self.adapt_data = adapt_data
+        self.mesh_weight_map = mesh_weight_map
 
     @property
     def image_plane_data_grid(self):

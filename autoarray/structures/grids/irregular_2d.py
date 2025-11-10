@@ -1,6 +1,4 @@
 import logging
-import jax
-import jax.numpy as jnp
 import numpy as np
 from typing import List, Tuple, Union
 
@@ -13,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Grid2DIrregular(AbstractNDArray):
-    def __init__(self, values: Union[np.ndarray, List]):
+    def __init__(self, values: Union[np.ndarray, List], xp=np):
         """
         An irregular grid of (y,x) coordinates.
 
@@ -45,15 +43,10 @@ class Grid2DIrregular(AbstractNDArray):
         if type(values) is list:
             if isinstance(values[0], Grid2DIrregular):
                 values = values
-            elif isinstance(values[0], jnp.ndarray):
-                values = jnp.asarray(values)
             else:
-                try:
-                    values = np.asarray(values)
-                except ValueError:
-                    pass
+                values = xp.asarray(values)
 
-        super().__init__(values)
+        super().__init__(values, xp=xp)
 
     @classmethod
     def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
@@ -192,7 +185,7 @@ class Grid2DIrregular(AbstractNDArray):
         coordinate
             The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
         """
-        squared_distances = jnp.square(self.array[:, 0] - coordinate[0]) + jnp.square(
+        squared_distances = self._xp.square(self.array[:, 0] - coordinate[0]) + self._xp.square(
             self.array[:, 1] - coordinate[1]
         )
         return ArrayIrregular(values=squared_distances)
@@ -208,7 +201,7 @@ class Grid2DIrregular(AbstractNDArray):
         coordinate
             The (y,x) coordinate from which the distance of every coordinate is computed.
         """
-        distances = jnp.sqrt(
+        distances = self._xp.sqrt(
             self.squared_distances_to_coordinate_from(coordinate=coordinate).array
         )
         return ArrayIrregular(values=distances)
@@ -236,13 +229,16 @@ class Grid2DIrregular(AbstractNDArray):
         ArrayIrregular
             The further distances of every coordinate to every other coordinate on the irregular grid.
         """
+        # Compute pairwise deltas: shape (N, N, 2)
+        deltas = self.array[:, None, :] - self.array[None, :, :]
 
-        def max_radial_distance(point):
-            x_distances = jnp.square(point[0] - self.array[:, 0])
-            y_distances = jnp.square(point[1] - self.array[:, 1])
-            return jnp.sqrt(jnp.nanmax(x_distances + y_distances))
+        # Squared distances: shape (N, N)
+        sq_dists = self._xp.sum(deltas * deltas, axis=-1)
 
-        return ArrayIrregular(values=jax.vmap(max_radial_distance)(self.array))
+        # Furthest distance for each point: shape (N,)
+        furthest = self._xp.sqrt(self._xp.nanmax(sq_dists, axis=1))
+
+        return ArrayIrregular(values=furthest)
 
     def grid_of_closest_from(self, grid_pair: "Grid2DIrregular") -> "Grid2DIrregular":
         """
@@ -259,13 +255,16 @@ class Grid2DIrregular(AbstractNDArray):
         The grid of coordinates corresponding to the closest coordinate of each coordinate of this instance of
         the `Grid2DIrregular` to the input grid.
         """
+        # pairwise differences: shape (N2, N1, 2)
+        deltas = grid_pair.array[:, None, :] - self.array[None, :, :]
 
-        jax_array = jnp.asarray(self.array)
+        # squared distances: shape (N2, N1)
+        sq_dists = self._xp.sum(deltas * deltas, axis=-1)
 
-        def closest_point(point):
-            x_distances = jnp.square(point[0] - jax_array[:, 0])
-            y_distances = jnp.square(point[1] - jax_array[:, 1])
-            radial_distances = x_distances + y_distances
-            return jax_array[jnp.argmin(radial_distances)]
+        # argmin along grid1: shape (N2,)
+        closest_idx = self._xp.argmin(sq_dists, axis=1)
 
-        return jax.vmap(closest_point)(grid_pair.array)
+        # select closest points: shape (N2, 2)
+        closest_points = self.array[closest_idx]
+
+        return Grid2DIrregular(closest_points)

@@ -237,7 +237,7 @@ def test__masked_grid():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     masked_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=np.array(mask),
+        mask_2d=mask,
         pixel_scales=(1.0, 1.0),
         origin=(3.0, -2.0),
     )

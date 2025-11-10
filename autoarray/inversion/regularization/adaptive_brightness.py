@@ -1,5 +1,5 @@
 from __future__ import annotations
-import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -9,8 +9,8 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
 def adaptive_regularization_weights_from(
-    inner_coefficient: float, outer_coefficient: float, pixel_signals: jnp.ndarray
-) -> jnp.ndarray:
+    inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray
+) -> np.ndarray:
     """
     Returns the regularization weights for the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
 
@@ -38,7 +38,7 @@ def adaptive_regularization_weights_from(
 
     Returns
     -------
-    jnp.ndarray
+    np.ndarray
         The adaptive regularization weights which act as the effective regularization coefficients of
         every source pixel.
     """
@@ -48,9 +48,10 @@ def adaptive_regularization_weights_from(
 
 
 def weighted_regularization_matrix_from(
-    regularization_weights: jnp.ndarray,
-    neighbors: jnp.ndarray,
-) -> jnp.ndarray:
+    regularization_weights: np.ndarray,
+    neighbors: np.ndarray,
+    xp=np,
+) -> np.ndarray:
     """
     Returns the regularization matrix of the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
 
@@ -75,7 +76,7 @@ def weighted_regularization_matrix_from(
 
     Returns
     -------
-    jnp.ndarray
+    np.ndarray
         The regularization matrix computed using an adaptive regularization scheme where the effective regularization
         coefficient of every source pixel is different.
     """
@@ -83,35 +84,45 @@ def weighted_regularization_matrix_from(
     reg_w = regularization_weights**2
 
     # 1) Flatten the (i→j) neighbor pairs
-    I = jnp.repeat(jnp.arange(S), P)  # (S*P,)
+    I = xp.repeat(xp.arange(S), P)  # (S*P,)
     J = neighbors.reshape(-1)  # (S*P,)
 
     # 2) Remap “no neighbor” entries to an extra slot S, whose weight=0
     OUT = S
-    J = jnp.where(J < 0, OUT, J)
+    J = xp.where(J < 0, OUT, J)
 
     # 3) Build an extended weight vector with a zero at index S
-    reg_w_ext = jnp.concatenate([reg_w, jnp.zeros((1,))], axis=0)
+    reg_w_ext = xp.concatenate([reg_w, xp.zeros((1,))], axis=0)
     w_ij = reg_w_ext[J]  # (S*P,)
 
     # 4) Start with zeros on an (S+1)x(S+1) canvas so we can scatter into row S safely
-    mat = jnp.zeros((S + 1, S + 1), dtype=regularization_weights.dtype)
+    mat = xp.zeros((S + 1, S + 1), dtype=regularization_weights.dtype)
 
     # 5) Scatter into the diagonal:
     #    - the tiny 1e-8 floor on each i < S
     #    - sum_j reg_w[j] into diag[i]
     #    - sum contributions reg_w[j] into diag[j]
     #    (diagonal at OUT=S picks up zeros only)
-    diag_updates_i = jnp.concatenate(
-        [jnp.full((S,), 1e-8), jnp.zeros((1,))], axis=0  # out‐of‐bounds slot stays zero
+    diag_updates_i = xp.concatenate(
+        [xp.full((S,), 1e-8), xp.zeros((1,))], axis=0  # out‐of‐bounds slot stays zero
     )
-    mat = mat.at[jnp.diag_indices(S + 1)].add(diag_updates_i)
-    mat = mat.at[I, I].add(w_ij)
-    mat = mat.at[J, J].add(w_ij)
 
-    # 6) Scatter the off‐diagonal subtractions:
-    mat = mat.at[I, J].add(-w_ij)
-    mat = mat.at[J, I].add(-w_ij)
+    if xp.__name__.startswith("jax"):
+        mat = mat.at[xp.diag_indices(S + 1)].add(diag_updates_i)
+        mat = mat.at[I, I].add(w_ij)
+        mat = mat.at[J, J].add(w_ij)
+
+        # 6) Scatter the off‐diagonal subtractions:
+        mat = mat.at[I, J].add(-w_ij)
+        mat = mat.at[J, I].add(-w_ij)
+    else:
+        np.add.at(mat, np.diag_indices(S+1), diag_updates_i)
+
+        xp.add.at(mat, (I, I), w_ij)
+        xp.add.at(mat, (J, J), w_ij)
+
+        np.add.at(mat, (I, J), -w_ij)
+        np.add.at(mat, (J, I), -w_ij)
 
     # 7) Drop the extra row/column S and return the S×S result
     return mat[:S, :S]
@@ -177,7 +188,7 @@ class AdaptiveBrightness(AbstractRegularization):
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -196,7 +207,7 @@ class AdaptiveBrightness(AbstractRegularization):
         -------
         The regularization weights.
         """
-        pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
+        pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale, xp=xp)
 
         return adaptive_regularization_weights_from(
             inner_coefficient=self.inner_coefficient,
@@ -204,7 +215,7 @@ class AdaptiveBrightness(AbstractRegularization):
             pixel_signals=pixel_signals,
         )
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -217,9 +228,10 @@ class AdaptiveBrightness(AbstractRegularization):
         -------
         The regularization matrix.
         """
-        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
+        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
 
         return weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             neighbors=linear_obj.source_plane_mesh_grid.neighbors,
+            xp=xp
         )

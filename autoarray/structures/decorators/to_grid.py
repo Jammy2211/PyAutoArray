@@ -103,6 +103,7 @@ def to_grid(func):
     def wrapper(
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        xp=np,
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Grid2D, Grid2DIrregular, List]:
@@ -140,6 +141,6 @@ def to_grid(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        return GridMaker(func=func, obj=obj, grid=grid, *args, **kwargs).result
+        return GridMaker(func=func, obj=obj, grid=grid, xp=xp, *args, **kwargs).result
 
     return wrapper

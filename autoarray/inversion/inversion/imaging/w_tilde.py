@@ -1,8 +1,5 @@
-import jax.numpy as jnp
 import numpy as np
 from typing import Dict, List, Optional, Union
-
-from autoconf import cached_property
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
@@ -25,6 +22,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -64,6 +62,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            xp=xp
         )
 
         if self.settings.use_w_tilde:
@@ -72,7 +71,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         else:
             self.w_tilde = None
 
-    @cached_property
+    @property
     def w_tilde_data(self):
 
         return inversion_imaging_numba_util.w_tilde_data_imaging_from(
@@ -118,7 +117,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return data_vector
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
@@ -218,7 +217,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return data_vector
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
@@ -525,6 +524,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 mapped_reconstructed_image = self.psf.convolved_image_from(
                     image=mapped_reconstructed_image,
                     blurring_image=None,
+                    xp=self._xp
                 ).array
 
                 mapped_reconstructed_image = Array2D(
