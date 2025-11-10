@@ -346,7 +346,7 @@ def adaptive_pixel_signals_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    mesh_weight_map: np.ndarray,
+    adapt_data: np.ndarray,
     xp=np
 ) -> np.ndarray:
     """
@@ -373,7 +373,7 @@ def adaptive_pixel_signals_from(
         low signal regions.
     regular_to_pix
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    mesh_weight_map
+    adapt_data
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
@@ -395,7 +395,7 @@ def adaptive_pixel_signals_from(
     )  # send invalid indices to an out-of-bounds slot
 
     # 4) Look up data & multiply by mapping weights:
-    flat_data_vals = xp.take(mesh_weight_map[slim_index_for_sub_slim_index], I_sub, axis=0)
+    flat_data_vals = xp.take(adapt_data[slim_index_for_sub_slim_index], I_sub, axis=0)
     flat_contrib = flat_data_vals * flat_weights  # (M_sub*B,)
 
     pixel_signals = xp.zeros((pixels + 1,))
