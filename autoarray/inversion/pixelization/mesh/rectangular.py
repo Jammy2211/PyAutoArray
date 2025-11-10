@@ -13,7 +13,7 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray import exc
 
 
-class Rectangular(AbstractMesh):
+class RectangularMagnification(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
@@ -25,7 +25,7 @@ class Rectangular(AbstractMesh):
         The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
         in the top-left corner and going rightwards and downwards.
 
-        A ``Pixelization`` using a ``Rectangular`` mesh has three grids associated with it:
+        A ``Pixelization`` using a ``RectangularMagnification`` mesh has three grids associated with it:
 
         - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
           the source-plane).
@@ -52,6 +52,19 @@ class Rectangular(AbstractMesh):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
+    def mesh_weight_map_from(self, adapt_data, xp=np) -> np.ndarray:
+        """
+        The weight map of a rectangular pixelization is None, because magnificaiton adaption uses
+        the distribution and density of traced (y,x) coordinates in the source plane and
+        not weights or the adapt data.
+
+        Parameters
+        ----------
+        xp
+            The array library to use.
+        """
+        return None
+
     def mapper_grids_from(
         self,
         mask,
@@ -60,6 +73,7 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,
+        xp=np,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
@@ -96,9 +110,15 @@ class Rectangular(AbstractMesh):
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
+            xp=xp
         )
 
-        mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
+        mesh_grid = self.mesh_grid_from(
+            source_plane_data_grid=relocated_grid,
+            xp=xp
+        )
+
+        mesh_weight_map = self.mesh_weight_map_from(adapt_data=adapt_data, xp=xp)
 
         return MapperGrids(
             mask=mask,
@@ -106,12 +126,14 @@ class Rectangular(AbstractMesh):
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
+            mesh_weight_map=mesh_weight_map
         )
 
     def mesh_grid_from(
         self,
         source_plane_data_grid: Optional[Grid2D] = None,
         source_plane_mesh_grid: Optional[Grid2D] = None,
+        xp=np,
     ) -> Mesh2DRectangular:
         """
         Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
@@ -129,8 +151,63 @@ class Rectangular(AbstractMesh):
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape,
             grid=Grid2DIrregular(source_plane_data_grid.over_sampled),
+            xp=xp
+
         )
 
     @property
     def requires_image_mesh(self):
         return False
+
+
+class RectangularSource(RectangularMagnification):
+
+    def __init__(self, shape: Tuple[int, int] = (3, 3), weight_power : float = 1.0):
+        """
+        A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
+        coordinates.
+
+        For a full description of how a mesh is paired with another grid,
+        see the :meth:`Pixelization API documentation <autoarray.inversion.pixelization.pixelization.Pixelization>`.
+
+        The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
+        in the top-left corner and going rightwards and downwards.
+
+        A ``Pixelization`` using a ``RectangularMagnification`` mesh has three grids associated with it:
+
+        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
+          the source-plane).
+        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
+        - ``source_plane_mesh_grid``: The centres of each rectangular pixel.
+
+        It does not have a ``image_plane_mesh_grid`` because a rectangular pixelization is constructed by overlaying
+        a grid of rectangular over the `source_plane_data_grid`.
+
+        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the rectangular pixelization pixel
+        it falls within. No interpolation is performed when making these associations.
+        Parameters
+        ----------
+        shape
+            The 2D dimensions of the rectangular grid of pixels (total_y_pixels, total_x_pixel).
+        """
+
+        super().__init__(shape=shape)
+
+        self.weight_power = weight_power
+
+    def mesh_weight_map_from(self, adapt_data, xp=np) -> np.ndarray:
+        """
+        The weight map of a rectangular pixelization is None, because magnificaiton adaption uses
+        the distribution and density of traced (y,x) coordinates in the source plane and
+        not weights or the adapt data.
+
+        Parameters
+        ----------
+        xp
+            The array library to use.
+        """
+        mesh_weight_map = xp.asarray(mesh_weight_map.array)
+        mesh_weight_map = xp.clip(mesh_weight_map, 1e-12, None)
+        mesh_weight_map = mesh_weight_map ** self.weight_power
+        mesh_weight_map /= xp.sum(mesh_weight_map)
+        return mesh_weight_map

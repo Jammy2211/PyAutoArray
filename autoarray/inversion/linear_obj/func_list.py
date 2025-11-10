@@ -1,7 +1,5 @@
 import numpy as np
-from typing import Optional, Dict
-
-from autoconf import cached_property
+from typing import Optional
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.neighbors import Neighbors
@@ -15,6 +13,7 @@ class AbstractLinearObjFuncList(LinearObj):
         self,
         grid: Grid1D2DLike,
         regularization: Optional[AbstractRegularization],
+        xp=np
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -41,11 +40,11 @@ class AbstractLinearObjFuncList(LinearObj):
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
         """
 
-        super().__init__(regularization=regularization)
+        super().__init__(regularization=regularization, xp=xp)
 
         self.grid = grid
 
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         An object describing how the different parameters in the linear object neighbor one another, which is used
@@ -77,7 +76,7 @@ class AbstractLinearObjFuncList(LinearObj):
             arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int")
         )
 
-    @cached_property
+    @property
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)

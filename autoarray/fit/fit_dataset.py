@@ -5,8 +5,6 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from autoconf import cached_property
-
 from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util
@@ -85,7 +83,7 @@ class AbstractFit(ABC):
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
-        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map.array)
+        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map.array, xp=self._xp)
 
     @property
     def noise_normalization(self) -> float:
@@ -94,7 +92,7 @@ class AbstractFit(ABC):
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
-        return fit_util.noise_normalization_from(noise_map=self.noise_map.array)
+        return fit_util.noise_normalization_from(noise_map=self.noise_map.array, xp=self._xp)
 
     @property
     def log_likelihood(self) -> float:
@@ -115,6 +113,7 @@ class FitDataset(AbstractFit):
         dataset,
         use_mask_in_fit: bool = False,
         dataset_model: DatasetModel = None,
+        xp=np
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -147,12 +146,13 @@ class FitDataset(AbstractFit):
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
         self.dataset_model = dataset_model or DatasetModel()
+        self._xp = xp
 
     @property
     def mask(self) -> Mask2D:
         return self.dataset.mask
 
-    @cached_property
+    @property
     def grids(self) -> GridsInterface:
 
         def subtracted_from(grid, offset):
@@ -196,7 +196,7 @@ class FitDataset(AbstractFit):
 
         if self.use_mask_in_fit:
             return fit_util.residual_map_with_mask_from(
-                data=self.data, model_data=self.model_data, mask=self.mask
+                data=self.data, model_data=self.model_data, mask=self.mask, xp=self._xp
             )
         return super().residual_map
 
@@ -209,7 +209,7 @@ class FitDataset(AbstractFit):
         """
         if self.use_mask_in_fit:
             return fit_util.normalized_residual_map_with_mask_from(
-                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask, xp=self._xp
             )
         return super().normalized_residual_map
 
@@ -222,7 +222,7 @@ class FitDataset(AbstractFit):
         """
         if self.use_mask_in_fit:
             return fit_util.chi_squared_map_with_mask_from(
-                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask, xp=self._xp
             )
         return super().chi_squared_map
 
@@ -243,7 +243,7 @@ class FitDataset(AbstractFit):
 
         if self.use_mask_in_fit:
             return fit_util.chi_squared_with_mask_from(
-                chi_squared_map=self.chi_squared_map, mask=self.mask
+                chi_squared_map=self.chi_squared_map, mask=self.mask, xp=self._xp
             )
         return super().chi_squared
 
@@ -256,7 +256,7 @@ class FitDataset(AbstractFit):
         """
         if self.use_mask_in_fit:
             return fit_util.noise_normalization_with_mask_from(
-                noise_map=self.noise_map, mask=self.mask
+                noise_map=self.noise_map, mask=self.mask, xp=self._xp
             )
         return super().noise_normalization
 

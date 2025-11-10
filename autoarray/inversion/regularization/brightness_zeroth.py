@@ -1,5 +1,5 @@
 from __future__ import annotations
-import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -7,12 +7,10 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray.inversion.regularization import regularization_util
-
 
 def brightness_zeroth_regularization_weights_from(
-    coefficient: float, pixel_signals: jnp.ndarray
-) -> jnp.ndarray:
+    coefficient: float, pixel_signals: np.ndarray
+) -> np.ndarray:
     """
     Returns the regularization weights for the brightness zeroth regularization scheme (e.g. ``BrightnessZeroth``).
 
@@ -36,7 +34,7 @@ def brightness_zeroth_regularization_weights_from(
 
     Returns
     -------
-    jnp.ndarray
+    np.ndarray
         The zeroth order regularization weights which act as the effective level of zeroth order regularization
         applied to every mesh parameter.
     """
@@ -44,8 +42,8 @@ def brightness_zeroth_regularization_weights_from(
 
 
 def brightness_zeroth_regularization_matrix_from(
-    regularization_weights: jnp.ndarray,
-) -> jnp.ndarray:
+    regularization_weights: np.ndarray, xp=np
+) -> np.ndarray:
     """
     Returns the regularization matrix for the zeroth-order brightness regularization scheme.
 
@@ -61,7 +59,7 @@ def brightness_zeroth_regularization_matrix_from(
     for that pixel.
     """
     regularization_weight_squared = regularization_weights**2.0
-    return jnp.diag(regularization_weight_squared)
+    return xp.diag(regularization_weight_squared)
 
 
 class BrightnessZeroth(AbstractRegularization):
@@ -99,7 +97,7 @@ class BrightnessZeroth(AbstractRegularization):
         self.coefficient = coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of the ``BrightnessZeroth`` regularization scheme.
 
@@ -123,7 +121,7 @@ class BrightnessZeroth(AbstractRegularization):
             coefficient=self.coefficient, pixel_signals=pixel_signals
         )
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -136,8 +134,8 @@ class BrightnessZeroth(AbstractRegularization):
         -------
         The regularization matrix.
         """
-        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
+        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
 
         return brightness_zeroth_regularization_matrix_from(
-            regularization_weights=regularization_weights
+            regularization_weights=regularization_weights, xp=xp
         )

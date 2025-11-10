@@ -1,5 +1,4 @@
 from __future__ import annotations
-import jax.numpy as jnp
 import numpy as np
 from typing import TYPE_CHECKING, List, Union
 
@@ -14,6 +13,7 @@ def convert_array_1d(
     array_1d: Union[np.ndarray, List],
     mask_1d: Mask1D,
     store_native: bool = False,
+    xp=np
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -40,23 +40,20 @@ def convert_array_1d(
     """
     array_1d = array_2d_util.convert_array(array=array_1d)
 
-    is_numpy = True if isinstance(array_1d, np.ndarray) else False
-
     is_native = array_1d.shape[0] == mask_1d.shape_native[0]
 
     if is_native == store_native:
-        array_1d = array_1d
+        return array_1d
     elif not store_native:
-        array_1d = array_1d_slim_from(
+        return array_1d_slim_from(
             array_1d_native=array_1d,
             mask_1d=mask_1d,
         )
-    else:
-        array_1d = array_1d_native_from(
-            array_1d_slim=array_1d,
-            mask_1d=mask_1d,
-        )
-    return np.array(array_1d) if is_numpy else jnp.array(array_1d)
+    return array_1d_native_from(
+        array_1d_slim=array_1d,
+        mask_1d=mask_1d,
+        xp=xp
+    )
 
 
 def array_1d_slim_from(
@@ -114,17 +111,20 @@ def array_1d_slim_from(
 def array_1d_native_from(
     array_1d_slim: np.ndarray,
     mask_1d: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     shape = mask_1d.shape[0]
 
     native_index_for_slim_index_1d = mask_1d_util.native_index_for_slim_index_1d_from(
         mask_1d=mask_1d,
+        xp=xp,
     ).astype("int")
 
     return array_1d_via_indexes_1d_from(
         array_1d_slim=array_1d_slim,
         shape=shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
+        xp=xp
     )
 
 
@@ -132,6 +132,7 @@ def array_1d_via_indexes_1d_from(
     array_1d_slim: np.ndarray,
     shape: int,
     native_index_for_slim_index_1d: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     """
     For a slimmed 1D array with indexes mapping the slimmed array values to their native array indexes,
@@ -166,9 +167,11 @@ def array_1d_via_indexes_1d_from(
     ndarray
         The native 1D array of values mapped from the slimmed array with dimensions (total_x_pixels).
     """
-    if isinstance(array_1d_slim, np.ndarray):
-        array_1d_native = np.zeros(shape)
-        array_1d_native[native_index_for_slim_index_1d] = array_1d_slim
-        return array_1d_native
-    array_1d_native = jnp.zeros(shape)
-    return array_1d_native.at[native_index_for_slim_index_1d].set(array_1d_slim)
+    array = xp.zeros(shape, dtype=array_1d_slim.dtype)
+
+    if xp.__name__.startswith("jax"):
+        array = array.at[native_index_for_slim_index_1d].set(array_1d_slim)
+    else:
+        array[native_index_for_slim_index_1d] = array_1d_slim
+
+    return array

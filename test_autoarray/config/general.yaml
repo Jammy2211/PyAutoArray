@@ -15,8 +15,8 @@ inversion:
   no_regularization_add_to_curvature_diag_value : 1.0e-8 # The default value added to the curvature matrix's diagonal when regularization is not applied to a linear object, which prevents inversion's failing due to the matrix being singular.
   positive_only_uses_p_initial: false  # If True, the positive-only solver of an inversion's uses an initial guess of the reconstructed data's values as which values should be positive, speeding up the solver.
 numba:
-  cache: true
   nopython: true
+  cache: true
   parallel: false
   use_numba: true
 pixelization:

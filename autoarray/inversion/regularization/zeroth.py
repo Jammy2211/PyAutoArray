@@ -1,5 +1,5 @@
 from __future__ import annotations
-import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
-def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> jnp.ndarray:
+def zeroth_regularization_matrix_from(coefficient: float, pixels: int, xp=np) -> np.ndarray:
     """
     Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
     to the regularization matrix.
@@ -34,7 +34,7 @@ def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> jnp.nd
 
     # Identity matrix scaled by reg_coeff does exactly ∑_i reg_coeff * e_i e_i^T
 
-    return jnp.eye(pixels) * reg_coeff
+    return xp.eye(pixels) * reg_coeff
 
 
 class Zeroth(AbstractRegularization):
@@ -68,7 +68,7 @@ class Zeroth(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -87,9 +87,9 @@ class Zeroth(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * jnp.ones(linear_obj.params)
+        return self.coefficient * xp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 

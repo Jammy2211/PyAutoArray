@@ -86,11 +86,6 @@ class MockGrid1DLikeObj:
         self.centre = centre
         self.angle = angle
 
-    @decorators.project_grid
-    def ndarray_1d_from(self, grid, *args, **kwargs):
-        return np.ones(shape=grid.shape[0])
-
-
 class MockGrid2DLikeObj:
     def __init__(self):
         self.centre = (0.0, 0.0)

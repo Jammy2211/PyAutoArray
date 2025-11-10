@@ -1,4 +1,3 @@
-import jax.numpy as jnp
 import numpy as np
 
 
@@ -85,7 +84,7 @@ def preload_imag_transforms_from(
 
 
 def visibilities_via_preload_from(
-    image_1d: np.ndarray, preloaded_reals: np.ndarray, preloaded_imags: np.ndarray
+    image_1d: np.ndarray, preloaded_reals: np.ndarray, preloaded_imags: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     Computes interferometric visibilities using preloaded real and imaginary DFT transform components.
@@ -109,8 +108,8 @@ def visibilities_via_preload_from(
         The complex visibilities computed by summing over all pixels.
     """
     # Perform the dot product between the image and preloaded transform matrices
-    vis_real = jnp.dot(image_1d, preloaded_reals)  # shape (n_visibilities,)
-    vis_imag = jnp.dot(image_1d, preloaded_imags)  # shape (n_visibilities,)
+    vis_real = xp.dot(image_1d, preloaded_reals)  # shape (n_visibilities,)
+    vis_imag = xp.dot(image_1d, preloaded_imags)  # shape (n_visibilities,)
 
     visibilities = vis_real + 1j * vis_imag
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-import jax.numpy as jnp
+import numpy as np
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -10,8 +10,9 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 def exp_cov_matrix_from(
     scale: float,
-    pixel_points: jnp.ndarray,  # shape (N, 2)
-) -> jnp.ndarray:  # shape (N, N)
+    pixel_points: np.ndarray,  # shape (N, 2)
+    xp=np,
+) -> np.ndarray:  # shape (N, N)
     """
     Construct the source brightness covariance matrix using an exponential kernel:
 
@@ -28,21 +29,21 @@ def exp_cov_matrix_from(
 
     Returns
     -------
-    jnp.ndarray, shape (N, N)
+    np.ndarray, shape (N, N)
         The exponential covariance matrix.
     """
     # pairwise differences: shape (N, N, 2)
     diff = pixel_points[:, None, :] - pixel_points[None, :, :]
 
     # Euclidean distances: shape (N, N)
-    d = jnp.linalg.norm(diff, axis=-1)
+    d = xp.linalg.norm(diff, axis=-1)
 
     # exponential kernel
-    cov = jnp.exp(-d / scale)
+    cov = xp.exp(-d / scale)
 
     # add a small jitter on the diagonal
     N = pixel_points.shape[0]
-    cov = cov + jnp.eye(N) * 1e-8
+    cov = cov + xp.eye(N) * 1e-8
 
     return cov
 
@@ -75,7 +76,7 @@ class ExponentialKernel(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -94,9 +95,9 @@ class ExponentialKernel(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * jnp.ones(linear_obj.params)
+        return self.coefficient * xp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> jnp.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -114,4 +115,4 @@ class ExponentialKernel(AbstractRegularization):
             pixel_points=linear_obj.source_plane_mesh_grid.array,
         )
 
-        return self.coefficient * jnp.linalg.inv(covariance_matrix)
+        return self.coefficient * xp.linalg.inv(covariance_matrix)

@@ -1,11 +1,7 @@
 import copy
-import jax.numpy as jnp
-from jax.scipy.linalg import block_diag
+
 import numpy as np
-
-from typing import Dict, List, Optional, Type, Union
-
-from autoconf import cached_property
+from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
@@ -22,7 +18,6 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.util import misc_util
 from autoarray.inversion.inversion import inversion_util
 
-
 class AbstractInversion:
     def __init__(
         self,
@@ -30,6 +25,7 @@ class AbstractInversion:
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
+        xp=np
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -76,6 +72,10 @@ class AbstractInversion:
         self.settings = settings
 
         self.preloads = preloads or Preloads()
+
+        self._xp = xp
+
+
 
     @property
     def data(self):
@@ -160,8 +160,8 @@ class AbstractInversion:
 
         - If the input is `cls=aa.mesh.Mesh`, a list containing all pixelizations in the class are returned.
 
-        - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.Rectangular`, a list of all pixelizations
-        excluding those which are `Rectangular` pixelizations will be returned.
+        - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.RectangularMagnification`, a list of all pixelizations
+        excluding those which are `RectangularMagnification` pixelizations will be returned.
 
         Parameters
         ----------
@@ -176,7 +176,7 @@ class AbstractInversion:
             cls_filtered=cls_filtered,
         )
 
-    @cached_property
+    @property
     def total_params(self) -> int:
         """
         Returns the total number of parameters used by this `Inversion`, where:
@@ -269,7 +269,7 @@ class AbstractInversion:
     def mask(self) -> Array2D:
         return self.data.mask
 
-    @cached_property
+    @property
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
@@ -285,7 +285,7 @@ class AbstractInversion:
         If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
         equations are solved simultaneously. This property returns the stacked mapping matrix.
         """
-        return jnp.hstack(
+        return self._xp.hstack(
             [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
         )
 
@@ -293,7 +293,7 @@ class AbstractInversion:
     def operated_mapping_matrix_list(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -304,17 +304,17 @@ class AbstractInversion:
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return jnp.hstack(self.operated_mapping_matrix_list)
+        return self._xp.hstack(self.operated_mapping_matrix_list)
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def regularization_matrix(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -331,11 +331,17 @@ class AbstractInversion:
         If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
+        if self._xp.__name__.startswith("jax"):
+            from jax.scipy.linalg import block_diag
+            return block_diag(
+                *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
+            )
+        from scipy.linalg import block_diag
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
 
-    @cached_property
+    @property
     def regularization_matrix_reduced(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -359,7 +365,7 @@ class AbstractInversion:
         # Zero rows and columns in the matrix we want to ignore
         return self.regularization_matrix[ids_to_keep][:, ids_to_keep]
 
-    @cached_property
+    @property
     def curvature_reg_matrix(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
@@ -369,12 +375,13 @@ class AbstractInversion:
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        return jnp.add(self.curvature_matrix, self.regularization_matrix)
+        return self._xp.add(self.curvature_matrix, self.regularization_matrix)
 
-    @cached_property
+    @property
     def curvature_reg_matrix_reduced(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -398,7 +405,7 @@ class AbstractInversion:
         # Zero rows and columns in the matrix we want to ignore
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
-    @cached_property
+    @property
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -414,6 +421,7 @@ class AbstractInversion:
             ZTZ := np.dot(Z.T, Z)
             ZTx := np.dot(Z.T, x)
         """
+
         if self.settings.use_positive_only_solver:
 
             if (
@@ -439,16 +447,21 @@ class AbstractInversion:
                     inversion_util.reconstruction_positive_only_from(
                         data_vector=data_vector,
                         curvature_reg_matrix=curvature_reg_matrix,
+                        settings=self.settings,
+                        xp=self._xp
                     )
                 )
 
                 # Allocate full solution array
-                reconstruction = jnp.zeros(self.data_vector.shape[0])
+                reconstruction = self._xp.zeros(self.data_vector.shape[0])
 
                 # Scatter the partial solution back to the full shape
-                reconstruction = reconstruction.at[ids_to_keep].set(
-                    reconstruction_partial
-                )
+                if self._xp.__name__.startswith("jax"):
+                    reconstruction = reconstruction.at[ids_to_keep].set(
+                        reconstruction_partial
+                    )
+                else:
+                    reconstruction[ids_to_keep] = reconstruction_partial
 
                 return reconstruction
 
@@ -457,14 +470,17 @@ class AbstractInversion:
                 return inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix,
+                    settings=self.settings,
+                    xp=self._xp
                 )
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
             curvature_reg_matrix=self.curvature_reg_matrix,
+            xp=self._xp
         )
 
-    @cached_property
+    @property
     def reconstruction_reduced(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -544,7 +560,7 @@ class AbstractInversion:
         """
         return self.mapped_reconstructed_data_dict
 
-    @cached_property
+    @property
     def mapped_reconstructed_data(self) -> Union[Array2D, Visibilities]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -560,7 +576,7 @@ class AbstractInversion:
         """
         return sum(self.mapped_reconstructed_data_dict.values())
 
-    @cached_property
+    @property
     def mapped_reconstructed_image(self) -> Array2D:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -576,7 +592,7 @@ class AbstractInversion:
         """
         return sum(self.mapped_reconstructed_image_dict.values())
 
-    @cached_property
+    @property
     def data_subtracted_dict(self) -> Dict[LinearObj, Array2D]:
         """
         Returns a dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
@@ -604,7 +620,7 @@ class AbstractInversion:
 
         return data_subtracted_dict
 
-    @cached_property
+    @property
     def regularization_term(self) -> float:
         """
         Returns the regularization term of an inversion. This term represents the sum of the difference in flux
@@ -619,16 +635,15 @@ class AbstractInversion:
         The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens,
         this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
         """
-
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return jnp.matmul(
+        return self._xp.matmul(
             self.reconstruction_reduced.T,
-            jnp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            self._xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
         )
 
-    @cached_property
+    @property
     def log_det_curvature_reg_matrix_term(self) -> float:
         """
         The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
@@ -638,11 +653,11 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * jnp.sum(
-            jnp.log(jnp.diag(jnp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+        return 2.0 * self._xp.sum(
+            self._xp.log(self._xp.diag(self._xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
         )
 
-    @cached_property
+    @property
     def log_det_regularization_matrix_term(self) -> float:
         """
         The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
@@ -659,8 +674,8 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * jnp.sum(
-            jnp.log(jnp.diag(jnp.linalg.cholesky(self.regularization_matrix_reduced)))
+        return 2.0 * self._xp.sum(
+            self._xp.log(self._xp.diag(self._xp.linalg.cholesky(self.regularization_matrix_reduced)))
         )
 
     @property
@@ -723,7 +738,7 @@ class AbstractInversion:
 
             return np.zeros((pixels,))
 
-        return regularization.regularization_weights_from(linear_obj=linear_obj)
+        return regularization.regularization_weights_from(linear_obj=linear_obj, xp=self._xp)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
@@ -731,7 +746,7 @@ class AbstractInversion:
 
         for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
             regularization_weights_dict[mapper] = self.regularization_weights_from(
-                index=index
+                index=index,
             )
 
         return regularization_weights_dict

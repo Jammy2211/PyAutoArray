@@ -23,18 +23,20 @@ class Array1D(Structure):
         mask: Mask1D,
         header: Optional[Header] = None,
         store_native: bool = False,
+        xp=np
     ):
 
         values = array_1d_util.convert_array_1d(
             array_1d=values,
             mask_1d=mask,
             store_native=store_native,
+            xp=xp
         )
 
         self.mask = mask
         self.header = header
 
-        super().__init__(values)
+        super().__init__(values, xp=xp)
 
     @classmethod
     def no_mask(

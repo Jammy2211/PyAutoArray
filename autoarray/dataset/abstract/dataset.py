@@ -4,10 +4,6 @@ import numpy as np
 import warnings
 from typing import Optional, Union
 
-from autoconf import cached_property
-
-from autoarray.dataset.grids import GridsDataset
-
 from autoarray import exc
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
@@ -140,14 +136,6 @@ class AbstractDataset:
     def grid(self):
         return self.grids.lp
 
-    @cached_property
-    def grids(self):
-        return GridsDataset(
-            mask=self.data.mask,
-            over_sample_size_lp=self.over_sample_size_lp,
-            over_sample_size_pixelization=self.over_sample_size_pixelization,
-        )
-
     @property
     def shape_native(self):
         return self.mask.shape_native
@@ -188,7 +176,7 @@ class AbstractDataset:
         """
         return np.max(self.signal_to_noise_map)
 
-    @cached_property
+    @property
     def noise_covariance_matrix_inv(self) -> np.ndarray:
         """
         Returns the inverse of the noise covariance matrix, which is used when computing a chi-squared which accounts

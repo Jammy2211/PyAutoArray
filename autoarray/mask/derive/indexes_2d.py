@@ -2,8 +2,6 @@ from __future__ import annotations
 import logging
 import numpy as np
 
-from autoconf import cached_property
-
 from jax._src.tree_util import register_pytree_node_class
 from typing import TYPE_CHECKING
 
@@ -18,7 +16,8 @@ logger = logging.getLogger(__name__)
 
 @register_pytree_node_class
 class DeriveIndexes2D:
-    def __init__(self, mask: Mask2D):
+
+    def __init__(self, mask: Mask2D, xp=np):
         """
         Derives 1D and 2D indexes of significance from a ``Mask2D``.
 
@@ -65,6 +64,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.edge_native)
         """
         self.mask = mask
+        self._xp = xp
 
     def tree_flatten(self):
         return (self.mask,), ()
@@ -365,7 +365,7 @@ class DeriveIndexes2D:
         """
         return self.native_for_slim[self.border_slim].astype("int")
 
-    @cached_property
+    @property
     def native_for_slim(self) -> np.ndarray:
         """
         Derives a 1D ``ndarray`` which maps every 1D ``slim`` index of the ``Mask2D`` to its
@@ -410,4 +410,5 @@ class DeriveIndexes2D:
         """
         return mask_2d_util.native_index_for_slim_index_2d_from(
             mask_2d=self.mask,
+            xp=self._xp
         ).astype("int")

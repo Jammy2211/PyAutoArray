@@ -1,5 +1,4 @@
 from __future__ import annotations
-import jax.numpy as jnp
 import numpy as np
 from typing import TYPE_CHECKING
 
@@ -11,8 +10,9 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 def gauss_cov_matrix_from(
     scale: float,
-    pixel_points: jnp.ndarray,  # shape (N, 2)
-) -> jnp.ndarray:
+    pixel_points: np.ndarray,  # shape (N, 2)
+    xp=np
+) -> np.ndarray:
     """
     Construct the source‐pixel Gaussian covariance matrix for regularization.
 
@@ -31,21 +31,21 @@ def gauss_cov_matrix_from(
 
     Returns
     -------
-    cov : jnp.ndarray, shape (N, N)
+    cov : np.ndarray, shape (N, N)
         The Gaussian covariance matrix.
     """
     # Ensure array:
-    pts = jnp.asarray(pixel_points)  # (N, 2)
+    pts = xp.asarray(pixel_points)  # (N, 2)
     # Compute squared distances: ||p_i - p_j||^2
     diffs = pts[:, None, :] - pts[None, :, :]  # (N, N, 2)
-    d2 = jnp.sum(diffs**2, axis=-1)  # (N, N)
+    d2 = xp.sum(diffs**2, axis=-1)  # (N, N)
 
     # Gaussian kernel
-    cov = jnp.exp(-d2 / (2.0 * scale**2))  # (N, N)
+    cov = xp.exp(-d2 / (2.0 * scale**2))  # (N, N)
 
     # Add tiny jitter on the diagonal
     N = pts.shape[0]
-    cov = cov + jnp.eye(N, dtype=cov.dtype) * 1e-8
+    cov = cov + xp.eye(N, dtype=cov.dtype) * 1e-8
 
     return cov
 
@@ -77,7 +77,7 @@ class GaussianKernel(AbstractRegularization):
         self.scale = scale
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -96,9 +96,9 @@ class GaussianKernel(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.params)
+        return self.coefficient * xp.ones(linear_obj.params)
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -112,7 +112,7 @@ class GaussianKernel(AbstractRegularization):
         The regularization matrix.
         """
         covariance_matrix = gauss_cov_matrix_from(
-            scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid.array
+            scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid.array, xp=xp
         )
 
-        return self.coefficient * jnp.linalg.inv(covariance_matrix)
+        return self.coefficient * xp.linalg.inv(covariance_matrix)

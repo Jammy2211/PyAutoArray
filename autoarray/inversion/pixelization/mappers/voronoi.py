@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Optional, Tuple
 
-from autoconf import cached_property
-
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -82,7 +80,7 @@ class MapperVoronoi(AbstractMapper):
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
-    @cached_property
+    @property
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
@@ -101,10 +99,10 @@ class MapperVoronoi(AbstractMapper):
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the mesh pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the RectangularMagnification
         mesh's third (index 2) pixel.
 
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the RectangularMagnification
         mesh's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used

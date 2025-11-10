@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.interferometer.abstract import (
@@ -17,6 +15,8 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 
+from autoarray import exc
+
 
 class InversionInterferometerWTilde(AbstractInversionInterferometer):
     def __init__(
@@ -25,6 +25,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         w_tilde: WTildeInterferometer,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        xp=np
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -71,11 +72,12 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            xp=xp,
         )
 
         self.settings = settings
 
-    @cached_property
+    @property
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -91,7 +93,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         """
         return np.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -120,7 +122,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         if self.settings.use_w_tilde_numpy:
             return inversion_util.curvature_matrix_via_w_tilde_from(
-                w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
+                w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix, xp=self._xp
             )
 
         mapper = self.cls_list_from(cls=AbstractMapper)[0]

@@ -77,7 +77,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             signal_scale=signal_scale,
         )
 
-    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
 
@@ -90,7 +90,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         -------
         The regularization matrix.
         """
-        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
+        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
 
         pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
 

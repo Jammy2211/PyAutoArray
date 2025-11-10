@@ -1,5 +1,4 @@
 from __future__ import annotations
-import jax.numpy as jnp
 import numpy as np
 from typing import Tuple, Union
 
@@ -202,7 +201,7 @@ def sub_border_slim_from(mask, sub_size):
     ).astype("int")
 
 
-def relocated_grid_from(grid, border_grid):
+def relocated_grid_from(grid, border_grid, xp=np):
     """
     Relocate the coordinates of a grid to its border if they are outside the border, where the border is
     defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -229,12 +228,12 @@ def relocated_grid_from(grid, border_grid):
     """
 
     # Compute origin (center) of the border grid
-    border_origin = jnp.mean(border_grid, axis=0)
+    border_origin = xp.mean(border_grid, axis=0)
 
     # Radii from origin
-    grid_radii = jnp.linalg.norm(grid - border_origin, axis=1)  # (N,)
-    border_radii = jnp.linalg.norm(border_grid - border_origin, axis=1)  # (M,)
-    border_min_radius = jnp.min(border_radii)
+    grid_radii = xp.linalg.norm(grid - border_origin, axis=1)  # (N,)
+    border_radii = xp.linalg.norm(border_grid - border_origin, axis=1)  # (M,)
+    border_min_radius = xp.min(border_radii)
 
     # Determine which points are outside
     outside_mask = grid_radii > border_min_radius  # (N,)
@@ -242,8 +241,8 @@ def relocated_grid_from(grid, border_grid):
     # To compute nearest border point for each grid point, we must do it for all and then mask later
     # Compute all distances: (N, M)
     diffs = grid[:, None, :] - border_grid[None, :, :]  # (N, M, 2)
-    dists_squared = jnp.sum(diffs**2, axis=2)  # (N, M)
-    closest_indices = jnp.argmin(dists_squared, axis=1)  # (N,)
+    dists_squared = xp.sum(diffs**2, axis=2)  # (N, M)
+    closest_indices = xp.argmin(dists_squared, axis=1)  # (N,)
 
     # Get border radius for closest border point to each grid point
     matched_border_radii = border_radii[closest_indices]  # (N,)
@@ -254,14 +253,14 @@ def relocated_grid_from(grid, border_grid):
     # Only move if:
     #   - the point is outside the border
     #   - the matched border point is closer to the origin (i.e. move_factor < 1)
-    apply_move = jnp.logical_and(outside_mask, move_factors < 1.0)  # (N,)
+    apply_move = xp.logical_and(outside_mask, move_factors < 1.0)  # (N,)
 
     # Compute moved positions (for all points, but will select with mask)
     direction_vectors = grid - border_origin  # (N, 2)
     moved_grid = move_factors[:, None] * direction_vectors + border_origin  # (N, 2)
 
     # Select which grid points to move
-    relocated_grid = jnp.where(apply_move[:, None], moved_grid, grid)  # (N, 2)
+    relocated_grid = xp.where(apply_move[:, None], moved_grid, grid)  # (N, 2)
 
     return relocated_grid
 
@@ -324,7 +323,7 @@ class BorderRelocator:
 
         self.sub_border_grid = sub_grid[self.sub_border_slim]
 
-    def relocated_grid_from(self, grid: Grid2D) -> Grid2D:
+    def relocated_grid_from(self, grid: Grid2D, xp=np) -> Grid2D:
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -354,11 +353,13 @@ class BorderRelocator:
         values = relocated_grid_from(
             grid=grid.array,
             border_grid=grid.array[self.border_slim],
+            xp=xp
         )
 
         over_sampled = relocated_grid_from(
             grid=grid.over_sampled.array,
             border_grid=grid.over_sampled.array[self.sub_border_slim],
+            xp=xp
         )
 
         return Grid2D(
@@ -366,10 +367,11 @@ class BorderRelocator:
             mask=grid.mask,
             over_sample_size=self.sub_size,
             over_sampled=over_sampled,
+            xp=xp
         )
 
     def relocated_mesh_grid_from(
-        self, grid, mesh_grid: Grid2DIrregular
+        self, grid, mesh_grid: Grid2DIrregular, xp=np
     ) -> Grid2DIrregular:
         """
         Relocate the coordinates of a pixelization grid to the border of this grid. See the
@@ -388,5 +390,7 @@ class BorderRelocator:
             values=relocated_grid_from(
                 grid=mesh_grid.array,
                 border_grid=grid[self.sub_border_slim],
+                xp=xp
             ),
+            xp=xp
         )

@@ -10,7 +10,7 @@ from autoarray.structures.abstract_structure import Structure
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoconf import cached_property
+
 from autoconf.fitsable import ndarray_via_fits_from
 
 from autoarray.mask.abstract_mask import Mask
@@ -47,6 +47,7 @@ class Mask2D(Mask):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
+        xp=np,
         *args,
         **kwargs,
     ):
@@ -199,7 +200,7 @@ class Mask2D(Mask):
         """
 
         if type(mask) is list:
-            mask = np.asarray(mask).astype("bool")
+            mask = xp.asarray(mask).astype("bool")
 
         if invert:
             mask = ~mask
@@ -213,9 +214,10 @@ class Mask2D(Mask):
             mask=mask,
             origin=origin,
             pixel_scales=pixel_scales,
+            xp=xp,
         )
 
-    @cached_property
+    @property
     def native_for_slim(self):
         return self.derive_indexes.native_for_slim
 
@@ -243,9 +245,9 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    @cached_property
+    @property
     def derive_indexes(self) -> DeriveIndexes2D:
-        return DeriveIndexes2D(mask=self)
+        return DeriveIndexes2D(mask=self, xp=self._xp)
 
     @property
     def derive_mask(self) -> DeriveMask2D:
@@ -850,7 +852,7 @@ class Mask2D(Mask):
 
         return central_row_pixels == central_column_pixels
 
-    @cached_property
+    @property
     def circular_radius(self) -> float:
         """
         Returns the radius in scaled units of a circular mask.

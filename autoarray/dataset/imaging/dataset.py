@@ -3,9 +3,6 @@ import numpy as np
 from pathlib import Path
 from typing import Optional, Union
 
-from autoconf import cached_property
-from autoconf import instance
-
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
@@ -194,7 +191,7 @@ class Imaging(AbstractDataset):
             psf=self.psf,
         )
 
-    @cached_property
+    @property
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked

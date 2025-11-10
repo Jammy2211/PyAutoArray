@@ -1,8 +1,6 @@
 import logging
 import numpy as np
 
-from autoconf import cached_property
-
 from autoarray.dataset.abstract.w_tilde import AbstractWTilde
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
@@ -55,7 +53,7 @@ class WTildeImaging(AbstractWTilde):
         self.psf = psf
         self.mask = mask
 
-    @cached_property
+    @property
     def w_matrix(self):
         """
         The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
@@ -93,7 +91,7 @@ class WTildeImaging(AbstractWTilde):
             ).astype("int"),
         )
 
-    @cached_property
+    @property
     def psf_operator_matrix_dense(self):
 
         return inversion_imaging_util.psf_operator_matrix_dense_from(

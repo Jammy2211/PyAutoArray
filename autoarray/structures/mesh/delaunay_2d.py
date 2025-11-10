@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Optional, Tuple
 
-from autoconf import cached_property
-
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.mesh.triangulation_2d import Abstract2DMeshTriangulation
@@ -10,7 +8,7 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
 class Mesh2DDelaunay(Abstract2DMeshTriangulation):
-    @cached_property
+    @property
     def neighbors(self) -> Neighbors:
         """
         Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is

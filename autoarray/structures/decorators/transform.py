@@ -26,6 +26,7 @@ def transform(func):
     def wrapper(
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        xp=np,
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Grid2D, Grid2DIrregular]:
@@ -53,13 +54,13 @@ def transform(func):
             kwargs["is_transformed"] = True
 
             transformed_grid = obj.transformed_to_reference_frame_grid_from(
-                grid, **kwargs
+                grid, xp, **kwargs
             )
 
-            result = func(obj, transformed_grid, *args, **kwargs)
+            result = func(obj, transformed_grid, xp, *args, **kwargs)
 
         else:
-            result = func(obj, grid, *args, **kwargs)
+            result = func(obj, grid, xp, *args, **kwargs)
 
         return result
 

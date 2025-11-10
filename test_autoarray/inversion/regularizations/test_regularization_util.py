@@ -238,6 +238,9 @@ def test__weighted_regularization_matrix_from():
         neighbors=neighbors,
     )
 
+    print(regularization_matrix)
+    print(test_regularization_matrix)
+
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
     # Here, we define the neighbors first here and make the B matrices based on them.
@@ -268,6 +271,9 @@ def test__weighted_regularization_matrix_from():
         regularization_weights=regularization_weights,
         neighbors=neighbors,
     )
+
+    print(regularization_matrix)
+    print(test_regularization_matrix)
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 

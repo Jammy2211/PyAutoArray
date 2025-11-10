@@ -5,7 +5,6 @@ import numpy as np
 from pathlib import Path
 from typing import List, Tuple, Union
 
-from autoconf import cached_property
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.structures.abstract_structure import Structure
@@ -83,11 +82,11 @@ class AbstractVisibilities(Structure, ABC):
     def mask(self):
         return np.full(fill_value=False, shape=self.shape)
 
-    @cached_property
+    @property
     def amplitudes(self) -> np.ndarray:
         return np.sqrt(np.square(self.array.real) + np.square(self.array.imag))
 
-    @cached_property
+    @property
     def phases(self) -> np.ndarray:
         return np.arctan2(self.array.imag, self.array.real)
 
