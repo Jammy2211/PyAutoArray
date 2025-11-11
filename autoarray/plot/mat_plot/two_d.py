@@ -592,16 +592,16 @@ class MatPlot2D(AbstractMatPlot):
                     array=pixel_values.array, use_log10=self.use_log10
                 )
 
-                edges_transformed = mapper.edges_transformed
+                # Unpack edges (assuming shape is (N_edges, 2) → (y_edges, x_edges))
+                y_edges, x_edges = mapper.edges_transformed.T  # explicit, safe
 
-                edges_transformed_dense = np.moveaxis(
-                    np.stack(np.meshgrid(*edges_transformed.T)), 0, 2
-                )
+                # Build meshes with ij-indexing: (row = y, col = x)
+                Y, X = np.meshgrid(y_edges, x_edges, indexing="ij")
 
                 plt.pcolormesh(
-                    edges_transformed_dense[..., 0],
-                    edges_transformed_dense[..., 1],
-                    pixel_values.array.reshape(shape_native),
+                    X,  # x-grid
+                    Y,  # y-grid
+                    np.flipud(pixel_values.array.reshape(shape_native)),  # (ny, nx)
                     shading="flat",
                     norm=norm,
                     cmap=self.cmap.cmap,
