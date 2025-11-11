@@ -100,7 +100,7 @@ class SimulatorImaging:
         self.noise_seed = noise_seed
 
     def via_image_from(
-        self, image: Array2D, over_sample_size: Optional[Union[int, np.ndarray]] = None
+        self, image: Array2D, over_sample_size: Optional[Union[int, np.ndarray]] = None, xp=np
     ) -> Imaging:
         """
         Simulate an `Imaging` dataset from an input image.
@@ -126,7 +126,7 @@ class SimulatorImaging:
             pixel_scales=image.pixel_scales,
         )
 
-        image = self.psf.convolved_image_from(image=image, blurring_image=None)
+        image = self.psf.convolved_image_from(image=image, blurring_image=None, xp=xp)
 
         image = image + background_sky_map
 
