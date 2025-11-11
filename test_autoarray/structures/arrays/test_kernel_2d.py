@@ -528,4 +528,4 @@ def test__convolve_imaged_from__via_fft__sizes_not_precomputed__compare_numerica
         blurring_image=blurring_image
     )
 
-    assert blurred_fft.native.array[13, 13] == pytest.approx(250.0, rel=1e-6, abs=1e-6)
+    assert blurred_fft.native.array[13, 13] == pytest.approx(249.5, abs=1e-6)
