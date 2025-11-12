@@ -2,7 +2,6 @@ from __future__ import annotations
 import logging
 import numpy as np
 
-from jax._src.tree_util import register_pytree_node_class
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -14,7 +13,6 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-@register_pytree_node_class
 class DeriveIndexes2D:
 
     def __init__(self, mask: Mask2D, xp=np):

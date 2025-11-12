@@ -1,6 +1,5 @@
 import numpy as np
 
-from jax._src.tree_util import register_pytree_node_class
 from typing import Union
 
 from autoconf import conf
@@ -11,7 +10,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.over_sampling import over_sample_util
 
 
-@register_pytree_node_class
 class OverSampler:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         """

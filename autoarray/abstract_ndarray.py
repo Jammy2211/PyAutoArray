@@ -5,8 +5,6 @@ from copy import copy
 from abc import ABC
 from abc import abstractmethod
 
-from jax._src.tree_util import register_pytree_node
-
 import numpy as np
 
 from autoconf.fitsable import output_to_fits
@@ -75,14 +73,14 @@ class AbstractNDArray(ABC):
         while isinstance(array, AbstractNDArray):
             array = array.array
         self._array = array
-        try:
-            register_pytree_node(
-                type(self),
-                self.instance_flatten,
-                self.instance_unflatten,
-            )
-        except ValueError:
-            pass
+        # try:
+        #     register_pytree_node(
+        #         type(self),
+        #         self.instance_flatten,
+        #         self.instance_unflatten,
+        #     )
+        # except ValueError:
+        #     pass
 
         self._xp = xp
 

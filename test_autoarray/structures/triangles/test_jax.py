@@ -1,25 +1,25 @@
-from jax import numpy as np
 import jax
-
-jax.config.update("jax_log_compiles", True)
+import jax.numpy as jnp
+from jax.tree_util import register_pytree_node_class
 
 import pytest
-
 
 from autoarray.structures.triangles.shape import Point
 from autoarray.structures.triangles.array import ArrayTriangles
 
+ArrayTriangles = register_pytree_node_class(ArrayTriangles)
+Point = register_pytree_node_class(Point)
 
 @pytest.fixture
 def triangles():
     return ArrayTriangles(
-        indices=np.array(
+        indices=jnp.array(
             [
                 [0, 1, 2],
                 [1, 2, 3],
             ]
         ),
-        vertices=np.array(
+        vertices=jnp.array(
             [
                 [0.0, 0.0],
                 [1.0, 0.0],
@@ -36,29 +36,29 @@ def triangles():
     [
         (
             Point(0.1, 0.1),
-            np.array(
+            jnp.array(
                 [
                     [0.0, 0.0],
                     [0.0, 1.0],
                     [1.0, 0.0],
                 ]
             ),
-            np.array([0, -1, -1, -1, -1]),
+            jnp.array([0, -1, -1, -1, -1]),
         ),
         (
             Point(0.6, 0.6),
-            np.array(
+            jnp.array(
                 [
                     [0.0, 1.0],
                     [1.0, 0.0],
                     [1.0, 1.0],
                 ]
             ),
-            np.array([1, -1, -1, -1, -1]),
+            jnp.array([1, -1, -1, -1, -1]),
         ),
         (
             Point(0.5, 0.5),
-            np.array(
+            jnp.array(
                 [
                     [0.0, 0.0],
                     [0.0, 1.0],
@@ -66,7 +66,7 @@ def triangles():
                     [1.0, 1.0],
                 ]
             ),
-            np.array([0, 1, -1, -1, -1]),
+            jnp.array([0, 1, -1, -1, -1]),
         ),
     ],
 )
@@ -85,38 +85,38 @@ def test_contains_vertices(
     "indexes, vertices, indices",
     [
         (
-            np.array([0]),
-            np.array(
+            jnp.array([0]),
+            jnp.array(
                 [
                     [0.0, 0.0],
                     [0.0, 1.0],
                     [1.0, 0.0],
                 ]
             ),
-            np.array(
+            jnp.array(
                 [
                     [0, 1, 2],
                 ]
             ),
         ),
         (
-            np.array([1]),
-            np.array(
+            jnp.array([1]),
+            jnp.array(
                 [
                     [0.0, 1.0],
                     [1.0, 0.0],
                     [1.0, 1.0],
                 ]
             ),
-            np.array(
+            jnp.array(
                 [
                     [0, 1, 2],
                 ]
             ),
         ),
         (
-            np.array([0, 1]),
-            np.array(
+            jnp.array([0, 1]),
+            jnp.array(
                 [
                     [0.0, 0.0],
                     [0.0, 1.0],
@@ -124,7 +124,7 @@ def test_contains_vertices(
                     [1.0, 1.0],
                 ],
             ),
-            np.array(
+            jnp.array(
                 [
                     [0, 1, 2],
                     [1, 2, 3],
@@ -153,13 +153,13 @@ def test_negative_index(
     triangles,
     compare_with_nans,
 ):
-    indexes = np.array([0, -1])
+    indexes = jnp.array([0, -1])
 
     containing = jax.jit(triangles.for_indexes)(indexes)
 
     assert (
         containing.indices
-        == np.array(
+        == jnp.array(
             [
                 [-1, -1, -1],
                 [0, 1, 2],
@@ -168,7 +168,7 @@ def test_negative_index(
     ).all()
     assert compare_with_nans(
         containing.vertices,
-        np.array(
+        jnp.array(
             [
                 [0.0, 0.0],
                 [0.0, 1.0],
@@ -186,7 +186,7 @@ def test_up_sample(
 
     assert compare_with_nans(
         up_sampled.vertices,
-        np.array(
+        jnp.array(
             [
                 [0.0, 0.0],
                 [0.0, 0.5],
@@ -203,7 +203,7 @@ def test_up_sample(
 
     assert (
         up_sampled.indices
-        == np.array(
+        == jnp.array(
             [
                 [0, 1, 3],
                 [1, 2, 4],
@@ -224,12 +224,12 @@ def test_up_sample(
 )
 def test_simple_neighborhood(offset, compare_with_nans):
     triangles = ArrayTriangles(
-        indices=np.array(
+        indices=jnp.array(
             [
                 [0, 1, 2],
             ]
         ),
-        vertices=np.array(
+        vertices=jnp.array(
             [
                 [0.0, 0.0],
                 [1.0, 0.0],
@@ -242,7 +242,7 @@ def test_simple_neighborhood(offset, compare_with_nans):
     assert compare_with_nans(
         jax.jit(triangles.neighborhood)().triangles,
         (
-            np.array(
+            jnp.array(
                 [
                     [[-1.0, 1.0], [0.0, 0.0], [0.0, 1.0]],
                     [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
@@ -260,7 +260,7 @@ def test_neighborhood(triangles, compare_with_nans):
 
     assert compare_with_nans(
         neighborhood.vertices,
-        np.array(
+        jnp.array(
             [
                 [-1.0, 1.0],
                 [0.0, 0.0],
@@ -276,7 +276,7 @@ def test_neighborhood(triangles, compare_with_nans):
 
     assert (
         neighborhood.indices
-        == np.array(
+        == jnp.array(
             [
                 [0, 1, 2],
                 [1, 2, 5],
@@ -294,7 +294,7 @@ def test_neighborhood(triangles, compare_with_nans):
 def test_means(triangles):
     means = triangles.means
     assert means == pytest.approx(
-        np.array(
+        jnp.array(
             [
                 [0.33333333, 0.33333333],
                 [0.66666667, 0.66666667],

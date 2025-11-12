@@ -1,7 +1,5 @@
 import numpy as np
 
-from jax.tree_util import register_pytree_node_class
-
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
@@ -9,8 +7,6 @@ from autoarray.structures.triangles.shape import Shape
 
 MAX_CONTAINING_SIZE = 15
 
-
-@register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     def __init__(
         self,
