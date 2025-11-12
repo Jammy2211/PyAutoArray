@@ -49,18 +49,14 @@ def convert_grid_1d(
             grid_1d_native=grid_1d,
             mask_1d=mask_1d,
         )
-    return grid_1d_native_from(
-        grid_1d_slim=grid_1d,
-        mask_1d=mask_1d,
-        xp=xp
-    )
+    return grid_1d_native_from(grid_1d_slim=grid_1d, mask_1d=mask_1d, xp=xp)
 
 
 def grid_1d_slim_via_shape_slim_from(
     shape_slim: Tuple[int],
     pixel_scales: ty.PixelScales,
     origin: Tuple[float] = (0.0,),
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     This routine computes the (x) scaled coordinates at the centre of every pixel defined by a 1D shape of the
@@ -93,7 +89,7 @@ def grid_1d_slim_via_shape_slim_from(
         mask_1d=np.full(fill_value=False, shape=shape_slim),
         pixel_scales=pixel_scales,
         origin=origin,
-        xp=xp
+        xp=xp,
     )
 
 
@@ -101,7 +97,7 @@ def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
     pixel_scales: ty.PixelScales,
     origin: Tuple[float] = (0.0,),
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     For a grid, every unmasked pixel of its 1D mask with shape (total_pixels,) is divided into a finer uniform
@@ -207,7 +203,5 @@ def grid_1d_native_from(
         mapped from the slimmed grid.
     """
     return array_1d_util.array_1d_native_from(
-        array_1d_slim=grid_1d_slim,
-        mask_1d=mask_1d,
-        xp=xp
+        array_1d_slim=grid_1d_slim, mask_1d=mask_1d, xp=xp
     )

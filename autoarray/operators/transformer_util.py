@@ -84,7 +84,10 @@ def preload_imag_transforms_from(
 
 
 def visibilities_via_preload_from(
-    image_1d: np.ndarray, preloaded_reals: np.ndarray, preloaded_imags: np.ndarray, xp=np
+    image_1d: np.ndarray,
+    preloaded_reals: np.ndarray,
+    preloaded_imags: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     """
     Computes interferometric visibilities using preloaded real and imaginary DFT transform components.

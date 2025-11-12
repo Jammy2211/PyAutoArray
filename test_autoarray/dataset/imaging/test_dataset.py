@@ -33,7 +33,6 @@ def make_test_data_path():
     return test_data_path
 
 
-
 def test__grid__uses_mask_and_settings(
     image_7x7,
     noise_map_7x7,

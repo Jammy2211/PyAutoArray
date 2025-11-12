@@ -247,7 +247,9 @@ def chi_squared_map_with_mask_from(
     return xp.where(xp.asarray(mask) == 0, xp.square(residual_map / noise_map), 0)
 
 
-def chi_squared_with_mask_from(*, chi_squared_map: ty.DataLike, mask: Mask, xp=np) -> float:
+def chi_squared_with_mask_from(
+    *, chi_squared_map: ty.DataLike, mask: Mask, xp=np
+) -> float:
     """
     Returns the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
     chi-squared-map of the fit.
@@ -265,7 +267,12 @@ def chi_squared_with_mask_from(*, chi_squared_map: ty.DataLike, mask: Mask, xp=n
 
 
 def chi_squared_with_mask_fast_from(
-    *, data: ty.DataLike, mask: Mask, model_data: ty.DataLike, noise_map: ty.DataLike, xp=np
+    *,
+    data: ty.DataLike,
+    mask: Mask,
+    model_data: ty.DataLike,
+    noise_map: ty.DataLike,
+    xp=np,
 ) -> float:
     """
     Returns the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
@@ -302,7 +309,9 @@ def chi_squared_with_mask_fast_from(
     )
 
 
-def noise_normalization_with_mask_from(*, noise_map: ty.DataLike, mask: Mask, xp=np) -> float:
+def noise_normalization_with_mask_from(
+    *, noise_map: ty.DataLike, mask: Mask, xp=np
+) -> float:
     """
     Returns the noise-map normalization terms of masked noise-map, summing the noise_map value in every pixel as:
 
@@ -317,9 +326,7 @@ def noise_normalization_with_mask_from(*, noise_map: ty.DataLike, mask: Mask, xp
     mask
         The mask applied to the noise-map, where `False` entries are included in the calculation.
     """
-    return float(
-        xp.sum(xp.log(2 * xp.pi * noise_map[xp.asarray(mask) == 0] ** 2.0))
-    )
+    return float(xp.sum(xp.log(2 * xp.pi * noise_map[xp.asarray(mask) == 0] ** 2.0)))
 
 
 def chi_squared_with_noise_covariance_from(

@@ -24,7 +24,7 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
-        xp=np
+        xp=np,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -267,7 +267,7 @@ class AbstractMapper(LinearObj):
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.over_sampler.sub_fraction.array,
-            xp=self._xp
+            xp=self._xp,
         )
 
     def pixel_signals_from(self, signal_scale: float, xp=np) -> np.ndarray:
@@ -292,7 +292,7 @@ class AbstractMapper(LinearObj):
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
             adapt_data=self.adapt_data.array,
-            xp=xp
+            xp=xp,
         )
 
     def slim_indexes_for_pix_indexes(self, pix_indexes: List) -> List[List]:

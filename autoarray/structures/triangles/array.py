@@ -58,7 +58,7 @@ class ArrayTriangles(AbstractTriangles):
     ) -> "AbstractTriangles":
 
         import jax.numpy as jnp
-        
+
         height = scale * HEIGHT_FACTOR
 
         vertices = []
@@ -152,6 +152,7 @@ class ArrayTriangles(AbstractTriangles):
         The mean of each triangle.
         """
         import jax.numpy as jnp
+
         return jnp.mean(self.triangles, axis=1)
 
     def containing_indices(self, shape: Shape) -> np.ndarray:
@@ -168,6 +169,7 @@ class ArrayTriangles(AbstractTriangles):
         The triangles that intersect the shape.
         """
         import jax.numpy as jnp
+
         inside = shape.mask(self.triangles)
 
         return jnp.where(
@@ -191,6 +193,7 @@ class ArrayTriangles(AbstractTriangles):
         The new ArrayTriangles instance.
         """
         import jax.numpy as jnp
+
         selected_indices = select_and_handle_invalid(
             data=self.indices,
             indices=indexes,
@@ -238,6 +241,7 @@ class ArrayTriangles(AbstractTriangles):
 
     def _up_sample_triangle(self):
         import jax.numpy as jnp
+
         triangles = self.triangles
 
         m01 = (triangles[:, 0] + triangles[:, 1]) / 2
@@ -270,6 +274,7 @@ class ArrayTriangles(AbstractTriangles):
 
     def _neighborhood_triangles(self):
         import jax.numpy as jnp
+
         triangles = self.triangles
 
         new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
@@ -380,6 +385,7 @@ def select_and_handle_invalid(
     An array with selected data, where invalid indices are replaced with `invalid_replacement`.
     """
     import jax.numpy as jnp
+
     invalid_mask = indices == invalid_value
     safe_indices = jnp.where(invalid_mask, 0, indices)
     selected_data = data[safe_indices]
@@ -394,6 +400,7 @@ def select_and_handle_invalid(
 
 def remove_duplicates(new_triangles):
     import jax.numpy as jnp
+
     unique_vertices, inverse_indices = jnp.unique(
         new_triangles.reshape(-1, 2),
         axis=0,

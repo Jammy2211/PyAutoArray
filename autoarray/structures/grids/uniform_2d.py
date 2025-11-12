@@ -160,10 +160,7 @@ class Grid2D(Structure):
         """
 
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=values,
-            mask_2d=mask,
-            store_native=store_native,
-            xp=xp
+            grid_2d=values, mask_2d=mask, store_native=store_native, xp=xp
         )
 
         super().__init__(values, xp=xp)
@@ -556,14 +553,11 @@ class Grid2D(Structure):
             mask_2d=mask.array,
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
-            xp=xp
+            xp=xp,
         )
 
         return Grid2D(
-            values=grid_2d,
-            mask=mask,
-            over_sample_size=over_sample_size,
-            xp=xp
+            values=grid_2d, mask=mask, over_sample_size=over_sample_size, xp=xp
         )
 
     @classmethod
@@ -691,7 +685,9 @@ class Grid2D(Structure):
             over_sample_size=over_sample_size,
         )
 
-    def subtracted_from(self, offset: Tuple[(float, float), np.ndarray], xp=np) -> "Grid2D":
+    def subtracted_from(
+        self, offset: Tuple[(float, float), np.ndarray], xp=np
+    ) -> "Grid2D":
 
         mask = Mask2D(
             mask=self.mask,
@@ -848,9 +844,9 @@ class Grid2D(Structure):
         coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-        squared_distances = self._xp.square(self.array[:, 0] - coordinate[0]) + self._xp.square(
-            self.array[:, 1] - coordinate[1]
-        )
+        squared_distances = self._xp.square(
+            self.array[:, 0] - coordinate[0]
+        ) + self._xp.square(self.array[:, 1] - coordinate[1])
 
         return Array2D(values=squared_distances, mask=self.mask)
 

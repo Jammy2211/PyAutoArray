@@ -1,4 +1,3 @@
-
 import numpy as np
 
 import pytest
@@ -314,9 +313,6 @@ def one_triangle():
         coordinates=np.array([[0, 0]]),
         side_length=1.0,
     )
-
-
-
 
 
 def test_neighborhood(one_triangle):

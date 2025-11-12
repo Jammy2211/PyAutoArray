@@ -7,6 +7,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray import exc
 from autoarray.util.fnnls import fnnls_cholesky
 
+
 def curvature_matrix_via_w_tilde_from(
     w_tilde: np.ndarray, mapping_matrix: np.ndarray, xp=np
 ) -> np.ndarray:
@@ -38,7 +39,7 @@ def curvature_matrix_with_added_to_diag_from(
     curvature_matrix: np.ndarray,
     value: float,
     no_regularization_index_list: Optional[List] = None,
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
@@ -58,13 +59,13 @@ def curvature_matrix_with_added_to_diag_from(
         return curvature_matrix.at[
             no_regularization_index_list, no_regularization_index_list
         ].add(value)
-    curvature_matrix[no_regularization_index_list, no_regularization_index_list] += value
+    curvature_matrix[
+        no_regularization_index_list, no_regularization_index_list
+    ] += value
     return curvature_matrix
 
 
-def curvature_matrix_mirrored_from(
-    curvature_matrix: np.ndarray, xp=np
-) -> np.ndarray:
+def curvature_matrix_mirrored_from(curvature_matrix: np.ndarray, xp=np) -> np.ndarray:
 
     # Copy the original matrix and its transpose
     m1 = curvature_matrix
@@ -82,7 +83,7 @@ def curvature_matrix_via_mapping_matrix_from(
     add_to_curvature_diag: bool = False,
     no_regularization_index_list: Optional[List] = None,
     settings: SettingsInversion = SettingsInversion(),
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
@@ -104,7 +105,7 @@ def curvature_matrix_via_mapping_matrix_from(
             curvature_matrix=curvature_matrix,
             value=settings.no_regularization_add_to_curvature_diag_value,
             no_regularization_index_list=no_regularization_index_list,
-            xp=xp
+            xp=xp,
         )
 
     return curvature_matrix
@@ -247,6 +248,7 @@ def reconstruction_positive_only_from(
     if xp.__name__.startswith("jax"):
 
         import jaxnnls
+
         return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
 
     try:
@@ -263,8 +265,6 @@ def reconstruction_positive_only_from(
 
     except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
         raise exc.InversionException() from e
-
-
 
 
 def preconditioner_matrix_via_mapping_matrix_from(

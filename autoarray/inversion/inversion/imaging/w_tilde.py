@@ -22,7 +22,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        xp=np
+        xp=np,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -59,10 +59,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
 
         super().__init__(
-            dataset=dataset,
-            linear_obj_list=linear_obj_list,
-            settings=settings,
-            xp=xp
+            dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
         )
 
         if self.settings.use_w_tilde:
@@ -522,9 +519,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 )
 
                 mapped_reconstructed_image = self.psf.convolved_image_from(
-                    image=mapped_reconstructed_image,
-                    blurring_image=None,
-                    xp=self._xp
+                    image=mapped_reconstructed_image, blurring_image=None, xp=self._xp
                 ).array
 
                 mapped_reconstructed_image = Array2D(

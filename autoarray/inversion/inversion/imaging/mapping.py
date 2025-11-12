@@ -21,7 +21,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
-        xp=np
+        xp=np,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -48,7 +48,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            xp=xp
+            xp=xp,
         )
 
     @property
@@ -142,7 +142,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 settings=self.settings,
                 add_to_curvature_diag=True,
                 no_regularization_index_list=self.no_regularization_index_list,
-                xp=self._xp
+                xp=self._xp,
             )
 
             curvature_matrix[
@@ -181,7 +181,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             settings=self.settings,
             add_to_curvature_diag=True,
             no_regularization_index_list=self.no_regularization_index_list,
-            xp=self._xp
+            xp=self._xp,
         )
 
     @property
@@ -224,7 +224,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=operated_mapping_matrix_list[index],
                     reconstruction=reconstruction,
-                    xp=self._xp
+                    xp=self._xp,
                 )
             )
 

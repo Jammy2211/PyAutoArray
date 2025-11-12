@@ -9,9 +9,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
 def gauss_cov_matrix_from(
-    scale: float,
-    pixel_points: np.ndarray,  # shape (N, 2)
-    xp=np
+    scale: float, pixel_points: np.ndarray, xp=np  # shape (N, 2)
 ) -> np.ndarray:
     """
     Construct the source‐pixel Gaussian covariance matrix for regularization.
@@ -112,7 +110,9 @@ class GaussianKernel(AbstractRegularization):
         The regularization matrix.
         """
         covariance_matrix = gauss_cov_matrix_from(
-            scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid.array, xp=xp
+            scale=self.scale,
+            pixel_points=linear_obj.source_plane_mesh_grid.array,
+            xp=xp,
         )
 
         return self.coefficient * xp.linalg.inv(covariance_matrix)

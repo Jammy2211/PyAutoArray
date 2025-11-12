@@ -13,7 +13,7 @@ def constant_zeroth_regularization_matrix_from(
     coefficient_zeroth: float,
     neighbors: np.ndarray,
     neighbors_sizes,
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -54,9 +54,7 @@ def constant_zeroth_regularization_matrix_from(
 
     if xp.__name__.startswith("jax"):
         const = (
-            xp.diag(diag_vals).at[
-                I_IDX, neighbors
-            ]
+            xp.diag(diag_vals).at[I_IDX, neighbors]
             # unique indices should be guranteed by neighbors-spec
             .add(-regularization_coefficient, mode="drop", unique_indices=True)
         )
@@ -119,5 +117,5 @@ class ConstantZeroth(AbstractRegularization):
             coefficient=self.coefficient_neighbor,
             coefficient_zeroth=self.coefficient_zeroth,
             neighbors=linear_obj.neighbors,
-            xp=xp
+            xp=xp,
         )

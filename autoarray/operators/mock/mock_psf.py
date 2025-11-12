@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class MockPSF:
     def __init__(self, operated_mapping_matrix=None):
         self.operated_mapping_matrix = operated_mapping_matrix

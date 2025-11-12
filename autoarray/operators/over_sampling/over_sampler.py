@@ -11,7 +11,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.over_sampling import over_sample_util
 
 
-
 @register_pytree_node_class
 class OverSampler:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
@@ -148,9 +147,7 @@ class OverSampler:
 
         self.sub_total = int(np.sum(self.sub_size**2))
         self.sub_length = self.sub_size**self.mask.dimensions
-        self.sub_fraction = Array2D(
-            values=1.0 / self.sub_length.array, mask=self.mask
-        )
+        self.sub_fraction = Array2D(values=1.0 / self.sub_length.array, mask=self.mask)
 
         # Used for JAX based adaptive over sampling.
 

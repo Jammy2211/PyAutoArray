@@ -333,9 +333,7 @@ def rectangular_edges_from(shape_native, pixel_scales, xp=np):
             )  # xa is the "right" boundary in your convention
 
             # Edge order to match your pytest: [(xa,y0)->(xa,y1), (xa,y1)->(xb,y1), (xb,y1)->(xb,y0), (xb,y0)->(xa,y0)]
-            e0 = xp.array(
-                [[xa, y0], [xa, y1]]
-            )  # "top" in your test (vertical at x=xa)
+            e0 = xp.array([[xa, y0], [xa, y1]])  # "top" in your test (vertical at x=xa)
             e1 = xp.array(
                 [[xa, y1], [xb, y1]]
             )  # "right" in your test (horizontal at y=y1)

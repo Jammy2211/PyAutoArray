@@ -14,7 +14,7 @@ def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
     border_relocator: Optional[BorderRelocator] = None,
-    xp=np
+    xp=np,
 ):
     """
     Factory which given input `MapperGrids` and `Regularization` objects creates a `Mapper`.
@@ -54,26 +54,26 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            xp=xp
+            xp=xp,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
         return MapperRectangular(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            xp=xp
+            xp=xp,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
         return MapperDelaunay(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            xp=xp
+            xp=xp,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DVoronoi):
         return MapperVoronoi(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
-            xp=xp
+            xp=xp,
         )

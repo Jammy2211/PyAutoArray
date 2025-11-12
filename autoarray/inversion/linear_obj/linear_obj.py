@@ -6,11 +6,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
 class LinearObj:
-    def __init__(
-        self,
-        regularization: Optional[AbstractRegularization],
-        xp=np
-    ):
+    def __init__(self, regularization: Optional[AbstractRegularization], xp=np):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
         the parameters of the linear object. For example, the linear obj could map to the data via analytic functions
@@ -152,4 +148,6 @@ class LinearObj:
         if self.regularization is None:
             return self._xp.zeros((self.params, self.params))
 
-        return self.regularization.regularization_matrix_from(linear_obj=self, xp=self._xp)
+        return self.regularization.regularization_matrix_from(
+            linear_obj=self, xp=self._xp
+        )

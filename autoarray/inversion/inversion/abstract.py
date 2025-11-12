@@ -18,6 +18,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.util import misc_util
 from autoarray.inversion.inversion import inversion_util
 
+
 class AbstractInversion:
     def __init__(
         self,
@@ -25,7 +26,7 @@ class AbstractInversion:
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = None,
-        xp=np
+        xp=np,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -74,8 +75,6 @@ class AbstractInversion:
         self.preloads = preloads or Preloads()
 
         self._xp = xp
-
-
 
     @property
     def data(self):
@@ -333,10 +332,15 @@ class AbstractInversion:
         """
         if self._xp.__name__.startswith("jax"):
             from jax.scipy.linalg import block_diag
+
             return block_diag(
-                *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
+                *[
+                    linear_obj.regularization_matrix
+                    for linear_obj in self.linear_obj_list
+                ]
             )
         from scipy.linalg import block_diag
+
         return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
@@ -448,7 +452,7 @@ class AbstractInversion:
                         data_vector=data_vector,
                         curvature_reg_matrix=curvature_reg_matrix,
                         settings=self.settings,
-                        xp=self._xp
+                        xp=self._xp,
                     )
                 )
 
@@ -471,13 +475,13 @@ class AbstractInversion:
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix,
                     settings=self.settings,
-                    xp=self._xp
+                    xp=self._xp,
                 )
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
             curvature_reg_matrix=self.curvature_reg_matrix,
-            xp=self._xp
+            xp=self._xp,
         )
 
     @property
@@ -640,7 +644,9 @@ class AbstractInversion:
 
         return self._xp.matmul(
             self.reconstruction_reduced.T,
-            self._xp.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+            self._xp.matmul(
+                self.regularization_matrix_reduced, self.reconstruction_reduced
+            ),
         )
 
     @property
@@ -654,7 +660,11 @@ class AbstractInversion:
             return 0.0
 
         return 2.0 * self._xp.sum(
-            self._xp.log(self._xp.diag(self._xp.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+            self._xp.log(
+                self._xp.diag(
+                    self._xp.linalg.cholesky(self.curvature_reg_matrix_reduced)
+                )
+            )
         )
 
     @property
@@ -675,7 +685,11 @@ class AbstractInversion:
             return 0.0
 
         return 2.0 * self._xp.sum(
-            self._xp.log(self._xp.diag(self._xp.linalg.cholesky(self.regularization_matrix_reduced)))
+            self._xp.log(
+                self._xp.diag(
+                    self._xp.linalg.cholesky(self.regularization_matrix_reduced)
+                )
+            )
         )
 
     @property
@@ -738,7 +752,9 @@ class AbstractInversion:
 
             return np.zeros((pixels,))
 
-        return regularization.regularization_weights_from(linear_obj=linear_obj, xp=self._xp)
+        return regularization.regularization_weights_from(
+            linear_obj=linear_obj, xp=self._xp
+        )
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:

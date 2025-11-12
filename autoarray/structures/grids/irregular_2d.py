@@ -185,9 +185,9 @@ class Grid2DIrregular(AbstractNDArray):
         coordinate
             The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
         """
-        squared_distances = self._xp.square(self.array[:, 0] - coordinate[0]) + self._xp.square(
-            self.array[:, 1] - coordinate[1]
-        )
+        squared_distances = self._xp.square(
+            self.array[:, 0] - coordinate[0]
+        ) + self._xp.square(self.array[:, 1] - coordinate[1])
         return ArrayIrregular(values=squared_distances)
 
     def distances_to_coordinate_from(

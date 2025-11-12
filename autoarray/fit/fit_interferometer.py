@@ -17,7 +17,7 @@ class FitInterferometer(FitDataset):
         dataset: Interferometer,
         dataset_model: DatasetModel = None,
         use_mask_in_fit: bool = False,
-        xp=np
+        xp=np,
     ):
         """
         Class to fit a masked interferometer dataset.
@@ -58,7 +58,7 @@ class FitInterferometer(FitDataset):
             dataset=dataset,
             dataset_model=dataset_model,
             use_mask_in_fit=use_mask_in_fit,
-            xp=xp
+            xp=xp,
         )
 
     @property

@@ -83,7 +83,9 @@ class AbstractFit(ABC):
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
-        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map.array, xp=self._xp)
+        return fit_util.chi_squared_from(
+            chi_squared_map=self.chi_squared_map.array, xp=self._xp
+        )
 
     @property
     def noise_normalization(self) -> float:
@@ -92,7 +94,9 @@ class AbstractFit(ABC):
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
-        return fit_util.noise_normalization_from(noise_map=self.noise_map.array, xp=self._xp)
+        return fit_util.noise_normalization_from(
+            noise_map=self.noise_map.array, xp=self._xp
+        )
 
     @property
     def log_likelihood(self) -> float:
@@ -113,7 +117,7 @@ class FitDataset(AbstractFit):
         dataset,
         use_mask_in_fit: bool = False,
         dataset_model: DatasetModel = None,
-        xp=np
+        xp=np,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -209,7 +213,10 @@ class FitDataset(AbstractFit):
         """
         if self.use_mask_in_fit:
             return fit_util.normalized_residual_map_with_mask_from(
-                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask, xp=self._xp
+                residual_map=self.residual_map,
+                noise_map=self.noise_map,
+                mask=self.mask,
+                xp=self._xp,
             )
         return super().normalized_residual_map
 
@@ -222,7 +229,10 @@ class FitDataset(AbstractFit):
         """
         if self.use_mask_in_fit:
             return fit_util.chi_squared_map_with_mask_from(
-                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask, xp=self._xp
+                residual_map=self.residual_map,
+                noise_map=self.noise_map,
+                mask=self.mask,
+                xp=self._xp,
             )
         return super().chi_squared_map
 

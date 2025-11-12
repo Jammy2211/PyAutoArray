@@ -134,7 +134,9 @@ class BrightnessZeroth(AbstractRegularization):
         -------
         The regularization matrix.
         """
-        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
+        regularization_weights = self.regularization_weights_from(
+            linear_obj=linear_obj, xp=xp
+        )
 
         return brightness_zeroth_regularization_matrix_from(
             regularization_weights=regularization_weights, xp=xp

@@ -13,7 +13,7 @@ def convert_array_1d(
     array_1d: Union[np.ndarray, List],
     mask_1d: Mask1D,
     store_native: bool = False,
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -49,11 +49,7 @@ def convert_array_1d(
             array_1d_native=array_1d,
             mask_1d=mask_1d,
         )
-    return array_1d_native_from(
-        array_1d_slim=array_1d,
-        mask_1d=mask_1d,
-        xp=xp
-    )
+    return array_1d_native_from(array_1d_slim=array_1d, mask_1d=mask_1d, xp=xp)
 
 
 def array_1d_slim_from(
@@ -124,7 +120,7 @@ def array_1d_native_from(
         array_1d_slim=array_1d_slim,
         shape=shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
-        xp=xp
+        xp=xp,
     )
 
 

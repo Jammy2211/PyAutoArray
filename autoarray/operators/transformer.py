@@ -39,7 +39,7 @@ class TransformerDFT:
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         preload_transform: bool = True,
-        xp=np
+        xp=np,
     ):
         """
         A direct Fourier transform (DFT) operator for radio interferometric imaging.
@@ -138,7 +138,7 @@ class TransformerDFT:
                 image_1d=image.array,
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
-                xp=self._xp
+                xp=self._xp,
             )
         else:
             visibilities = transformer_util.visibilities_from(
@@ -178,9 +178,7 @@ class TransformerDFT:
         )
 
         image_native = array_2d_util.array_2d_native_from(
-            array_2d_slim=image_slim,
-            mask_2d=self.real_space_mask,
-            xp=self._xp
+            array_2d_slim=image_slim, mask_2d=self.real_space_mask, xp=self._xp
         )
 
         return Array2D(values=image_native, mask=self.real_space_mask)
@@ -220,7 +218,9 @@ class TransformerDFT:
 
 
 class TransformerNUFFT(NUFFT_cpu):
-    def __init__(self, uv_wavelengths: np.ndarray, real_space_mask: Mask2D, xp=np, **kwargs):
+    def __init__(
+        self, uv_wavelengths: np.ndarray, real_space_mask: Mask2D, xp=np, **kwargs
+    ):
         """
         Performs the Non-Uniform Fast Fourier Transform (NUFFT) for interferometric image reconstruction.
 
@@ -452,7 +452,7 @@ class TransformerNUFFT(NUFFT_cpu):
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
-                xp=self._xp
+                xp=self._xp,
             )
 
             image = Array2D(values=image_2d, mask=self.grid.mask)

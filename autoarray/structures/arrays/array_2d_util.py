@@ -93,7 +93,7 @@ def convert_array_2d(
     mask_2d: Mask2D,
     store_native: bool = False,
     skip_mask: bool = False,
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -134,11 +134,7 @@ def convert_array_2d(
             array_2d_native=array_2d,
             mask_2d=mask_2d,
         )
-    return array_2d_native_from(
-        array_2d_slim=array_2d,
-        mask_2d=mask_2d,
-        xp=xp
-    )
+    return array_2d_native_from(array_2d_slim=array_2d, mask_2d=mask_2d, xp=xp)
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
@@ -169,7 +165,9 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarra
     )
 
 
-def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D, xp=np) -> np.ndarray:
+def convert_array_2d_to_native(
+    array_2d: np.ndarray, mask_2d: Mask2D, xp=np
+) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
@@ -203,11 +201,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D, xp=np) -> 
             "the mask."
         )
 
-    return array_2d_native_from(
-        array_2d_slim=array_2d,
-        mask_2d=mask_2d,
-        xp=xp
-    )
+    return array_2d_native_from(array_2d_slim=array_2d, mask_2d=mask_2d, xp=xp)
 
 
 def extracted_array_2d_from(
@@ -468,9 +462,7 @@ def array_2d_slim_from(
 
 
 def array_2d_native_from(
-    array_2d_slim: np.ndarray,
-    mask_2d: np.ndarray,
-    xp=np
+    array_2d_slim: np.ndarray, mask_2d: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     For a slimmed 2D array that was computed by mapping unmasked values from a native 2D array of shape
@@ -510,16 +502,16 @@ def array_2d_native_from(
     shape = (mask_2d.shape[0], mask_2d.shape[1])
 
     native_index_for_slim_index_2d = mask_2d_util.native_index_for_slim_index_2d_from(
-        mask_2d=mask_2d,
-        xp=xp
+        mask_2d=mask_2d, xp=xp
     ).astype("int")
 
     return array_2d_via_indexes_from(
         array_2d_slim=array_2d_slim,
         shape=shape,
         native_index_for_slim_index_2d=native_index_for_slim_index_2d,
-        xp=xp
+        xp=xp,
     )
+
 
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,

@@ -92,7 +92,7 @@ class MapperRectangularUniform(MapperRectangular):
                 shape_native=self.shape_native,
                 source_plane_mesh_grid=self.source_plane_mesh_grid.array,
                 source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-                xp=self._xp
+                xp=self._xp,
             )
         )
 

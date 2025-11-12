@@ -61,7 +61,7 @@ def w_tilde_data_imaging_from(
     noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     The matrix w_tilde is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF convolution of
