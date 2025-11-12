@@ -524,8 +524,7 @@ def test__convolve_imaged_from__via_fft__sizes_not_precomputed__compare_numerica
     blurring_image = aa.Array2D(values=image.native, mask=blurring_mask)
 
     blurred_fft = kernel_fft.convolved_image_from(
-        image=masked_image,
-        blurring_image=blurring_image
+        image=masked_image, blurring_image=blurring_image
     )
 
     assert blurred_fft.native.array[13, 13] == pytest.approx(249.5, abs=1e-6)

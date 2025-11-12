@@ -20,7 +20,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        xp=np
+        xp=np,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -47,10 +47,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         """
 
         super().__init__(
-            dataset=dataset,
-            linear_obj_list=linear_obj_list,
-            settings=settings,
-            xp=xp
+            dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
         )
 
     @property
@@ -91,13 +88,13 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.real,
             noise_map=self.noise_map.real,
-            xp=self._xp
+            xp=self._xp,
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
-            xp=self._xp
+            xp=self._xp,
         )
 
         curvature_matrix = self._xp.add(real_curvature_matrix, imag_curvature_matrix)
@@ -107,7 +104,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
                 curvature_matrix=curvature_matrix,
                 value=self.settings.no_regularization_add_to_curvature_diag_value,
                 no_regularization_index_list=self.no_regularization_index_list,
-                xp=self._xp
+                xp=self._xp,
             )
 
         return curvature_matrix

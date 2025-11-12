@@ -601,7 +601,7 @@ class MatPlot2D(AbstractMatPlot):
                 plt.pcolormesh(
                     X,  # x-grid
                     Y,  # y-grid
-                    np.flipud(pixel_values.array.reshape(shape_native)),  # (ny, nx)
+                    pixel_values.array.reshape(shape_native),  # (ny, nx)
                     shading="flat",
                     norm=norm,
                     cmap=self.cmap.cmap,

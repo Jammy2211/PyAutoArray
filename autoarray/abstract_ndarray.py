@@ -342,6 +342,7 @@ class AbstractNDArray(ABC):
 
     def __setitem__(self, key, value):
         from jax import Array
+
         if isinstance(key, (jnp.ndarray, AbstractNDArray, Array)):
             self._array = jnp.where(key, value, self._array)
         else:

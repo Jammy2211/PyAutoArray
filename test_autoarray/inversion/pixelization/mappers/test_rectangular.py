@@ -139,7 +139,7 @@ def test__edges_transformed(mask_2d_7x7):
 
     assert mapper.edges_transformed[3] == pytest.approx(
         np.array(
-            [1.5, 1.5],  # left
+            [-1.5, 1.5],  # left
         ),
         abs=1e-8,
     )

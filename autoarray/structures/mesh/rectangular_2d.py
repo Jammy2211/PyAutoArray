@@ -62,7 +62,11 @@ class Mesh2DRectangular(Abstract2DMesh):
 
     @classmethod
     def overlay_grid(
-        cls, shape_native: Tuple[int, int], grid: np.ndarray, buffer: float = 1e-8, xp=np
+        cls,
+        shape_native: Tuple[int, int],
+        grid: np.ndarray,
+        buffer: float = 1e-8,
+        xp=np,
     ) -> "Mesh2DRectangular":
         """
         Creates a `Grid2DRecntagular` by overlaying the rectangular pixelization over an input grid of (y,x)
@@ -100,10 +104,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         origin = xp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
 
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
-            xp=xp
+            shape_native=shape_native, pixel_scales=pixel_scales, origin=origin, xp=xp
         )
 
         return cls(

@@ -24,7 +24,7 @@ def inversion_from(
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = None,
-    xp=np
+    xp=np,
 ):
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
@@ -60,14 +60,11 @@ def inversion_from(
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            xp=xp
+            xp=xp,
         )
 
     return inversion_interferometer_from(
-        dataset=dataset,
-        linear_obj_list=linear_obj_list,
-        settings=settings,
-        xp=xp
+        dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
     )
 
 
@@ -76,7 +73,7 @@ def inversion_imaging_from(
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = None,
-    xp=np
+    xp=np,
 ):
     """
     Factory which given an input `Imaging` dataset and list of linear objects, creates an `InversionImaging`.
@@ -129,7 +126,7 @@ def inversion_imaging_from(
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
-            xp=xp
+            xp=xp,
         )
 
     return InversionImagingMapping(
@@ -137,7 +134,7 @@ def inversion_imaging_from(
         linear_obj_list=linear_obj_list,
         settings=settings,
         preloads=preloads,
-        xp=xp
+        xp=xp,
     )
 
 
@@ -145,7 +142,7 @@ def inversion_interferometer_from(
     dataset: Union[Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
-    xp=np
+    xp=np,
 ):
     """
     Factory which given an input `Interferometer` dataset and list of linear objects, creates
@@ -199,7 +196,7 @@ def inversion_interferometer_from(
                 w_tilde=w_tilde,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
-                xp=xp
+                xp=xp,
             )
 
         else:
@@ -207,5 +204,5 @@ def inversion_interferometer_from(
                 dataset=dataset,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
-                xp=xp
+                xp=xp,
             )

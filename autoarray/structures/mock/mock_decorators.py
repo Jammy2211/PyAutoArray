@@ -86,6 +86,7 @@ class MockGrid1DLikeObj:
         self.centre = centre
         self.angle = angle
 
+
 class MockGrid2DLikeObj:
     def __init__(self):
         self.centre = (0.0, 0.0)

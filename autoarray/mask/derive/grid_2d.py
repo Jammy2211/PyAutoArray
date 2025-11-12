@@ -171,7 +171,7 @@ class DeriveGrid2D:
             mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
-            xp=self._xp
+            xp=self._xp,
         )
         return Grid2D(values=grid_2d, mask=self.mask)
 

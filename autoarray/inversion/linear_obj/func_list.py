@@ -13,7 +13,7 @@ class AbstractLinearObjFuncList(LinearObj):
         self,
         grid: Grid1D2DLike,
         regularization: Optional[AbstractRegularization],
-        xp=np
+        xp=np,
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and

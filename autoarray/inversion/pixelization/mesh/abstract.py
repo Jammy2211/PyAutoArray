@@ -12,10 +12,7 @@ class AbstractMesh:
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
 
     def relocated_grid_from(
-        self,
-        border_relocator: BorderRelocator,
-        source_plane_data_grid: Grid2D,
-        xp=np
+        self, border_relocator: BorderRelocator, source_plane_data_grid: Grid2D, xp=np
     ) -> Grid2D:
         """
         Relocates all coordinates of the input `source_plane_data_grid` that are outside of a
@@ -41,14 +38,16 @@ class AbstractMesh:
             A 2D (y,x) grid of coordinates, whose coordinates outside the border are relocated to its edge.
         """
         if border_relocator is not None:
-            return border_relocator.relocated_grid_from(grid=source_plane_data_grid, xp=xp)
+            return border_relocator.relocated_grid_from(
+                grid=source_plane_data_grid, xp=xp
+            )
 
         return Grid2D(
             values=source_plane_data_grid.array,
             mask=source_plane_data_grid.mask,
             over_sample_size=source_plane_data_grid.over_sampler.sub_size,
             over_sampled=source_plane_data_grid.over_sampled.array,
-            xp=xp
+            xp=xp,
         )
 
     def relocated_mesh_grid_from(
@@ -56,7 +55,7 @@ class AbstractMesh:
         border_relocator: Optional[BorderRelocator],
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
-        xp=np
+        xp=np,
     ):
         """
         Relocates all coordinates of the input `source_plane_mesh_grid` that are outside of a border (which

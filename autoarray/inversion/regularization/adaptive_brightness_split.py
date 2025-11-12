@@ -90,7 +90,9 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         -------
         The regularization matrix.
         """
-        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
+        regularization_weights = self.regularization_weights_from(
+            linear_obj=linear_obj, xp=xp
+        )
 
         pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
 

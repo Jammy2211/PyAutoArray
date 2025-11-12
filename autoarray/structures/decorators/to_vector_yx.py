@@ -107,6 +107,8 @@ def to_vector_yx(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        return VectorYXMaker(func=func, obj=obj, grid=grid, xp=xp, *args, **kwargs).result
+        return VectorYXMaker(
+            func=func, obj=obj, grid=grid, xp=xp, *args, **kwargs
+        ).result
 
     return wrapper

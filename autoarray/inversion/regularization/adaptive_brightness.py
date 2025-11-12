@@ -116,7 +116,7 @@ def weighted_regularization_matrix_from(
         mat = mat.at[I, J].add(-w_ij)
         mat = mat.at[J, I].add(-w_ij)
     else:
-        np.add.at(mat, np.diag_indices(S+1), diag_updates_i)
+        np.add.at(mat, np.diag_indices(S + 1), diag_updates_i)
 
         xp.add.at(mat, (I, I), w_ij)
         xp.add.at(mat, (J, J), w_ij)
@@ -207,7 +207,9 @@ class AdaptiveBrightness(AbstractRegularization):
         -------
         The regularization weights.
         """
-        pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale, xp=xp)
+        pixel_signals = linear_obj.pixel_signals_from(
+            signal_scale=self.signal_scale, xp=xp
+        )
 
         return adaptive_regularization_weights_from(
             inner_coefficient=self.inner_coefficient,
@@ -228,10 +230,12 @@ class AdaptiveBrightness(AbstractRegularization):
         -------
         The regularization matrix.
         """
-        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
+        regularization_weights = self.regularization_weights_from(
+            linear_obj=linear_obj, xp=xp
+        )
 
         return weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             neighbors=linear_obj.source_plane_mesh_grid.neighbors,
-            xp=xp
+            xp=xp,
         )

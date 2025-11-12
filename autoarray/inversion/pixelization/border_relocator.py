@@ -351,15 +351,13 @@ class BorderRelocator:
             return grid
 
         values = relocated_grid_from(
-            grid=grid.array,
-            border_grid=grid.array[self.border_slim],
-            xp=xp
+            grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
         )
 
         over_sampled = relocated_grid_from(
             grid=grid.over_sampled.array,
             border_grid=grid.over_sampled.array[self.sub_border_slim],
-            xp=xp
+            xp=xp,
         )
 
         return Grid2D(
@@ -367,7 +365,7 @@ class BorderRelocator:
             mask=grid.mask,
             over_sample_size=self.sub_size,
             over_sampled=over_sampled,
-            xp=xp
+            xp=xp,
         )
 
     def relocated_mesh_grid_from(
@@ -388,9 +386,7 @@ class BorderRelocator:
 
         return Grid2DIrregular(
             values=relocated_grid_from(
-                grid=mesh_grid.array,
-                border_grid=grid[self.sub_border_slim],
-                xp=xp
+                grid=mesh_grid.array, border_grid=grid[self.sub_border_slim], xp=xp
             ),
-            xp=xp
+            xp=xp,
         )

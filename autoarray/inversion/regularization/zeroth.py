@@ -8,7 +8,9 @@ if TYPE_CHECKING:
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
-def zeroth_regularization_matrix_from(coefficient: float, pixels: int, xp=np) -> np.ndarray:
+def zeroth_regularization_matrix_from(
+    coefficient: float, pixels: int, xp=np
+) -> np.ndarray:
     """
     Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
     to the regularization matrix.

@@ -7,13 +7,18 @@ def forward_interp(xp, yp, x):
 
     import jax
     import jax.numpy as jnp
-    return jax.vmap(jnp.interp, in_axes=(1, 1, None, None, None))(x, xp, yp, 0, 1).T
+
+    return jax.vmap(jnp.interp, in_axes=(1, 1, 1, None, None), out_axes=(1))(
+        x, xp, yp, 0, 1
+    )
 
 
 def reverse_interp(xp, yp, x):
     import jax
     import jax.numpy as jnp
-    return jax.vmap(jnp.interp, in_axes=(1, None, 1))(x, xp, yp).T
+
+    return jax.vmap(jnp.interp, in_axes=(1, 1, 1), out_axes=(1))(x, xp, yp)
+
 
 def forward_interp_np(xp, yp, x):
     """
@@ -34,6 +39,7 @@ def forward_interp_np(xp, yp, x):
 
     return out
 
+
 def reverse_interp_np(xp, yp, x):
     """
     xp : (N,) or (N, M)
@@ -42,8 +48,8 @@ def reverse_interp_np(xp, yp, x):
     """
 
     # Ensure xp is 2D: (N, M)
-    if xp.ndim == 1 and yp.ndim == 2:   # (N, 1)
-        xp = np.broadcast_to(xp[:, None] , yp.shape)
+    if xp.ndim == 1 and yp.ndim == 2:  # (N, 1)
+        xp = np.broadcast_to(xp[:, None], yp.shape)
 
     # Shapes
     K, M = x.shape
@@ -57,38 +63,43 @@ def reverse_interp_np(xp, yp, x):
 
     return out
 
-def create_transforms(traced_points, mesh_weight_map = None, xp=np):
-    # make functions that takes a set of traced points
-    # stored in a (N, 2) array and return functions that
-    # take in (N, 2) arrays and transform the values into
-    # the range (0, 1) and the inverse transform
+
+def create_transforms(traced_points, mesh_weight_map=None, xp=np):
+
     N = traced_points.shape[0]  # // 2
 
     if mesh_weight_map is None:
         t = xp.arange(1, N + 1) / (N + 1)
+        t = xp.stack([t, t], axis=1)
+        sort_points = xp.sort(traced_points, axis=0)  # [::2]
     else:
-        t = xp.cumsum(mesh_weight_map)
-
-    sort_points = xp.sort(traced_points, axis=0)  # [::2]
+        sdx = xp.argsort(traced_points, axis=0)
+        sort_points = xp.take_along_axis(traced_points, sdx, axis=0)
+        t = xp.stack([mesh_weight_map, mesh_weight_map], axis=1)
+        t = xp.take_along_axis(t, sdx, axis=0)
+        t = xp.cumsum(t, axis=0)
 
     if xp.__name__.startswith("jax"):
         transform = partial(forward_interp, sort_points, t)
         inv_transform = partial(reverse_interp, t, sort_points)
         return transform, inv_transform
-    else:
-        transform = partial(forward_interp_np, sort_points, t)
-        inv_transform = partial(reverse_interp_np, t, sort_points)
-        return transform, inv_transform
+
+    transform = partial(forward_interp_np, sort_points, t)
+    inv_transform = partial(reverse_interp_np, t, sort_points)
+    return transform, inv_transform
 
 
-
-def adaptive_rectangular_transformed_grid_from(source_plane_data_grid, grid, xp=np):
+def adaptive_rectangular_transformed_grid_from(
+    source_plane_data_grid, grid, mesh_weight_map=None, xp=np
+):
 
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
-    transform, inv_transform = create_transforms(source_grid_scaled, xp=xp)
+    transform, inv_transform = create_transforms(
+        source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp
+    )
 
     def inv_full(U):
         return inv_transform(U) * scale + mu
@@ -96,33 +107,38 @@ def adaptive_rectangular_transformed_grid_from(source_plane_data_grid, grid, xp=
     return inv_full(grid)
 
 
-def adaptive_rectangular_areas_from(source_grid_size, source_plane_data_grid, xp=np):
+def adaptive_rectangular_areas_from(
+    source_grid_shape, source_plane_data_grid, mesh_weight_map=None, xp=np
+):
 
-    pixel_edges_1d = xp.linspace(0, 1, source_grid_size + 1)
+    edges_y = xp.linspace(1, 0, source_grid_shape[0] + 1)
+    edges_x = xp.linspace(0, 1, source_grid_shape[1] + 1)
 
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
-    transform, inv_transform = create_transforms(source_grid_scaled, xp=xp)
+    transform, inv_transform = create_transforms(
+        source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp
+    )
 
     def inv_full(U):
         return inv_transform(U) * scale + mu
 
-    pixel_edges = inv_full(xp.stack([pixel_edges_1d, pixel_edges_1d]).T)
+    pixel_edges = inv_full(xp.stack([edges_y, edges_x]).T)
     pixel_lengths = xp.diff(pixel_edges, axis=0).squeeze()  # shape (N_source, 2)
 
     dy = pixel_lengths[:, 0]
     dx = pixel_lengths[:, 1]
 
-    return xp.outer(dy, dx).flatten()
+    return xp.abs(xp.outer(dy, dx).flatten())
 
 
 def adaptive_rectangular_mappings_weights_via_interpolation_from(
     source_grid_size: int,
     source_plane_data_grid,
     source_plane_data_grid_over_sampled,
-    mesh_weight_map = None,
+    mesh_weight_map=None,
     xp=np,
 ):
     """
@@ -178,13 +194,16 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
         The bilinear interpolation weights for each of the four neighboring pixels.
         Order: [w_bl, w_br, w_tl, w_tr].
     """
+
     # --- Step 1. Normalize grid ---
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
     # --- Step 2. Build transforms ---
-    transform, inv_transform = create_transforms(source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp)
+    transform, inv_transform = create_transforms(
+        source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp
+    )
 
     # --- Step 3. Transform oversampled grid into index space ---
     grid_over_sampled_scaled = (source_plane_data_grid_over_sampled - mu) / scale
@@ -236,7 +255,7 @@ def rectangular_mappings_weights_via_interpolation_from(
     shape_native: Tuple[int, int],
     source_plane_data_grid: np.ndarray,
     source_plane_mesh_grid: np.ndarray,
-    xp=np
+    xp=np,
 ):
     """
     Compute bilinear interpolation weights and corresponding rectangular mesh indices for an irregular grid.
@@ -347,7 +366,7 @@ def adaptive_pixel_signals_from(
     pix_size_for_sub_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     adapt_data: np.ndarray,
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     Returns the signal in each pixel, where the signal is the sum of its mapped data values.

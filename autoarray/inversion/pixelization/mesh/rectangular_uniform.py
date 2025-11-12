@@ -32,5 +32,5 @@ class RectangularUniform(RectangularMagnification):
         return Mesh2DRectangularUniform.overlay_grid(
             shape_native=self.shape,
             grid=Grid2DIrregular(source_plane_data_grid.over_sampled),
-            xp=xp
+            xp=xp,
         )

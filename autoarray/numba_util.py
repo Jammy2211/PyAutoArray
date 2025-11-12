@@ -14,6 +14,7 @@ except Exception:
     cache = True
     parallel = False
 
+
 def jit(nopython=nopython, cache=cache, parallel=parallel):
 
     def wrapper(func):

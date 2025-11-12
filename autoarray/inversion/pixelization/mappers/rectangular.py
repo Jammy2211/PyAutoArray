@@ -103,7 +103,7 @@ class MapperRectangular(AbstractMapper):
                     self.source_plane_data_grid.over_sampled
                 ),
                 mesh_weight_map=self.mapper_grids.mesh_weight_map,
-                xp=self._xp
+                xp=self._xp,
             )
         )
 
@@ -123,9 +123,10 @@ class MapperRectangular(AbstractMapper):
         rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
         """
         return mapper_util.adaptive_rectangular_areas_from(
-            source_grid_size=self.shape_native[0],
+            source_grid_shape=self.shape_native,
             source_plane_data_grid=self.source_plane_data_grid.array,
-            xp=self._xp
+            mesh_weight_map=self.mapper_grids.mesh_weight_map,
+            xp=self._xp,
         )
 
     @property
@@ -139,11 +140,14 @@ class MapperRectangular(AbstractMapper):
         """
 
         # edges defined in 0 -> 1 space, there is one more edge than pixel centers on each side
-        edges = self._xp.linspace(0, 1, self.shape_native[0] + 1)
-        edges_reshaped = self._xp.stack([edges, edges]).T
+        edges_y = self._xp.linspace(1, 0, self.shape_native[0] + 1)
+        edges_x = self._xp.linspace(0, 1, self.shape_native[1] + 1)
+
+        edges_reshaped = self._xp.stack([edges_y, edges_x]).T
 
         return mapper_util.adaptive_rectangular_transformed_grid_from(
             source_plane_data_grid=self.source_plane_data_grid.array,
             grid=edges_reshaped,
-            xp=self._xp
+            mesh_weight_map=self.mapper_grids.mesh_weight_map,
+            xp=self._xp,
         )

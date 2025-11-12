@@ -121,16 +121,8 @@ def convert_grid_2d(
     if is_native == store_native:
         return grid_2d
     elif not store_native:
-        return grid_2d_slim_from(
-            grid_2d_native=grid_2d,
-            mask=mask_2d,
-            xp=xp
-        )
-    return grid_2d_native_from(
-            grid_2d_slim=grid_2d,
-            mask_2d=mask_2d,#
-            xp=xp
-        )
+        return grid_2d_slim_from(grid_2d_native=grid_2d, mask=mask_2d, xp=xp)
+    return grid_2d_native_from(grid_2d_slim=grid_2d, mask_2d=mask_2d, xp=xp)  #
 
 
 def convert_grid_2d_to_slim(
@@ -152,15 +144,12 @@ def convert_grid_2d_to_slim(
     """
     if len(grid_2d.shape) == 2:
         return grid_2d
-    return grid_2d_slim_from(
-        grid_2d_native=grid_2d,
-        mask=mask_2d,
-        xp=xp
-    )
+    return grid_2d_slim_from(grid_2d_native=grid_2d, mask=mask_2d, xp=xp)
 
 
 def convert_grid_2d_to_native(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D,
+    grid_2d: Union[np.ndarray, List],
+    mask_2d: Mask2D,
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -302,11 +291,7 @@ def grid_2d_via_mask_from(
         mask_2d=mask_2d, pixel_scales=pixel_scales, origin=origin, xp=xp
     )
 
-    return grid_2d_native_from(
-        grid_2d_slim=grid_2d_slim,
-        mask_2d=mask_2d,
-        xp=xp
-    )
+    return grid_2d_native_from(grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, xp=xp)
 
 
 def grid_2d_slim_via_shape_native_from(
@@ -350,7 +335,7 @@ def grid_2d_slim_via_shape_native_from(
         mask_2d=xp.full(fill_value=False, shape=shape_native),
         pixel_scales=pixel_scales,
         origin=origin,
-        xp=xp
+        xp=xp,
     )
 
 
@@ -568,9 +553,7 @@ def grid_scaled_2d_slim_radial_projected_from(
 
 
 def grid_2d_slim_from(
-    grid_2d_native: np.ndarray,
-    mask: np.ndarray,
-    xp=np
+    grid_2d_native: np.ndarray, mask: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     For a native 2D grid and mask of shape [total_y_pixels, total_x_pixels, 2], map the values of all unmasked
@@ -609,9 +592,7 @@ def grid_2d_slim_from(
 
 
 def grid_2d_native_from(
-    grid_2d_slim: np.ndarray,
-    mask_2d: np.ndarray,
-    xp=np
+    grid_2d_slim: np.ndarray, mask_2d: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     For a slimmed 2D grid of shape [total_unmasked_pixels, 2], that was computed by extracting the unmasked values
@@ -640,15 +621,11 @@ def grid_2d_native_from(
     """
 
     grid_2d_native_y = array_2d_util.array_2d_native_from(
-        array_2d_slim=grid_2d_slim[:, 0],
-        mask_2d=mask_2d,
-        xp=xp
+        array_2d_slim=grid_2d_slim[:, 0], mask_2d=mask_2d, xp=xp
     )
 
     grid_2d_native_x = array_2d_util.array_2d_native_from(
-        array_2d_slim=grid_2d_slim[:, 1],
-        mask_2d=mask_2d,
-        xp=xp
+        array_2d_slim=grid_2d_slim[:, 1], mask_2d=mask_2d, xp=xp
     )
 
     return xp.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
@@ -721,7 +698,7 @@ def grid_2d_slim_via_shape_native_not_mask_from(
     shape_native: Tuple[int, int],
     pixel_scales: Tuple[float, float],
     origin: Tuple[float, float] = (0.0, 0.0),
-    xp=np
+    xp=np,
 ) -> np.ndarray:
     """
     Build the slim (flattened) grid of all (y, x) pixel centres for a rectangular grid

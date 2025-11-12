@@ -239,7 +239,7 @@ class AbstractArray2D(Structure):
             mask_2d=mask,
             store_native=store_native,
             skip_mask=skip_mask,
-            xp=xp
+            xp=xp,
         )
 
         super().__init__(values, xp=xp)

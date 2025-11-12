@@ -35,6 +35,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
             An y_offset to apply to the y coordinates so that up-sampled triangles align.
         """
         import jax.numpy as jnp
+
         self.coordinates = coordinates
         self.side_length = side_length
         self.flipped = flipped
@@ -56,6 +57,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         **_,
     ):
         import jax.numpy as jnp
+
         x_shift = int(2 * x_min / scale)
         y_shift = int(y_min / (HEIGHT_FACTOR * scale))
 
@@ -99,6 +101,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
 
     def __len__(self):
         import jax.numpy as jnp
+
         return jnp.count_nonzero(~jnp.isnan(self.coordinates).any(axis=1))
 
     def __iter__(self):
@@ -110,6 +113,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         The centres of the triangles.
         """
         import jax.numpy as jnp
+
         centres = self.scaling_factors * self.coordinates + jnp.array(
             [self.x_offset, self.y_offset]
         )
@@ -121,6 +125,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         The vertices of the triangles as an Nx3x2 array.
         """
         import jax.numpy as jnp
+
         coordinates = self.coordinates
         return jnp.concatenate(
             [
@@ -137,6 +142,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         The vertices of the triangles as an Nx3x2 array.
         """
         import jax.numpy as jnp
+
         centres = self.centres
         return jnp.stack(
             (
@@ -177,6 +183,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         An array of 1s and -1s to flip the triangles.
         """
         import jax.numpy as jnp
+
         array = jnp.where(self.flip_mask, -1, 1)
         return array[:, None]
 
@@ -185,6 +192,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
         """
         import jax.numpy as jnp
+
         coordinates = self.coordinates
         flip_mask = self.flip_mask
 
@@ -217,6 +225,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         Ensures that the new triangles are unique and adjusts the mask accordingly.
         """
         import jax.numpy as jnp
+
         coordinates = self.coordinates
         flip_mask = self.flip_mask
 
@@ -255,6 +264,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
     @property
     def _vertices_and_indices(self):
         import jax.numpy as jnp
+
         flat_triangles = self.triangles.reshape(-1, 2)
         vertices, inverse_indices = jnp.unique(
             flat_triangles,
@@ -303,6 +313,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
         The new CoordinateArrayTriangles instance.
         """
         import jax.numpy as jnp
+
         mask = indexes == -1
         safe_indexes = jnp.where(mask, 0, indexes)
         coordinates = jnp.take(self.coordinates, safe_indexes, axis=0)
@@ -333,6 +344,7 @@ class CoordinateArrayTriangles(AbstractTriangles, ABC):
     @property
     def means(self):
         import jax.numpy as jnp
+
         return jnp.mean(self.triangles, axis=1)
 
     @property

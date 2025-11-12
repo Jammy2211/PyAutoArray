@@ -9,10 +9,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
 def constant_regularization_matrix_from(
-    coefficient: float,
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    xp=np
+    coefficient: float, neighbors: np.ndarray, neighbors_sizes: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -56,9 +53,9 @@ def constant_regularization_matrix_from(
 
     if xp.__name__.startswith("jax"):
         return (
-            xp.diag(diag_vals).at[
-                I_IDX, neighbors
-            ].add(-regularization_coefficient, mode="drop", unique_indices=True)
+            xp.diag(diag_vals)
+            .at[I_IDX, neighbors]
+            .add(-regularization_coefficient, mode="drop", unique_indices=True)
         )
     else:
         mat = xp.diag(diag_vals).copy()
@@ -69,6 +66,7 @@ def constant_regularization_matrix_from(
         # scatter-add
         xp.add.at(mat, (I_valid, neigh_valid), -regularization_coefficient)
         return mat
+
 
 class Constant(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):
@@ -137,5 +135,5 @@ class Constant(AbstractRegularization):
             coefficient=self.coefficient,
             neighbors=linear_obj.neighbors,
             neighbors_sizes=linear_obj.neighbors.sizes,
-            xp=xp
+            xp=xp,
         )

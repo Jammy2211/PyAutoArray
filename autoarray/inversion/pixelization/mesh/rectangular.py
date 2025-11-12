@@ -110,13 +110,10 @@ class RectangularMagnification(AbstractMesh):
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
-            xp=xp
+            xp=xp,
         )
 
-        mesh_grid = self.mesh_grid_from(
-            source_plane_data_grid=relocated_grid,
-            xp=xp
-        )
+        mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid, xp=xp)
 
         mesh_weight_map = self.mesh_weight_map_from(adapt_data=adapt_data, xp=xp)
 
@@ -126,7 +123,7 @@ class RectangularMagnification(AbstractMesh):
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
-            mesh_weight_map=mesh_weight_map
+            mesh_weight_map=mesh_weight_map,
         )
 
     def mesh_grid_from(
@@ -151,8 +148,7 @@ class RectangularMagnification(AbstractMesh):
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape,
             grid=Grid2DIrregular(source_plane_data_grid.over_sampled),
-            xp=xp
-
+            xp=xp,
         )
 
     @property
@@ -162,7 +158,7 @@ class RectangularMagnification(AbstractMesh):
 
 class RectangularSource(RectangularMagnification):
 
-    def __init__(self, shape: Tuple[int, int] = (3, 3), weight_power : float = 1.0):
+    def __init__(self, shape: Tuple[int, int] = (3, 3), weight_power: float = 1.0):
         """
         A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
         coordinates.
@@ -208,6 +204,6 @@ class RectangularSource(RectangularMagnification):
         """
         mesh_weight_map = xp.asarray(adapt_data.array)
         mesh_weight_map = xp.clip(mesh_weight_map, 1e-12, None)
-        mesh_weight_map = mesh_weight_map ** self.weight_power
+        mesh_weight_map = mesh_weight_map**self.weight_power
         mesh_weight_map /= xp.sum(mesh_weight_map)
         return mesh_weight_map

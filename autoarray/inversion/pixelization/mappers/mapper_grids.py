@@ -19,7 +19,7 @@ class MapperGrids:
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
-        mesh_weight_map : Optional[Array2D] = None,
+        mesh_weight_map: Optional[Array2D] = None,
     ):
         """
         Groups the different grids used by `Mesh` objects, the `mesh` package and the `pixelization` package, which

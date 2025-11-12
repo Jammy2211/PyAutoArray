@@ -200,7 +200,7 @@ class MapperValued:
             values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=mapping_matrix,
                 reconstruction=self.values_masked,
-                xp=self.mapper._xp
+                xp=self.mapper._xp,
             ),
             mask=self.mapper.mapper_grids.mask,
         )

@@ -409,6 +409,5 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.native_for_slim)
         """
         return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=self.mask,
-            xp=self._xp
+            mask_2d=self.mask, xp=self._xp
         ).astype("int")

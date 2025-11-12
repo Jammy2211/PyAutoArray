@@ -1,9 +1,7 @@
 import numpy as np
 
-def native_index_for_slim_index_1d_from(
-    mask_1d: np.ndarray,
-    xp=np
-) -> np.ndarray:
+
+def native_index_for_slim_index_1d_from(mask_1d: np.ndarray, xp=np) -> np.ndarray:
     """
     Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
     corresponding native 2D pixel using its (y,x) pixel indexes.
