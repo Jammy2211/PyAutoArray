@@ -332,6 +332,7 @@ class AbstractNDArray(ABC):
     def __getitem__(self, item):
 
         import jax.numpy as jnp
+
         result = self._array[item]
 
         if isinstance(item, slice):

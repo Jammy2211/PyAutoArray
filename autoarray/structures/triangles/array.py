@@ -7,6 +7,7 @@ from autoarray.structures.triangles.shape import Shape
 
 MAX_CONTAINING_SIZE = 15
 
+
 class ArrayTriangles(AbstractTriangles):
     def __init__(
         self,

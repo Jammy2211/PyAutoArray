@@ -1,13 +1,15 @@
 import numpy as np
+from jax.tree_util import register_pytree_node_class
 
 import pytest
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
-from autoarray.structures.triangles.shape import Point
 
 from autoarray.structures.triangles.coordinate_array import (
     CoordinateArrayTriangles,
 )
+
+CoordinateArrayTriangles = register_pytree_node_class(CoordinateArrayTriangles)
 
 
 def test__two(two_triangles):

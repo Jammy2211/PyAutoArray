@@ -10,6 +10,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
 ArrayTriangles = register_pytree_node_class(ArrayTriangles)
 Point = register_pytree_node_class(Point)
 
+
 @pytest.fixture
 def triangles():
     return ArrayTriangles(
