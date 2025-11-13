@@ -2,14 +2,11 @@ from abc import ABC
 
 import numpy as np
 
-from jax._src.tree_util import register_pytree_node_class
-
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 from autoarray.structures.triangles.abstract import AbstractTriangles
 from autoarray.structures.triangles.array import ArrayTriangles
 
 
-@register_pytree_node_class
 class CoordinateArrayTriangles(AbstractTriangles, ABC):
 
     def __init__(

@@ -1,7 +1,5 @@
 import numpy as np
 
-from jax.tree_util import register_pytree_node_class
-
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 
 from autoarray.structures.triangles.abstract import AbstractTriangles
@@ -10,7 +8,6 @@ from autoarray.structures.triangles.shape import Shape
 MAX_CONTAINING_SIZE = 15
 
 
-@register_pytree_node_class
 class ArrayTriangles(AbstractTriangles):
     def __init__(
         self,
@@ -119,14 +116,6 @@ class ArrayTriangles(AbstractTriangles):
             vertices=jnp.array(vertices),
             max_containing_size=max_containing_size,
         )
-
-    @property
-    def indices(self):
-        return self._indices
-
-    @property
-    def vertices(self):
-        return self._vertices
 
     @property
     def triangles(self) -> np.ndarray:
@@ -322,21 +311,6 @@ class ArrayTriangles(AbstractTriangles):
             indices=self.indices,
             vertices=vertices,
             max_containing_size=self.max_containing_size,
-        )
-
-    @property
-    def area(self) -> float:
-        """
-        The total area covered by the triangles.
-        """
-        triangles = self.triangles
-        return (
-            0.5
-            * np.abs(
-                (triangles[:, 0, 0] * (triangles[:, 1, 1] - triangles[:, 2, 1]))
-                + (triangles[:, 1, 0] * (triangles[:, 2, 1] - triangles[:, 0, 1]))
-                + (triangles[:, 2, 0] * (triangles[:, 0, 1] - triangles[:, 1, 1]))
-            ).sum()
         )
 
     def tree_flatten(self):

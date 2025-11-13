@@ -4,8 +4,6 @@ from copy import copy
 
 from abc import ABC
 from abc import abstractmethod
-import jax.numpy as jnp
-from jax._src.tree_util import register_pytree_node
 
 import numpy as np
 
@@ -75,20 +73,20 @@ class AbstractNDArray(ABC):
         while isinstance(array, AbstractNDArray):
             array = array.array
         self._array = array
-        try:
-            register_pytree_node(
-                type(self),
-                self.instance_flatten,
-                self.instance_unflatten,
-            )
-        except ValueError:
-            pass
+        # try:
+        #     register_pytree_node(
+        #         type(self),
+        #         self.instance_flatten,
+        #         self.instance_unflatten,
+        #     )
+        # except ValueError:
+        #     pass
 
         self._xp = xp
 
     def invert(self):
         new = self.copy()
-        new._array = jnp.invert(new._array)
+        new._array = self._xp.invert(new._array)
         return new
 
     @classmethod
@@ -117,7 +115,7 @@ class AbstractNDArray(ABC):
             setattr(instance, key, value)
         return instance
 
-    def with_new_array(self, array: jnp.ndarray) -> "AbstractNDArray":
+    def with_new_array(self, array: np.ndarray) -> "AbstractNDArray":
         """
         Copy this object but give it a new array.
 
@@ -137,10 +135,9 @@ class AbstractNDArray(ABC):
         new_array._array = array
         return new_array
 
-    @staticmethod
-    def flip_hdu_for_ds9(values):
+    def flip_hdu_for_ds9(self, values):
         if conf.instance["general"]["fits"]["flip_for_ds9"]:
-            return jnp.flipud(values)
+            return self._xp.flipud(values)
         return values
 
     def copy(self):
@@ -170,7 +167,7 @@ class AbstractNDArray(ABC):
 
     @to_new_array
     def sqrt(self):
-        return jnp.sqrt(self._array)
+        return self._xp.sqrt(self._array)
 
     @property
     def array(self):
@@ -333,20 +330,28 @@ class AbstractNDArray(ABC):
         )
 
     def __getitem__(self, item):
+
         result = self._array[item]
+
         if isinstance(item, slice):
             result = self.with_new_array(result)
-        if isinstance(result, jnp.ndarray):
-            result = self.with_new_array(result)
+
+        try:
+            import jax.numpy as jnp
+            if isinstance(result, jnp.ndarray):
+                result = self.with_new_array(result)
+        except ImportError:
+            pass
+
         return result
 
     def __setitem__(self, key, value):
-        from jax import Array
 
-        if isinstance(key, (jnp.ndarray, AbstractNDArray, Array)):
-            self._array = jnp.where(key, value, self._array)
-        else:
+        if isinstance(self._array, np.ndarray):
             self._array[key] = value
+        else:
+            import jax.numpy as jnp
+            self._array = jnp.where(key, value, self._array)
 
     def __repr__(self):
         return repr(self._array).replace(

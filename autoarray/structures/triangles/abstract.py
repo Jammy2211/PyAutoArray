@@ -12,21 +12,27 @@ class AbstractTriangles(ABC):
         return len(self.triangles)
 
     @property
-    @abstractmethod
     def area(self) -> float:
         """
         The total area covered by the triangles.
         """
+        triangles = self.triangles
+        return (
+            0.5
+            * np.abs(
+                (triangles[:, 0, 0] * (triangles[:, 1, 1] - triangles[:, 2, 1]))
+                + (triangles[:, 1, 0] * (triangles[:, 2, 1] - triangles[:, 0, 1]))
+                + (triangles[:, 2, 0] * (triangles[:, 0, 1] - triangles[:, 1, 1]))
+            ).sum()
+        )
 
     @property
-    @abstractmethod
     def indices(self):
-        pass
+        return self._indices
 
     @property
-    @abstractmethod
     def vertices(self):
-        pass
+        return self._vertices
 
     def __str__(self):
         return f"{self.__class__.__name__} with {len(self.indices)} triangles"

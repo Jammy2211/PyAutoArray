@@ -65,7 +65,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         """
         return [
             self.transformer.transform_mapping_matrix(
-                mapping_matrix=linear_obj.mapping_matrix
+                mapping_matrix=linear_obj.mapping_matrix, xp=self._xp
             )
             for linear_obj in self.linear_obj_list
         ]

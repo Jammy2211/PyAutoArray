@@ -163,7 +163,7 @@ class FitDataset(AbstractFit):
             if grid is None:
                 return None
 
-            return grid.subtracted_from(offset=offset)
+            return grid.subtracted_from(offset=offset, xp=self._xp)
 
         lp = subtracted_from(
             grid=self.dataset.grids.lp, offset=self.dataset_model.grid_offset
