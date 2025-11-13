@@ -120,7 +120,7 @@ def visibilities_via_preload_from(
 
 
 def visibilities_from(
-    image_1d: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+    image_1d: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     Compute complex visibilities from an input sky image using the Fourier transform,
@@ -150,19 +150,19 @@ def visibilities_from(
     # Compute the dot product for each pixel-uv pair
     phase = (
         -2.0
-        * np.pi
+        * xp.pi
         * (
-            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])
-            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
+            xp.outer(grid_radians[:, 1], uv_wavelengths[:, 0])
+            + xp.outer(grid_radians[:, 0], uv_wavelengths[:, 1])
         )
     )  # shape (n_pixels, n_vis)
 
     # Multiply image values with phase terms
-    vis_real = image_1d[:, None] * np.cos(phase)
-    vis_imag = image_1d[:, None] * np.sin(phase)
+    vis_real = image_1d[:, None] * xp.cos(phase)
+    vis_imag = image_1d[:, None] * xp.sin(phase)
 
     # Sum over all pixels for each visibility
-    visibilities = np.sum(vis_real + 1j * vis_imag, axis=0)
+    visibilities = xp.sum(vis_real + 1j * vis_imag, axis=0)
 
     return visibilities
 
@@ -247,7 +247,7 @@ def transformed_mapping_matrix_via_preload_from(
 
 
 def transformed_mapping_matrix_from(
-    mapping_matrix: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+    mapping_matrix: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray, xp=np
 ) -> np.ndarray:
     """
     Computes the Fourier-transformed mapping matrix used in radio interferometric imaging.
@@ -273,16 +273,16 @@ def transformed_mapping_matrix_from(
     # Compute phase term: (n_image_pixels, n_visibilities)
     phase = (
         -2.0
-        * np.pi
+        * xp.pi
         * (
-            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
-            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
+            xp.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
+            + xp.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
         )
     )
 
     # Compute real and imaginary Fourier matrices
-    fourier_real = np.cos(phase)
-    fourier_imag = np.sin(phase)
+    fourier_real = xp.cos(phase)
+    fourier_imag = xp.sin(phase)
 
     # Only compute contributions from non-zero mapping entries
     # This matrix multiplication is: (n_visibilities x n_image_pixels) dot (n_image_pixels x n_source_pixels)

@@ -331,24 +331,27 @@ class AbstractNDArray(ABC):
 
     def __getitem__(self, item):
 
-        import jax.numpy as jnp
-
         result = self._array[item]
 
         if isinstance(item, slice):
             result = self.with_new_array(result)
-        if isinstance(result, jnp.ndarray):
-            result = self.with_new_array(result)
+
+        try:
+            import jax.numpy as jnp
+            if isinstance(result, jnp.ndarray):
+                result = self.with_new_array(result)
+        except ImportError:
+            pass
+
         return result
 
     def __setitem__(self, key, value):
-        from jax import Array
-        import jax.numpy as jnp
 
-        if isinstance(key, (jnp.ndarray, AbstractNDArray, Array)):
-            self._array = jnp.where(key, value, self._array)
-        else:
+        if isinstance(self._array, np.ndarray):
             self._array[key] = value
+        else:
+            import jax.numpy as jnp
+            self._array = jnp.where(key, value, self._array)
 
     def __repr__(self):
         return repr(self._array).replace(

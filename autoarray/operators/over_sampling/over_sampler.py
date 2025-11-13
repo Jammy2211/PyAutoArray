@@ -227,6 +227,7 @@ class OverSampler:
         Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
         sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
         """
+
         if conf.instance["general"]["structures"]["native_binned_only"]:
             return self
 
@@ -243,16 +244,28 @@ class OverSampler:
 
         else:
 
-            import jax
+            if xp.__name__.startswith("jax"):
 
-            # Compute the group means
+                import jax
 
-            sums = jax.ops.segment_sum(
-                array, self.segment_ids, self.mask.pixels_in_mask
-            )
-            counts = jax.ops.segment_sum(
-                xp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
-            )
+                sums = jax.ops.segment_sum(
+                    array, self.segment_ids, self.mask.pixels_in_mask
+                )
+                counts = jax.ops.segment_sum(
+                    xp.ones_like(array), self.segment_ids, self.mask.pixels_in_mask
+                )
+
+            else:
+
+                # Sum values per segment
+                sums = np.bincount(self.segment_ids, weights=array, minlength=self.mask.pixels_in_mask)
+
+                # Count number of items per segment
+                counts = np.bincount(self.segment_ids, minlength=self.mask.pixels_in_mask)
+
+                # Avoid division by zero
+                counts[counts == 0] = 1
+
             binned_array_2d = sums / counts
 
         return Array2D(

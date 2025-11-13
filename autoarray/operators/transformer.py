@@ -39,7 +39,6 @@ class TransformerDFT:
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         preload_transform: bool = True,
-        xp=np,
     ):
         """
         A direct Fourier transform (DFT) operator for radio interferometric imaging.
@@ -112,9 +111,7 @@ class TransformerDFT:
             2.0 * self.grid.shape_native[1]
         )
 
-        self._xp = xp
-
-    def visibilities_from(self, image: Array2D) -> Visibilities:
+    def visibilities_from(self, image: Array2D, xp=np) -> Visibilities:
         """
         Computes the visibilities from a real-space image using the direct Fourier transform (DFT).
 
@@ -138,19 +135,20 @@ class TransformerDFT:
                 image_1d=image.array,
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
-                xp=self._xp,
+                xp=xp,
             )
         else:
             visibilities = transformer_util.visibilities_from(
                 image_1d=image.slim.array,
                 grid_radians=self.grid.array,
                 uv_wavelengths=self.uv_wavelengths,
+                xp=xp
             )
 
-        return Visibilities(visibilities=self._xp.array(visibilities))
+        return Visibilities(visibilities=xp.array(visibilities))
 
     def image_from(
-        self, visibilities: Visibilities, use_adjoint_scaling: bool = False
+        self, visibilities: Visibilities, use_adjoint_scaling: bool = False, xp=np
     ) -> Array2D:
         """
         Computes the real-space image from a set of visibilities using the adjoint of the DFT.
@@ -178,12 +176,12 @@ class TransformerDFT:
         )
 
         image_native = array_2d_util.array_2d_native_from(
-            array_2d_slim=image_slim, mask_2d=self.real_space_mask, xp=self._xp
+            array_2d_slim=image_slim, mask_2d=self.real_space_mask, xp=xp
         )
 
         return Array2D(values=image_native, mask=self.real_space_mask)
 
-    def transform_mapping_matrix(self, mapping_matrix: np.ndarray) -> np.ndarray:
+    def transform_mapping_matrix(self, mapping_matrix: np.ndarray, xp=np) -> np.ndarray:
         """
         Applies the DFT to a mapping matrix that maps source pixels to image pixels.
 
@@ -310,8 +308,6 @@ class TransformerNUFFT(NUFFT_cpu):
             2.0 * self.grid.shape_native[1]
         )
 
-        self._xp = xp
-
     def initialize_plan(self, ratio: int = 2, interp_kernel: Tuple[int, int] = (6, 6)):
         """
         Initializes the PyNUFFT plan for performing the NUFFT operation.
@@ -394,7 +390,7 @@ class TransformerNUFFT(NUFFT_cpu):
         )
 
     def image_from(
-        self, visibilities: Visibilities, use_adjoint_scaling: bool = False
+        self, visibilities: Visibilities, use_adjoint_scaling: bool = False, xp=np
     ) -> Array2D:
         """
         Reconstructs a real-space image from visibilities using the NUFFT adjoint transform.
@@ -425,24 +421,24 @@ class TransformerNUFFT(NUFFT_cpu):
 
         return Array2D(values=image, mask=self.real_space_mask)
 
-    def transform_mapping_matrix(self, mapping_matrix: np.ndarray) -> np.ndarray:
+    def transform_mapping_matrix(self, mapping_matrix: np.ndarray, xp=np) -> np.ndarray:
         """
-            Applies the NUFFT forward transform to each column of a mapping matrix, producing transformed visibilities.
+        Applies the NUFFT forward transform to each column of a mapping matrix, producing transformed visibilities.
 
-            Parameters
-            ----------
-            mapping_matrix
-                A 2D array where each column corresponds to a source-plane pixel intensity distribution flattened into image space.
+        Parameters
+        ----------
+        mapping_matrix
+            A 2D array where each column corresponds to a source-plane pixel intensity distribution flattened into image space.
 
-            Returns
+        Returns
         -------
-            A complex-valued 2D array where each column contains the visibilities corresponding to the respective column
-            in the input mapping matrix.
+        A complex-valued 2D array where each column contains the visibilities corresponding to the respective column
+        in the input mapping matrix.
 
-            Notes
-            -----
-            - Each column of the input mapping matrix is reshaped into the native 2D image grid before transformation.
-            - This method repeatedly calls `visibilities_from` for each column, which may be computationally intensive.
+        Notes
+        -----
+        - Each column of the input mapping matrix is reshaped into the native 2D image grid before transformation.
+        - This method repeatedly calls `visibilities_from` for each column, which may be computationally intensive.
         """
         transformed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
@@ -452,7 +448,7 @@ class TransformerNUFFT(NUFFT_cpu):
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
-                xp=self._xp,
+                xp=xp,
             )
 
             image = Array2D(values=image_2d, mask=self.grid.mask)

@@ -118,14 +118,6 @@ class ArrayTriangles(AbstractTriangles):
         )
 
     @property
-    def indices(self):
-        return self._indices
-
-    @property
-    def vertices(self):
-        return self._vertices
-
-    @property
     def triangles(self) -> np.ndarray:
         """
         The triangles as a 3x2 array of vertices.
@@ -319,21 +311,6 @@ class ArrayTriangles(AbstractTriangles):
             indices=self.indices,
             vertices=vertices,
             max_containing_size=self.max_containing_size,
-        )
-
-    @property
-    def area(self) -> float:
-        """
-        The total area covered by the triangles.
-        """
-        triangles = self.triangles
-        return (
-            0.5
-            * np.abs(
-                (triangles[:, 0, 0] * (triangles[:, 1, 1] - triangles[:, 2, 1]))
-                + (triangles[:, 1, 0] * (triangles[:, 2, 1] - triangles[:, 0, 1]))
-                + (triangles[:, 2, 0] * (triangles[:, 0, 1] - triangles[:, 1, 1]))
-            ).sum()
         )
 
     def tree_flatten(self):
