@@ -440,11 +440,14 @@ class TransformerNUFFT(NUFFT_cpu):
         - Each column of the input mapping matrix is reshaped into the native 2D image grid before transformation.
         - This method repeatedly calls `visibilities_from` for each column, which may be computationally intensive.
         """
-        transformed_mapping_matrix = 0 + 0j * np.zeros(
+        transformed_mapping_matrix = 0 + 0j * xp.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
         )
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
+
+            print("hi")
+
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
