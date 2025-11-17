@@ -446,8 +446,6 @@ class TransformerNUFFT(NUFFT_cpu):
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
 
-            print("hi")
-
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,

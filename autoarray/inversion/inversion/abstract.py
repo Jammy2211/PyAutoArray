@@ -1,13 +1,14 @@
 import copy
 
 import numpy as np
-from typing import Dict, List, Optional, Type, Union, TYPE_CHECKING
+from typing import Dict, List, Optional, Type, Union
+
+from autoconf import cached_property
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -409,7 +410,7 @@ class AbstractInversion:
         # Zero rows and columns in the matrix we want to ignore
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
-    @property
+    @cached_property
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -435,10 +436,6 @@ class AbstractInversion:
 
                 # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
                 ids_to_keep = self.preloads.source_pixel_zeroed_indices_to_keep
-
-                total_linear_light_profiles = self.cls_list_from(
-                    cls=AbstractLinearObjFuncList
-                )
 
                 # Use advanced indexing to select rows/columns
                 data_vector = self.data_vector[ids_to_keep]
