@@ -52,8 +52,15 @@ class Visuals2D(AbstractVisuals):
             plotter.mask_scatter.scatter_grid(grid=self.mask.derive_grid.edge.array)
 
         if self.origin is not None:
+
+            origin = self.origin
+
+            if isinstance(origin, tuple):
+
+                origin = Grid2DIrregular(values=[origin])
+
             plotter.origin_scatter.scatter_grid(
-                grid=Grid2DIrregular(values=self.origin).array
+                grid=Grid2DIrregular(values=origin).array
             )
 
         if self.border is not None:
