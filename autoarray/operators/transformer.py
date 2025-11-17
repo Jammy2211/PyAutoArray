@@ -362,7 +362,7 @@ class TransformerNUFFT(NUFFT_cpu):
             Jd=interp_kernel,
         )
 
-    def visibilities_from(self, image: Array2D) -> Visibilities:
+    def visibilities_from(self, image: Array2D, xp=np) -> Visibilities:
         """
         Computes visibilities from a real-space image using the NUFFT forward transform.
 
@@ -454,7 +454,7 @@ class TransformerNUFFT(NUFFT_cpu):
 
             image = Array2D(values=image_2d, mask=self.grid.mask)
 
-            visibilities = self.visibilities_from(image=image)
+            visibilities = self.visibilities_from(image=image, xp=xp)
 
             transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities
 
