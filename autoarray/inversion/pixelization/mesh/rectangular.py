@@ -205,7 +205,16 @@ class RectangularSource(RectangularMagnification):
         """
         mesh_weight_map = xp.asarray(adapt_data.array)
         mesh_weight_map = xp.clip(mesh_weight_map, 1e-12, None)
-        mesh_weight_map = mesh_weight_map**self.weight_power
-        mesh_weight_map[mesh_weight_map < self.weight_floor] = self.weight_floor
-        mesh_weight_map /= xp.sum(mesh_weight_map)
+        mesh_weight_map = mesh_weight_map ** self.weight_power
+
+        # Apply floor using xp.where (safe for NumPy and JAX)
+        mesh_weight_map = xp.where(
+            mesh_weight_map < self.weight_floor,
+            self.weight_floor,
+            mesh_weight_map,
+        )
+
+        # Normalize
+        mesh_weight_map = mesh_weight_map / xp.sum(mesh_weight_map)
+
         return mesh_weight_map
