@@ -166,7 +166,7 @@ class MapperValued:
         max_pixel = np.argmax(self.values_masked)
 
         max_pixel_centre = Grid2DIrregular(
-            values=[self.mapper.source_plane_mesh_grid[max_pixel].array]
+            values=[self.mapper.source_plane_mesh_grid.array[max_pixel]]
         )
 
         return max_pixel_centre
