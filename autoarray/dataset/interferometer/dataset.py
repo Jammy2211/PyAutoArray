@@ -231,7 +231,6 @@ class Interferometer(AbstractDataset):
             curvature_preload=curvature_preload,
             dirty_image=np.array(dirty_image.array),
             real_space_mask=self.real_space_mask,
-            noise_map_value=self.noise_map[0],
         )
 
     @property
