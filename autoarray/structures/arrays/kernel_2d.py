@@ -673,16 +673,12 @@ class Kernel2D(AbstractArray2D):
         # start with native image padded with zeros
         image_both_native = xp.zeros(image.mask.shape, dtype=image.dtype)
 
-        image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(
-            xp.asarray(image.array)
-        )
+        image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(image.array)
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_both_native = image_both_native.at[blurring_image.mask.slim_to_native_tuple].set(
-                xp.asarray(blurring_image.array)
-            )
+            image_both_native = image_both_native.at[blurring_image.mask.slim_to_native_tuple].set(blurring_image.array)
 
         else:
             warnings.warn(
@@ -846,7 +842,7 @@ class Kernel2D(AbstractArray2D):
         )
 
         # return slim form
-        return blurred_mapping_matrix_native[slim_to_native_tuple]
+        return blurred_mapping_matrix_native[mask.slim_to_native_tuple]
 
     def rescaled_with_odd_dimensions_from(
         self, rescale_factor: float, normalize: bool = False
@@ -983,19 +979,16 @@ class Kernel2D(AbstractArray2D):
         import jax
 
         # start with native array padded with zeros
-        image_native = xp.zeros(image.mask.shape, dtype=xp.asarray(image.array).dtype)
+        image_native = xp.zeros(image.mask.shape, dtype=image.array.dtype)
 
         # set image pixels
-        image_native = image_native.at[image.mask.slim_to_native_tuple].set(
-            xp.asarray(image.array)
-        )
+        image_native = image_native.at[image.mask.slim_to_native_tuple].set(image.array)
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native = image_native.at[blurring_image.mask.slim_to_native_tuple].set(
-                xp.asarray(blurring_image.array)
-            )
+            image_native = image_native.at[blurring_image.mask.slim_to_native_tuple].set(blurring_image.array)
+
         else:
             warnings.warn(
                 "No blurring_image provided. Only the direct image will be convolved. "
@@ -1113,17 +1106,16 @@ class Kernel2D(AbstractArray2D):
         from scipy.signal import convolve as scipy_convolve
 
         # start with native array padded with zeros
-        image_native = xp.zeros(image.mask.shape, dtype=xp.asarray(image.array).dtype)
+        image_native = xp.zeros(image.mask.shape, dtype=image.array.dtype)
 
         # set image pixels
-        image_native[image.mask.slim_to_native_tuple] = xp.asarray(image.array)
+        image_native[image.mask.slim_to_native_tuple] = image.array
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native[blurring_image.mask.slim_to_native_tuple] = xp.asarray(
-                blurring_image.array
-            )
+            image_native[blurring_image.mask.slim_to_native_tuple] = blurring_image.array
+
         else:
             warnings.warn(
                 "No blurring_image provided. Only the direct image will be convolved. "
