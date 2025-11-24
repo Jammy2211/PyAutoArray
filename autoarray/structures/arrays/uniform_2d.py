@@ -378,7 +378,9 @@ class AbstractArray2D(Structure):
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     def brightest_coordinate_in_region_from(
-        self, region: Optional[Tuple[float, float, float, float]]
+        self,
+        region: Optional[Tuple[float, float, float, float]],
+        return_in_pixels: bool = False,
     ) -> Tuple[float, float]:
         """
         Returns the brightest pixel in the array inside an input region of form (y0, y1, x0, x1) where
@@ -419,6 +421,9 @@ class AbstractArray2D(Structure):
         brightest_pixel_value = np.max(extracted_region)
         extracted_pixels = np.argwhere(extracted_region == brightest_pixel_value)[0]
         pixel_coordinates_2d = (y0 + extracted_pixels[0], x0 + extracted_pixels[1])
+
+        if return_in_pixels:
+            return pixel_coordinates_2d
 
         return self.geometry.scaled_coordinates_2d_from(
             pixel_coordinates_2d=pixel_coordinates_2d

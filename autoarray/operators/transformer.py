@@ -142,7 +142,7 @@ class TransformerDFT:
                 image_1d=image.slim.array,
                 grid_radians=self.grid.array,
                 uv_wavelengths=self.uv_wavelengths,
-                xp=xp
+                xp=xp,
             )
 
         return Visibilities(visibilities=xp.array(visibilities))

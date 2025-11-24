@@ -247,7 +247,10 @@ def transformed_mapping_matrix_via_preload_from(
 
 
 def transformed_mapping_matrix_from(
-    mapping_matrix: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray, xp=np
+    mapping_matrix: np.ndarray,
+    grid_radians: np.ndarray,
+    uv_wavelengths: np.ndarray,
+    xp=np,
 ) -> np.ndarray:
     """
     Computes the Fourier-transformed mapping matrix used in radio interferometric imaging.

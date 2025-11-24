@@ -258,10 +258,14 @@ class OverSampler:
             else:
 
                 # Sum values per segment
-                sums = np.bincount(self.segment_ids, weights=array, minlength=self.mask.pixels_in_mask)
+                sums = np.bincount(
+                    self.segment_ids, weights=array, minlength=self.mask.pixels_in_mask
+                )
 
                 # Count number of items per segment
-                counts = np.bincount(self.segment_ids, minlength=self.mask.pixels_in_mask)
+                counts = np.bincount(
+                    self.segment_ids, minlength=self.mask.pixels_in_mask
+                )
 
                 # Avoid division by zero
                 counts[counts == 0] = 1

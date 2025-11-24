@@ -67,7 +67,7 @@ class Preloads:
 
             ids_zeros = np.array(source_pixel_zeroed_indices, dtype=int)
 
-            values_to_solve = np.ones(np.max(mapper_indices)+1, dtype=bool)
+            values_to_solve = np.ones(np.max(mapper_indices) + 1, dtype=bool)
             values_to_solve[ids_zeros] = False
 
             self.source_pixel_zeroed_indices_to_keep = np.where(values_to_solve)[0]

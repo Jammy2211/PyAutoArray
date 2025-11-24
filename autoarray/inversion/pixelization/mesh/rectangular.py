@@ -158,7 +158,12 @@ class RectangularMagnification(AbstractMesh):
 
 class RectangularSource(RectangularMagnification):
 
-    def __init__(self, shape: Tuple[int, int] = (3, 3), weight_power: float = 1.0, weight_floor : float = 0.0):
+    def __init__(
+        self,
+        shape: Tuple[int, int] = (3, 3),
+        weight_power: float = 1.0,
+        weight_floor: float = 0.0,
+    ):
         """
         A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
         coordinates.
@@ -203,9 +208,9 @@ class RectangularSource(RectangularMagnification):
         xp
             The array library to use.
         """
-        mesh_weight_map = xp.asarray(adapt_data.array)
+        mesh_weight_map = adapt_data.array
         mesh_weight_map = xp.clip(mesh_weight_map, 1e-12, None)
-        mesh_weight_map = mesh_weight_map ** self.weight_power
+        mesh_weight_map = mesh_weight_map**self.weight_power
 
         # Apply floor using xp.where (safe for NumPy and JAX)
         mesh_weight_map = xp.where(

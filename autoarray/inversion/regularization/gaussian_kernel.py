@@ -33,7 +33,7 @@ def gauss_cov_matrix_from(
         The Gaussian covariance matrix.
     """
     # Ensure array:
-    pts = xp.asarray(pixel_points)  # (N, 2)
+    pts = pixel_points  # (N, 2)
     # Compute squared distances: ||p_i - p_j||^2
     diffs = pts[:, None, :] - pts[None, :, :]  # (N, N, 2)
     d2 = xp.sum(diffs**2, axis=-1)  # (N, N)
