@@ -19,7 +19,6 @@ def make_settings_dict():
             "no_regularization_add_to_curvature_diag_value": 1e-08,
             "use_w_tilde_numpy": False,
             "use_source_loop": False,
-            "use_linear_operators": False,
             "tolerance": 1e-08,
             "maxiter": 250,
         },
