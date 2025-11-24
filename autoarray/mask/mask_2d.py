@@ -217,6 +217,9 @@ class Mask2D(Mask):
             xp=xp,
         )
 
+        slim_to_native = self.derive_indexes.native_for_slim.astype("int32")
+        self.slim_to_native_tuple = (slim_to_native[:, 0], slim_to_native[:, 1])
+
     @property
     def native_for_slim(self):
         return self.derive_indexes.native_for_slim
