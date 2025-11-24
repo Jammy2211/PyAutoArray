@@ -73,8 +73,7 @@ class MockInversionImaging(InversionImagingMapping):
 
 
 class MockWTildeImaging:
-    def check_noise_map(self, noise_map):
-        pass
+    pass
 
 
 class MockInversionImagingWTilde(InversionImagingWTilde):

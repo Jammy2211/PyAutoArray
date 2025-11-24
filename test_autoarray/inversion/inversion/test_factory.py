@@ -18,7 +18,6 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
-        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
@@ -49,7 +48,6 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
-        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
@@ -67,7 +65,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangularUniform)
@@ -96,7 +93,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[delaunay_mapper_9_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperDelaunay)
@@ -200,7 +196,7 @@ def test__inversion_imaging__source_pixel_zeroed_indices(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
         preloads=aa.Preloads(
             mapper_indices=range(0, 9), source_pixel_zeroed_indices=np.array([0])
         ),
@@ -231,7 +227,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(
-            use_w_tilde=False,
             no_regularization_add_to_curvature_diag_value=False,
         ),
     )
@@ -285,7 +280,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, delaunay_mapper_9_3x3],
         settings=aa.SettingsInversion(
-            use_w_tilde=False,
             no_regularization_add_to_curvature_diag_value=False,
             force_edge_pixels_to_zeros=True,
         ),
@@ -299,7 +293,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, delaunay_mapper_9_3x3],
         settings=aa.SettingsInversion(
-            use_w_tilde=False,
             use_positive_only_solver=True,
             no_regularization_add_to_curvature_diag_value=False,
             force_edge_pixels_to_zeros=True,
@@ -328,7 +321,7 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[delaunay_mapper_9_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(),
     )
 
     assert inversion_w_tilde._curvature_matrix_mapper_diag == pytest.approx(
@@ -366,7 +359,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(
-            use_w_tilde=False,
             use_positive_only_solver=True,
             force_edge_pixels_to_zeros=False,
         ),
@@ -382,7 +374,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(
-            use_w_tilde=False,
             use_positive_only_solver=True,
             force_edge_pixels_to_zeros=False,
         ),
@@ -420,7 +411,7 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     inversion_w_tilde = aa.Inversion(
@@ -462,7 +453,7 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
             linear_obj_1,
             linear_obj_2,
         ],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(),
     )
 
     inversion_w_tilde = aa.Inversion(
@@ -493,7 +484,7 @@ def test__inversion_interferometer__via_mapper(
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangularUniform)
@@ -508,7 +499,7 @@ def test__inversion_interferometer__via_mapper(
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[delaunay_mapper_9_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False),
+        settings=aa.SettingsInversion(),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperDelaunay)
@@ -606,7 +597,7 @@ def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
@@ -635,7 +626,7 @@ def test__data_linear_func_matrix_dict(
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(use_w_tilde=False, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     assert inversion_mapping.data_linear_func_matrix_dict[linear_obj][

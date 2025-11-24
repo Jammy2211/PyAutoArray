@@ -155,7 +155,6 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     inversion_mapping = aa.Inversion(
         dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
@@ -230,7 +229,6 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     inversion_mapping = aa.Inversion(
         dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert inversion_w_tilde.curvature_matrix == pytest.approx(

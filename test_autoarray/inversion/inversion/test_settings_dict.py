@@ -13,7 +13,6 @@ def make_settings_dict():
         "class_path": "autoarray.inversion.inversion.settings.SettingsInversion",
         "type": "instance",
         "arguments": {
-            "use_w_tilde": True,
             "use_positive_only_solver": False,
             "positive_only_uses_p_initial": False,
             "force_edge_pixels_to_zeros": True,

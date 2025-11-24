@@ -62,11 +62,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
         )
 
-        if self.settings.use_w_tilde:
-            self.w_tilde = w_tilde
-            self.w_tilde.check_noise_map(noise_map=dataset.noise_map)
-        else:
-            self.w_tilde = None
+        self.w_tilde = dataset.w_tilde
 
     @property
     def w_tilde_data(self):

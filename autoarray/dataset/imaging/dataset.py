@@ -17,8 +17,6 @@ from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
-from autolens_workspace_test.linear_alg.w_tilde_scra_coleman import w_tilde
-
 logger = logging.getLogger(__name__)
 
 
