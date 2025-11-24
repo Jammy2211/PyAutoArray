@@ -198,7 +198,7 @@ def residual_map_with_mask_from(
     model_data
         The model data used to fit the data.
     """
-    return xp.where(xp.asarray(mask) == 0, xp.subtract(data, model_data), 0)
+    return xp.where(mask == 0, xp.subtract(data, model_data), 0)
 
 
 @to_new_array
@@ -221,7 +221,7 @@ def normalized_residual_map_with_mask_from(
     mask
         The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
-    return xp.where(xp.asarray(mask) == 0, xp.divide(residual_map, noise_map), 0)
+    return xp.where(mask == 0, xp.divide(residual_map, noise_map), 0)
 
 
 @to_new_array
@@ -244,7 +244,7 @@ def chi_squared_map_with_mask_from(
     mask
         The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
-    return xp.where(xp.asarray(mask) == 0, xp.square(residual_map / noise_map), 0)
+    return xp.where(mask == 0, xp.square(residual_map / noise_map), 0)
 
 
 def chi_squared_with_mask_from(
@@ -263,7 +263,7 @@ def chi_squared_with_mask_from(
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
-    return float(xp.sum(chi_squared_map[xp.asarray(mask) == 0]))
+    return float(xp.sum(chi_squared_map[mask == 0]))
 
 
 def chi_squared_with_mask_fast_from(
@@ -301,8 +301,8 @@ def chi_squared_with_mask_fast_from(
                     xp.subtract(
                         data,
                         model_data,
-                    )[xp.asarray(mask) == 0],
-                    noise_map[xp.asarray(mask) == 0],
+                    )[mask == 0],
+                    noise_map[mask == 0],
                 )
             )
         )
@@ -326,7 +326,7 @@ def noise_normalization_with_mask_from(
     mask
         The mask applied to the noise-map, where `False` entries are included in the calculation.
     """
-    return float(xp.sum(xp.log(2 * xp.pi * noise_map[xp.asarray(mask) == 0] ** 2.0)))
+    return float(xp.sum(xp.log(2 * xp.pi * noise_map[mask == 0] ** 2.0)))
 
 
 def chi_squared_with_noise_covariance_from(
