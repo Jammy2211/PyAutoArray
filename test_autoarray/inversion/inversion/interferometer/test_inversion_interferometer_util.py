@@ -245,10 +245,12 @@ def test__identical_inversion_values_for_two_methods():
         transformer_class=aa.TransformerDFT,
     )
 
+    dataset_w_tilde = dataset.apply_w_tilde()
+
     inversion_w_tilde = aa.Inversion(
-        dataset=dataset,
+        dataset=dataset_w_tilde,
         linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_w_tilde=True, use_positive_only_solver=True),
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     inversion_mapping_matrices = aa.Inversion(
@@ -344,19 +346,21 @@ def test__identical_inversion_source_and_image_loops():
         transformer_class=aa.TransformerDFT,
     )
 
+    dataset_w_tilde = dataset.apply_w_tilde()
+
     inversion_image_loop = aa.Inversion(
-        dataset=dataset,
+        dataset=dataset_w_tilde,
         linear_obj_list=[mapper],
         settings=aa.SettingsInversion(
-            use_w_tilde=True, use_source_loop=False, use_positive_only_solver=True
+            use_source_loop=False, use_positive_only_solver=True
         ),
     )
 
     inversion_source_loop = aa.Inversion(
-        dataset=dataset,
+        dataset=dataset_w_tilde,
         linear_obj_list=[mapper],
         settings=aa.SettingsInversion(
-            use_w_tilde=True, use_source_loop=True, use_positive_only_solver=True
+            use_source_loop=True, use_positive_only_solver=True
         ),
     )
 

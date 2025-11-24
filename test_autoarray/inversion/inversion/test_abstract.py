@@ -146,10 +146,11 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
+    masked_dataset_w_tilde = masked_dataset.apply_w_tilde()
+
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_dataset,
+        dataset=masked_dataset_w_tilde,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
@@ -220,10 +221,11 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
+    masked_dataset_w_tilde = masked_dataset.apply_w_tilde()
+
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_dataset,
+        dataset=masked_dataset_w_tilde,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(

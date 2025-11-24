@@ -108,7 +108,15 @@ def inversion_imaging_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
 
-    if dataset.w_tilde is not None:
+    use_w_tilde = True
+
+    if all(
+        isinstance(linear_obj, AbstractLinearObjFuncList)
+        for linear_obj in linear_obj_list
+    ):
+        use_w_tilde = False
+
+    if dataset.w_tilde is not None and use_w_tilde:
 
         return InversionImagingWTilde(
             dataset=dataset,
@@ -168,7 +176,15 @@ def inversion_interferometer_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
-    if dataset.w_tilde is not None:
+    use_w_tilde = True
+
+    if all(
+            isinstance(linear_obj, AbstractLinearObjFuncList)
+            for linear_obj in linear_obj_list
+    ):
+        use_w_tilde = False
+
+    if dataset.w_tilde is not None and use_w_tilde:
 
         return InversionInterferometerWTilde(
             dataset=dataset,
