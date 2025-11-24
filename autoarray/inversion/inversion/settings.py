@@ -17,7 +17,6 @@ class SettingsInversion:
         no_regularization_add_to_curvature_diag_value: float = None,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
-        use_linear_operators: bool = False,
         image_mesh_min_mesh_pixels_per_pixel=None,
         image_mesh_min_mesh_number: int = 5,
         image_mesh_adapt_background_percent_threshold: float = None,
@@ -47,9 +46,6 @@ class SettingsInversion:
             which exploit sparsity to do the calculation normally in a more efficient way).
         use_source_loop
             Shhhh its a secret.
-        use_linear_operators
-            For an interferometer inversion, whether to use the linear operator solution to solve the linear system
-            or not (this input does nothing for dataset data).
         image_mesh_min_mesh_pixels_per_pixel
             If not None, the image-mesh must place this many mesh pixels per image pixels in the N highest weighted
             regions of the adapt data, or an `InversionException` is raised. This can be used to force the image-mesh
@@ -73,7 +69,6 @@ class SettingsInversion:
         self._use_positive_only_solver = use_positive_only_solver
         self._positive_only_uses_p_initial = positive_only_uses_p_initial
         self._use_border_relocator = use_border_relocator
-        self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
