@@ -275,7 +275,7 @@ class CoordinateArrayTrianglesNp(AbstractTriangles):
         The indices of triangles that intersect the shape.
         """
         return self.with_vertices(self.vertices).containing_indices(shape)
-    
+
     @property
     def means(self):
         return np.mean(self.triangles, axis=1)

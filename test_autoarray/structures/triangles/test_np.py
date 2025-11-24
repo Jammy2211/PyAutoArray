@@ -26,8 +26,6 @@ def triangles():
     )
 
 
-
-
 @pytest.mark.parametrize(
     "offset",
     [-1, 0, 1],

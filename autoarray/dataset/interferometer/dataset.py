@@ -2,6 +2,8 @@ import logging
 import numpy as np
 from pathlib import Path
 
+from autoconf import cached_property
+
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
@@ -13,6 +15,8 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
+
+from autoarray import exc
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +169,7 @@ class Interferometer(AbstractDataset):
 
                 fits.writeto(filename, data=curvature_preload)
 
-    @property
+    @cached_property
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities

@@ -338,6 +338,7 @@ class AbstractNDArray(ABC):
 
         try:
             import jax.numpy as jnp
+
             if isinstance(result, jnp.ndarray):
                 result = self.with_new_array(result)
         except ImportError:
@@ -351,6 +352,7 @@ class AbstractNDArray(ABC):
             self._array[key] = value
         else:
             import jax.numpy as jnp
+
             self._array = jnp.where(key, value, self._array)
 
     def __repr__(self):
