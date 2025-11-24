@@ -11,7 +11,6 @@ class WTildeInterferometer(AbstractWTilde):
         curvature_preload: np.ndarray,
         dirty_image: np.ndarray,
         real_space_mask: Mask2D,
-        noise_map_value: float,
     ):
         """
         Packages together all derived data quantities necessary to fit `Interferometer` data using an ` Inversion` via
@@ -35,12 +34,9 @@ class WTildeInterferometer(AbstractWTilde):
         real_space_mask
             The 2D mask in real-space defining the area where the interferometer data's visibilities are observing
             a signal.
-        noise_map_value
-            The first value of the noise-map used to construct the curvature preload, which is used as a sanity
-            check when performing the inversion to ensure the preload corresponds to the data being fitted.
         """
         super().__init__(
-            curvature_preload=curvature_preload, noise_map_value=noise_map_value
+            curvature_preload=curvature_preload,
         )
 
         self.dirty_image = dirty_image

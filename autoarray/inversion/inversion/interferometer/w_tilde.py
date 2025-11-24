@@ -66,7 +66,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             )
 
         self.w_tilde = w_tilde
-        self.w_tilde.check_noise_map(noise_map=dataset.noise_map)
 
         super().__init__(
             dataset=dataset,

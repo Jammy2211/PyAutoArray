@@ -107,23 +107,20 @@ def inversion_imaging_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
+
+    use_w_tilde = True
+
     if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
         use_w_tilde = False
-    else:
-        use_w_tilde = settings.use_w_tilde
 
-    if not settings.use_w_tilde:
-        use_w_tilde = False
-
-    if use_w_tilde:
-        w_tilde = dataset.w_tilde
+    if dataset.w_tilde is not None and use_w_tilde:
 
         return InversionImagingWTilde(
             dataset=dataset,
-            w_tilde=w_tilde,
+            w_tilde=dataset.w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
             xp=xp,
@@ -179,30 +176,27 @@ def inversion_interferometer_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
-    if any(
+    use_w_tilde = True
+
+    if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
         use_w_tilde = False
-    else:
-        use_w_tilde = settings.use_w_tilde
 
-    if not settings.use_linear_operators:
-        if use_w_tilde:
-            w_tilde = dataset.w_tilde
+    if dataset.w_tilde is not None and use_w_tilde:
 
-            return InversionInterferometerWTilde(
-                dataset=dataset,
-                w_tilde=w_tilde,
-                linear_obj_list=linear_obj_list,
-                settings=settings,
-                xp=xp,
-            )
+        return InversionInterferometerWTilde(
+            dataset=dataset,
+            w_tilde=dataset.w_tilde,
+            linear_obj_list=linear_obj_list,
+            settings=settings,
+            xp=xp,
+        )
 
-        else:
-            return InversionInterferometerMapping(
-                dataset=dataset,
-                linear_obj_list=linear_obj_list,
-                settings=settings,
-                xp=xp,
-            )
+    return InversionInterferometerMapping(
+        dataset=dataset,
+        linear_obj_list=linear_obj_list,
+        settings=settings,
+        xp=xp,
+    )

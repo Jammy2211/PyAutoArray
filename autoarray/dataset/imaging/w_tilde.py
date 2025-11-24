@@ -18,7 +18,6 @@ class WTildeImaging(AbstractWTilde):
         noise_map: np.ndarray,
         psf: np.ndarray,
         mask: np.ndarray,
-        noise_map_value: float,
     ):
         """
         Packages together all derived data quantities necessary to fit `Imaging` data using an ` Inversion` via the
@@ -39,12 +38,9 @@ class WTildeImaging(AbstractWTilde):
         lengths
             The lengths of how many indexes each curvature preload contains, again used to compute the curvature
             matrix efficienctly.
-        noise_map_value
-            The first value of the noise-map used to construct the curvature preload, which is used as a sanity
-            check when performing the inversion to ensure the preload corresponds to the data being fitted.
         """
         super().__init__(
-            curvature_preload=curvature_preload, noise_map_value=noise_map_value
+            curvature_preload=curvature_preload,
         )
 
         self.indexes = indexes

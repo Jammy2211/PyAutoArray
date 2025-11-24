@@ -32,6 +32,7 @@ class Imaging(AbstractDataset):
         disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
+        w_tilde: Optional[WTildeImaging] = None,
     ):
         """
         An imaging dataset, containing the image data, noise-map, PSF and associated quantities
@@ -85,6 +86,10 @@ class Imaging(AbstractDataset):
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
+        w_tilde
+            The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
+            noise-map values given the PSF (see `inversion.inversion_util`). Pass the `WTildeImaging` object here to
+            enable this linear algebra formalism for pixelized reconstructions.
         """
 
         self.disable_fft_pad = disable_fft_pad
@@ -193,58 +198,7 @@ class Imaging(AbstractDataset):
             psf=self.psf,
         )
 
-    @cached_property
-    def w_tilde(self):
-        """
-        The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
-        noise-map values given the PSF (see `inversion.inversion_util`).
-
-        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
-        per analysis.
-
-        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
-        ensuring efficient set up of the `Imaging` class.
-
-        Returns
-        -------
-        WTildeImaging
-            Precomputed values used for the w tilde formalism of linear algebra calculations.
-        """
-
-        logger.info("IMAGING - Computing W-Tilde... May take a moment.")
-
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
-        (
-            curvature_preload,
-            indexes,
-            lengths,
-        ) = inversion_imaging_numba_util.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
-            native_index_for_slim_index=np.array(
-                self.mask.derive_indexes.native_for_slim
-            ).astype("int"),
-        )
-
-        return WTildeImaging(
-            curvature_preload=curvature_preload,
-            indexes=indexes.astype("int"),
-            lengths=lengths.astype("int"),
-            noise_map_value=self.noise_map[0],
-            noise_map=self.noise_map,
-            psf=self.psf,
-            mask=self.mask,
-        )
+        self.w_tilde = w_tilde
 
     @classmethod
     def from_fits(
@@ -516,6 +470,69 @@ class Imaging(AbstractDataset):
         )
 
         return dataset
+
+    def apply_w_tilde(self, disable_fft_pad: bool = False):
+        """
+        The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
+        noise-map values given the PSF (see `inversion.inversion_util`).
+
+        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
+        per analysis.
+
+        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
+        ensuring efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        WTildeImaging
+            Precomputed values used for the w tilde formalism of linear algebra calculations.
+        """
+
+        logger.info("IMAGING - Computing W-Tilde... May take a moment.")
+
+        try:
+            import numba
+        except ModuleNotFoundError:
+            raise exc.InversionException(
+                "Inversion w-tilde functionality (pixelized reconstructions) is "
+                "disabled if numba is not installed.\n\n"
+                "This is because the run-times without numba are too slow.\n\n"
+                "Please install numba, which is described at the following web page:\n\n"
+                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            )
+
+        (
+            curvature_preload,
+            indexes,
+            lengths,
+        ) = inversion_imaging_numba_util.w_tilde_curvature_preload_imaging_from(
+            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
+            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            native_index_for_slim_index=np.array(
+                self.mask.derive_indexes.native_for_slim
+            ).astype("int"),
+        )
+
+        w_tilde = WTildeImaging(
+            curvature_preload=curvature_preload,
+            indexes=indexes.astype("int"),
+            lengths=lengths.astype("int"),
+            noise_map=self.noise_map,
+            psf=self.psf,
+            mask=self.mask,
+        )
+
+        return Imaging(
+            data=self.data,
+            noise_map=self.noise_map,
+            psf=self.psf,
+            noise_covariance_matrix=self.noise_covariance_matrix,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
+            disable_fft_pad=disable_fft_pad,
+            check_noise_map=False,
+            w_tilde=w_tilde,
+        )
 
     def output_to_fits(
         self,
