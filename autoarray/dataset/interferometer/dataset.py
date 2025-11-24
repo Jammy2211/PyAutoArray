@@ -30,7 +30,6 @@ class Interferometer(AbstractDataset):
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
         dft_preload_transform: bool = True,
-        preprocessing_directory=None,
         w_tilde: Optional[WTildeImaging] = None,
     ):
         """
@@ -98,12 +97,6 @@ class Interferometer(AbstractDataset):
             preload_transform=dft_preload_transform,
         )
 
-        self.preprocessing_directory = (
-            Path(preprocessing_directory)
-            if preprocessing_directory is not None
-            else None
-        )
-
         self.dft_preload_transform = dft_preload_transform
 
         self.grids = GridsDataset(
@@ -154,26 +147,6 @@ class Interferometer(AbstractDataset):
             transformer_class=transformer_class,
             dft_preload_transform=dft_preload_transform,
         )
-
-    def w_tilde_preprocessing(self):
-
-        from astropy.io import fits
-
-        if self.preprocessing_directory.is_dir():
-            filename = "{}/curvature_preload.fits".format(self.preprocessing_directory)
-
-            if not self.preprocessing_directory.isfile(filename):
-                print("The file {} does not exist".format(filename))
-                logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
-
-                curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-                    noise_map_real=self.noise_map.real,
-                    uv_wavelengths=self.uv_wavelengths,
-                    shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
-                    grid_radians_2d=self.transformer.grid.mask.unmasked_grid_sub_1.in_radians.native,
-                )
-
-                fits.writeto(filename, data=curvature_preload)
 
     def apply_w_tilde(self):
         """
@@ -245,7 +218,6 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=self.uv_wavelengths,
             transformer_class=lambda uv_wavelengths, real_space_mask, preload_transform: self.transformer,
             dft_preload_transform=self.dft_preload_transform,
-            preprocessing_directory=self.preprocessing_directory,
             w_tilde=w_tilde,
         )
 
