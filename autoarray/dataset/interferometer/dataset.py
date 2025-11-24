@@ -31,6 +31,7 @@ class Interferometer(AbstractDataset):
         transformer_class=TransformerNUFFT,
         dft_preload_transform: bool = True,
         preprocessing_directory=None,
+        w_tilde: Optional[WTildeImaging] = None,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -103,11 +104,16 @@ class Interferometer(AbstractDataset):
             else None
         )
 
+        self.dft_preload_transform = dft_preload_transform
+
         self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
         )
+
+        self.w_tilde = w_tilde
+
 
     @classmethod
     def from_fits(
@@ -169,8 +175,7 @@ class Interferometer(AbstractDataset):
 
                 fits.writeto(filename, data=curvature_preload)
 
-    @cached_property
-    def w_tilde(self):
+    def apply_w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).
@@ -226,11 +231,22 @@ class Interferometer(AbstractDataset):
             use_adjoint_scaling=True,
         )
 
-        return WTildeInterferometer(
+        w_tilde = WTildeInterferometer(
             w_matrix=w_matrix,
             curvature_preload=curvature_preload,
             dirty_image=np.array(dirty_image.array),
             real_space_mask=self.real_space_mask,
+        )
+
+        return Interferometer(
+            real_space_mask=self.real_space_mask,
+            data=self.data,
+            noise_map=self.noise_map,
+            uv_wavelengths=self.uv_wavelengths,
+            transformer_class=lambda uv_wavelengths, real_space_mask, preload_transform: self.transformer,
+            dft_preload_transform=self.dft_preload_transform,
+            preprocessing_directory=self.preprocessing_directory,
+            w_tilde=w_tilde,
         )
 
     @property
