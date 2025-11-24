@@ -179,8 +179,8 @@ def inversion_interferometer_from(
     use_w_tilde = True
 
     if all(
-            isinstance(linear_obj, AbstractLinearObjFuncList)
-            for linear_obj in linear_obj_list
+        isinstance(linear_obj, AbstractLinearObjFuncList)
+        for linear_obj in linear_obj_list
     ):
         use_w_tilde = False
 

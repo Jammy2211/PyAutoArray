@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from pathlib import Path
+from typing import Optional
 
 from autoconf import cached_property
 
@@ -30,7 +31,7 @@ class Interferometer(AbstractDataset):
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
         dft_preload_transform: bool = True,
-        w_tilde: Optional[WTildeImaging] = None,
+        w_tilde: Optional[WTildeInterferometer] = None,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -106,7 +107,6 @@ class Interferometer(AbstractDataset):
         )
 
         self.w_tilde = w_tilde
-
 
     @classmethod
     def from_fits(

@@ -32,7 +32,7 @@ class Imaging(AbstractDataset):
         disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
-        w_tilde : Optional[WTildeImaging] = None,
+        w_tilde: Optional[WTildeImaging] = None,
     ):
         """
         An imaging dataset, containing the image data, noise-map, PSF and associated quantities

@@ -575,9 +575,9 @@ class Kernel2D(AbstractArray2D):
 
         # Scatter main mapping matrix into native cube
         if xp.__name__.startswith("jax"):
-            mapping_matrix_native = mapping_matrix_native.at[mask.slim_to_native_tuple].set(
-                mapping_matrix
-            )
+            mapping_matrix_native = mapping_matrix_native.at[
+                mask.slim_to_native_tuple
+            ].set(mapping_matrix)
         else:
             mapping_matrix_native[mask.slim_to_native_tuple] = mapping_matrix
 
@@ -673,12 +673,16 @@ class Kernel2D(AbstractArray2D):
         # start with native image padded with zeros
         image_both_native = xp.zeros(image.mask.shape, dtype=image.dtype)
 
-        image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(image.array)
+        image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(
+            image.array
+        )
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_both_native = image_both_native.at[blurring_image.mask.slim_to_native_tuple].set(blurring_image.array)
+            image_both_native = image_both_native.at[
+                blurring_image.mask.slim_to_native_tuple
+            ].set(blurring_image.array)
 
         else:
             warnings.warn(
@@ -707,7 +711,8 @@ class Kernel2D(AbstractArray2D):
         )
 
         blurred_image = Array2D(
-            values=blurred_image_native[image.mask.slim_to_native_tuple], mask=image.mask
+            values=blurred_image_native[image.mask.slim_to_native_tuple],
+            mask=image.mask,
         )
 
         if self.fft_shape is None:
@@ -987,7 +992,9 @@ class Kernel2D(AbstractArray2D):
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native = image_native.at[blurring_image.mask.slim_to_native_tuple].set(blurring_image.array)
+            image_native = image_native.at[
+                blurring_image.mask.slim_to_native_tuple
+            ].set(blurring_image.array)
 
         else:
             warnings.warn(
@@ -1114,7 +1121,9 @@ class Kernel2D(AbstractArray2D):
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native[blurring_image.mask.slim_to_native_tuple] = blurring_image.array
+            image_native[blurring_image.mask.slim_to_native_tuple] = (
+                blurring_image.array
+            )
 
         else:
             warnings.warn(
