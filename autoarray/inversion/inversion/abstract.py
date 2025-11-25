@@ -293,7 +293,7 @@ class AbstractInversion:
     def operated_mapping_matrix_list(self) -> np.ndarray:
         raise NotImplementedError
 
-    @property
+    @cached_property
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
@@ -314,7 +314,7 @@ class AbstractInversion:
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    @property
+    @cached_property
     def regularization_matrix(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -346,7 +346,7 @@ class AbstractInversion:
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
 
-    @property
+    @cached_property
     def regularization_matrix_reduced(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
@@ -360,7 +360,6 @@ class AbstractInversion:
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
         """
-
         if self.all_linear_obj_have_regularization:
             return self.regularization_matrix
 
@@ -380,7 +379,6 @@ class AbstractInversion:
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
@@ -400,7 +398,6 @@ class AbstractInversion:
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
         """
-
         if self.all_linear_obj_have_regularization:
             return self.curvature_reg_matrix
 
@@ -426,7 +423,6 @@ class AbstractInversion:
             ZTZ := np.dot(Z.T, Z)
             ZTx := np.dot(Z.T, x)
         """
-
         if self.settings.use_positive_only_solver:
 
             if (
@@ -481,7 +477,7 @@ class AbstractInversion:
             xp=self._xp,
         )
 
-    @property
+    @cached_property
     def reconstruction_reduced(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -489,7 +485,6 @@ class AbstractInversion:
 
         S is the vector of reconstructed inversion values.
         """
-
         if self.all_linear_obj_have_regularization:
             return self.reconstruction
 

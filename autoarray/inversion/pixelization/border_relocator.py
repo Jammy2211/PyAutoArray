@@ -2,6 +2,8 @@ from __future__ import annotations
 import numpy as np
 from typing import Tuple, Union
 
+from autoconf import cached_property
+
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -265,8 +267,9 @@ def relocated_grid_from(grid, border_grid, xp=np):
     return relocated_grid
 
 
+
 class BorderRelocator:
-    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D], use_w_tilde : bool = False):
         """
         Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
         border.
@@ -323,6 +326,8 @@ class BorderRelocator:
 
         self.sub_border_grid = sub_grid[self.sub_border_slim]
 
+        self.use_w_tilde = use_w_tilde
+
     def relocated_grid_from(self, grid: Grid2D, xp=np) -> Grid2D:
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
@@ -350,15 +355,32 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        values = relocated_grid_from(
-            grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
-        )
+        if not self.use_w_tilde:
 
-        over_sampled = relocated_grid_from(
-            grid=grid.over_sampled.array,
-            border_grid=grid.over_sampled.array[self.sub_border_slim],
-            xp=xp,
-        )
+            values = relocated_grid_from(
+                grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
+            )
+
+
+            over_sampled = relocated_grid_from(
+                grid=grid.over_sampled.array,
+                border_grid=grid.over_sampled.array[self.sub_border_slim],
+                xp=xp,
+            )
+
+        else:
+
+            from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+
+            values = inversion_imaging_numba_util.relocated_grid_via_jit_from(
+                grid=grid.array,
+                border_grid=grid[self.border_slim]
+            )
+
+            over_sampled = inversion_imaging_numba_util.relocated_grid_via_jit_from(
+                grid=grid.over_sampled.array,
+                border_grid=grid.over_sampled[self.sub_border_slim],
+            )
 
         return Grid2D(
             values=values,
@@ -384,9 +406,24 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return mesh_grid
 
+        if not self.use_w_tilde:
+
+            relocated_grid = relocated_grid_from(
+                grid=mesh_grid.array,
+                border_grid=grid[self.border_slim],
+                xp=xp,
+            )
+
+        else:
+
+            from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+
+            relocated_grid = inversion_imaging_numba_util.relocated_grid_via_jit_from(
+                grid=mesh_grid.array,
+                border_grid=grid[self.border_slim],
+            )
+
         return Grid2DIrregular(
-            values=relocated_grid_from(
-                grid=mesh_grid.array, border_grid=grid[self.sub_border_slim], xp=xp
-            ),
+            values=relocated_grid,
             xp=xp,
         )

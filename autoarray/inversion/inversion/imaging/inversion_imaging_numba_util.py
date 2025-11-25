@@ -857,3 +857,71 @@ def mapped_reconstructed_data_via_image_to_pix_unique_from(
             )
 
     return mapped_reconstructed_data
+
+
+@numba_util.jit()
+def relocated_grid_via_jit_from(grid, border_grid):
+    """
+    Relocate the coordinates of a grid to its border if they are outside the border, where the border is
+    defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
+
+    This is performed as follows:
+
+    1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
+    2: Compute the radial distance of every grid coordinate from the origin.
+    3: For every coordinate, find its nearest pixel in the border.
+    4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
+    border pixel's radial distance.
+    5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
+    border (if its inside the border, do nothing).
+
+    The method can be used on uniform or irregular grids, however for irregular grids the border of the
+    'image-plane' mask is used to define border pixels.
+
+    Parameters
+    ----------
+    grid
+        The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
+    border_grid : Grid2D
+        The grid of border (y,x) coordinates.
+    """
+
+    grid_relocated = np.zeros(grid.shape)
+    grid_relocated[:, :] = grid[:, :]
+
+    border_origin = np.zeros(2)
+    border_origin[0] = np.mean(border_grid[:, 0])
+    border_origin[1] = np.mean(border_grid[:, 1])
+    border_grid_radii = np.sqrt(
+        np.add(
+            np.square(np.subtract(border_grid[:, 0], border_origin[0])),
+            np.square(np.subtract(border_grid[:, 1], border_origin[1])),
+        )
+    )
+    border_min_radii = np.min(border_grid_radii)
+
+    grid_radii = np.sqrt(
+        np.add(
+            np.square(np.subtract(grid[:, 0], border_origin[0])),
+            np.square(np.subtract(grid[:, 1], border_origin[1])),
+        )
+    )
+
+    for pixel_index in range(grid.shape[0]):
+        if grid_radii[pixel_index] > border_min_radii:
+            closest_pixel_index = np.argmin(
+                np.square(grid[pixel_index, 0] - border_grid[:, 0])
+                + np.square(grid[pixel_index, 1] - border_grid[:, 1])
+            )
+
+            move_factor = (
+                border_grid_radii[closest_pixel_index] / grid_radii[pixel_index]
+            )
+
+            if move_factor < 1.0:
+                grid_relocated[pixel_index, :] = (
+                    move_factor * (grid[pixel_index, :] - border_origin[:])
+                    + border_origin[:]
+                )
+
+    return grid_relocated

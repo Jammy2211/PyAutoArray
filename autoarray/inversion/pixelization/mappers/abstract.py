@@ -3,6 +3,7 @@ import numpy as np
 from typing import List, Optional, Tuple
 
 from autoconf import conf
+from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
@@ -208,7 +209,7 @@ class AbstractMapper(LinearObj):
 
         return sub_slim_indexes_for_pix_index
 
-    @property
+    @cached_property
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
@@ -221,7 +222,6 @@ class AbstractMapper(LinearObj):
         A full description of these mappings is given in the
         function `mapper_util.data_slim_to_pixelization_unique_from()`.
         """
-
         (
             data_to_pix_unique,
             data_weights,
@@ -245,7 +245,7 @@ class AbstractMapper(LinearObj):
             pix_lengths=pix_lengths,
         )
 
-    @property
+    @cached_property
     def mapping_matrix(self) -> np.ndarray:
         """
         The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels

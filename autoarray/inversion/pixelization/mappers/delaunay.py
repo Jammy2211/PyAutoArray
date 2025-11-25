@@ -1,5 +1,7 @@
 import numpy as np
 
+from autoconf import cached_property
+
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
@@ -59,7 +61,7 @@ class MapperDelaunay(AbstractMapper):
     def delaunay(self):
         return self.source_plane_mesh_grid.delaunay
 
-    @property
+    @cached_property
     def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data

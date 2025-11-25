@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Optional
 
+from autoconf import cached_property
+
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
@@ -44,7 +46,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
         self.grid = grid
 
-    @property
+    @cached_property
     def neighbors(self) -> Neighbors:
         """
         An object describing how the different parameters in the linear object neighbor one another, which is used
@@ -76,7 +78,7 @@ class AbstractLinearObjFuncList(LinearObj):
             arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int")
         )
 
-    @property
+    @cached_property
     def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
@@ -88,7 +90,6 @@ class AbstractLinearObjFuncList(LinearObj):
 
         For a `LinearObjFuncList` every data pixel's group of sub-pixels maps directly to the linear function.
         """
-
         sub_size = np.max(self.grid.over_sample_size)
 
         # TODO : This shape slim is prob unreliable and needs to be divided by sub_size**2
