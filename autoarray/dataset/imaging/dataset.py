@@ -198,7 +198,7 @@ class Imaging(AbstractDataset):
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
-            use_w_tilde=use_w_tilde
+            use_w_tilde=use_w_tilde,
         )
 
         self.w_tilde = w_tilde

@@ -267,9 +267,10 @@ def relocated_grid_from(grid, border_grid, xp=np):
     return relocated_grid
 
 
-
 class BorderRelocator:
-    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D], use_w_tilde : bool = False):
+    def __init__(
+        self, mask: Mask2D, sub_size: Union[int, Array2D], use_w_tilde: bool = False
+    ):
         """
         Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
         border.
@@ -361,7 +362,6 @@ class BorderRelocator:
                 grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
             )
 
-
             over_sampled = relocated_grid_from(
                 grid=grid.over_sampled.array,
                 border_grid=grid.over_sampled.array[self.sub_border_slim],
@@ -370,11 +370,12 @@ class BorderRelocator:
 
         else:
 
-            from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+            from autoarray.inversion.inversion.imaging import (
+                inversion_imaging_numba_util,
+            )
 
             values = inversion_imaging_numba_util.relocated_grid_via_jit_from(
-                grid=grid.array,
-                border_grid=grid[self.border_slim]
+                grid=grid.array, border_grid=grid[self.border_slim]
             )
 
             over_sampled = inversion_imaging_numba_util.relocated_grid_via_jit_from(
@@ -387,6 +388,7 @@ class BorderRelocator:
             mask=grid.mask,
             over_sample_size=self.sub_size,
             over_sampled=over_sampled,
+            over_sampler=grid.over_sampler,
             xp=xp,
         )
 
@@ -416,11 +418,13 @@ class BorderRelocator:
 
         else:
 
-            from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+            from autoarray.inversion.inversion.imaging import (
+                inversion_imaging_numba_util,
+            )
 
             relocated_grid = inversion_imaging_numba_util.relocated_grid_via_jit_from(
                 grid=mesh_grid.array,
-                border_grid=grid[self.border_slim],
+                border_grid=grid[self.sub_border_slim],
             )
 
         return Grid2DIrregular(
