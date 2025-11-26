@@ -150,6 +150,14 @@ class FitDataset(AbstractFit):
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
         self.dataset_model = dataset_model or DatasetModel()
+
+        # Ensures preloaded in memory so repeated calls are fast
+
+        self.dataset.grids.lp
+        self.dataset.grids.pixelization
+        self.dataset.grids.blurring
+        self.dataset.grids.border_relocator
+
         self._xp = xp
 
     @property

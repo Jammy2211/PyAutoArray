@@ -61,31 +61,69 @@ class GridsDataset:
         self.over_sample_size_pixelization = over_sample_size_pixelization
         self.psf = psf
 
-        self.lp = Grid2D.from_mask(
+        self._lp = None
+        self._pixelization = None
+        self._blurring = None
+        self._border_relocator = None
+
+        self.use_w_tilde = use_w_tilde
+
+    @property
+    def lp(self):
+
+        if self._lp is not None:
+            return self._lp
+
+        self._lp = Grid2D.from_mask(
             mask=self.mask,
             over_sample_size=self.over_sample_size_lp,
         )
 
-        self.pixelization = Grid2D.from_mask(
+        return self._lp
+
+    @property
+    def pixelization(self):
+        if self._pixelization is not None:
+            return self._pixelization
+
+        self._pixelization = Grid2D.from_mask(
             mask=self.mask,
             over_sample_size=self.over_sample_size_pixelization,
         )
 
+        return self._pixelization
+
+    @property
+    def blurring(self):
+
+        if self._blurring is not None:
+            return self._blurring
+
         if self.psf is None:
-            self.blurring = None
+            self._blurring = None
         else:
             try:
-                self.blurring = self.lp.blurring_grid_via_kernel_shape_from(
+                self._blurring = self.lp.blurring_grid_via_kernel_shape_from(
                     kernel_shape_native=self.psf.shape_native,
                 )
             except exc.MaskException:
-                self.blurring = None
+                self._blurring = None
 
-        self.border_relocator = BorderRelocator(
+        return self._blurring
+
+    @property
+    def border_relocator(self) -> BorderRelocator:
+
+        if self._border_relocator is not None:
+            return self._border_relocator
+
+        self._border_relocator = BorderRelocator(
             mask=self.mask,
             sub_size=self.over_sample_size_pixelization,
-            use_w_tilde=use_w_tilde,
+            use_w_tilde=self.use_w_tilde,
         )
+
+        return self._border_relocator
 
 
 class GridsInterface:

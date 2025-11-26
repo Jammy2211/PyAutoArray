@@ -84,8 +84,8 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     grid_sub_2 = dataset_7x7.grids.lp
     grids_pixelization_sub_2 = dataset_7x7.grids.pixelization
 
-    dataset_7x7.grids.__dict__["lp"][0][0] = 100.0
-    dataset_7x7.grids.__dict__["pixelization"][0][0] = 100.0
+    dataset_7x7.grids.__dict__["_lp"][0][0] = 100.0
+    dataset_7x7.grids.__dict__["_pixelization"][0][0] = 100.0
 
     assert dataset_7x7.grids.lp[0][0] == pytest.approx(100.0, 1.0e-4)
     assert dataset_7x7.grids.pixelization[0][0] == pytest.approx(100.0, 1.0e-4)
