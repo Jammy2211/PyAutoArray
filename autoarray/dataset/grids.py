@@ -17,6 +17,7 @@ class GridsDataset:
         over_sample_size_lp: Union[int, Array2D],
         over_sample_size_pixelization: Union[int, Array2D],
         psf: Optional[Kernel2D] = None,
+        use_w_tilde: bool = False,
     ):
         """
         Contains grids of (y,x) Cartesian coordinates at the centre of every pixel in the dataset's image and
@@ -64,13 +65,11 @@ class GridsDataset:
             mask=self.mask,
             over_sample_size=self.over_sample_size_lp,
         )
-        self.lp.over_sampled
 
         self.pixelization = Grid2D.from_mask(
             mask=self.mask,
             over_sample_size=self.over_sample_size_pixelization,
         )
-        self.pixelization.over_sampled
 
         if self.psf is None:
             self.blurring = None
@@ -79,12 +78,13 @@ class GridsDataset:
                 self.blurring = self.lp.blurring_grid_via_kernel_shape_from(
                     kernel_shape_native=self.psf.shape_native,
                 )
-                self.blurring.over_sampled
             except exc.MaskException:
                 self.blurring = None
 
         self.border_relocator = BorderRelocator(
-            mask=self.mask, sub_size=self.over_sample_size_pixelization
+            mask=self.mask,
+            sub_size=self.over_sample_size_pixelization,
+            use_w_tilde=use_w_tilde,
         )
 
 

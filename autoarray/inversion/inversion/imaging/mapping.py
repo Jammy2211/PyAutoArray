@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Dict, List, Optional, Union
 
+from autoconf import cached_property
+
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
@@ -89,7 +91,7 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         return data_vector
 
-    @property
+    @cached_property
     def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
@@ -156,7 +158,7 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         return curvature_matrix
 
-    @property
+    @cached_property
     def curvature_matrix(self):
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to

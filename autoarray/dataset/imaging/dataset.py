@@ -191,11 +191,14 @@ class Imaging(AbstractDataset):
             if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
                 raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
+        use_w_tilde = True if w_tilde is not None else False
+
         self.grids = GridsDataset(
             mask=self.data.mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
+            use_w_tilde=use_w_tilde,
         )
 
         self.w_tilde = w_tilde

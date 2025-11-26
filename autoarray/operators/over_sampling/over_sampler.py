@@ -3,6 +3,7 @@ import numpy as np
 from typing import Union
 
 from autoconf import conf
+from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -330,7 +331,7 @@ class OverSampler:
             mask_2d=np.array(self.mask), sub_size=self.sub_size.array
         ).astype("int")
 
-    @property
+    @cached_property
     def uniform_over_sampled(self):
         """
         For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
@@ -345,6 +346,7 @@ class OverSampler:
         Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
         sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
         """
+
         from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(

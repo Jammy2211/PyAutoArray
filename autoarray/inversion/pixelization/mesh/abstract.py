@@ -47,6 +47,7 @@ class AbstractMesh:
             mask=source_plane_data_grid.mask,
             over_sample_size=source_plane_data_grid.over_sampler.sub_size,
             over_sampled=source_plane_data_grid.over_sampled.array,
+            over_sampler=source_plane_data_grid.over_sampler,
             xp=xp,
         )
 

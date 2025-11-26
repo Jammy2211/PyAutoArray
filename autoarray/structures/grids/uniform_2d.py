@@ -27,6 +27,7 @@ class Grid2D(Structure):
         store_native: bool = False,
         over_sample_size: Union[int, Array2D] = 4,
         over_sampled: Optional[Grid2D] = None,
+        over_sampler=None,
         xp=np,
         *args,
         **kwargs,
@@ -169,15 +170,36 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        over_sample_size = over_sample_util.over_sample_size_convert_to_array_2d_from(
-            over_sample_size=over_sample_size, mask=mask
+        self._over_sample_size = over_sample_size
+
+        self._over_sampler = over_sampler
+        self._over_sampled = over_sampled
+
+    @property
+    def over_sample_size(self):
+
+        if isinstance(self._over_sample_size, Array2D):
+            return self._over_sample_size
+
+        self._over_sample_size = (
+            over_sample_util.over_sample_size_convert_to_array_2d_from(
+                over_sample_size=self._over_sample_size, mask=self.mask
+            )
         )
+
+        return self._over_sample_size
+
+    @property
+    def over_sampler(self):
+
+        if self._over_sampler is not None:
+            return self._over_sampler
 
         from autoarray.operators.over_sampling.over_sampler import OverSampler
 
-        self.over_sampler = OverSampler(sub_size=over_sample_size, mask=mask)
+        self._over_sampler = OverSampler(sub_size=self.over_sample_size, mask=self.mask)
 
-        self._over_sampled = over_sampled
+        return self._over_sampler
 
     @property
     def over_sampled(self):
@@ -188,7 +210,7 @@ class Grid2D(Structure):
         over_sampled = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.over_sampler.sub_size.array.astype("int"),
+            sub_size=self.over_sample_size.array.astype("int"),
             origin=self.mask.origin,
         )
 
@@ -700,11 +722,8 @@ class Grid2D(Structure):
             mask=mask,
             over_sample_size=self.over_sample_size,
             over_sampled=self.over_sampled - xp.array(offset),
+            over_sampler=self.over_sampler,
         )
-
-    @property
-    def over_sample_size(self):
-        return self.over_sampler.sub_size
 
     @property
     def slim(self) -> "Grid2D":

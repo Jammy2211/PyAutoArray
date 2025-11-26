@@ -100,10 +100,13 @@ class Interferometer(AbstractDataset):
 
         self.dft_preload_transform = dft_preload_transform
 
+        use_w_tilde = True if w_tilde is not None else False
+
         self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
+            use_w_tilde=use_w_tilde,
         )
 
         self.w_tilde = w_tilde
