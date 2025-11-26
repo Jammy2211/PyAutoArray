@@ -178,15 +178,6 @@ def grid_2d_slim_over_sampled_via_mask_from(
     skipping pixels where sub_size == 0 (to avoid divide-by-zero).
     """
 
-    import traceback
-
-    def debug_trace():
-        print("=== FULL CALL TRACE ===")
-        traceback.print_stack()
-        print("=======================")
-
-    debug_trace()
-
     H, W = mask_2d.shape
     sy, sx = pixel_scales
     oy, ox = origin

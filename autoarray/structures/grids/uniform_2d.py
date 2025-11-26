@@ -197,7 +197,7 @@ class Grid2D(Structure):
 
         from autoarray.operators.over_sampling.over_sampler import OverSampler
 
-        self._over_sampler = OverSampler(sub_size=self.over_sample_size, mask=self.mask)
+        self._over_sampler = OverSampler(sub_size=self.over_sample_size.array.astype("int"), mask=self.mask)
 
         return self._over_sampler
 
