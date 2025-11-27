@@ -186,7 +186,6 @@ class Overlay(AbstractImageMesh):
         self,
         mask: Mask2D,
         adapt_data: Optional[np.ndarray] = None,
-        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         """
         Returns an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the

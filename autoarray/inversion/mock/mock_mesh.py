@@ -37,13 +37,8 @@ class MockMesh(AbstractMesh):
         self,
         mask: Mask2D,
         adapt_data,
-        settings=None,
     ):
         if adapt_data is not None and self.image_plane_mesh_grid is not None:
             return adapt_data * self.image_plane_mesh_grid
 
         return self.image_plane_mesh_grid
-
-    @property
-    def requires_image_mesh(self):
-        return False

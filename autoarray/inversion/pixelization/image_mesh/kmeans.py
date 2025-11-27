@@ -52,7 +52,6 @@ class KMeans(AbstractImageMeshWeighted):
         self,
         mask: Mask2D,
         adapt_data: Optional[np.ndarray],
-        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running a KMeans clustering algorithm on the weight map.
