@@ -151,10 +151,6 @@ class RectangularMagnification(AbstractMesh):
             xp=xp,
         )
 
-    @property
-    def requires_image_mesh(self):
-        return False
-
 
 class RectangularSource(RectangularMagnification):
 
