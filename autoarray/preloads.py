@@ -107,7 +107,9 @@ class Preloads:
             for image_plane_mesh_grid in image_plane_mesh_grid_list:
 
                 if image_plane_mesh_grid is not None:
-                    self.image_plane_mesh_grid_list.append(np.array(image_plane_mesh_grid))
+                    self.image_plane_mesh_grid_list.append(
+                        np.array(image_plane_mesh_grid)
+                    )
                 else:
                     self.image_plane_mesh_grid_list.append(None)
 

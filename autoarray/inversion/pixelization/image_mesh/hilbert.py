@@ -288,9 +288,7 @@ class Hilbert(AbstractImageMeshWeighted):
             gridy=grid_hb[:, 0],
         )
 
-        mesh_grid = Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
-
-        return mesh_grid
+        return Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
 
     def check_mesh_pixels_per_image_pixels(
         self,

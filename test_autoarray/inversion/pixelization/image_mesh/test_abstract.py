@@ -44,28 +44,31 @@ def test__mesh_pixels_per_image_pixels_from(mask, mesh_grid, image_mesh):
 
 def test__check_mesh_pixels_per_image_pixels(mask, mesh_grid, image_mesh):
     image_mesh.check_mesh_pixels_per_image_pixels(
-        mask=mask, mesh_grid=mesh_grid,
+        mask=mask,
+        mesh_grid=mesh_grid,
     )
 
     image_mesh.check_mesh_pixels_per_image_pixels(
         mask=mask,
         mesh_grid=mesh_grid,
         image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=1
+        image_mesh_min_mesh_number=1,
     )
 
     with pytest.raises(aa.exc.InversionException):
         image_mesh.check_mesh_pixels_per_image_pixels(
             mask=mask,
             mesh_grid=mesh_grid,
-            image_mesh_min_mesh_pixels_per_pixel=5, image_mesh_min_mesh_number=1
+            image_mesh_min_mesh_pixels_per_pixel=5,
+            image_mesh_min_mesh_number=1,
         )
 
     with pytest.raises(aa.exc.InversionException):
         image_mesh.check_mesh_pixels_per_image_pixels(
             mask=mask,
             mesh_grid=mesh_grid,
-            image_mesh_min_mesh_pixels_per_pixel=3, image_mesh_min_mesh_number=2
+            image_mesh_min_mesh_pixels_per_pixel=3,
+            image_mesh_min_mesh_number=2,
         )
 
 
@@ -76,7 +79,9 @@ def test__check_adapt_background_pixels(mask, mesh_grid, image_mesh):
     )
 
     image_mesh.check_adapt_background_pixels(
-        mask=mask, mesh_grid=mesh_grid, adapt_data=adapt_data,
+        mask=mask,
+        mesh_grid=mesh_grid,
+        adapt_data=adapt_data,
     )
 
     image_mesh.check_adapt_background_pixels(
