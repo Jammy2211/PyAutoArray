@@ -22,7 +22,7 @@ class Preloads:
         self,
         mapper_indices: np.ndarray = None,
         source_pixel_zeroed_indices: np.ndarray = None,
-        image_plane_mesh_grid: np.ndarray = None,
+        image_plane_mesh_grid_list: np.ndarray = None,
         linear_light_profile_blurred_mapping_matrix=None,
     ):
         """
@@ -36,6 +36,29 @@ class Preloads:
         Other arrays (e.g. parts of the curvature matrix) are preloaded purely to improve performance. In cases where
         the source model is fixed (e.g. when fitting only the lens light), sections of the curvature matrix do not
         change and can be reused, avoiding redundant computation.
+
+        Returns a list of image-plane mesh-grids, which are image-plane grids defining the centres of the pixels of
+        the pixelization's mesh (e.g. the centres of Voronoi pixels).
+
+        The `image_mesh` attribute of the pixelization object defines whether the centre of each mesh pixel are
+        determined in the image-plane. When this is the case, the pixelization therefore has an image-plane mesh-grid,
+        which needs to be computed before the inversion is performed.
+
+        This function iterates over all galaxies with pixelizations, determines which pixelizations have an
+        `image_mesh` and for these pixelizations computes the image-plane mesh-grid.
+
+        It returns a list of all image-plane mesh-grids, which in the functions `mapper_from` and `mapper_galaxy_dict`
+        are grouped into a `Mapper` object with other information required to perform the inversion using the
+        pixelization.
+
+        The order of this list is not important, because the `linear_obj_galaxy_dict` function associates each
+        mapper object (and therefore image-plane mesh-grid) with the galaxy it belongs to and is therefore used
+        elsewhere in the code (e.g. the fit module) to match inversion results to galaxies.
+
+        Certain image meshes adapt their pixels to the dataset, for example congregating the pixels to the brightest
+        regions of the image. This requires that `adapt_images` are used when setting up the image-plane mesh-grid.
+        This function uses the `adapt_images` attribute of the `GalaxiesToInversion` object pass these images and
+        raise an error if they are not present.
 
         Parameters
         ----------
@@ -77,9 +100,16 @@ class Preloads:
 
             self.source_pixel_zeroed_indices_to_keep = np.where(values_to_solve)[0]
 
-        if image_plane_mesh_grid is not None:
+        if image_plane_mesh_grid_list is not None:
 
-            self.image_plane_mesh_grid = np.array(image_plane_mesh_grid)
+            self.image_plane_mesh_grid_list = []
+
+            for image_plane_mesh_grid in image_plane_mesh_grid_list:
+
+                if image_plane_mesh_grid is not None:
+                    self.image_plane_mesh_grid_list.append(np.array(image_plane_mesh_grid))
+                else:
+                    self.image_plane_mesh_grid_list.append(None)
 
         if linear_light_profile_blurred_mapping_matrix is not None:
 

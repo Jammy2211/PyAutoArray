@@ -76,7 +76,7 @@ def test__check_adapt_background_pixels(mask, mesh_grid, image_mesh):
     )
 
     image_mesh.check_adapt_background_pixels(
-        mask=mask, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=None
+        mask=mask, mesh_grid=mesh_grid, adapt_data=adapt_data,
     )
 
     image_mesh.check_adapt_background_pixels(

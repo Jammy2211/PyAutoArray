@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+import os
 
 from typing import Optional
 
@@ -238,7 +239,6 @@ class Hilbert(AbstractImageMeshWeighted):
         self,
         mask: Mask2D,
         adapt_data: Optional[np.ndarray],
-        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running the Hilbert curve on the weight map.
@@ -290,14 +290,6 @@ class Hilbert(AbstractImageMeshWeighted):
 
         mesh_grid = Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
 
-        self.check_mesh_pixels_per_image_pixels(
-            mask=mask, mesh_grid=mesh_grid, settings=settings
-        )
-
-        self.check_adapt_background_pixels(
-            mask=mask, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=settings
-        )
-
         return mesh_grid
 
     def check_mesh_pixels_per_image_pixels(
@@ -344,21 +336,20 @@ class Hilbert(AbstractImageMeshWeighted):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        if settings is not None:
-            if image_mesh_min_mesh_pixels_per_pixel is not None:
-                mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
-                    mask=mask, mesh_grid=mesh_grid
-                )
+        if image_mesh_min_mesh_pixels_per_pixel is not None:
+            mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
+                mask=mask, mesh_grid=mesh_grid
+            )
 
-                indices_of_highest_values = np.argsort(mesh_pixels_per_image_pixels)[
-                    -image_mesh_min_mesh_number:
-                ]
-                lowest_mesh_pixels = np.min(
-                    mesh_pixels_per_image_pixels[indices_of_highest_values]
-                )
+            indices_of_highest_values = np.argsort(mesh_pixels_per_image_pixels)[
+                -image_mesh_min_mesh_number:
+            ]
+            lowest_mesh_pixels = np.min(
+                mesh_pixels_per_image_pixels[indices_of_highest_values]
+            )
 
-                if lowest_mesh_pixels < image_mesh_min_mesh_pixels_per_pixel:
-                    raise exc.InversionException()
+            if lowest_mesh_pixels < image_mesh_min_mesh_pixels_per_pixel:
+                raise exc.InversionException()
 
         return mesh_grid
 
@@ -412,27 +403,26 @@ class Hilbert(AbstractImageMeshWeighted):
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
 
-        if settings is not None:
-            if image_mesh_adapt_background_percent_threshold is not None:
-                pixels = mesh_grid.shape[0]
+        if image_mesh_adapt_background_percent_threshold is not None:
+            pixels = mesh_grid.shape[0]
 
-                pixels_in_background = int(
-                    mask.shape_slim * image_mesh_adapt_background_percent_check
-                )
+            pixels_in_background = int(
+                mask.shape_slim * image_mesh_adapt_background_percent_check
+            )
 
-                indices_of_lowest_values = np.argsort(adapt_data)[:pixels_in_background]
-                mask_background = np.zeros_like(adapt_data, dtype=bool)
-                mask_background[indices_of_lowest_values] = True
+            indices_of_lowest_values = np.argsort(adapt_data)[:pixels_in_background]
+            mask_background = np.zeros_like(adapt_data, dtype=bool)
+            mask_background[indices_of_lowest_values] = True
 
-                mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
-                    mask=mask, mesh_grid=mesh_grid
-                )
+            mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
+                mask=mask, mesh_grid=mesh_grid
+            )
 
-                mesh_pixels_in_background = sum(
-                    mesh_pixels_per_image_pixels[mask_background]
-                )
+            mesh_pixels_in_background = sum(
+                mesh_pixels_per_image_pixels[mask_background]
+            )
 
-                if mesh_pixels_in_background < (
-                    pixels * image_mesh_adapt_background_percent_threshold
-                ):
-                    raise exc.InversionException()
+            if mesh_pixels_in_background < (
+                pixels * image_mesh_adapt_background_percent_threshold
+            ):
+                raise exc.InversionException()
