@@ -300,9 +300,14 @@ class Hilbert(AbstractImageMeshWeighted):
 
         return mesh_grid
 
-
     def check_mesh_pixels_per_image_pixels(
-        self, mask: Mask2D, mesh_grid: Grid2DIrregular, settings: SettingsInversion
+        self,
+        mask: Mask2D,
+        mesh_grid: Grid2DIrregular,
+        image_mesh_min_mesh_pixels_per_pixel=None,
+        image_mesh_min_mesh_number: int = 5,
+        image_mesh_adapt_background_percent_threshold: float = None,
+        image_mesh_adapt_background_percent_check: float = 0.8,
     ):
         """
         Checks the number of mesh pixels in every image pixel and raises an `InversionException` if there are fewer
@@ -315,12 +320,12 @@ class Hilbert(AbstractImageMeshWeighted):
 
         1) Compute the 2D array of the number of mesh pixels in every masked data image pixel.
         2) Find the number of mesh pixels in the N data pixels with the larger number of mesh pixels, where N is
-           given by `settings.image_mesh_min_mesh_number`. For example, if `settings.image_mesh_min_mesh_number=5` then
+           given by `image_mesh_min_mesh_number`. For example, if `image_mesh_min_mesh_number=5` then
            the number of mesh pixels in the 5 data pixels with the most data pixels is computed.
-        3) Compare the lowest value above to the value `settings.image_mesh_min_mesh_pixels_per_pixel`. If the value is
+        3) Compare the lowest value above to the value `image_mesh_min_mesh_pixels_per_pixel`. If the value is
            below this value, raise an `InversionException`.
 
-        Therefore, by settings `settings.image_mesh_min_mesh_pixels_per_pixel` to a value above 1 the code is forced
+        Therefore, by settings `image_mesh_min_mesh_pixels_per_pixel` to a value above 1 the code is forced
         to adapt the image mesh enough to put many mesh pixels in the brightest image pixels.
 
         Parameters
@@ -340,19 +345,19 @@ class Hilbert(AbstractImageMeshWeighted):
             return
 
         if settings is not None:
-            if settings.image_mesh_min_mesh_pixels_per_pixel is not None:
+            if image_mesh_min_mesh_pixels_per_pixel is not None:
                 mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
                     mask=mask, mesh_grid=mesh_grid
                 )
 
                 indices_of_highest_values = np.argsort(mesh_pixels_per_image_pixels)[
-                    -settings.image_mesh_min_mesh_number :
+                    -image_mesh_min_mesh_number:
                 ]
                 lowest_mesh_pixels = np.min(
                     mesh_pixels_per_image_pixels[indices_of_highest_values]
                 )
 
-                if lowest_mesh_pixels < settings.image_mesh_min_mesh_pixels_per_pixel:
+                if lowest_mesh_pixels < image_mesh_min_mesh_pixels_per_pixel:
                     raise exc.InversionException()
 
         return mesh_grid
@@ -362,7 +367,10 @@ class Hilbert(AbstractImageMeshWeighted):
         mask: Mask2D,
         mesh_grid: Grid2DIrregular,
         adapt_data: Optional[np.ndarray],
-        settings: SettingsInversion,
+        image_mesh_min_mesh_pixels_per_pixel=None,
+        image_mesh_min_mesh_number: int = 5,
+        image_mesh_adapt_background_percent_threshold: float = None,
+        image_mesh_adapt_background_percent_check: float = 0.8,
     ):
         """
         Checks the number of mesh pixels in the background of the image-mesh and raises an `InversionException` if
@@ -375,15 +383,15 @@ class Hilbert(AbstractImageMeshWeighted):
         The check works as follows:
 
         1) Find all pixels in the background of the `adapt_data`, which are N pixels with the lowest values, where N is
-           a percentage given by `settings.image_mesh_adapt_background_percent_check`. If N is 50%, then the half of
+           a percentage given by `image_mesh_adapt_background_percent_check`. If N is 50%, then the half of
             pixels in `adapt_data` with the lowest values will be checked.
         2) Sum the total number of mesh pixels in these background pixels, thereby estimating the number of mesh pixels
             assigned to background pixels.
         3) Compare this value to the total number of mesh pixels multiplied
-           by `settings.image_mesh_adapt_background_percent_threshold` and raise an `InversionException` if the number
+           by `image_mesh_adapt_background_percent_threshold` and raise an `InversionException` if the number
            of mesh pixels is below this value, meaning the background did not have sufficient mesh pixels in it.
 
-        Therefore, by setting `settings.image_mesh_adapt_background_percent_threshold` the code is forced
+        Therefore, by setting `image_mesh_adapt_background_percent_threshold` the code is forced
         to adapt the image mesh in a way that places many mesh pixels in the background regions.
 
         Parameters
@@ -405,11 +413,11 @@ class Hilbert(AbstractImageMeshWeighted):
             return
 
         if settings is not None:
-            if settings.image_mesh_adapt_background_percent_threshold is not None:
+            if image_mesh_adapt_background_percent_threshold is not None:
                 pixels = mesh_grid.shape[0]
 
                 pixels_in_background = int(
-                    mask.shape_slim * settings.image_mesh_adapt_background_percent_check
+                    mask.shape_slim * image_mesh_adapt_background_percent_check
                 )
 
                 indices_of_lowest_values = np.argsort(adapt_data)[:pixels_in_background]
@@ -425,6 +433,6 @@ class Hilbert(AbstractImageMeshWeighted):
                 )
 
                 if mesh_pixels_in_background < (
-                    pixels * settings.image_mesh_adapt_background_percent_threshold
+                    pixels * image_mesh_adapt_background_percent_threshold
                 ):
                     raise exc.InversionException()

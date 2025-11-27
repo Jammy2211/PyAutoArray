@@ -30,7 +30,6 @@ class AbstractImageMesh:
         self,
         mask: Mask2D,
         adapt_data: Optional[np.ndarray] = None,
-        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         raise NotImplementedError
 

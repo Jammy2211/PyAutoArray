@@ -22,7 +22,7 @@ class Preloads:
         self,
         mapper_indices: np.ndarray = None,
         source_pixel_zeroed_indices: np.ndarray = None,
-        image_plane_mesh_grid : np.ndarray = None,
+        image_plane_mesh_grid: np.ndarray = None,
         linear_light_profile_blurred_mapping_matrix=None,
     ):
         """

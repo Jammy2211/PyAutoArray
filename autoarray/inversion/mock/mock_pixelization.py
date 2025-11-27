@@ -10,9 +10,7 @@ class MockPixelization(Pixelization):
         mapper=None,
         image_plane_mesh_grid=None,
     ):
-        super().__init__(
-            mesh=mesh, regularization=regularization
-        )
+        super().__init__(mesh=mesh, regularization=regularization)
 
         self.mapper = mapper
         self.image_plane_mesh_grid = image_plane_mesh_grid
