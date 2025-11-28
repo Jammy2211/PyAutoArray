@@ -42,6 +42,27 @@ def test__mesh_pixels_per_image_pixels_from(mask, mesh_grid, image_mesh):
     )
 
 
+def test__append_with_circle_edge_points():
+
+    image_plane_mesh_grid = aa.Grid2DIrregular(
+        values=[(0.0, 0.0), (1.0, 1.0), (2.0, 2.0)]
+    )
+
+    grid_with_circle = aa.image_mesh.append_with_circle_edge_points(
+        image_plane_mesh_grid=image_plane_mesh_grid,
+        centre=(0.0, 0.0),
+        radius=3.0,
+        n_points=4,
+    )
+
+    assert grid_with_circle == pytest.approx(
+        np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 3.0], [3.0, 0.0], [0.0, -3.0], [-3.0, 0.0]]), 1.0e-4
+    )
+
+
+
+
+
 def test__check_mesh_pixels_per_image_pixels(mask, mesh_grid, image_mesh):
     image_mesh.check_mesh_pixels_per_image_pixels(
         mask=mask,
