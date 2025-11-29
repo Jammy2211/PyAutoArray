@@ -9,7 +9,6 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
-from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray import exc

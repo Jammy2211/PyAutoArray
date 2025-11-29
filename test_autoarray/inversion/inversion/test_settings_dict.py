@@ -15,7 +15,6 @@ def make_settings_dict():
         "arguments": {
             "use_positive_only_solver": False,
             "positive_only_uses_p_initial": False,
-            "force_edge_pixels_to_zeros": True,
             "no_regularization_add_to_curvature_diag_value": 1e-08,
             "use_w_tilde_numpy": False,
             "use_source_loop": False,

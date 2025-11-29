@@ -1,16 +1,46 @@
 from typing import Optional
 
 import numpy as np
-import os
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray.structures.grids import grid_2d_util
 
-from autoarray import exc
+
+def append_with_circle_edge_points(image_plane_mesh_grid, centre, radius, n_points):
+    """
+    Generate N uniformly spaced (y, x) coordinates around a circle.
+
+    Parameters
+    ----------
+    centre : (float, float)
+        The (y, x) centre of the circle.
+    radius : float
+        Circle radius.
+    n_points : int
+        Number of points around the circle.
+    xp : array namespace (np or jnp)
+        Function will use NumPy or JAX depending on what is passed.
+
+    Returns
+    -------
+    coords : (n_points, 2) xp.ndarray
+        Array of (y, x) coordinates sampled uniformly around the circle.
+    """
+    y0, x0 = centre
+
+    # angles from 0 to 2π
+    theta = np.linspace(0, 2 * np.pi, n_points, endpoint=False)
+
+    # parametric circle
+    ys = y0 + radius * np.sin(theta)
+    xs = x0 + radius * np.cos(theta)
+
+    circle_edge_points = np.stack([ys, xs], axis=-1)
+
+    return Grid2DIrregular(np.vstack([image_plane_mesh_grid, circle_edge_points]))
 
 
 class AbstractImageMesh:

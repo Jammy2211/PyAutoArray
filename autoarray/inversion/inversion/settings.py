@@ -13,7 +13,6 @@ class SettingsInversion:
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,
-        force_edge_pixels_to_zeros: bool = True,
         no_regularization_add_to_curvature_diag_value: float = None,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
@@ -52,7 +51,6 @@ class SettingsInversion:
         self._use_positive_only_solver = use_positive_only_solver
         self._positive_only_uses_p_initial = positive_only_uses_p_initial
         self._use_border_relocator = use_border_relocator
-        self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
         )
