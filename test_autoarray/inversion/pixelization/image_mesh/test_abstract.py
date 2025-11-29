@@ -56,11 +56,19 @@ def test__append_with_circle_edge_points():
     )
 
     assert grid_with_circle == pytest.approx(
-        np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 3.0], [3.0, 0.0], [0.0, -3.0], [-3.0, 0.0]]), 1.0e-4
+        np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 1.0],
+                [2.0, 2.0],
+                [0.0, 3.0],
+                [3.0, 0.0],
+                [0.0, -3.0],
+                [-3.0, 0.0],
+            ]
+        ),
+        1.0e-4,
     )
-
-
-
 
 
 def test__check_mesh_pixels_per_image_pixels(mask, mesh_grid, image_mesh):

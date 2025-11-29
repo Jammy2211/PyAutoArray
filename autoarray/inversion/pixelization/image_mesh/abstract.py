@@ -43,7 +43,6 @@ def append_with_circle_edge_points(image_plane_mesh_grid, centre, radius, n_poin
     return Grid2DIrregular(np.vstack([image_plane_mesh_grid, circle_edge_points]))
 
 
-
 class AbstractImageMesh:
     def __init__(self):
         """
