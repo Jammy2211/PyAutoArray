@@ -950,7 +950,7 @@ class Grid2D(Structure):
         centre: Tuple[float, float] = (0.0, 0.0),
         angle: float = 0.0,
         shape_slim: Optional[int] = 0,
-        remove_projected_centre: bool = None,
+        remove_projected_centre: bool = False,
     ) -> Grid2DIrregular:
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
@@ -1014,11 +1014,6 @@ class Grid2D(Structure):
         grid_radial_projected_2d = geometry_util.transform_grid_2d_from_reference_frame(
             grid_2d=grid_radial_projected_2d, centre=centre, angle=0.0
         )
-
-        if remove_projected_centre is None:
-            remove_projected_centre = conf.instance["general"]["grid"][
-                "remove_projected_centre"
-            ]
 
         if remove_projected_centre:
             grid_radial_projected_2d = grid_radial_projected_2d[1:, :]
