@@ -327,9 +327,6 @@ class AbstractInversion:
         For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
-
-        If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
-        are regularized so high their value is forced to zero.
         """
         if self._xp.__name__.startswith("jax"):
             from jax.scipy.linalg import block_diag
@@ -425,10 +422,7 @@ class AbstractInversion:
         """
         if self.settings.use_positive_only_solver:
 
-            if (
-                self.preloads.source_pixel_zeroed_indices is not None
-                and self.settings.force_edge_pixels_to_zeros
-            ):
+            if self.preloads.source_pixel_zeroed_indices is not None:
 
                 # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
                 ids_to_keep = self.preloads.source_pixel_zeroed_indices_to_keep
