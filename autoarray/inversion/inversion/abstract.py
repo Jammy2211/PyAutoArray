@@ -420,6 +420,7 @@ class AbstractInversion:
             ZTZ := np.dot(Z.T, Z)
             ZTx := np.dot(Z.T, x)
         """
+
         if self.settings.use_positive_only_solver:
 
             if self.preloads.source_pixel_zeroed_indices is not None:
