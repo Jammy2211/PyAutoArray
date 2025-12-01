@@ -2,90 +2,27 @@ from functools import partial
 import numpy as np
 from typing import Tuple
 
-
-def forward_interp(xp, yp, x):
-
-    import jax
-    import jax.numpy as jnp
-
-    return jax.vmap(jnp.interp, in_axes=(1, 1, 1, None, None), out_axes=(1))(
-        x, xp, yp, 0, 1
-    )
-
-
-def reverse_interp(xp, yp, x):
-    import jax
-    import jax.numpy as jnp
-
-    return jax.vmap(jnp.interp, in_axes=(1, 1, 1), out_axes=(1))(x, xp, yp)
-
-
-def forward_interp_np(xp, yp, x):
-    """
-    xp: (N, M)
-    yp: (N, M)
-    x : (M,)  ← one x per column
-    """
-
-    if yp.ndim == 1 and xp.ndim == 2:
-        yp = np.broadcast_to(yp[:, None], xp.shape)
-
-    K, M = x.shape
-
-    out = np.empty((K, 2), dtype=xp.dtype)
-
-    for j in range(2):
-        out[:, j] = np.interp(x[:, j], xp[:, j], yp[:, j], left=0, right=1)
-
-    return out
-
-
-def reverse_interp_np(xp, yp, x):
-    """
-    xp : (N,) or (N, M)
-    yp : (N, M)
-    x  : (K, M)   query points per column
-    """
-
-    # Ensure xp is 2D: (N, M)
-    if xp.ndim == 1 and yp.ndim == 2:  # (N, 1)
-        xp = np.broadcast_to(xp[:, None], yp.shape)
-
-    # Shapes
-    K, M = x.shape
-
-    # Output
-    out = np.empty((K, 2), dtype=yp.dtype)
-
-    # Column-wise interpolation (cannot avoid this loop in pure NumPy)
-    for j in range(2):
-        out[:, j] = np.interp(x[:, j], xp[:, j], yp[:, j])
-
-    return out
-
-
-def create_transforms(traced_points, mesh_weight_map=None, xp=np):
-
-    N = traced_points.shape[0]  # // 2
-
-    if mesh_weight_map is None:
-        t = xp.arange(1, N + 1) / (N + 1)
-        t = xp.stack([t, t], axis=1)
-        sort_points = xp.sort(traced_points, axis=0)  # [::2]
-    else:
-        sdx = xp.argsort(traced_points, axis=0)
-        sort_points = xp.take_along_axis(traced_points, sdx, axis=0)
-        t = xp.stack([mesh_weight_map, mesh_weight_map], axis=1)
-        t = xp.take_along_axis(t, sdx, axis=0)
-        t = xp.cumsum(t, axis=0)
+def transform_and_inv_transform_from(source_grid_scaled, mesh_weight_map, xp=np):
 
     if xp.__name__.startswith("jax"):
-        transform = partial(forward_interp, sort_points, t)
-        inv_transform = partial(reverse_interp, t, sort_points)
-        return transform, inv_transform
 
-    transform = partial(forward_interp_np, sort_points, t)
-    inv_transform = partial(reverse_interp_np, t, sort_points)
+        from autoarray.inversion.pixelization.mappers.rectangular_interp import util_jax
+
+        transform, inv_transform = util_jax.create_transforms(
+            source_grid_scaled,
+            deg=21,
+            mesh_weight_map=mesh_weight_map
+        )
+
+    else:
+
+        from autoarray.inversion.pixelization.mappers.rectangular_interp import util_np
+
+        transform, inv_transform = util_np.create_transforms(
+            source_grid_scaled,
+            mesh_weight_map=mesh_weight_map
+        )
+
     return transform, inv_transform
 
 
@@ -97,8 +34,10 @@ def adaptive_rectangular_transformed_grid_from(
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
-    transform, inv_transform = create_transforms(
-        source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp
+    transform, inv_transform = transform_and_inv_transform_from(
+        source_grid_scaled=source_grid_scaled,
+        mesh_weight_map=mesh_weight_map,
+        xp=xp
     )
 
     def inv_full(U):
@@ -118,8 +57,10 @@ def adaptive_rectangular_areas_from(
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
-    transform, inv_transform = create_transforms(
-        source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp
+    transform, inv_transform = transform_and_inv_transform_from(
+        source_grid_scaled=source_grid_scaled,
+        mesh_weight_map=mesh_weight_map,
+        xp=xp
     )
 
     def inv_full(U):
@@ -194,15 +135,16 @@ def adaptive_rectangular_mappings_weights_via_interpolation_from(
         The bilinear interpolation weights for each of the four neighboring pixels.
         Order: [w_bl, w_br, w_tl, w_tr].
     """
-
     # --- Step 1. Normalize grid ---
     mu = source_plane_data_grid.mean(axis=0)
     scale = source_plane_data_grid.std(axis=0).min()
     source_grid_scaled = (source_plane_data_grid - mu) / scale
 
     # --- Step 2. Build transforms ---
-    transform, inv_transform = create_transforms(
-        source_grid_scaled, mesh_weight_map=mesh_weight_map, xp=xp
+    transform, inv_transform = transform_and_inv_transform_from(
+        source_grid_scaled=source_grid_scaled,
+        mesh_weight_map=mesh_weight_map,
+        xp=xp
     )
 
     # --- Step 3. Transform oversampled grid into index space ---
