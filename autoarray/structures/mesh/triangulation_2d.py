@@ -10,6 +10,42 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 from autoarray.structures.grids import grid_2d_util
 
 
+import numpy as np
+import scipy.spatial
+
+
+def scipy_delaunay_padded(points_np, max_simplices):
+    tri = scipy.spatial.Delaunay(points_np)
+
+    pts = tri.points  # same dtype as input
+    simplices = tri.simplices.astype(np.int32)
+
+    # Pad simplices to fixed size (max_simplices, 3)
+    padded = -np.ones((max_simplices, 3), dtype=np.int32)
+    padded[: simplices.shape[0]] = simplices
+
+    return pts, padded
+
+
+
+def jax_delaunay(points):
+
+    import jax
+    import jax.numpy as jnp
+
+    N = points.shape[0]
+    max_simplices = 2 * N
+
+    pts_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
+    simp_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
+
+    return jax.pure_callback(
+        lambda pts: scipy_delaunay_padded(pts, max_simplices),
+        (pts_shape, simp_shape),
+        points,
+    )
+
+
 class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __init__(
         self,
@@ -84,15 +120,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
-
-        import scipy.spatial
-
-        try:
-            return scipy.spatial.Delaunay(
-                np.asarray([self.array[:, 0], self.array[:, 1]]).T
-            )
-        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
-            raise exc.MeshException() from e
+        return jax_delaunay(
+            jnp.stack([self.array[:, 0], self.array[:, 1]]).T
+        )
 
     @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
