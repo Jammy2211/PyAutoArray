@@ -487,9 +487,13 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
         """
 
+        half_region_area_sqrt_lengths = 0.5 * np.sqrt(
+            self.voronoi_pixel_areas_for_split
+        )
+
         return split_points_from(
             points=self.array,
-            area_weights=0.5 * self.delaunay.areas,
+            area_weights=half_region_area_sqrt_lengths,
             xp=self._xp,
         )
 
@@ -502,21 +506,10 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         an input value of N% the maximum area of the Voronoi mesh, which this value is suitable for different
         calculations.
         """
-        voronoi_vertices = self.voronoi.vertices
-        voronoi_regions = self.voronoi.regions
-        voronoi_point_region = self.voronoi.point_region
-        region_areas = np.zeros(self.pixels)
-
-        for i in range(self.pixels):
-            region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
-            if -1 in region_vertices_indexes:
-                region_areas[i] = -1
-            else:
-                region_areas[i] = grid_2d_util.compute_polygon_area(
-                    voronoi_vertices[region_vertices_indexes]
-                )
-
-        return region_areas
+        return voronoi_areas_via_delaunay_from(
+            self.delaunay.points,
+            self.delaunay.simplices,
+        )
 
     @property
     def voronoi_pixel_areas_for_split(self) -> np.ndarray:
