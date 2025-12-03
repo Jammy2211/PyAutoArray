@@ -3,6 +3,7 @@ import pytest
 
 import autoarray as aa
 
+from autoarray.structures.mesh.triangulation_2d import vertex_areas_from_delaunay
 
 def test__edge_pixel_list():
     grid = np.array(
@@ -58,3 +59,4 @@ def test__interpolated_array_from():
     assert interpolated_array.native == pytest.approx(
         np.array([[1.0, 1.907216], [1.0, 1.0], [1.0, 1.0]]), 1.0e-4
     )
+

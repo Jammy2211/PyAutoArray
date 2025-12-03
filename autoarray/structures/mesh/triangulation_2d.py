@@ -1,5 +1,5 @@
 import numpy as np
-
+import scipy.spatial
 from typing import List, Union, Tuple
 
 from autoconf import cached_property
@@ -12,8 +12,7 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 from autoarray.structures.grids import grid_2d_util
 
 
-import numpy as np
-import scipy.spatial
+
 
 
 def scipy_delaunay_padded(points_np, max_simplices):
@@ -146,7 +145,10 @@ def vertex_areas_from_delaunay(points, simplices, xp=np):
     vertex_area = xp.zeros(n_pts)
 
     # Scatter-add: NumPy and JAX both support this API!
-    vertex_area = vertex_area.at[scatter_idx].add(scatter_vals)
+    if xp.__name__.startswith("jax"):
+        vertex_area = vertex_area.at[scatter_idx].add(scatter_vals)
+    else:
+        np.add.at(vertex_area, scatter_idx, scatter_vals)
 
     return vertex_area
 
@@ -289,6 +291,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
+
         mesh_grid = self._xp.stack([self.array[:, 0], self.array[:, 1]]).T
 
         if self._xp.__name__.startswith("jax"):
