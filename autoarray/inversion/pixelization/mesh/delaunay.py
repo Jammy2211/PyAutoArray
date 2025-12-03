@@ -55,5 +55,5 @@ class Delaunay(Triangulation):
         """
 
         return Mesh2DDelaunay(
-            values=source_plane_mesh_grid,
+            values=source_plane_mesh_grid, _xp=xp
         )
