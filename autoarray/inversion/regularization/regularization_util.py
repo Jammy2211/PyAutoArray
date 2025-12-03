@@ -185,12 +185,57 @@ def reg_split_from(
     return mappings, sizes_new, weights
 
 
-def pixel_splitted_regularization_matrix_from(
+
+
+def pixel_splitted_regularization_matrix_np_from(
     regularization_weights: np.ndarray,
     splitted_mappings: np.ndarray,
     splitted_sizes: np.ndarray,
     splitted_weights: np.ndarray,
 ) -> np.ndarray:
+    # I'm not sure what is the best way to add surface brightness weight to the regularization scheme here.
+    # Currently, I simply mulitply the i-th weight to the i-th source pixel, but there should be different ways.
+    # Need to keep an eye here.
+
+    parameters = int(len(splitted_mappings) / 4)
+
+    regularization_matrix = np.zeros(shape=(parameters, parameters))
+
+    regularization_weight = regularization_weights**2.0
+
+    for i in range(parameters):
+        regularization_matrix[i, i] += 2e-8
+
+        for j in range(4):
+            k = i * 4 + j
+
+            size = splitted_sizes[k]
+            mapping = splitted_mappings[k]
+            weight = splitted_weights[k]
+
+            for l in range(size):
+                for m in range(size - l):
+                    regularization_matrix[mapping[l], mapping[l + m]] += (
+                        weight[l] * weight[l + m] * regularization_weight[i]
+                    )
+                    regularization_matrix[mapping[l + m], mapping[l]] += (
+                        weight[l] * weight[l + m] * regularization_weight[i]
+                    )
+
+    for i in range(parameters):
+        regularization_matrix[i, i] /= 2.0
+
+    return regularization_matrix
+
+
+
+def pixel_splitted_regularization_matrix_from(
+    regularization_weights: np.ndarray,   # (P,)
+    splitted_mappings: np.ndarray,        # (4P, 4)
+    splitted_sizes: np.ndarray,           # (4P,)
+    splitted_weights: np.ndarray,          # (4P, 4)
+    xp=np,
+):
     """
     Returns the regularization matrix for the adaptive split-pixel regularization scheme.
 
@@ -220,25 +265,50 @@ def pixel_splitted_regularization_matrix_from(
     The regularization matrix of shape [source_pixels, source_pixels].
     """
 
-    parameters = splitted_mappings.shape[0] // 4
-    regularization_matrix = np.zeros((parameters, parameters))
-    regularization_weight = regularization_weights**2.0
+    if xp == np:
+        return pixel_splitted_regularization_matrix_np_from(
+            regularization_weights=regularization_weights,
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
+        )
 
-    # Add small constant to diagonal
-    np.fill_diagonal(regularization_matrix, 2e-8)
+    import jax.numpy as jnp
 
-    # Compute regularization contributions
-    for i in range(parameters):
-        reg_w = regularization_weight[i]
-        for j in range(4):
-            k = i * 4 + j
-            size = splitted_sizes[k]
-            mapping = splitted_mappings[k][:size]
-            weight = splitted_weights[k][:size]
+    # How many real pixels?
+    P = splitted_mappings.shape[0] // 4
 
-            # Outer product of weights and symmetric updates
-            outer = np.outer(weight, weight) * reg_w
-            rows, cols = np.meshgrid(mapping, mapping, indexing="ij")
-            regularization_matrix[rows, cols] += outer
+    # Square, positive regularization weights
+    reg_w = regularization_weights**2.0              # (P,)
 
-    return regularization_matrix
+    # Add diagonal jitter (2e-8)
+    reg_mat = jnp.eye(P) * 2e-8                      # (P, P)
+
+    # ----- Build all 4P contributions at once -----
+
+    # Mask away padded entries (where mapping = -1)
+    valid = splitted_mappings != -1                  # (4P, 4)
+
+    # Extract valid mapping rows and weights
+    # BUT keep fixed shape (4) and just zero out invalid ones
+    map_fixed = jnp.where(valid, splitted_mappings, 0)  # (4P, 4)
+    w_fixed   = jnp.where(valid, splitted_weights,  0.) # (4P, 4)
+
+    # Compute all outer products of weights
+    # w_fixed[:, :, None] * w_fixed[:, None, :]  → (4P, 4, 4)
+    outer = w_fixed[:, :, None] * w_fixed[:, None, :]   # (4P, 4, 4)
+
+    # Build corresponding row and col index grids
+    rows = map_fixed[:, :, None]   # (4P, 4, 1)
+    cols = map_fixed[:, None, :]   # (4P, 1, 4)
+
+    # Multiply each 4x4 block by its pixel’s regularization weight
+    # Rows 0–3 belong to pixel 0, rows 4–7 to pixel 1, etc.
+    pixel_index = jnp.arange(4 * P) // 4            # (4P,)
+    block_scale = reg_w[pixel_index]                # (4P,)
+    outer_scaled = outer * block_scale[:, None, None]
+
+    # Now scatter-add all entries into the (P,P) matrix
+    reg_mat = reg_mat.at[rows, cols].add(outer_scaled)
+
+    return reg_mat

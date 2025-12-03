@@ -115,6 +115,7 @@ class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
                 splitted_mappings=splitted_mappings,
                 splitted_sizes=splitted_sizes,
                 splitted_weights=splitted_weights,
+                xp=xp
             )
         )
 
