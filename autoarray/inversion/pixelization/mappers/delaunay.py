@@ -8,6 +8,7 @@ from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 
+
 class MapperDelaunay(AbstractMapper):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -106,6 +107,9 @@ class MapperDelaunay(AbstractMapper):
         (see `mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from`).
         """
         delaunay = self.delaunay
+
+        print(delaunay.points)
+        print(delaunay.simplices)
 
         simplex_index_for_sub_slim_index = delaunay.find_simplex(
             self.source_plane_data_grid.over_sampled

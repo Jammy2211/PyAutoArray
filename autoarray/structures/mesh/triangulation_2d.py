@@ -26,8 +26,6 @@ def scipy_delaunay_padded(points_np, max_simplices):
 
     return pts, padded
 
-
-
 def jax_delaunay(points):
 
     import jax
@@ -45,6 +43,72 @@ def jax_delaunay(points):
         points,
     )
 
+def find_simplex_from(query_points, points, simplices):
+    """
+    Return simplex index for each query point.
+    Returns -1 where no simplex contains the point.
+    """
+
+    import jax
+    import jax.numpy as jnp
+
+    # Mask padded simplices (marked with -1)
+    valid = simplices[:, 0] >= 0        # (M,)
+    simplices_clipped = simplices.clip(min=0)
+
+    # Triangle vertices: (M, 3, 2)
+    tri = points[simplices_clipped]
+
+    p0 = tri[:, 0]       # (M, 2)
+    p1 = tri[:, 1]
+    p2 = tri[:, 2]
+
+    # Edges
+    v0 = p1 - p0         # (M, 2)
+    v1 = p2 - p0
+
+    # Precomputed dot products
+    d00 = jnp.sum(v0 * v0, axis=1)      # (M,)
+    d01 = jnp.sum(v0 * v1, axis=1)
+    d11 = jnp.sum(v1 * v1, axis=1)
+    denom = d00 * d11 - d01 * d01       # (M,)
+
+    # Barycentric computation for each query point vs each triangle
+    diff = query_points[:, None, :] - p0[None, :, :]    # (Q, M, 2)
+
+    a = jnp.sum(diff * v0[None, :, :], axis=-1)          # (Q, M)
+    b = jnp.sum(diff * v1[None, :, :], axis=-1)
+
+    b0 = (a * d11 - b * d01) / denom    # (Q, M)
+    b1 = (b * d00 - a * d01) / denom
+
+    # Inside test
+    inside = (b0 >= 0.0) & (b1 >= 0.0) & (b0 + b1 <= 1.0)   # (Q, M)
+
+    # Remove padded simplices
+    inside = inside & valid[None, :]
+
+    # First valid simplex per point
+    simplex_idx = jnp.argmax(inside, axis=1)              # (Q,)
+
+    # Detect points with no simplex match
+    has_match = jnp.any(inside, axis=1)                   # (Q,)
+
+    # Replace unmatched with -1
+    simplex_idx = jnp.where(has_match, simplex_idx, -1)
+
+    return simplex_idx
+
+
+class DelaunayInterface:
+
+    def __init__(self, ppoints, simplices):
+
+        self.points = ppoints
+        self.simplices = simplices
+
+    def find_simplex(self, query_points):
+        return find_simplex_from(query_points, self.points, self.simplices)
 
 class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __init__(
@@ -120,9 +184,13 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
-        return jax_delaunay(
+        import jax.numpy as jnp
+
+        points, simplices = jax_delaunay(
             jnp.stack([self.array[:, 0], self.array[:, 1]]).T
         )
+
+        return DelaunayInterface(points, simplices)
 
     @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
