@@ -74,6 +74,11 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         simplices = mapper.delaunay.simplices
 
+        # Remove padded -1 values required for JAX
+        simplices = np.asarray(simplices)
+        valid_mask = np.all(simplices >= 0, axis=1)
+        simplices = simplices[valid_mask]
+
         facecolors = facecolors_from(values=pixel_values, simplices=simplices)
 
         norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)

@@ -134,16 +134,16 @@ class MapperPlotter(AbstractPlotter):
         auto_labels
             The labels given to the figure.
         """
-        # try:
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.mapper,
-            visuals_2d=self.visuals_2d,
-            auto_labels=auto_labels,
-            pixel_values=pixel_values,
-            zoom_to_brightest=zoom_to_brightest,
-            interpolate_to_uniform=interpolate_to_uniform,
-        )
-        # except ValueError:
-        #     logger.info(
-        #         "Could not plot the source-plane via the Mapper because of a ValueError."
-        #     )
+        try:
+            self.mat_plot_2d.plot_mapper(
+                mapper=self.mapper,
+                visuals_2d=self.visuals_2d,
+                auto_labels=auto_labels,
+                pixel_values=pixel_values,
+                zoom_to_brightest=zoom_to_brightest,
+                interpolate_to_uniform=interpolate_to_uniform,
+            )
+        except ValueError:
+            logger.info(
+                "Could not plot the source-plane via the Mapper because of a ValueError."
+            )
