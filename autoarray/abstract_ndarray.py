@@ -73,15 +73,6 @@ class AbstractNDArray(ABC):
         while isinstance(array, AbstractNDArray):
             array = array.array
         self._array = array
-        # try:
-        #     register_pytree_node(
-        #         type(self),
-        #         self.instance_flatten,
-        #         self.instance_unflatten,
-        #     )
-        # except ValueError:
-        #     pass
-
         self._xp = xp
 
     def invert(self):

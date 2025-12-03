@@ -9,6 +9,95 @@ from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 
 
+import numpy as np
+import jax.numpy as jnp
+
+
+def pix_indexes_for_sub_slim_index_delaunay_from(
+    source_plane_data_grid,          # (N_sub, 2)
+    simplex_index_for_sub_slim_index,  # (N_sub,)
+    pix_indexes_for_simplex_index,   # (M, 3)
+    delaunay_points,                 # (N_points, 2)
+    xp=np,                           # <--- choose backend: np or jnp
+):
+    """
+    XP-compatible version of pix_indexes_for_sub_slim_index_delaunay_from.
+
+    If xp=np: runs with NumPy (no JAX needed)
+    If xp=jnp: runs inside JAX (jit, vmap, GPU)
+
+    Returns
+    -------
+    pix_indexes_for_sub_slim_index : (N_sub, 3)
+    pix_indexes_for_sub_slim_index_sizes : (N_sub,)
+    """
+
+    # Helper: xp.ones_like that supports setting dtype
+    def ones_like(x, dtype):
+        return xp.ones(x.shape, dtype=dtype)
+
+    N_sub = source_plane_data_grid.shape[0]
+
+    # Boolean mask for points that fall inside simplices
+    inside_mask = simplex_index_for_sub_slim_index >= 0     # shape (N_sub,)
+    outside_mask = ~inside_mask
+
+    # ----------------------------
+    # Case 1: inside a simplex
+    # ----------------------------
+    # (N_sub, 3)
+    pix_inside = xp.where(
+        inside_mask[:, None],
+        pix_indexes_for_simplex_index[simplex_index_for_sub_slim_index],
+        -ones_like((inside_mask[:, None] + 0), dtype=np.int32),  # -1 filler
+    )
+
+    # ----------------------------
+    # Case 2: outside any simplex → nearest delaunay point
+    # ----------------------------
+    # Squared distances: (N_sub, N_points)
+    d2 = xp.sum(
+        (source_plane_data_grid[:, None, :] - delaunay_points[None, :, :]) ** 2.0,
+        axis=-1,
+    )
+
+    nearest = xp.argmin(d2, axis=1).astype(np.int32)   # (N_sub,)
+
+    # (N_sub, 3) → [nearest, -1, -1]
+    nn_triplets = xp.stack(
+        [
+            nearest,
+            -ones_like(nearest, dtype=np.int32),
+            -ones_like(nearest, dtype=np.int32),
+        ],
+        axis=1,
+    )
+
+    pix_outside = xp.where(
+        outside_mask[:, None],
+        nn_triplets,
+        -ones_like((outside_mask[:, None] + 0), dtype=np.int32),
+    )
+
+    # ----------------------------
+    # Combine inside + outside
+    # ----------------------------
+    pix_indexes_for_sub_slim_index = xp.where(
+        inside_mask[:, None],
+        pix_inside,
+        pix_outside,
+    )
+
+    # ----------------------------
+    # Count valid entries
+    # ----------------------------
+    pix_sizes = xp.sum(pix_indexes_for_sub_slim_index >= 0, axis=1)
+
+    return pix_indexes_for_sub_slim_index, pix_sizes
+
+
+
+
 class MapperDelaunay(AbstractMapper):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -108,22 +197,18 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        print(delaunay.points)
-        print(delaunay.simplices)
-
         simplex_index_for_sub_slim_index = delaunay.find_simplex(
             self.source_plane_data_grid.over_sampled
         )
         pix_indexes_for_simplex_index = delaunay.simplices
 
         mappings, sizes = (
-            mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from(
-                source_plane_data_grid=np.array(
-                    self.source_plane_data_grid.over_sampled
-                ),
+            pix_indexes_for_sub_slim_index_delaunay_from(
+                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
                 simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
                 pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
                 delaunay_points=delaunay.points,
+                xp=self._xp,
             )
         )
 
@@ -162,11 +247,12 @@ class MapperDelaunay(AbstractMapper):
         (
             splitted_mappings,
             splitted_sizes,
-        ) = mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from(
+        ) = pix_indexes_for_sub_slim_index_delaunay_from(
             source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
             simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
+            xp=self._xp,
         )
 
         splitted_weights = mapper_numba_util.pixel_weights_delaunay_from(

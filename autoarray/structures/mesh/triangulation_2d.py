@@ -114,6 +114,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __init__(
         self,
         values: Union[np.ndarray, List],
+        _xp=np
     ):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
@@ -145,7 +146,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         if type(values) is list:
             values = np.asarray(values)
 
-        super().__init__(values)
+        super().__init__(values, xp=_xp)
 
     @property
     def geometry(self):
@@ -184,11 +185,22 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
-        import jax.numpy as jnp
+        mesh_grid = self._xp.stack([self.array[:, 0], self.array[:, 1]]).T
 
-        points, simplices = jax_delaunay(
-            jnp.stack([self.array[:, 0], self.array[:, 1]]).T
-        )
+        if self._xp.__name__.startswith("jax"):
+
+            import jax.numpy as jnp
+
+            points, simplices = jax_delaunay(mesh_grid)
+
+        else:
+
+            delaunay = scipy.spatial.Delaunay(
+                mesh_grid
+            )
+
+            points = delaunay.points
+            simplices = delaunay.simplices.astype(np.int32)
 
         return DelaunayInterface(points, simplices)
 

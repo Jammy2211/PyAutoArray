@@ -4,6 +4,7 @@ import scipy.spatial
 import autoarray as aa
 
 from autoarray.structures.mesh.triangulation_2d import find_simplex_from
+from autoarray.inversion.pixelization.mappers.delaunay import pix_indexes_for_sub_slim_index_delaunay_from
 
 def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     mesh_grid = aa.Grid2D.no_mask(
@@ -13,7 +14,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid)
+    mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid, _xp=np)
 
     mapper_grids = aa.MapperGrids(
         mask=grid_2d_sub_1_7x7.mask,
@@ -31,7 +32,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     (
         pix_indexes_for_sub_slim_index_util,
         sizes,
-    ) = aa.util.mapper_numba.pix_indexes_for_sub_slim_index_delaunay_from(
+    ) = pix_indexes_for_sub_slim_index_delaunay_from(
         source_plane_data_grid=mapper.source_plane_data_grid.array,
         simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
