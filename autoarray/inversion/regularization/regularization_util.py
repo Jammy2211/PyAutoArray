@@ -62,24 +62,84 @@ def reg_split_from(
     -------
 
     """
-    splitted_weights *= -1.0
+    # splitted_weights *= -1.0
+    #
+    # for i in range(len(splitted_mappings)):
+    #     pixel_index = i // 4
+    #
+    #     flag = 0
+    #
+    #     for j in range(splitted_sizes[i]):
+    #         if splitted_mappings[i][j] == pixel_index:
+    #             splitted_weights[i][j] += 1.0
+    #             flag = 1
+    #
+    #     if flag == 0:
+    #         splitted_mappings[i][j + 1] = pixel_index
+    #         splitted_sizes[i] += 1
+    #         splitted_weights[i][j + 1] = 1.0
+    #
+    # return splitted_mappings, splitted_sizes, splitted_weights
 
-    for i in range(len(splitted_mappings)):
-        pixel_index = i // 4
+    import jax
+    import jax.numpy as jnp
+    import jax.nn as jnn
 
-        flag = 0
+    mappings = jnp.asarray(splitted_mappings)
+    sizes = jnp.asarray(splitted_sizes)
+    weights = jnp.asarray(splitted_weights)
 
-        for j in range(splitted_sizes[i]):
-            if splitted_mappings[i][j] == pixel_index:
-                splitted_weights[i][j] += 1.0
-                flag = 1
+    N, K = mappings.shape
 
-        if flag == 0:
-            splitted_mappings[i][j + 1] = pixel_index
-            splitted_sizes[i] += 1
-            splitted_weights[i][j + 1] = 1.0
+    # -------------------------------------------------------------
+    # 1. Negate all weights (same as Python: splitted_weights *= -1)
+    # -------------------------------------------------------------
+    weights = -weights
 
-    return splitted_mappings, splitted_sizes, splitted_weights
+    # -------------------------------------------------------------
+    # 2. Pixel index for each row: i // 4
+    # -------------------------------------------------------------
+    pixel_index = (jnp.arange(N) // 4).astype(mappings.dtype)  # (N,)
+    pix_b = pixel_index[:, None]                                # (N,1)
+
+    # -------------------------------------------------------------
+    # 3. Mask of valid columns j < size[i]
+    # -------------------------------------------------------------
+    cols = jnp.arange(K)[None, :]         # (1,4)
+    valid_mask = cols < sizes[:, None]    # (N,4)
+
+    # -------------------------------------------------------------
+    # 4. Self match: mapping[i,j] == pixel_index AND j is valid
+    # -------------------------------------------------------------
+    self_mask = (mappings == pix_b) & valid_mask               # (N,4)
+    row_has_self = jnp.any(self_mask, axis=1)                  # (N,)
+
+    # Position of self per row
+    self_pos = jnp.argmax(self_mask, axis=1)                   # (N,)
+
+    # -------------------------------------------------------------
+    # 5. Add +1 weight at self_pos where row_has_self == True
+    # -------------------------------------------------------------
+    one_hot = jnn.one_hot(self_pos, K, dtype=weights.dtype)    # (N,4)
+    weights = weights + one_hot * row_has_self[:, None]
+
+    # -------------------------------------------------------------
+    # 6. Handle rows where pixel_index must be inserted
+    # -------------------------------------------------------------
+    no_self = ~row_has_self
+
+    # Insert position = sizes[i]
+    insert_pos = sizes                                          # (N,)
+    insert_mask = no_self[:, None] & (cols == sizes[:, None])
+
+    # New mappings and weights
+    mappings = jnp.where(insert_mask, pix_b, mappings)
+    weights  = jnp.where(insert_mask, jnp.array(1.0, weights.dtype), weights)
+
+    # Updated sizes: +1 if no self detected
+    sizes_new = sizes + no_self.astype(sizes.dtype)
+
+    return mappings, sizes_new, weights
 
 
 def pixel_splitted_regularization_matrix_from(
