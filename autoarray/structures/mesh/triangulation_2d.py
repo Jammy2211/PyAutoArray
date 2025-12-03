@@ -102,10 +102,11 @@ def find_simplex_from(query_points, points, simplices):
 
 class DelaunayInterface:
 
-    def __init__(self, ppoints, simplices):
+    def __init__(self, ppoints, simplices, vertex_neighbor_vertices):
 
         self.points = ppoints
         self.simplices = simplices
+        self.vertex_neighbor_vertices = vertex_neighbor_vertices
 
     def find_simplex(self, query_points):
         return find_simplex_from(query_points, self.points, self.simplices)
@@ -192,6 +193,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             import jax.numpy as jnp
 
             points, simplices = jax_delaunay(mesh_grid)
+            vertex_neighbor_vertices = None
 
         else:
 
@@ -201,8 +203,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
             points = delaunay.points
             simplices = delaunay.simplices.astype(np.int32)
+            vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
-        return DelaunayInterface(points, simplices)
+        return DelaunayInterface(points, simplices, vertex_neighbor_vertices)
 
     @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
