@@ -13,8 +13,6 @@ from autoarray.structures.grids import grid_2d_util
 
 
 
-
-
 def scipy_delaunay_padded(points_np, max_simplices):
     tri = scipy.spatial.Delaunay(points_np)
 
@@ -148,7 +146,7 @@ def circumcenters_from(points, simplices, xp=np):
     return centers
 
 
-MAX_DEG_JAX = 128
+MAX_DEG_JAX = 32
 
 def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     """
