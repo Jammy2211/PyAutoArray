@@ -62,9 +62,6 @@ def reg_split_from(
     -------
 
     """
-
-    max_j = np.shape(splitted_weights)[1] - 1
-
     splitted_weights *= -1.0
 
     for i in range(len(splitted_mappings)):
@@ -76,11 +73,6 @@ def reg_split_from(
             if splitted_mappings[i][j] == pixel_index:
                 splitted_weights[i][j] += 1.0
                 flag = 1
-
-            if j >= max_j:
-                raise exc.MeshException(
-                    f"The number of Voronoi natural neighbours exceeds {max_j}."
-                )
 
         if flag == 0:
             splitted_mappings[i][j + 1] = pixel_index
