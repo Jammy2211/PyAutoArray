@@ -26,31 +26,22 @@ def scipy_delaunay_padded(points_np, max_simplices):
     return pts, padded
 
 
-def delaunay_no_vmap(points):
+def jax_delaunay(points):
 
     import jax
     import jax.numpy as jnp
 
-    # prevent batching
-    points = jax.lax.stop_gradient(points)
-
     N = points.shape[0]
     max_simplices = 2 * N
 
-    pts_spec  = jax.ShapeDtypeStruct((N, 2), points.dtype)
-    simp_spec = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
+    pts_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
+    simp_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
 
-    def _cb(pts):
-        return scipy_delaunay_padded(pts, max_simplices)
-
-    pts_out, simplices_out = jax.pure_callback(
-        _cb,
-        (pts_spec, simp_spec),
+    return jax.pure_callback(
+        lambda pts: scipy_delaunay_padded(pts, max_simplices),
+        (pts_shape, simp_shape),
         points,
-        vectorized=False,   # ← VERY IMPORTANT (JAX 0.4.33+)
     )
-
-    return pts_out, simplices_out
 
 
 def find_simplex_from(query_points, points, simplices):
@@ -415,7 +406,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
             import jax.numpy as jnp
 
-            points, simplices = delaunay_no_vmap(mesh_grid)
+            points, simplices = jax_delaunay(mesh_grid)
             vertex_neighbor_vertices = None
 
         else:
