@@ -66,6 +66,7 @@ class ConstantSplit(Constant):
             splitted_mappings=pix_sub_weights_split_cross.mappings,
             splitted_sizes=pix_sub_weights_split_cross.sizes,
             splitted_weights=pix_sub_weights_split_cross.weights,
+            xp=xp
         )
 
         pixels = int(len(splitted_mappings) / 4)

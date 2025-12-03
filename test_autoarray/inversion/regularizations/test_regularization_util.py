@@ -644,8 +644,6 @@ def test__reg_split_from(splitted_data):
         [-0.57, 0.57, -0.00, -0.00],
     ])
 
-    print(splitted_mappings)
-
     assert splitted_mappings == pytest.approx(expected_mappings, abs=1.0e-4)
     assert splitted_sizes    == pytest.approx(expected_sizes,    abs=1.0e-4)
     assert splitted_weights  == pytest.approx(expected_weights,  abs=1.0e-4)

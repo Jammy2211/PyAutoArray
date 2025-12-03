@@ -27,7 +27,7 @@ from autoarray.inversion.regularization.matern_kernel import matern_kernel
 from autoarray.inversion.regularization.zeroth import zeroth_regularization_matrix_from
 
 
-def reg_split_from(
+def reg_split_np_from(
     splitted_mappings: np.ndarray,
     splitted_sizes: np.ndarray,
     splitted_weights: np.ndarray,
@@ -62,26 +62,69 @@ def reg_split_from(
     -------
 
     """
-    # splitted_weights *= -1.0
-    #
-    # for i in range(len(splitted_mappings)):
-    #     pixel_index = i // 4
-    #
-    #     flag = 0
-    #
-    #     for j in range(splitted_sizes[i]):
-    #         if splitted_mappings[i][j] == pixel_index:
-    #             splitted_weights[i][j] += 1.0
-    #             flag = 1
-    #
-    #     if flag == 0:
-    #         splitted_mappings[i][j + 1] = pixel_index
-    #         splitted_sizes[i] += 1
-    #         splitted_weights[i][j + 1] = 1.0
-    #
-    # return splitted_mappings, splitted_sizes, splitted_weights
+    splitted_weights *= -1.0
 
-    import jax
+    for i in range(len(splitted_mappings)):
+
+        pixel_index = i // 4
+
+        flag = 0
+
+        for j in range(splitted_sizes[i]):
+            if splitted_mappings[i][j] == pixel_index:
+                splitted_weights[i][j] += 1.0
+                flag = 1
+
+        if flag == 0:
+            splitted_mappings[i][j + 1] = pixel_index
+            splitted_sizes[i] += 1
+            splitted_weights[i][j + 1] = 1.0
+
+    return splitted_mappings, splitted_sizes, splitted_weights
+
+def reg_split_from(
+    splitted_mappings: np.ndarray,
+    splitted_sizes: np.ndarray,
+    splitted_weights: np.ndarray,
+    xp=np,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    When creating the regularization matrix of a source pixelization, this function assumes each source pixel has been
+    split into a cross of four points (the size of which is based on the area of the source pixel). This cross of
+    points represents points which together can evaluate the gradient of the pixelization's reconstructed values.
+
+    This function takes each cross of points and determines the regularization weights of every point on the cross,
+    to construct a regulariaztion matrix based on the gradient of each pixel.
+
+    The size of each cross depends on the Voronoi pixel area, thus this regularization scheme and its weights depend
+    on the pixel area (there are larger weights for bigger pixels). This ensures that bigger pixels are regularized
+    more.
+
+    The number of pixel neighbors over which regularization is 4 * the total number of source pixels. This contrasts
+    other regularization schemes, where the number of neighbors changes depending on, for example, the Voronoi mesh
+    geometry. By having a fixed number of neighbors this removes stochasticty in the regularization that is applied
+    to a solution.
+
+    There are cases where a grid has over 100 neighbors, corresponding to very coordinate transformations. In such
+    extreme cases, we raise a `exc.FitException`.
+
+    Parameters
+    ----------
+    splitted_mappings
+    splitted_sizes
+    splitted_weights
+
+    Returns
+    -------
+
+    """
+    if xp == np:
+        return reg_split_np_from(
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
+        )
+
     import jax.numpy as jnp
     import jax.nn as jnn
 

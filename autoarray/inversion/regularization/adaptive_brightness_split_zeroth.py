@@ -106,6 +106,7 @@ class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
             splitted_mappings=pix_sub_weights_split_cross.mappings,
             splitted_sizes=pix_sub_weights_split_cross.sizes,
             splitted_weights=pix_sub_weights_split_cross.weights,
+            xp=xp
         )
 
         regularization_matrix = (
