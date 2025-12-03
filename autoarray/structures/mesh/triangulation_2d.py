@@ -148,6 +148,8 @@ def circumcenters_from(points, simplices, xp=np):
     return centers
 
 
+MAX_DEG_JAX = 128
+
 def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     """
     Compute 'Voronoi-ish' cell areas for each vertex in a 2D Delaunay triangulation.
@@ -172,6 +174,8 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     areas : (N,)
         Voronoi-ish area associated with each vertex.
     """
+    import jax
+    import jax.numpy as jnp
 
     pts = xp.asarray(points)
     tris = xp.asarray(simplices, dtype=int)
@@ -193,35 +197,28 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
 
     # 4) Compute how many triangles are incident to each vertex
     if xp is np:
-        counts = np.bincount(vert_sorted, minlength=N)  # (N,)
+        counts = xp.bincount(vert_sorted, minlength=N)   # (N,)
+        max_deg = int(counts.max())
     else:
-        counts = jnp.bincount(vert_sorted, length=N)    # (N,)
-
-    max_deg = int(counts.max()) if xp is np else int(counts.max().item())
+        counts = xp.bincount(vert_sorted, length=N)     # (N,)
+        max_deg = MAX_DEG_JAX                            # static upper bound
 
     # 5) Compute start index for each vertex's block in vert_sorted
     #    start[v] = cumulative sum of counts up to v
-    if xp is np:
-        start = np.concatenate([np.array([0], dtype=int), np.cumsum(counts[:-1])])
-    else:
-        start = jnp.concatenate([jnp.array([0], dtype=int), jnp.cumsum(counts[:-1])])
+    start = xp.concatenate([xp.array([0], dtype=int), xp.cumsum(counts[:-1])])
 
     # Global indices 0..3M-1
-    if xp is np:
-        arange_all = np.arange(3 * M, dtype=int)
-    else:
-        arange_all = jnp.arange(3 * M, dtype=int)
+    arange_all = xp.arange(3 * M, dtype=int)
 
     # Position within each vertex block: pos = i - start[vertex]
     start_per_entry = start[vert_sorted]       # (3M,)
     pos = arange_all - start_per_entry         # (3M,)
 
     # 6) Scatter into a padded (N, max_deg, 2) array of circumcenters
+    circum_padded = xp.zeros((N, max_deg, 2), dtype=pts.dtype)
     if xp is np:
-        circum_padded = np.zeros((N, max_deg, 2), dtype=pts.dtype)
         circum_padded[vert_sorted, pos, :] = centers_sorted
     else:
-        circum_padded = jnp.zeros((N, max_deg, 2), dtype=pts.dtype)
         circum_padded = circum_padded.at[vert_sorted, pos, :].set(centers_sorted)
 
     # 7) For each vertex, sort its circumcenters by angle around the vertex
@@ -231,10 +228,7 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     angles = xp.arctan2(dy, dx)
 
     # Mark which slots are valid (j < count[v])
-    if xp is np:
-        j_idx = np.arange(max_deg)[None, :]      # (1, max_deg)
-    else:
-        j_idx = jnp.arange(max_deg)[None, :]
+    j_idx = xp.arange(max_deg)[None, :]
     valid_mask = j_idx < counts[:, None]        # (N, max_deg)
 
     # For invalid entries, set angle to a big constant so they go to the end
@@ -245,18 +239,11 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     order_angles = xp.argsort(angles_masked, axis=1)   # (N, max_deg)
 
     # Reorder circumcenters accordingly
-    if xp is np:
-        centers_sorted2 = np.take_along_axis(
-            circum_padded,
-            order_angles[..., None].repeat(2, axis=2),
-            axis=1,
-        )  # (N, max_deg, 2)
-    else:
-        centers_sorted2 = jnp.take_along_axis(
-            circum_padded,
-            jnp.repeat(order_angles[..., None], 2, axis=2),
-            axis=1,
-        )
+    centers_sorted2 = xp.take_along_axis(
+        circum_padded,
+        order_angles[..., None].repeat(2, axis=2),
+        axis=1,
+    )  # (N, max_deg, 2)
 
     # 8) Compute polygon area with shoelace formula per vertex
     x = centers_sorted2[..., 0]  # (N, max_deg)
@@ -432,7 +419,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             simplices = delaunay.simplices.astype(np.int32)
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
-
         return DelaunayInterface(points, simplices, vertex_neighbor_vertices)
 
     @property
@@ -487,7 +473,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
         """
 
-        half_region_area_sqrt_lengths = 0.5 * np.sqrt(
+        half_region_area_sqrt_lengths = 0.5 * self._xp.sqrt(
             self.voronoi_pixel_areas_for_split
         )
 
@@ -507,8 +493,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         calculations.
         """
         return voronoi_areas_via_delaunay_from(
-            self.delaunay.points,
-            self.delaunay.simplices,
+            points=self.delaunay.points,
+            simplices=self.delaunay.simplices,
+            xp=self._xp,
         )
 
     @property
@@ -524,13 +511,20 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         with large regularization coefficients, which is preferred at the edge of the mesh where the reconstruction
         goes to zero.
         """
-        areas = self.voronoi_pixel_areas
+        areas = self._xp.asarray(self.voronoi_pixel_areas)
 
-        max_area = np.percentile(areas, 90.0)
+        # 90th percentile
+        max_area = self._xp.percentile(areas, 90.0)
 
-        areas[areas == -1] = max_area
-        areas[areas > max_area] = max_area
+        if self._xp is np:
+            # NumPy allows in-place mutation
+            areas[areas == -1] = max_area
+            areas[areas > max_area] = max_area
+            return areas
 
+        # JAX arrays are immutable → use .at[]
+        areas = self._xp.where(areas == -1, max_area, areas)
+        areas = self._xp.where(areas > max_area, max_area, areas)
         return areas
 
     @property

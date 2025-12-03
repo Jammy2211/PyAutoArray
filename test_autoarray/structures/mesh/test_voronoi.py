@@ -54,6 +54,8 @@ def test__mesh_areas():
 
     mesh = aa.Mesh2DVoronoi(values=grid)
 
+    print(mesh.voronoi_pixel_areas_for_split)
+
     assert mesh.voronoi_pixel_areas_for_split == pytest.approx(
         np.array(
             [
