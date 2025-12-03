@@ -509,7 +509,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         with large regularization coefficients, which is preferred at the edge of the mesh where the reconstruction
         goes to zero.
         """
-        areas = self._xp.asarray(self.voronoi_pixel_areas)
+        # areas = self._xp.asarray(self.voronoi_pixel_areas)
+
+        areas = self._xp.ones(self.shape[0])
 
         # 90th percentile
         max_area = self._xp.percentile(areas, 90.0)
