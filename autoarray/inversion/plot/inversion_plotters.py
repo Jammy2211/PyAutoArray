@@ -376,14 +376,14 @@ class InversionPlotter(AbstractPlotter):
         )
 
         self.set_title(label="Regularization Weights (Unzoomed)")
-        # try:
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index,
-            regularization_weights=True,
-            zoom_to_brightest=False,
-        )
-        # except IndexError:
-        #     pass
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index,
+                regularization_weights=True,
+                zoom_to_brightest=False,
+            )
+        except IndexError:
+            pass
         self.set_title(label=None)
 
         self.figures_2d_of_pixelization(
