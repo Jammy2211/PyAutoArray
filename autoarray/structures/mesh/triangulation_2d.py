@@ -103,54 +103,178 @@ def find_simplex_from(query_points, points, simplices):
     return simplex_idx
 
 
-def vertex_areas_from_delaunay(points, simplices, xp=np):
+def circumcenters_from(points, simplices, xp=np):
     """
-    Compute per-vertex areas using:
-        vertex_area[v] = sum(area(triangles incident to v)) / 3
+    Compute triangle circumcenters for a Delaunay triangulation, using either NumPy or JAX.
 
     Parameters
     ----------
-    points : (N_pts, 2) array
-    simplices : (N_tris, 3) array of triangle vertex indices
+    points : (N, 2)
+    simplices : (M, 3)
     xp : np or jnp
-        Backend to use.
 
     Returns
     -------
-    vertex_area : (N_pts,) array
-        Estimated area associated with each vertex.
+    circumcenters : (M, 2)
+    """
+    pts = xp.asarray(points)
+    tris = xp.asarray(simplices, dtype=int)
+
+    tri_pts = pts[tris]  # (M, 3, 2)
+
+    x0 = tri_pts[:, 0, 0]
+    y0 = tri_pts[:, 0, 1]
+    x1 = tri_pts[:, 1, 0]
+    y1 = tri_pts[:, 1, 1]
+    x2 = tri_pts[:, 2, 0]
+    y2 = tri_pts[:, 2, 1]
+
+    a = 2.0 * (x1 - x0)
+    b = 2.0 * (y1 - y0)
+    c = 2.0 * (x2 - x0)
+    d = 2.0 * (y2 - y0)
+
+    v1 = (x1**2 + y1**2) - (x0**2 + y0**2)
+    v2 = (x2**2 + y2**2) - (x0**2 + y0**2)
+
+    det = a * d - b * c
+    detx = v1 * d - v2 * b
+    dety = a * v2 - c * v1
+
+    x = detx / det
+    y = dety / det
+
+    centers = xp.stack([x, y], axis=1)  # (M, 2)
+    return centers
+
+
+def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
+    """
+    Compute 'Voronoi-ish' cell areas for each vertex in a 2D Delaunay triangulation.
+
+    For each vertex v:
+      - find all incident triangles
+      - get their circumcenters
+      - sort these circumcenters by angle around v
+      - compute polygon area by the shoelace formula
+
+    Parameters
+    ----------
+    points : (N, 2)
+        Delaunay vertices.
+    simplices : (M, 3)
+        Delaunay triangles (indices into `points`).
+    xp : np or jnp
+        Backend.
+
+    Returns
+    -------
+    areas : (N,)
+        Voronoi-ish area associated with each vertex.
     """
 
-    # Triangle vertices
-    p0 = points[simplices[:, 0]]  # (N_tris, 2)
-    p1 = points[simplices[:, 1]]
-    p2 = points[simplices[:, 2]]
+    pts = xp.asarray(points)
+    tris = xp.asarray(simplices, dtype=int)
+    N = pts.shape[0]
+    M = tris.shape[0]
 
-    # Compute triangle areas (vectorized)
-    tri_area = 0.5 * xp.abs(
-        (p1[:, 0] - p0[:, 0]) * (p2[:, 1] - p0[:, 1])
-        - (p1[:, 1] - p0[:, 1]) * (p2[:, 0] - p0[:, 0])
-    )  # (N_tris,)
+    # 1) Circumcenters for all triangles
+    centers = circumcenters_from(pts, tris, xp=xp)  # (M, 2)
 
-    # Area contribution to each vertex: (N_tris, 3)
-    contrib = (tri_area / 3.0)[:, None] * xp.ones((1, 3))
+    # 2) Build a flattened vertex-triangle incidence
+    # Each triangle contributes its circumcenter to 3 vertices.
+    vert_ids = tris.reshape(-1)           # (3M,)
+    centers_rep = xp.repeat(centers, 3, axis=0)  # (3M, 2)
 
-    # Flatten for scatter:
-    # Each triangle contributes 3 entries, one per vertex.
-    scatter_idx = simplices.reshape(-1)  # (3*N_tris,)
-    scatter_vals = contrib.reshape(-1)  # (3*N_tris,)
+    # 3) Sort by vertex id so all entries for a given vertex are contiguous
+    order = xp.argsort(vert_ids)
+    vert_sorted = vert_ids[order]        # (3M,)
+    centers_sorted = centers_rep[order]  # (3M, 2)
 
-    # Allocate output
-    n_pts = points.shape[0]
-    vertex_area = xp.zeros(n_pts)
-
-    # Scatter-add: NumPy and JAX both support this API!
-    if xp.__name__.startswith("jax"):
-        vertex_area = vertex_area.at[scatter_idx].add(scatter_vals)
+    # 4) Compute how many triangles are incident to each vertex
+    if xp is np:
+        counts = np.bincount(vert_sorted, minlength=N)  # (N,)
     else:
-        np.add.at(vertex_area, scatter_idx, scatter_vals)
+        counts = jnp.bincount(vert_sorted, length=N)    # (N,)
 
-    return vertex_area
+    max_deg = int(counts.max()) if xp is np else int(counts.max().item())
+
+    # 5) Compute start index for each vertex's block in vert_sorted
+    #    start[v] = cumulative sum of counts up to v
+    if xp is np:
+        start = np.concatenate([np.array([0], dtype=int), np.cumsum(counts[:-1])])
+    else:
+        start = jnp.concatenate([jnp.array([0], dtype=int), jnp.cumsum(counts[:-1])])
+
+    # Global indices 0..3M-1
+    if xp is np:
+        arange_all = np.arange(3 * M, dtype=int)
+    else:
+        arange_all = jnp.arange(3 * M, dtype=int)
+
+    # Position within each vertex block: pos = i - start[vertex]
+    start_per_entry = start[vert_sorted]       # (3M,)
+    pos = arange_all - start_per_entry         # (3M,)
+
+    # 6) Scatter into a padded (N, max_deg, 2) array of circumcenters
+    if xp is np:
+        circum_padded = np.zeros((N, max_deg, 2), dtype=pts.dtype)
+        circum_padded[vert_sorted, pos, :] = centers_sorted
+    else:
+        circum_padded = jnp.zeros((N, max_deg, 2), dtype=pts.dtype)
+        circum_padded = circum_padded.at[vert_sorted, pos, :].set(centers_sorted)
+
+    # 7) For each vertex, sort its circumcenters by angle around the vertex
+    # Compute angles: (N, max_deg)
+    dx = circum_padded[..., 0] - pts[:, None, 0]
+    dy = circum_padded[..., 1] - pts[:, None, 1]
+    angles = xp.arctan2(dy, dx)
+
+    # Mark which slots are valid (j < count[v])
+    if xp is np:
+        j_idx = np.arange(max_deg)[None, :]      # (1, max_deg)
+    else:
+        j_idx = jnp.arange(max_deg)[None, :]
+    valid_mask = j_idx < counts[:, None]        # (N, max_deg)
+
+    # For invalid entries, set angle to a big constant so they go to the end
+    big_angle = xp.array(1e9, dtype=angles.dtype)
+    angles_masked = xp.where(valid_mask, angles, big_angle)
+
+    # Sort indices by angle for each vertex
+    order_angles = xp.argsort(angles_masked, axis=1)   # (N, max_deg)
+
+    # Reorder circumcenters accordingly
+    if xp is np:
+        centers_sorted2 = np.take_along_axis(
+            circum_padded,
+            order_angles[..., None].repeat(2, axis=2),
+            axis=1,
+        )  # (N, max_deg, 2)
+    else:
+        centers_sorted2 = jnp.take_along_axis(
+            circum_padded,
+            jnp.repeat(order_angles[..., None], 2, axis=2),
+            axis=1,
+        )
+
+    # 8) Compute polygon area with shoelace formula per vertex
+    x = centers_sorted2[..., 0]  # (N, max_deg)
+    y = centers_sorted2[..., 1]  # (N, max_deg)
+
+    # roll by -1 so j+1 wraps around
+    x_next = xp.roll(x, shift=-1, axis=1)
+    y_next = xp.roll(y, shift=-1, axis=1)
+
+    # A contribution is valid if both current and next vertices are valid
+    valid_pair = valid_mask & xp.roll(valid_mask, shift=-1, axis=1)
+
+    cross = x * y_next - x_next * y
+    cross = xp.where(valid_pair, cross, 0.0)
+
+    area = 0.5 * xp.abs(xp.sum(cross, axis=1))  # (N,)
+
+    return area
 
 
 def split_points_from(points, area_weights, xp=np):
@@ -209,11 +333,10 @@ def split_points_from(points, area_weights, xp=np):
 
 class DelaunayInterface:
 
-    def __init__(self, ppoints, simplices, areas, vertex_neighbor_vertices):
+    def __init__(self, ppoints, simplices, vertex_neighbor_vertices):
 
         self.points = ppoints
         self.simplices = simplices
-        self.areas = areas
         self.vertex_neighbor_vertices = vertex_neighbor_vertices
 
     def find_simplex(self, query_points):
@@ -309,11 +432,8 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             simplices = delaunay.simplices.astype(np.int32)
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
-        areas = vertex_areas_from_delaunay(
-            points=points, simplices=simplices, xp=self._xp
-        )
 
-        return DelaunayInterface(points, simplices, areas, vertex_neighbor_vertices)
+        return DelaunayInterface(points, simplices, vertex_neighbor_vertices)
 
     @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
