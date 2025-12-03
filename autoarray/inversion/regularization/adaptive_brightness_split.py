@@ -104,7 +104,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             splitted_mappings=pix_sub_weights_split_cross.mappings,
             splitted_sizes=pix_sub_weights_split_cross.sizes,
             splitted_weights=pix_sub_weights_split_cross.weights,
-            xp=xp
+            xp=xp,
         )
 
         return regularization_util.pixel_splitted_regularization_matrix_from(
@@ -112,5 +112,5 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             splitted_mappings=splitted_mappings,
             splitted_sizes=splitted_sizes,
             splitted_weights=splitted_weights,
-            xp=xp
+            xp=xp,
         )

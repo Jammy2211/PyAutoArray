@@ -9,11 +9,11 @@ from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 
 def pix_indexes_for_sub_slim_index_delaunay_from(
-    source_plane_data_grid,          # (N_sub, 2)
+    source_plane_data_grid,  # (N_sub, 2)
     simplex_index_for_sub_slim_index,  # (N_sub,)
-    pix_indexes_for_simplex_index,   # (M, 3)
-    delaunay_points,                 # (N_points, 2)
-    xp=np,                           # <--- choose backend: np or jnp
+    pix_indexes_for_simplex_index,  # (M, 3)
+    delaunay_points,  # (N_points, 2)
+    xp=np,  # <--- choose backend: np or jnp
 ):
     """
     XP-compatible version of pix_indexes_for_sub_slim_index_delaunay_from.
@@ -34,7 +34,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     N_sub = source_plane_data_grid.shape[0]
 
     # Boolean mask for points that fall inside simplices
-    inside_mask = simplex_index_for_sub_slim_index >= 0     # shape (N_sub,)
+    inside_mask = simplex_index_for_sub_slim_index >= 0  # shape (N_sub,)
     outside_mask = ~inside_mask
 
     # ----------------------------
@@ -56,7 +56,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
         axis=-1,
     )
 
-    nearest = xp.argmin(d2, axis=1).astype(np.int32)   # (N_sub,)
+    nearest = xp.argmin(d2, axis=1).astype(np.int32)  # (N_sub,)
 
     # (N_sub, 3) → [nearest, -1, -1]
     nn_triplets = xp.stack(
@@ -93,23 +93,24 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 import numpy as np
 
+
 def triangle_area_xp(c0, c1, c2, xp):
     """
     Twice triangle area using vector cross product magnitude.
     Calling via xp ensures NumPy or JAX backend operation.
     """
-    v0 = c1 - c0   # (..., 2)
+    v0 = c1 - c0  # (..., 2)
     v1 = c2 - c0
     cross = v0[..., 0] * v1[..., 1] - v0[..., 1] * v1[..., 0]
     return xp.abs(cross)
 
 
 def pixel_weights_delaunay_from(
-    source_plane_data_grid,         # (N_sub, 2)
-    source_plane_mesh_grid,         # (N_pix, 2)
+    source_plane_data_grid,  # (N_sub, 2)
+    source_plane_mesh_grid,  # (N_pix, 2)
     slim_index_for_sub_slim_index,  # (N_sub,)  UNUSED? kept for signature compatibility
-    pix_indexes_for_sub_slim_index, # (N_sub, 3), padded with -1
-    xp=np,                          # backend: np (default) or jnp
+    pix_indexes_for_sub_slim_index,  # (N_sub, 3), padded with -1
+    xp=np,  # backend: np (default) or jnp
 ):
     """
     XP-compatible (NumPy/JAX) version of pixel_weights_delaunay_from.
@@ -124,7 +125,7 @@ def pixel_weights_delaunay_from(
     # -----------------------------
     # If pix_indexes_for_sub_slim_index[sub][1] == -1 → NOT in simplex
     has_simplex = pix_indexes_for_sub_slim_index[:, 1] != -1  # (N_sub,)
-    no_simplex  = xp.logical_not(has_simplex)
+    no_simplex = xp.logical_not(has_simplex)
 
     # -----------------------------
     # GATHER TRIANGLE VERTICES
@@ -135,12 +136,12 @@ def pixel_weights_delaunay_from(
     # (N_sub, 3, 2)
     vertices = source_plane_mesh_grid[safe_indices]
 
-    p0 = vertices[:, 0]   # (N_sub, 2)
+    p0 = vertices[:, 0]  # (N_sub, 2)
     p1 = vertices[:, 1]
     p2 = vertices[:, 2]
 
     # Query points
-    q = source_plane_data_grid   # (N_sub, 2)
+    q = source_plane_data_grid  # (N_sub, 2)
 
     # -----------------------------
     # TRIANGLE AREAS (barycentric numerators)
@@ -164,21 +165,15 @@ def pixel_weights_delaunay_from(
             xp.zeros(N_sub),
             xp.zeros(N_sub),
         ],
-        axis=1
+        axis=1,
     )
 
     # -----------------------------
     # SELECT BETWEEN CASES
     # -----------------------------
-    pixel_weights = xp.where(
-        has_simplex[:, None],
-        weights_bary,
-        weights_nn
-    )
+    pixel_weights = xp.where(has_simplex[:, None], weights_bary, weights_nn)
 
     return pixel_weights
-
-
 
 
 class MapperDelaunay(AbstractMapper):
@@ -285,14 +280,12 @@ class MapperDelaunay(AbstractMapper):
         )
         pix_indexes_for_simplex_index = delaunay.simplices
 
-        mappings, sizes = (
-            pix_indexes_for_sub_slim_index_delaunay_from(
-                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-                simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
-                pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
-                delaunay_points=delaunay.points,
-                xp=self._xp,
-            )
+        mappings, sizes = pix_indexes_for_sub_slim_index_delaunay_from(
+            source_plane_data_grid=self.source_plane_data_grid.over_sampled,
+            simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
+            pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
+            delaunay_points=delaunay.points,
+            xp=self._xp,
         )
 
         mappings = mappings.astype("int")
@@ -351,7 +344,9 @@ class MapperDelaunay(AbstractMapper):
         append_line_float = np.zeros((len(splitted_weights), 1), dtype="float")
 
         return PixSubWeights(
-            mappings=self._xp.hstack((splitted_mappings.astype(self._xp.int32), append_line_int)),
+            mappings=self._xp.hstack(
+                (splitted_mappings.astype(self._xp.int32), append_line_int)
+            ),
             sizes=splitted_sizes.astype(self._xp.int32),
             weights=self._xp.hstack((splitted_weights, append_line_float)),
         )

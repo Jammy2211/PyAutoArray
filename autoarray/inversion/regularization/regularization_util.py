@@ -82,6 +82,7 @@ def reg_split_np_from(
 
     return splitted_mappings, splitted_sizes, splitted_weights
 
+
 def reg_split_from(
     splitted_mappings: np.ndarray,
     splitted_sizes: np.ndarray,
@@ -143,27 +144,27 @@ def reg_split_from(
     # 2. Pixel index for each row: i // 4
     # -------------------------------------------------------------
     pixel_index = (jnp.arange(N) // 4).astype(mappings.dtype)  # (N,)
-    pix_b = pixel_index[:, None]                                # (N,1)
+    pix_b = pixel_index[:, None]  # (N,1)
 
     # -------------------------------------------------------------
     # 3. Mask of valid columns j < size[i]
     # -------------------------------------------------------------
-    cols = jnp.arange(K)[None, :]         # (1,4)
-    valid_mask = cols < sizes[:, None]    # (N,4)
+    cols = jnp.arange(K)[None, :]  # (1,4)
+    valid_mask = cols < sizes[:, None]  # (N,4)
 
     # -------------------------------------------------------------
     # 4. Self match: mapping[i,j] == pixel_index AND j is valid
     # -------------------------------------------------------------
-    self_mask = (mappings == pix_b) & valid_mask               # (N,4)
-    row_has_self = jnp.any(self_mask, axis=1)                  # (N,)
+    self_mask = (mappings == pix_b) & valid_mask  # (N,4)
+    row_has_self = jnp.any(self_mask, axis=1)  # (N,)
 
     # Position of self per row
-    self_pos = jnp.argmax(self_mask, axis=1)                   # (N,)
+    self_pos = jnp.argmax(self_mask, axis=1)  # (N,)
 
     # -------------------------------------------------------------
     # 5. Add +1 weight at self_pos where row_has_self == True
     # -------------------------------------------------------------
-    one_hot = jnn.one_hot(self_pos, K, dtype=weights.dtype)    # (N,4)
+    one_hot = jnn.one_hot(self_pos, K, dtype=weights.dtype)  # (N,4)
     weights = weights + one_hot * row_has_self[:, None]
 
     # -------------------------------------------------------------
@@ -172,19 +173,17 @@ def reg_split_from(
     no_self = ~row_has_self
 
     # Insert position = sizes[i]
-    insert_pos = sizes                                          # (N,)
+    insert_pos = sizes  # (N,)
     insert_mask = no_self[:, None] & (cols == sizes[:, None])
 
     # New mappings and weights
     mappings = jnp.where(insert_mask, pix_b, mappings)
-    weights  = jnp.where(insert_mask, jnp.array(1.0, weights.dtype), weights)
+    weights = jnp.where(insert_mask, jnp.array(1.0, weights.dtype), weights)
 
     # Updated sizes: +1 if no self detected
     sizes_new = sizes + no_self.astype(sizes.dtype)
 
     return mappings, sizes_new, weights
-
-
 
 
 def pixel_splitted_regularization_matrix_np_from(
@@ -228,12 +227,11 @@ def pixel_splitted_regularization_matrix_np_from(
     return regularization_matrix
 
 
-
 def pixel_splitted_regularization_matrix_from(
-    regularization_weights: np.ndarray,   # (P,)
-    splitted_mappings: np.ndarray,        # (4P, 4)
-    splitted_sizes: np.ndarray,           # (4P,)
-    splitted_weights: np.ndarray,          # (4P, 4)
+    regularization_weights: np.ndarray,  # (P,)
+    splitted_mappings: np.ndarray,  # (4P, 4)
+    splitted_sizes: np.ndarray,  # (4P,)
+    splitted_weights: np.ndarray,  # (4P, 4)
     xp=np,
 ):
     """
@@ -279,33 +277,33 @@ def pixel_splitted_regularization_matrix_from(
     P = splitted_mappings.shape[0] // 4
 
     # Square, positive regularization weights
-    reg_w = regularization_weights**2.0              # (P,)
+    reg_w = regularization_weights**2.0  # (P,)
 
     # Add diagonal jitter (2e-8)
-    reg_mat = jnp.eye(P) * 2e-8                      # (P, P)
+    reg_mat = jnp.eye(P) * 2e-8  # (P, P)
 
     # ----- Build all 4P contributions at once -----
 
     # Mask away padded entries (where mapping = -1)
-    valid = splitted_mappings != -1                  # (4P, 4)
+    valid = splitted_mappings != -1  # (4P, 4)
 
     # Extract valid mapping rows and weights
     # BUT keep fixed shape (4) and just zero out invalid ones
     map_fixed = jnp.where(valid, splitted_mappings, 0)  # (4P, 4)
-    w_fixed   = jnp.where(valid, splitted_weights,  0.) # (4P, 4)
+    w_fixed = jnp.where(valid, splitted_weights, 0.0)  # (4P, 4)
 
     # Compute all outer products of weights
     # w_fixed[:, :, None] * w_fixed[:, None, :]  → (4P, 4, 4)
-    outer = w_fixed[:, :, None] * w_fixed[:, None, :]   # (4P, 4, 4)
+    outer = w_fixed[:, :, None] * w_fixed[:, None, :]  # (4P, 4, 4)
 
     # Build corresponding row and col index grids
-    rows = map_fixed[:, :, None]   # (4P, 4, 1)
-    cols = map_fixed[:, None, :]   # (4P, 1, 4)
+    rows = map_fixed[:, :, None]  # (4P, 4, 1)
+    cols = map_fixed[:, None, :]  # (4P, 1, 4)
 
     # Multiply each 4x4 block by its pixel’s regularization weight
     # Rows 0–3 belong to pixel 0, rows 4–7 to pixel 1, etc.
-    pixel_index = jnp.arange(4 * P) // 4            # (4P,)
-    block_scale = reg_w[pixel_index]                # (4P,)
+    pixel_index = jnp.arange(4 * P) // 4  # (4P,)
+    block_scale = reg_w[pixel_index]  # (4P,)
     outer_scaled = outer * block_scale[:, None, None]
 
     # Now scatter-add all entries into the (P,P) matrix

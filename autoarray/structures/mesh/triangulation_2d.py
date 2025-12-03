@@ -28,6 +28,7 @@ def scipy_delaunay_padded(points_np, max_simplices):
 
     return pts, padded
 
+
 def jax_delaunay(points):
 
     import jax
@@ -45,6 +46,7 @@ def jax_delaunay(points):
         points,
     )
 
+
 def find_simplex_from(query_points, points, simplices):
     """
     Return simplex index for each query point.
@@ -55,51 +57,52 @@ def find_simplex_from(query_points, points, simplices):
     import jax.numpy as jnp
 
     # Mask padded simplices (marked with -1)
-    valid = simplices[:, 0] >= 0        # (M,)
+    valid = simplices[:, 0] >= 0  # (M,)
     simplices_clipped = simplices.clip(min=0)
 
     # Triangle vertices: (M, 3, 2)
     tri = points[simplices_clipped]
 
-    p0 = tri[:, 0]       # (M, 2)
+    p0 = tri[:, 0]  # (M, 2)
     p1 = tri[:, 1]
     p2 = tri[:, 2]
 
     # Edges
-    v0 = p1 - p0         # (M, 2)
+    v0 = p1 - p0  # (M, 2)
     v1 = p2 - p0
 
     # Precomputed dot products
-    d00 = jnp.sum(v0 * v0, axis=1)      # (M,)
+    d00 = jnp.sum(v0 * v0, axis=1)  # (M,)
     d01 = jnp.sum(v0 * v1, axis=1)
     d11 = jnp.sum(v1 * v1, axis=1)
-    denom = d00 * d11 - d01 * d01       # (M,)
+    denom = d00 * d11 - d01 * d01  # (M,)
 
     # Barycentric computation for each query point vs each triangle
-    diff = query_points[:, None, :] - p0[None, :, :]    # (Q, M, 2)
+    diff = query_points[:, None, :] - p0[None, :, :]  # (Q, M, 2)
 
-    a = jnp.sum(diff * v0[None, :, :], axis=-1)          # (Q, M)
+    a = jnp.sum(diff * v0[None, :, :], axis=-1)  # (Q, M)
     b = jnp.sum(diff * v1[None, :, :], axis=-1)
 
-    b0 = (a * d11 - b * d01) / denom    # (Q, M)
+    b0 = (a * d11 - b * d01) / denom  # (Q, M)
     b1 = (b * d00 - a * d01) / denom
 
     # Inside test
-    inside = (b0 >= 0.0) & (b1 >= 0.0) & (b0 + b1 <= 1.0)   # (Q, M)
+    inside = (b0 >= 0.0) & (b1 >= 0.0) & (b0 + b1 <= 1.0)  # (Q, M)
 
     # Remove padded simplices
     inside = inside & valid[None, :]
 
     # First valid simplex per point
-    simplex_idx = jnp.argmax(inside, axis=1)              # (Q,)
+    simplex_idx = jnp.argmax(inside, axis=1)  # (Q,)
 
     # Detect points with no simplex match
-    has_match = jnp.any(inside, axis=1)                   # (Q,)
+    has_match = jnp.any(inside, axis=1)  # (Q,)
 
     # Replace unmatched with -1
     simplex_idx = jnp.where(has_match, simplex_idx, -1)
 
     return simplex_idx
+
 
 def vertex_areas_from_delaunay(points, simplices, xp=np):
     """
@@ -120,23 +123,23 @@ def vertex_areas_from_delaunay(points, simplices, xp=np):
     """
 
     # Triangle vertices
-    p0 = points[simplices[:, 0]]   # (N_tris, 2)
+    p0 = points[simplices[:, 0]]  # (N_tris, 2)
     p1 = points[simplices[:, 1]]
     p2 = points[simplices[:, 2]]
 
     # Compute triangle areas (vectorized)
     tri_area = 0.5 * xp.abs(
         (p1[:, 0] - p0[:, 0]) * (p2[:, 1] - p0[:, 1])
-      - (p1[:, 1] - p0[:, 1]) * (p2[:, 0] - p0[:, 0])
-    )   # (N_tris,)
+        - (p1[:, 1] - p0[:, 1]) * (p2[:, 0] - p0[:, 0])
+    )  # (N_tris,)
 
     # Area contribution to each vertex: (N_tris, 3)
     contrib = (tri_area / 3.0)[:, None] * xp.ones((1, 3))
 
     # Flatten for scatter:
     # Each triangle contributes 3 entries, one per vertex.
-    scatter_idx = simplices.reshape(-1)        # (3*N_tris,)
-    scatter_vals = contrib.reshape(-1)         # (3*N_tris,)
+    scatter_idx = simplices.reshape(-1)  # (3*N_tris,)
+    scatter_vals = contrib.reshape(-1)  # (3*N_tris,)
 
     # Allocate output
     n_pts = points.shape[0]
@@ -146,6 +149,7 @@ def vertex_areas_from_delaunay(points, simplices, xp=np):
     vertex_area = vertex_area.at[scatter_idx].add(scatter_vals)
 
     return vertex_area
+
 
 def split_points_from(points, area_weights, xp=np):
     """
@@ -198,9 +202,7 @@ def split_points_from(points, area_weights, xp=np):
         out[:, 3, 0] = x
         out[:, 3, 1] = y - offsets
 
-
     return out.reshape((N * 4, 2))
-
 
 
 class DelaunayInterface:
@@ -215,12 +217,9 @@ class DelaunayInterface:
     def find_simplex(self, query_points):
         return find_simplex_from(query_points, self.points, self.simplices)
 
+
 class Abstract2DMeshTriangulation(Abstract2DMesh):
-    def __init__(
-        self,
-        values: Union[np.ndarray, List],
-        _xp=np
-    ):
+    def __init__(self, values: Union[np.ndarray, List], _xp=np):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
 
@@ -301,9 +300,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         else:
 
-            delaunay = scipy.spatial.Delaunay(
-                mesh_grid
-            )
+            delaunay = scipy.spatial.Delaunay(mesh_grid)
 
             points = delaunay.points
             simplices = delaunay.simplices.astype(np.int32)

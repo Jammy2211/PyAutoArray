@@ -54,6 +54,4 @@ class Delaunay(Triangulation):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Mesh2DDelaunay(
-            values=source_plane_mesh_grid, _xp=xp
-        )
+        return Mesh2DDelaunay(values=source_plane_mesh_grid, _xp=xp)
