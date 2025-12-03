@@ -8,11 +8,6 @@ from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
 
 
-
-import numpy as np
-import jax.numpy as jnp
-
-
 def pix_indexes_for_sub_slim_index_delaunay_from(
     source_plane_data_grid,          # (N_sub, 2)
     simplex_index_for_sub_slim_index,  # (N_sub,)
@@ -94,6 +89,94 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     pix_sizes = xp.sum(pix_indexes_for_sub_slim_index >= 0, axis=1)
 
     return pix_indexes_for_sub_slim_index, pix_sizes
+
+
+import numpy as np
+
+def triangle_area_xp(c0, c1, c2, xp):
+    """
+    Twice triangle area using vector cross product magnitude.
+    Calling via xp ensures NumPy or JAX backend operation.
+    """
+    v0 = c1 - c0   # (..., 2)
+    v1 = c2 - c0
+    cross = v0[..., 0] * v1[..., 1] - v0[..., 1] * v1[..., 0]
+    return xp.abs(cross)
+
+
+def pixel_weights_delaunay_from(
+    source_plane_data_grid,         # (N_sub, 2)
+    source_plane_mesh_grid,         # (N_pix, 2)
+    slim_index_for_sub_slim_index,  # (N_sub,)  UNUSED? kept for signature compatibility
+    pix_indexes_for_sub_slim_index, # (N_sub, 3), padded with -1
+    xp=np,                          # backend: np (default) or jnp
+):
+    """
+    XP-compatible (NumPy/JAX) version of pixel_weights_delaunay_from.
+
+    Computes barycentric weights for Delaunay triangle interpolation.
+    """
+
+    N_sub = pix_indexes_for_sub_slim_index.shape[0]
+
+    # -----------------------------
+    # CASE MASKS
+    # -----------------------------
+    # If pix_indexes_for_sub_slim_index[sub][1] == -1 → NOT in simplex
+    has_simplex = pix_indexes_for_sub_slim_index[:, 1] != -1  # (N_sub,)
+    no_simplex  = xp.logical_not(has_simplex)
+
+    # -----------------------------
+    # GATHER TRIANGLE VERTICES
+    # -----------------------------
+    # Clip negatives (for padded entries) so that indexing doesn't crash
+    safe_indices = pix_indexes_for_sub_slim_index.clip(min=0)
+
+    # (N_sub, 3, 2)
+    vertices = source_plane_mesh_grid[safe_indices]
+
+    p0 = vertices[:, 0]   # (N_sub, 2)
+    p1 = vertices[:, 1]
+    p2 = vertices[:, 2]
+
+    # Query points
+    q = source_plane_data_grid   # (N_sub, 2)
+
+    # -----------------------------
+    # TRIANGLE AREAS (barycentric numerators)
+    # -----------------------------
+    a0 = triangle_area_xp(p1, p2, q, xp)
+    a1 = triangle_area_xp(p0, p2, q, xp)
+    a2 = triangle_area_xp(p0, p1, q, xp)
+
+    area_sum = a0 + a1 + a2
+
+    # (N_sub, 3)
+    weights_bary = xp.stack([a0, a1, a2], axis=1) / area_sum[:, None]
+
+    # -----------------------------
+    # NEAREST-NEIGHBOUR CASE
+    # -----------------------------
+    # For no-simplex: weight = [1,0,0]
+    weights_nn = xp.stack(
+        [
+            xp.ones(N_sub),
+            xp.zeros(N_sub),
+            xp.zeros(N_sub),
+        ],
+        axis=1
+    )
+
+    # -----------------------------
+    # SELECT BETWEEN CASES
+    # -----------------------------
+    pixel_weights = xp.where(
+        has_simplex[:, None],
+        weights_bary,
+        weights_nn
+    )
+
+    return pixel_weights
 
 
 
@@ -215,11 +298,12 @@ class MapperDelaunay(AbstractMapper):
         mappings = mappings.astype("int")
         sizes = sizes.astype("int")
 
-        weights = mapper_numba_util.pixel_weights_delaunay_from(
-            source_plane_data_grid=np.array(self.source_plane_data_grid.over_sampled),
-            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid.array),
+        weights = pixel_weights_delaunay_from(
+            source_plane_data_grid=self.source_plane_data_grid.over_sampled,
+            source_plane_mesh_grid=self.source_plane_mesh_grid.array,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=mappings,
+            xp=self._xp,
         )
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
@@ -255,18 +339,19 @@ class MapperDelaunay(AbstractMapper):
             xp=self._xp,
         )
 
-        splitted_weights = mapper_numba_util.pixel_weights_delaunay_from(
+        splitted_weights = pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
-            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid.array),
+            source_plane_mesh_grid=self.source_plane_mesh_grid.array,
             slim_index_for_sub_slim_index=self.source_plane_mesh_grid.split_cross,
             pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
+            xp=self._xp,
         )
 
         append_line_int = np.zeros((len(splitted_weights), 1), dtype="int") - 1
         append_line_float = np.zeros((len(splitted_weights), 1), dtype="float")
 
         return PixSubWeights(
-            mappings=np.hstack((splitted_mappings.astype("int"), append_line_int)),
-            sizes=splitted_sizes.astype("int"),
-            weights=np.hstack((splitted_weights, append_line_float)),
+            mappings=self._xp.hstack((splitted_mappings.astype(self._xp.int32), append_line_int)),
+            sizes=splitted_sizes.astype(self._xp.int32),
+            weights=self._xp.hstack((splitted_weights, append_line_float)),
         )

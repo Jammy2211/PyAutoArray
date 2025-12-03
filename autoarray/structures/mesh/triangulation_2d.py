@@ -2,6 +2,8 @@ import numpy as np
 
 from typing import List, Union, Tuple
 
+from autoconf import cached_property
+
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
@@ -99,13 +101,115 @@ def find_simplex_from(query_points, points, simplices):
 
     return simplex_idx
 
+def vertex_areas_from_delaunay(points, simplices, xp=np):
+    """
+    Compute per-vertex areas using:
+        vertex_area[v] = sum(area(triangles incident to v)) / 3
+
+    Parameters
+    ----------
+    points : (N_pts, 2) array
+    simplices : (N_tris, 3) array of triangle vertex indices
+    xp : np or jnp
+        Backend to use.
+
+    Returns
+    -------
+    vertex_area : (N_pts,) array
+        Estimated area associated with each vertex.
+    """
+
+    # Triangle vertices
+    p0 = points[simplices[:, 0]]   # (N_tris, 2)
+    p1 = points[simplices[:, 1]]
+    p2 = points[simplices[:, 2]]
+
+    # Compute triangle areas (vectorized)
+    tri_area = 0.5 * xp.abs(
+        (p1[:, 0] - p0[:, 0]) * (p2[:, 1] - p0[:, 1])
+      - (p1[:, 1] - p0[:, 1]) * (p2[:, 0] - p0[:, 0])
+    )   # (N_tris,)
+
+    # Area contribution to each vertex: (N_tris, 3)
+    contrib = (tri_area / 3.0)[:, None] * xp.ones((1, 3))
+
+    # Flatten for scatter:
+    # Each triangle contributes 3 entries, one per vertex.
+    scatter_idx = simplices.reshape(-1)        # (3*N_tris,)
+    scatter_vals = contrib.reshape(-1)         # (3*N_tris,)
+
+    # Allocate output
+    n_pts = points.shape[0]
+    vertex_area = xp.zeros(n_pts)
+
+    # Scatter-add: NumPy and JAX both support this API!
+    vertex_area = vertex_area.at[scatter_idx].add(scatter_vals)
+
+    return vertex_area
+
+def split_points_from(points, area_weights, xp=np):
+    """
+    points : (N, 2)
+    areas  : (N,)
+    xp     : np or jnp
+
+    Returns (4*N, 2)
+    """
+
+    N = points.shape[0]
+    offsets = 0.5 * area_weights
+
+    x = points[:, 0]
+    y = points[:, 1]
+
+    # Allocate output (N, 4, 2)
+    out = xp.zeros((N, 4, 2), dtype=points.dtype)
+
+    if xp.__name__.startswith("jax"):
+        # ----------------------------
+        # JAX → use .at[] updates
+        # ----------------------------
+        out = out.at[:, 0, 0].set(x + offsets)
+        out = out.at[:, 0, 1].set(y)
+
+        out = out.at[:, 1, 0].set(x - offsets)
+        out = out.at[:, 1, 1].set(y)
+
+        out = out.at[:, 2, 0].set(x)
+        out = out.at[:, 2, 1].set(y + offsets)
+
+        out = out.at[:, 3, 0].set(x)
+        out = out.at[:, 3, 1].set(y - offsets)
+
+    else:
+
+        # ----------------------------
+        # NumPy → direct assignment OK
+        # ----------------------------
+        out[:, 0, 0] = x + offsets
+        out[:, 0, 1] = y
+
+        out[:, 1, 0] = x - offsets
+        out[:, 1, 1] = y
+
+        out[:, 2, 0] = x
+        out[:, 2, 1] = y + offsets
+
+        out[:, 3, 0] = x
+        out[:, 3, 1] = y - offsets
+
+
+    return out.reshape((N * 4, 2))
+
+
 
 class DelaunayInterface:
 
-    def __init__(self, ppoints, simplices, vertex_neighbor_vertices):
+    def __init__(self, ppoints, simplices, areas, vertex_neighbor_vertices):
 
         self.points = ppoints
         self.simplices = simplices
+        self.areas = areas
         self.vertex_neighbor_vertices = vertex_neighbor_vertices
 
     def find_simplex(self, query_points):
@@ -172,7 +276,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             scaled_minima=scaled_minima,
         )
 
-    @property
+    @cached_property
     def delaunay(self) -> "scipy.spatial.Delaunay":
         """
         Returns a `scipy.spatial.Delaunay` object from the 2D (y,x) grid of irregular coordinates, which correspond to
@@ -205,7 +309,11 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             simplices = delaunay.simplices.astype(np.int32)
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
-        return DelaunayInterface(points, simplices, vertex_neighbor_vertices)
+        areas = vertex_areas_from_delaunay(
+            points=points, simplices=simplices, xp=self._xp
+        )
+
+        return DelaunayInterface(points, simplices, areas, vertex_neighbor_vertices)
 
     @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
@@ -258,25 +366,12 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         The grid returned by this function is used by certain regularization schemes in the `Inversion` module to apply
         gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
         """
-        half_region_area_sqrt_lengths = 0.5 * np.sqrt(
-            self.voronoi_pixel_areas_for_split
+
+        return split_points_from(
+            points=self.array,
+            area_weights=0.5 * self.delaunay.areas,
+            xp=self._xp,
         )
-
-        splitted_array = np.zeros((self.pixels, 4, 2))
-
-        splitted_array[:, 0][:, 0] = self.array[:, 0] + half_region_area_sqrt_lengths
-        splitted_array[:, 0][:, 1] = self.array[:, 1]
-
-        splitted_array[:, 1][:, 0] = self.array[:, 0] - half_region_area_sqrt_lengths
-        splitted_array[:, 1][:, 1] = self.array[:, 1]
-
-        splitted_array[:, 2][:, 0] = self.array[:, 0]
-        splitted_array[:, 2][:, 1] = self.array[:, 1] + half_region_area_sqrt_lengths
-
-        splitted_array[:, 3][:, 0] = self.array[:, 0]
-        splitted_array[:, 3][:, 1] = self.array[:, 1] - half_region_area_sqrt_lengths
-
-        return splitted_array.reshape((self.pixels * 4, 2))
 
     @property
     def voronoi_pixel_areas(self) -> np.ndarray:
