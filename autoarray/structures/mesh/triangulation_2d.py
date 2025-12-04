@@ -12,33 +12,72 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 from autoarray.structures.grids import grid_2d_util
 
 
-def scipy_delaunay_padded(points_np, max_simplices):
-    tri = scipy.spatial.Delaunay(points_np)
+def voronoi_areas_from(points_np):
 
-    pts = tri.points  # same dtype as input
+    from scipy.spatial import Voronoi
+
+    N = points_np.shape[0]
+
+    # --- Voronoi ---
+    vor = Voronoi(points_np, qhull_options="Qbb Qc Qx Qm")
+
+    areas = np.zeros(N, dtype=points_np.dtype)
+
+    voronoi_vertices = vor.vertices
+    voronoi_regions = vor.regions
+    voronoi_point_region = vor.point_region
+    region_areas = np.zeros(N)
+
+    for i in range(N):
+        region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
+        if -1 in region_vertices_indexes:
+            region_areas[i] = -1
+        else:
+
+            x = points_np[:, 1]
+            y = points_np[:, 0]
+
+            region_areas[i] = 0.5 * np.abs(
+                np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))
+            )
+
+    return region_areas
+
+
+def scipy_delaunay_voronoi(points_np, max_simplices):
+    """Compute Delaunay simplices (padded) and Voronoi areas in one call."""
+    from scipy.spatial import Delaunay
+    import numpy as np
+
+    N = points_np.shape[0]
+
+    # --- Delaunay ---
+    tri = Delaunay(points_np)
+    pts = tri.points.astype(points_np.dtype)
     simplices = tri.simplices.astype(np.int32)
 
-    # Pad simplices to fixed size (max_simplices, 3)
     padded = -np.ones((max_simplices, 3), dtype=np.int32)
     padded[: simplices.shape[0]] = simplices
 
-    return pts, padded
+    areas = voronoi_areas_from(points_np)
+
+    return pts, padded, areas
 
 
-def jax_delaunay(points):
-
+def jax_delaunay_voronoi(points):
     import jax
     import jax.numpy as jnp
 
     N = points.shape[0]
-    max_simplices = 2 * N
+    max_simplices = 2 * N  # same logic as before
 
     pts_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
     simp_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
+    area_shape = jax.ShapeDtypeStruct((N,), points.dtype)
 
     return jax.pure_callback(
-        lambda pts: scipy_delaunay_padded(pts, max_simplices),
-        (pts_shape, simp_shape),
+        lambda pts: scipy_delaunay_voronoi(pts, max_simplices),
+        (pts_shape, simp_shape, area_shape),
         points,
     )
 
@@ -127,168 +166,6 @@ def find_simplex_from(query_points, points, simplices):
     return simplex_idx
 
 
-def circumcenters_from(points, simplices, xp=np):
-    """
-    Compute triangle circumcenters for a Delaunay triangulation, using either NumPy or JAX.
-
-    Parameters
-    ----------
-    points : (N, 2)
-    simplices : (M, 3)
-    xp : np or jnp
-
-    Returns
-    -------
-    circumcenters : (M, 2)
-    """
-    pts = xp.asarray(points)
-    tris = xp.asarray(simplices, dtype=int)
-
-    tri_pts = pts[tris]  # (M, 3, 2)
-
-    x0 = tri_pts[:, 0, 0]
-    y0 = tri_pts[:, 0, 1]
-    x1 = tri_pts[:, 1, 0]
-    y1 = tri_pts[:, 1, 1]
-    x2 = tri_pts[:, 2, 0]
-    y2 = tri_pts[:, 2, 1]
-
-    a = 2.0 * (x1 - x0)
-    b = 2.0 * (y1 - y0)
-    c = 2.0 * (x2 - x0)
-    d = 2.0 * (y2 - y0)
-
-    v1 = (x1**2 + y1**2) - (x0**2 + y0**2)
-    v2 = (x2**2 + y2**2) - (x0**2 + y0**2)
-
-    det = a * d - b * c
-    detx = v1 * d - v2 * b
-    dety = a * v2 - c * v1
-
-    x = detx / det
-    y = dety / det
-
-    centers = xp.stack([x, y], axis=1)  # (M, 2)
-    return centers
-
-
-MAX_DEG_JAX = 64
-
-
-def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
-    """
-    Compute 'Voronoi-ish' cell areas for each vertex in a 2D Delaunay triangulation.
-
-    For each vertex v:
-      - find all incident triangles
-      - get their circumcenters
-      - sort these circumcenters by angle around v
-      - compute polygon area by the shoelace formula
-
-    Parameters
-    ----------
-    points : (N, 2)
-        Delaunay vertices.
-    simplices : (M, 3)
-        Delaunay triangles (indices into `points`).
-    xp : np or jnp
-        Backend.
-
-    Returns
-    -------
-    areas : (N,)
-        Voronoi-ish area associated with each vertex.
-    """
-    import jax
-    import jax.numpy as jnp
-
-    pts = xp.asarray(points)
-    tris = xp.asarray(simplices, dtype=int)
-    N = pts.shape[0]
-    M = tris.shape[0]
-
-    # 1) Circumcenters for all triangles
-    centers = circumcenters_from(pts, tris, xp=xp)  # (M, 2)
-
-    # 2) Build a flattened vertex-triangle incidence
-    # Each triangle contributes its circumcenter to 3 vertices.
-    vert_ids = tris.reshape(-1)  # (3M,)
-    centers_rep = xp.repeat(centers, 3, axis=0)  # (3M, 2)
-
-    # 3) Sort by vertex id so all entries for a given vertex are contiguous
-    order = xp.argsort(vert_ids)
-    vert_sorted = vert_ids[order]  # (3M,)
-    centers_sorted = centers_rep[order]  # (3M, 2)
-
-    # 4) Compute how many triangles are incident to each vertex
-    if xp is np:
-        counts = xp.bincount(vert_sorted, minlength=N)  # (N,)
-        max_deg = int(counts.max())
-    else:
-        counts = xp.bincount(vert_sorted, length=N)  # (N,)
-        max_deg = MAX_DEG_JAX  # static upper bound
-
-    # 5) Compute start index for each vertex's block in vert_sorted
-    #    start[v] = cumulative sum of counts up to v
-    start = xp.concatenate([xp.array([0], dtype=int), xp.cumsum(counts[:-1])])
-
-    # Global indices 0..3M-1
-    arange_all = xp.arange(3 * M, dtype=int)
-
-    # Position within each vertex block: pos = i - start[vertex]
-    start_per_entry = start[vert_sorted]  # (3M,)
-    pos = arange_all - start_per_entry  # (3M,)
-
-    # 6) Scatter into a padded (N, max_deg, 2) array of circumcenters
-    circum_padded = xp.zeros((N, max_deg, 2), dtype=pts.dtype)
-    if xp is np:
-        circum_padded[vert_sorted, pos, :] = centers_sorted
-    else:
-        circum_padded = circum_padded.at[vert_sorted, pos, :].set(centers_sorted)
-
-    # 7) For each vertex, sort its circumcenters by angle around the vertex
-    # Compute angles: (N, max_deg)
-    dx = circum_padded[..., 0] - pts[:, None, 0]
-    dy = circum_padded[..., 1] - pts[:, None, 1]
-    angles = xp.arctan2(dy, dx)
-
-    # Mark which slots are valid (j < count[v])
-    j_idx = xp.arange(max_deg)[None, :]
-    valid_mask = j_idx < counts[:, None]  # (N, max_deg)
-
-    # For invalid entries, set angle to a big constant so they go to the end
-    big_angle = xp.array(1e9, dtype=angles.dtype)
-    angles_masked = xp.where(valid_mask, angles, big_angle)
-
-    # Sort indices by angle for each vertex
-    order_angles = xp.argsort(angles_masked, axis=1)  # (N, max_deg)
-
-    # Reorder circumcenters accordingly
-    centers_sorted2 = xp.take_along_axis(
-        circum_padded,
-        order_angles[..., None].repeat(2, axis=2),
-        axis=1,
-    )  # (N, max_deg, 2)
-
-    # 8) Compute polygon area with shoelace formula per vertex
-    x = centers_sorted2[..., 0]  # (N, max_deg)
-    y = centers_sorted2[..., 1]  # (N, max_deg)
-
-    # roll by -1 so j+1 wraps around
-    x_next = xp.roll(x, shift=-1, axis=1)
-    y_next = xp.roll(y, shift=-1, axis=1)
-
-    # A contribution is valid if both current and next vertices are valid
-    valid_pair = valid_mask & xp.roll(valid_mask, shift=-1, axis=1)
-
-    cross = x * y_next - x_next * y
-    cross = xp.where(valid_pair, cross, 0.0)
-
-    area = 0.5 * xp.abs(xp.sum(cross, axis=1))  # (N,)
-
-    return area
-
-
 def split_points_from(points, area_weights, xp=np):
     """
     points : (N, 2)
@@ -345,10 +222,11 @@ def split_points_from(points, area_weights, xp=np):
 
 class DelaunayInterface:
 
-    def __init__(self, ppoints, simplices, vertex_neighbor_vertices):
+    def __init__(self, ppoints, simplices, voronoi_areas, vertex_neighbor_vertices):
 
         self.points = ppoints
         self.simplices = simplices
+        self.voronoi_areas = voronoi_areas
         self.vertex_neighbor_vertices = vertex_neighbor_vertices
 
     def find_simplex(self, query_points):
@@ -433,7 +311,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
             import jax.numpy as jnp
 
-            points, simplices = jax_delaunay(mesh_grid)
+            points, simplices, voronoi_areas = jax_delaunay_voronoi(mesh_grid)
             vertex_neighbor_vertices = None
 
         else:
@@ -444,31 +322,11 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             simplices = delaunay.simplices.astype(np.int32)
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
-        return DelaunayInterface(points, simplices, vertex_neighbor_vertices)
+            voronoi_areas = voronoi_areas_from(points_np)
 
-    @property
-    def voronoi(self) -> "scipy.spatial.Voronoi":
-        """
-        Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
-        the centre of every Voronoi pixel.
-
-        This object contains numerous attributes describing a Voronoi mesh. PyAutoArray uses
-        the `vertex_neighbor_vertices` attribute to determine the neighbors of every Delaunay triangle.
-
-        There are numerous exceptions that `scipy.spatial.Delaunay` may raise when the input grid of coordinates used
-        to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
-        `MeshException`, which helps exception handling in the `inversion` package.
-        """
-        import scipy.spatial
-        from scipy.spatial import QhullError
-
-        try:
-            return scipy.spatial.Voronoi(
-                np.asarray([self.array[:, 1], self.array[:, 0]]).T,
-                qhull_options="Qbb Qc Qx Qm",
-            )
-        except (ValueError, OverflowError, QhullError) as e:
-            raise exc.MeshException() from e
+        return DelaunayInterface(
+            points, simplices, voronoi_areas, vertex_neighbor_vertices
+        )
 
     @property
     def edge_pixel_list(self) -> List:
@@ -509,21 +367,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         )
 
     @property
-    def voronoi_pixel_areas(self) -> np.ndarray:
-        """
-        Returns the area of every Voronoi pixel in the Voronoi mesh.
-
-        Pixels at boundaries can sometimes have large unrealistic areas, in which case we set the maximum area to be
-        an input value of N% the maximum area of the Voronoi mesh, which this value is suitable for different
-        calculations.
-        """
-        return voronoi_areas_via_delaunay_from(
-            points=self.delaunay.points,
-            simplices=self.delaunay.simplices,
-            xp=self._xp,
-        )
-
-    @property
     def voronoi_pixel_areas_for_split(self) -> np.ndarray:
         """
         Returns the area of every Voronoi pixel in the Voronoi mesh.
@@ -536,7 +379,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         with large regularization coefficients, which is preferred at the edge of the mesh where the reconstruction
         goes to zero.
         """
-        areas = self._xp.asarray(self.voronoi_pixel_areas)
+        areas = self._xp.asarray(self.delaunay.voronoi_areas)
 
         # 90th percentile
         max_area = self._xp.percentile(areas, 90.0)
@@ -551,6 +394,30 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         areas = self._xp.where(areas == -1, max_area, areas)
         areas = self._xp.where(areas > max_area, max_area, areas)
         return areas
+
+    @property
+    def voronoi(self) -> "scipy.spatial.Voronoi":
+        """
+        Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
+        the centre of every Voronoi pixel.
+
+        This object contains numerous attributes describing a Voronoi mesh. PyAutoArray uses
+        the `vertex_neighbor_vertices` attribute to determine the neighbors of every Delaunay triangle.
+
+        There are numerous exceptions that `scipy.spatial.Delaunay` may raise when the input grid of coordinates used
+        to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
+        `MeshException`, which helps exception handling in the `inversion` package.
+        """
+        import scipy.spatial
+        from scipy.spatial import QhullError
+
+        try:
+            return scipy.spatial.Voronoi(
+                np.asarray([self.array[:, 1], self.array[:, 0]]).T,
+                qhull_options="Qbb Qc Qx Qm",
+            )
+        except (ValueError, OverflowError, QhullError) as e:
+            raise exc.MeshException() from e
 
     @property
     def origin(self) -> Tuple[float, float]:

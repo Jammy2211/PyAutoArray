@@ -412,7 +412,7 @@ class BorderRelocator:
 
             relocated_grid = relocated_grid_from(
                 grid=mesh_grid.array,
-                border_grid=grid[self.border_slim],
+                border_grid=grid[self.sub_border_slim],
                 xp=xp,
             )
 
