@@ -5,6 +5,7 @@ import autoarray as aa
 
 from autoarray.structures.mesh.triangulation_2d import voronoi_areas_via_delaunay_from
 
+
 def test__edge_pixel_list():
     grid = np.array(
         [
@@ -65,12 +66,15 @@ def test__voronoi_areas_via_delaunay_from():
 
     import scipy.spatial
 
-    mesh_grid = np.array([[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]])
+    mesh_grid = np.array(
+        [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]]
+    )
 
     delaunay = scipy.spatial.Delaunay(mesh_grid)
 
     voronoi_areas = voronoi_areas_via_delaunay_from(
-        mesh_grid, delaunay.simplices,
+        mesh_grid,
+        delaunay.simplices,
     )
 
     voronoi = scipy.spatial.Voronoi(

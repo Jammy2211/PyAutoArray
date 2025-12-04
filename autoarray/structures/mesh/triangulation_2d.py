@@ -12,7 +12,6 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 from autoarray.structures.grids import grid_2d_util
 
 
-
 def scipy_delaunay_padded(points_np, max_simplices):
     tri = scipy.spatial.Delaunay(points_np)
 
@@ -42,6 +41,33 @@ def jax_delaunay(points):
         (pts_shape, simp_shape),
         points,
     )
+
+
+# def delaunay_no_vmap(points):
+#
+#     import jax
+#     import jax.numpy as jnp
+#
+#     # prevent batching
+#     points = jax.lax.stop_gradient(points)
+#
+#     N = points.shape[0]
+#     max_simplices = 2 * N
+#
+#     pts_spec  = jax.ShapeDtypeStruct((N, 2), points.dtype)
+#     simp_spec = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
+#
+#     def _cb(pts):
+#         return scipy_delaunay_padded(pts, max_simplices)
+#
+#     pts_out, simplices_out = jax.pure_callback(
+#         _cb,
+#         (pts_spec, simp_spec),
+#         points,
+#         vectorized=False,   # ← VERY IMPORTANT (JAX 0.4.33+)
+#     )
+#
+#     return pts_out, simplices_out
 
 
 def find_simplex_from(query_points, points, simplices):
@@ -148,6 +174,7 @@ def circumcenters_from(points, simplices, xp=np):
 
 MAX_DEG_JAX = 64
 
+
 def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     """
     Compute 'Voronoi-ish' cell areas for each vertex in a 2D Delaunay triangulation.
@@ -185,21 +212,21 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
 
     # 2) Build a flattened vertex-triangle incidence
     # Each triangle contributes its circumcenter to 3 vertices.
-    vert_ids = tris.reshape(-1)           # (3M,)
+    vert_ids = tris.reshape(-1)  # (3M,)
     centers_rep = xp.repeat(centers, 3, axis=0)  # (3M, 2)
 
     # 3) Sort by vertex id so all entries for a given vertex are contiguous
     order = xp.argsort(vert_ids)
-    vert_sorted = vert_ids[order]        # (3M,)
+    vert_sorted = vert_ids[order]  # (3M,)
     centers_sorted = centers_rep[order]  # (3M, 2)
 
     # 4) Compute how many triangles are incident to each vertex
     if xp is np:
-        counts = xp.bincount(vert_sorted, minlength=N)   # (N,)
+        counts = xp.bincount(vert_sorted, minlength=N)  # (N,)
         max_deg = int(counts.max())
     else:
-        counts = xp.bincount(vert_sorted, length=N)     # (N,)
-        max_deg = MAX_DEG_JAX                            # static upper bound
+        counts = xp.bincount(vert_sorted, length=N)  # (N,)
+        max_deg = MAX_DEG_JAX  # static upper bound
 
     # 5) Compute start index for each vertex's block in vert_sorted
     #    start[v] = cumulative sum of counts up to v
@@ -209,8 +236,8 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
     arange_all = xp.arange(3 * M, dtype=int)
 
     # Position within each vertex block: pos = i - start[vertex]
-    start_per_entry = start[vert_sorted]       # (3M,)
-    pos = arange_all - start_per_entry         # (3M,)
+    start_per_entry = start[vert_sorted]  # (3M,)
+    pos = arange_all - start_per_entry  # (3M,)
 
     # 6) Scatter into a padded (N, max_deg, 2) array of circumcenters
     circum_padded = xp.zeros((N, max_deg, 2), dtype=pts.dtype)
@@ -227,14 +254,14 @@ def voronoi_areas_via_delaunay_from(points, simplices, xp=np):
 
     # Mark which slots are valid (j < count[v])
     j_idx = xp.arange(max_deg)[None, :]
-    valid_mask = j_idx < counts[:, None]        # (N, max_deg)
+    valid_mask = j_idx < counts[:, None]  # (N, max_deg)
 
     # For invalid entries, set angle to a big constant so they go to the end
     big_angle = xp.array(1e9, dtype=angles.dtype)
     angles_masked = xp.where(valid_mask, angles, big_angle)
 
     # Sort indices by angle for each vertex
-    order_angles = xp.argsort(angles_masked, axis=1)   # (N, max_deg)
+    order_angles = xp.argsort(angles_masked, axis=1)  # (N, max_deg)
 
     # Reorder circumcenters accordingly
     centers_sorted2 = xp.take_along_axis(
