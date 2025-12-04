@@ -34,8 +34,10 @@ def voronoi_areas_from(points_np):
             region_areas[i] = -1
         else:
 
-            x = points_np[:, 1]
-            y = points_np[:, 0]
+            points_of_region = voronoi_vertices[region_vertices_indexes]
+
+            x = points_of_region[:, 1]
+            y = points_of_region[:, 0]
 
             region_areas[i] = 0.5 * np.abs(
                 np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))
