@@ -309,4 +309,7 @@ def pixel_splitted_regularization_matrix_from(
     # Now scatter-add all entries into the (P,P) matrix
     reg_mat = reg_mat.at[rows, cols].add(outer_scaled)
 
+    # Divide diagonal by 2
+    reg_mat = reg_mat.at[jnp.diag_indices(reg_mat.shape[0])].add(-1e-8)
+
     return reg_mat
