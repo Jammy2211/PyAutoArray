@@ -27,10 +27,10 @@ def constant_zeroth_regularization_matrix_from(
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
     neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
-        the Voronoi grid (entries of -1 correspond to no neighbor).
+        the Delaunay grid (entries of -1 correspond to no neighbor).
     neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
-        Voronoi grid.
+        Delaunay grid.
 
     Returns
     -------

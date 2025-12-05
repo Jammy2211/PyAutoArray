@@ -17,7 +17,7 @@ class ConstantSplit(Constant):
         value to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
-        Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
+        Delaunay pixel the area of the pixel is computed and the distance of each point of the cross is given by
         the area times 0.5.
 
         For this regularization scheme, there is only 1 regularization coefficient that is applied to

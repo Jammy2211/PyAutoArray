@@ -315,7 +315,7 @@ class Polygon(Point):
 
     def mask(self, triangles: np.ndarray) -> np.ndarray:
         """
-        Determine which triangles intersect the Voronoi cell.
+        Determine which triangles intersect the cell.
 
         Parameters
         ----------
@@ -324,7 +324,7 @@ class Polygon(Point):
 
         Returns
         -------
-        A boolean array indicating which triangles intersect the Voronoi cell.
+        A boolean array indicating which triangles intersect the cell.
         """
         return np.any(
             [triangle.mask(triangles) for triangle in self.triangles],

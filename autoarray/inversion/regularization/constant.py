@@ -26,10 +26,10 @@ def constant_regularization_matrix_from(
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
     neighbors : ndarray, shape (S, P), dtype=int64
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
-        the Voronoi grid (entries of -1 correspond to no neighbor).
+        the Delaunay grid (entries of -1 correspond to no neighbor).
     neighbors_sizes : ndarray, shape (S,), dtype=int64
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
-        Voronoi grid.
+        Delaunay grid.
 
     Returns
     -------
@@ -71,7 +71,7 @@ def constant_regularization_matrix_from(
 class Constant(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):
         """
-        Regularization which uses the neighbors of the mesh (e.g. shared Voronoi vertexes) and
+        Regularization which uses the neighbors of the mesh (e.g. shared Delaunay vertexes) and
         a single value to smooth an inversion's solution.
 
         For this regularization scheme, there is only 1 regularization coefficient that is applied to

@@ -18,8 +18,6 @@ numba:
   cache: true
   parallel: false
   use_numba: true
-pixelization:
-  voronoi_nn_max_interpolation_neighbors: 300
 profiling:
   perform: false
   repeats: 1

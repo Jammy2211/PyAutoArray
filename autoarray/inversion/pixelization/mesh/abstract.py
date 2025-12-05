@@ -82,7 +82,7 @@ class AbstractMesh:
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
         source_plane_mesh_grid
-            The centres of every Voronoi pixel in the `source` frame, which are initially derived by computing a sparse
+            The centres of every pixel in the `source` frame, which are initially derived by computing a sparse
             set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
             to this.
         """

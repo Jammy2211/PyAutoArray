@@ -56,7 +56,7 @@ class MapperPlotter(AbstractPlotter):
         ----------
         interpolate_to_uniform
             By default, the mesh's reconstruction is interpolated to a uniform 2D array for plotting. If the
-            reconstruction can be plotted in an alternative format (e.g. using Voronoi pixels for a Voronoi mesh)
+            reconstruction can be plotted in an alternative format (e.g. using a Delaunay mesh)
             settings `interpolate_to_uniform=False` plots the reconstruction using this.
         solution_vector
             A vector of values which can culor the pixels of the mapper's source pixels.
@@ -96,7 +96,7 @@ class MapperPlotter(AbstractPlotter):
         ----------
         interpolate_to_uniform
             By default, the mesh's reconstruction is interpolated to a uniform 2D array for plotting. If the
-            reconstruction can be plotted in an alternative format (e.g. using Voronoi pixels for a Voronoi mesh)
+            reconstruction can be plotted in an alternative format (e.g. a Delaunay mesh)
             settings `interpolate_to_uniform=False` plots the reconstruction using this.
         image
             The image which is plotted on the subplot.

@@ -420,7 +420,7 @@ class AbstractMapper(LinearObj):
     ) -> Array2D:
         """
         The reconstructed values of a mapper (e.g. the `reconstruction` of an `Inversion` may be on an irregular
-        pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
+        pixelization (e.g. a Delaunay triangulation).
 
         Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
         this irregular grid.
@@ -437,7 +437,7 @@ class AbstractMapper(LinearObj):
         ----------
         values
             The value corresponding to the reconstructed value of every pixelization pixel (e.g. Delaunay triangle
-            vertexes, Voronoi mesh cells).
+            vertexes).
         shape_native
             The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
         extent

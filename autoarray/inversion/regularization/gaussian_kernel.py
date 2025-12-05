@@ -54,7 +54,7 @@ class GaussianKernel(AbstractRegularization):
         Regularization which uses a Gaussian smoothing kernel to regularize the solution.
 
         For this regularization scheme, every pixel is regularized with every other pixel. This contrasts many other
-        schemes, where regularization is based on neighboring (e.g. do the pixels share a Voronoi edge?) or computing
+        schemes, where regularization is based on neighboring (e.g. do the pixels share a Delaunay edge?) or computing
         derivates around the center of the pixel (where nearby pixels are regularization locally in similar ways).
 
         This makes the regularization matrix fully dense and therefore maybe change the run times of the solution.

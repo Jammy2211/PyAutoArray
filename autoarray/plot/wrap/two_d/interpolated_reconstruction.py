@@ -4,7 +4,6 @@ from typing import Union
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.plot.wrap.base.units import Units
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 
 from autoarray.plot.wrap import base as wb
@@ -16,7 +15,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
     triangulation) plot the values using `plt.imshow()`.
 
     The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the mesh (e.g. for
-    a Delaunay triangulation they are the connecting corners of each triangle or Voronoi mesh). This cannot be plotted
+    a Delaunay triangulation they are the connecting corners of each triangle). This cannot be plotted
     with `imshow()`, therefore this class first converts the `pixel_values` from this irregular grid to a uniform 2D
     array of square pixels via interpolation.
 
@@ -30,7 +29,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
 
     def imshow_reconstruction(
         self,
-        mapper: Union[MapperDelaunay, MapperVoronoi],
+        mapper: Union[MapperDelaunay],
         pixel_values: np.ndarray,
         units: Units,
         cmap: wb.Cmap,
@@ -45,7 +44,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         triangulation) plot the values using `plt.imshow()`.
 
         The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the mesh (e.g. for
-        a Delaunay triangulation they are the connecting corners of each triangle or Voronoi mesh). This cannot be plotted
+        a Delaunay triangulation they are the connecting corners of each triangle). This cannot be plotted
         with `imshow()`, therefore this class first converts the `pixel_values` from this irregular grid to a uniform 2D
         array of square pixels via interpolation.
 
@@ -59,16 +58,16 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         Parameters
         ----------
         mapper
-            An object which contains a 2D mesh (e.g. Voronoi mesh cells) and defines how to
+            An object which contains a 2D mesh (e.g. Delaunay mesh cells) and defines how to
             interpolate values from the pixelization's mesh.
         pixel_values
-            The pixel values of the pixelization's mesh (e.g. a Voronoi mesh) which are interpolated to a uniform square
+            The pixel values of the pixelization's mesh (e.g. a Delaunay mesh) which are interpolated to a uniform square
             array for plotting with `imshow()`.
         cmap
             The colormap used by `imshow()` to plot the pixelization's mesh values.
         colorbar
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the interpolated pixelization's mesh
-            values (e.g. values interpolated from the Voronoi mesh) are plotted on.
+            values (e.g. values interpolated from the Delaunay mesh) are plotted on.
         colorbar_tickparams
             Controls the tick parameters of the colorbar.
         """

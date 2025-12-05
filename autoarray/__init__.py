@@ -42,7 +42,6 @@ from .inversion.pixelization.mappers.mapper_grids import MapperGrids
 from .inversion.pixelization.mappers.factory import mapper_from as Mapper
 from .inversion.pixelization.mappers.rectangular import MapperRectangular
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay
-from .inversion.pixelization.mappers.voronoi import MapperVoronoi
 from .inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
@@ -77,7 +76,6 @@ from .operators.over_sampling.over_sampler import OverSampler
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.mesh.rectangular_2d import Mesh2DRectangular
 from .structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
-from .structures.mesh.voronoi_2d import Mesh2DVoronoi
 from .structures.mesh.delaunay_2d import Mesh2DDelaunay
 from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D

@@ -72,7 +72,7 @@ def weighted_regularization_matrix_from(
         the mesh grid (entries of -1 correspond to no neighbor).
     neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
-        Voronoi grid.
+        Delaunay grid.
 
     Returns
     -------
@@ -136,7 +136,7 @@ class AdaptiveBrightness(AbstractRegularization):
         signal_scale: float = 1.0,
     ):
         """
-        Regularization which uses the neighbors of the mesh (e.g. shared Voronoi vertexes) and values adaptred to the
+        Regularization which uses the neighbors of the mesh (e.g. shared Delaunay vertexes) and values adaptred to the
         data being fitted to smooth an inversion's solution.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is

@@ -38,7 +38,7 @@ class Preloads:
         change and can be reused, avoiding redundant computation.
 
         Returns a list of image-plane mesh-grids, which are image-plane grids defining the centres of the pixels of
-        the pixelization's mesh (e.g. the centres of Voronoi pixels).
+        the pixelization's mesh (e.g. the centres rectangular mesh pixels).
 
         The `image_mesh` attribute of the pixelization object defines whether the centre of each mesh pixel are
         determined in the image-plane. When this is the case, the pixelization therefore has an image-plane mesh-grid,

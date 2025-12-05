@@ -40,12 +40,12 @@ def reg_split_np_from(
     This function takes each cross of points and determines the regularization weights of every point on the cross,
     to construct a regulariaztion matrix based on the gradient of each pixel.
 
-    The size of each cross depends on the Voronoi pixel area, thus this regularization scheme and its weights depend
+    The size of each cross depends on the Delaunay pixel area, thus this regularization scheme and its weights depend
     on the pixel area (there are larger weights for bigger pixels). This ensures that bigger pixels are regularized
     more.
 
     The number of pixel neighbors over which regularization is 4 * the total number of source pixels. This contrasts
-    other regularization schemes, where the number of neighbors changes depending on, for example, the Voronoi mesh
+    other regularization schemes, where the number of neighbors changes depending on, for example, the Delaunay mesh
     geometry. By having a fixed number of neighbors this removes stochasticty in the regularization that is applied
     to a solution.
 
@@ -97,12 +97,12 @@ def reg_split_from(
     This function takes each cross of points and determines the regularization weights of every point on the cross,
     to construct a regulariaztion matrix based on the gradient of each pixel.
 
-    The size of each cross depends on the Voronoi pixel area, thus this regularization scheme and its weights depend
+    The size of each cross depends on the Delaunay pixel area, thus this regularization scheme and its weights depend
     on the pixel area (there are larger weights for bigger pixels). This ensures that bigger pixels are regularized
     more.
 
     The number of pixel neighbors over which regularization is 4 * the total number of source pixels. This contrasts
-    other regularization schemes, where the number of neighbors changes depending on, for example, the Voronoi mesh
+    other regularization schemes, where the number of neighbors changes depending on, for example, the Delaunay mesh
     geometry. By having a fixed number of neighbors this removes stochasticty in the regularization that is applied
     to a solution.
 
@@ -240,7 +240,7 @@ def pixel_splitted_regularization_matrix_from(
     This scheme splits each source pixel into a cross of four regularization points and interpolates
     to those points to smooth the inversion solution. It is designed to mitigate stochasticity in
     the regularization that can arise when the number of neighboring pixels varies across a
-    mesh (e.g., in a Voronoi tessellation).
+    mesh (e.g., in a Delaunay tessellation).
 
     A visual description and further details are provided in the appendix of He et al. (2024):
     https://arxiv.org/abs/2403.16253
