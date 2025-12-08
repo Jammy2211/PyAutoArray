@@ -1,10 +1,14 @@
 import numpy as np
+from typing import Optional
 
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
-from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
+from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
-
-class Delaunay(Triangulation):
+class Delaunay(AbstractMesh):
     def __init__(self):
         """
         An irregular mesh of Delaunay triangle pixels, which using linear barycentric interpolation are paired with

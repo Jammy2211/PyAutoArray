@@ -116,7 +116,6 @@ def test__inversion_imaging__via_mapper(
 def test__inversion_imaging__via_regularizations(
     masked_imaging_7x7_no_blur,
     delaunay_mapper_9_3x3,
-    voronoi_mapper_9_3x3,
     regularization_constant,
     regularization_constant_split,
     regularization_adaptive_brightness,
@@ -153,40 +152,6 @@ def test__inversion_imaging__via_regularizations(
         47.410169, 1.0e-4
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    pytest.importorskip(
-        "autoarray.util.nn.nn_py",
-        reason="Voronoi C library not installed, see util.nn README.md",
-    )
-
-    mapper = copy.copy(voronoi_mapper_9_3x3)
-    mapper.regularization = regularization_constant
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
-        linear_obj_list=[mapper],
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        10.66505, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    mapper = copy.copy(voronoi_mapper_9_3x3)
-    mapper.regularization = regularization_constant_split
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
-        linear_obj_list=[mapper],
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        10.37955, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
 
 def test__inversion_imaging__source_pixel_zeroed_indices(
     masked_imaging_7x7_no_blur,

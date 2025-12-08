@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
+from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.plot.wrap.base.units import Units
 

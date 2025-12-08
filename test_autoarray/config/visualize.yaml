@@ -267,12 +267,3 @@ mat_wrap_2d:
       linewidth: 51
       pivot: middle1
       units: xy1
-  VoronoiDrawer:
-    figure:
-      alpha: 0.7
-      edgecolor: k
-      linewidth: 0.3
-    subplot:
-      alpha: 0.5
-      edgecolor: r
-      linewidth: 1.0

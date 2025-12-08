@@ -3,7 +3,7 @@ import scipy.spatial
 
 import autoarray as aa
 
-from autoarray.structures.mesh.triangulation_2d import find_simplex_from
+from autoarray.structures.mesh.delaunay_2d import find_simplex_from
 from autoarray.inversion.pixelization.mappers.delaunay import (
     pix_indexes_for_sub_slim_index_delaunay_from,
 )

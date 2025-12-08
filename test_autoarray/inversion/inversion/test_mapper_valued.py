@@ -6,7 +6,7 @@ import autoarray as aa
 
 def test__max_pixel_list_from_and_centre():
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=aa.Mesh2DVoronoi(
+        source_plane_mesh_grid=aa.Mesh2DDelaunay(
             [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
         )
     )
@@ -25,7 +25,7 @@ def test__max_pixel_list_from_and_centre():
 
 def test__max_pixel_list_from__filter_neighbors():
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=aa.Mesh2DVoronoi(
+        source_plane_mesh_grid=aa.Mesh2DDelaunay(
             [
                 [1.0, 1.0],
                 [1.0, 2.0],
@@ -101,7 +101,7 @@ def test__magnification_via_mesh_from():
 
     magnification = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
-    source_plane_mesh_grid = aa.Mesh2DVoronoi(
+    source_plane_mesh_grid = aa.Mesh2DDelaunay(
         values=np.array(
             [
                 [0.0, 0.0],
@@ -147,7 +147,7 @@ def test__magnification_via_mesh_from__with_pixel_mask():
 
     magnification = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-    source_plane_mesh_grid = aa.Mesh2DVoronoi(
+    source_plane_mesh_grid = aa.Mesh2DDelaunay(
         values=np.array(
             [
                 [0.0, 0.0],

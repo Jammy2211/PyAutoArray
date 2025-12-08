@@ -106,55 +106,6 @@ def test__rectangular_neighbors_from():
     ).all()
 
 
-def test__voronoi_neighbors_from():
-    points = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-
-    voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (neighbors, neighbors_sizes) = aa.util.mesh_numba.voronoi_neighbors_from(
-        pixels=5, ridge_points=np.array(voronoi.ridge_points)
-    )
-
-    assert set(neighbors[0]) == {1, 2, 3, -1}
-    assert set(neighbors[1]) == {0, 2, 4, -1}
-    assert set(neighbors[2]) == {0, 1, 3, 4}
-    assert set(neighbors[3]) == {0, 2, 4, -1}
-    assert set(neighbors[4]) == {1, 2, 3, -1}
-
-    assert (neighbors_sizes == np.array([3, 3, 4, 3, 3])).all()
-
-    # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-    points = np.array(
-        [
-            [2.0, 0.0],
-            [2.0, 1.0],
-            [2.0, 2.0],
-            [1.0, 0.0],
-            [1.0, 1.0],
-            [1.0, 2.0],
-            [0.0, 0.0],
-            [0.0, 1.0],
-            [0.0, 2.0],
-        ]
-    )
-
-    voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (neighbors, neighbors_sizes) = aa.util.mesh_numba.voronoi_neighbors_from(
-        pixels=9, ridge_points=np.array(voronoi.ridge_points)
-    )
-
-    assert set(neighbors[0]) == {1, 3, -1, -1}
-    assert set(neighbors[1]) == {0, 2, 4, -1}
-    assert set(neighbors[2]) == {1, 5, -1, -1}
-    assert set(neighbors[3]) == {0, 4, 6, -1}
-    assert set(neighbors[4]) == {1, 3, 5, 7}
-    assert set(neighbors[5]) == {2, 4, 8, -1}
-    assert set(neighbors[6]) == {3, 7, -1, -1}
-    assert set(neighbors[7]) == {4, 6, 8, -1}
-    assert set(neighbors[8]) == {5, 7, -1, -1}
-
-    assert (neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
-
 
 def test__delaunay_interpolated_grid_from():
     shape_native = (3, 3)

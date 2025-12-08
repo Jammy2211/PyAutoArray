@@ -236,7 +236,7 @@ class DelaunayInterface:
         return find_simplex_from(query_points, self.points, self.simplices)
 
 
-class Abstract2DMeshTriangulation(Abstract2DMesh):
+class Mesh2DDelaunay(Abstract2DMesh):
     def __init__(self, values: Union[np.ndarray, List], _xp=np):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.

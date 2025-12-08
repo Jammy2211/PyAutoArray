@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.structures.mesh.triangulation_2d import voronoi_areas_via_delaunay_from
+from autoarray.structures.mesh.delaunay_2d import voronoi_areas_from
 
 
 def test__edge_pixel_list():
@@ -24,6 +24,41 @@ def test__edge_pixel_list():
     mesh = aa.Mesh2DDelaunay(values=grid)
 
     assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
+
+
+def test__mesh_areas():
+    grid = np.array(
+        [
+            [-2.0, 0.0],
+            [-np.sqrt(2), np.sqrt(2)],
+            [0.0, 0.0],
+            [0.0, 2.0],
+            [np.sqrt(2), np.sqrt(2)],
+            [2.0, 0.0],
+            [np.sqrt(2), -np.sqrt(2)],
+            [0.0, -2.0],
+            [-np.sqrt(2), -np.sqrt(2)],
+        ]
+    )
+
+    mesh = aa.Mesh2DVoronoi(values=grid)
+
+    assert mesh.voronoi_pixel_areas_for_split == pytest.approx(
+        np.array(
+            [
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+                -0.1372583,
+            ]
+        ),
+        1e-6,
+    )
 
 
 def test__interpolated_array_from():
@@ -72,9 +107,8 @@ def test__voronoi_areas_via_delaunay_from():
 
     delaunay = scipy.spatial.Delaunay(mesh_grid)
 
-    voronoi_areas = voronoi_areas_via_delaunay_from(
+    voronoi_areas = voronoi_areas_from(
         mesh_grid,
-        delaunay.simplices,
     )
 
     voronoi = scipy.spatial.Voronoi(
