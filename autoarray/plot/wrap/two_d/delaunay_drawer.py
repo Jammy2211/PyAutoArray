@@ -67,13 +67,16 @@ class DelaunayDrawer(AbstractMatWrap2D):
                 "pixel_values input to DelaunayPlotter are None and thus cannot be plotted."
             )
 
+        if pixel_values is not None:
+            pixel_values = np.asarray(pixel_values)
+        
         if ax is None:
             ax = plt.gca()
 
         source_pixelization_grid = mapper.mapper_grids.source_plane_mesh_grid
 
         simplices = mapper.delaunay.simplices
-
+        
         # Remove padded -1 values required for JAX
         simplices = np.asarray(simplices)
         valid_mask = np.all(simplices >= 0, axis=1)
