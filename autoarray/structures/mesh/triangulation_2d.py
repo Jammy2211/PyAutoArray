@@ -178,7 +178,7 @@ def split_points_from(points, area_weights, xp=np):
     """
 
     N = points.shape[0]
-    offsets = 0.5 * area_weights
+    offsets = area_weights
 
     x = points[:, 0]
     y = points[:, 1]
@@ -324,7 +324,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             simplices = delaunay.simplices.astype(np.int32)
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
-            voronoi_areas = voronoi_areas_from(points_np)
+            voronoi_areas = voronoi_areas_from(mesh_grid)
 
         return DelaunayInterface(
             points, simplices, voronoi_areas, vertex_neighbor_vertices

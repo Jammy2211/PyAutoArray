@@ -725,6 +725,10 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         else:
+
+            if hasattr(pixel_values, "array"):
+                pixel_values = pixel_values.array
+
             self.delaunay_drawer.draw_delaunay_pixels(
                 mapper=mapper,
                 pixel_values=pixel_values,
