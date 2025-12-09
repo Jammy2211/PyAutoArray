@@ -3,10 +3,9 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.structures.mesh.delaunay_2d import voronoi_areas_from
-
 
 def test__edge_pixel_list():
+
     grid = np.array(
         [
             [1.0, -1.0],
