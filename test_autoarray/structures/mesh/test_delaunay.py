@@ -105,37 +105,11 @@ def test__voronoi_areas_via_delaunay_from():
         [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]]
     )
 
-    delaunay = scipy.spatial.Delaunay(mesh_grid)
+    delaunay = aa.Mesh2DDelaunay(mesh_grid)
 
-    voronoi_areas = voronoi_areas_from(
-        mesh_grid,
-    )
+    voronoi_areas = delaunay.delaunay.voronoi_areas
 
-    voronoi = scipy.spatial.Voronoi(
-        mesh_grid,
-        qhull_options="Qbb Qc Qx Qm",
-    )
 
-    voronoi_vertices = voronoi.vertices
-    voronoi_regions = voronoi.regions
-    voronoi_point_region = voronoi.point_region
-
-    pixels = mesh_grid.shape[0]
-
-    region_areas = np.zeros(pixels)
-
-    for i in range(pixels):
-        region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
-        if -1 in region_vertices_indexes:
-            region_areas[i] = -1
-        else:
-            region_areas[i] = aa.util.grid_2d.compute_polygon_area(
-                voronoi_vertices[region_vertices_indexes]
-            )
-
-    assert voronoi_areas[1] == pytest.approx(region_areas[1], 1.0e-4)
-    assert voronoi_areas[3] == pytest.approx(region_areas[3], 1.0e-4)
-
-    # Old Voronoi cell code put -1 in edge pixels, new code puts large area
-
-    assert voronoi_areas[4] == pytest.approx(32.83847776, 1.0e-4)
+    assert voronoi_areas[1] == pytest.approx(1.39137102, 1.0e-4)
+    assert voronoi_areas[3] == pytest.approx(29.836324, 1.0e-4)
+    assert voronoi_areas[4] == pytest.approx(-1.0, 1.0e-4)

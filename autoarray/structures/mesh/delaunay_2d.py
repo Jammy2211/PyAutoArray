@@ -22,8 +22,6 @@ def voronoi_areas_from(points_np):
     # --- Voronoi ---
     vor = Voronoi(points_np, qhull_options="Qbb Qc Qx Qm")
 
-    areas = np.zeros(N, dtype=points_np.dtype)
-
     voronoi_vertices = vor.vertices
     voronoi_regions = vor.regions
     voronoi_point_region = vor.point_region
@@ -487,6 +485,11 @@ class Mesh2DDelaunay(Abstract2DMesh):
             delaunay=self.delaunay,
             pixel_values=values,
         )
+
+        return Array2D.no_mask(
+            values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        )
+
 
     @property
     def areas_for_magnification(self) -> np.ndarray:
