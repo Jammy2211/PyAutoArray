@@ -5,8 +5,6 @@ from autoconf import cached_property
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
-from autoarray.inversion.pixelization.mappers import mapper_numba_util
-
 
 def pix_indexes_for_sub_slim_index_delaunay_from(
     source_plane_data_grid,  # (N_sub, 2)
@@ -91,9 +89,6 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     return pix_indexes_for_sub_slim_index, pix_sizes
 
 
-import numpy as np
-
-
 def triangle_area_xp(c0, c1, c2, xp):
     """
     Twice triangle area using vector cross product magnitude.
@@ -108,7 +103,6 @@ def triangle_area_xp(c0, c1, c2, xp):
 def pixel_weights_delaunay_from(
     source_plane_data_grid,  # (N_sub, 2)
     source_plane_mesh_grid,  # (N_pix, 2)
-    slim_index_for_sub_slim_index,  # (N_sub,)  UNUSED? kept for signature compatibility
     pix_indexes_for_sub_slim_index,  # (N_sub, 3), padded with -1
     xp=np,  # backend: np (default) or jnp
 ):
@@ -294,7 +288,6 @@ class MapperDelaunay(AbstractMapper):
         weights = pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_data_grid.over_sampled,
             source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=mappings,
             xp=self._xp,
         )
@@ -335,7 +328,6 @@ class MapperDelaunay(AbstractMapper):
         splitted_weights = pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
             source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-            slim_index_for_sub_slim_index=self.source_plane_mesh_grid.split_cross,
             pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
             xp=self._xp,
         )
