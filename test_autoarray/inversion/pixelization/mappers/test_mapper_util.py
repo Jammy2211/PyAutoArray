@@ -335,7 +335,7 @@ def test__data_to_pix_unique_from():
     assert (pix_lengths == np.array([3, 3])).all()
 
 
-def test__weights():
+def test__pixel_weights_delaunay_from():
     source_plane_data_grid = np.array([[0.1, 0.1], [1.0, 1.0]])
 
     source_plane_mesh_grid = np.array([[0.0, 0.0], [0.1, 0.0], [0.2, 0.0]])

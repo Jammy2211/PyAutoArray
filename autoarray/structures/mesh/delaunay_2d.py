@@ -489,7 +489,6 @@ class Mesh2DDelaunay(Abstract2DMesh):
             values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )
 
-
     @property
     def areas_for_magnification(self) -> np.ndarray:
         """
@@ -499,7 +498,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
         calculation. This method therefore sets their areas to zero so they do not impact the magnification
         calculation.
         """
-        areas = self.voronoi_pixel_areas
+        areas = self.delaunay.voronoi_areas
 
         areas[areas == -1] = 0.0
 
