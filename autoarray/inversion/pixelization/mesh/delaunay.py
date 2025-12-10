@@ -58,7 +58,7 @@ class Delaunay(AbstractMesh):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Mesh2DDelaunay(values=source_plane_mesh_grid, _xp=xp)
+        return Mesh2DDelaunay(values=source_plane_mesh_grid, source_plane_data_grid_over_sampled=source_plane_data_grid, _xp=xp)
 
     def mapper_grids_from(
         self,

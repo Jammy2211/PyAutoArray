@@ -269,9 +269,7 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        simplex_index_for_sub_slim_index = delaunay.find_simplex(
-            self.source_plane_data_grid.over_sampled
-        )
+        simplex_index_for_sub_slim_index = delaunay.simplex_index_for_sub_slim_index
         pix_indexes_for_simplex_index = delaunay.simplices
 
         mappings, sizes = pix_indexes_for_sub_slim_index_delaunay_from(
@@ -309,9 +307,7 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
-            self.source_plane_mesh_grid.split_cross
-        )
+        splitted_simplex_index_for_sub_slim_index = delaunay.splitted_simplex_index_for_sub_slim_index
         pix_indexes_for_simplex_index = delaunay.simplices
 
         (

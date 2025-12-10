@@ -25,12 +25,12 @@ def voronoi_areas_from(points_np):
     voronoi_vertices = vor.vertices
     voronoi_regions = vor.regions
     voronoi_point_region = vor.point_region
-    region_areas = np.zeros(N)
+    voronoi_areas = np.zeros(N)
 
     for i in range(N):
         region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
         if -1 in region_vertices_indexes:
-            region_areas[i] = -1
+            voronoi_areas[i] = -1
         else:
 
             points_of_region = voronoi_vertices[region_vertices_indexes]
@@ -38,48 +38,77 @@ def voronoi_areas_from(points_np):
             x = points_of_region[:, 1]
             y = points_of_region[:, 0]
 
-            region_areas[i] = 0.5 * np.abs(
+            voronoi_areas[i] = 0.5 * np.abs(
                 np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))
             )
 
-    return region_areas
+    voronoi_pixel_areas_for_split = voronoi_areas.copy()
+
+    # 90th percentile
+    max_area = np.percentile(voronoi_pixel_areas_for_split, 90.0)
+
+    voronoi_pixel_areas_for_split[voronoi_pixel_areas_for_split == -1] = max_area
+    voronoi_pixel_areas_for_split[voronoi_pixel_areas_for_split > max_area] = max_area
+
+    half_region_area_sqrt_lengths = 0.5 * np.sqrt(voronoi_pixel_areas_for_split)
+
+    split_points = split_points_from(
+        points=points_np,
+        area_weights=half_region_area_sqrt_lengths,
+    )
+
+    return voronoi_areas, split_points
 
 
-def scipy_delaunay_voronoi(points_np, max_simplices):
+def scipy_delaunay_voronoi(points_np, query_points_np, max_simplices):
     """Compute Delaunay simplices (padded) and Voronoi areas in one call."""
     from scipy.spatial import Delaunay
     import numpy as np
 
-    N = points_np.shape[0]
-
     # --- Delaunay ---
     tri = Delaunay(points_np)
+
     pts = tri.points.astype(points_np.dtype)
     simplices = tri.simplices.astype(np.int32)
 
+    # Pad simplices to max_simplices
     padded = -np.ones((max_simplices, 3), dtype=np.int32)
     padded[: simplices.shape[0]] = simplices
 
-    areas = voronoi_areas_from(points_np)
+    # ---------- Voronoi cell areas ----------
+    areas, split_points = voronoi_areas_from(points_np)
 
-    return pts, padded, areas
+    # ---------- find_simplex ----------
+    simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
+
+    # ---------- find_simplex for split cross points ----------
+    split_cross_idx = tri.find_simplex(split_points)
+
+    return pts, padded, areas, simplex_idx, split_cross_idx
 
 
-def jax_delaunay_voronoi(points):
+def jax_delaunay_voronoi(points, query_points):
     import jax
     import jax.numpy as jnp
 
     N = points.shape[0]
+    Q = query_points.shape[0]
+
+    # Conservative pad (you can pass exact M if you want)
     max_simplices = 2 * N  # same logic as before
 
     pts_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
     simp_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
     area_shape = jax.ShapeDtypeStruct((N,), points.dtype)
+    sx_shape    = jax.ShapeDtypeStruct((Q,), jnp.int32)
+    sc_shape = jax.ShapeDtypeStruct((N*4,), jnp.int32)
 
     return jax.pure_callback(
-        lambda pts: scipy_delaunay_voronoi(pts, max_simplices),
-        (pts_shape, simp_shape, area_shape),
-        points,
+        lambda pts, qpts: scipy_delaunay_voronoi(
+            np.asarray(pts), np.asarray(qpts),  max_simplices
+        ),
+        (pts_shape, simp_shape, area_shape, sx_shape, sc_shape),
+        points, query_points,
     )
 
 
@@ -110,61 +139,60 @@ def jax_delaunay_voronoi(points):
 #     return pts_out, simplices_out
 
 
-def find_simplex_from(query_points, points, simplices):
-    """
-    Return simplex index for each query point.
-    Returns -1 where no simplex contains the point.
-    """
-
-    import jax
-    import jax.numpy as jnp
-
-    # Mask padded simplices (marked with -1)
-    valid = simplices[:, 0] >= 0  # (M,)
-    simplices_clipped = simplices.clip(min=0)
-
-    # Triangle vertices: (M, 3, 2)
-    tri = points[simplices_clipped]
-
-    p0 = tri[:, 0]  # (M, 2)
-    p1 = tri[:, 1]
-    p2 = tri[:, 2]
-
-    # Edges
-    v0 = p1 - p0  # (M, 2)
-    v1 = p2 - p0
-
-    # Precomputed dot products
-    d00 = jnp.sum(v0 * v0, axis=1)  # (M,)
-    d01 = jnp.sum(v0 * v1, axis=1)
-    d11 = jnp.sum(v1 * v1, axis=1)
-    denom = d00 * d11 - d01 * d01  # (M,)
-
-    # Barycentric computation for each query point vs each triangle
-    diff = query_points[:, None, :] - p0[None, :, :]  # (Q, M, 2)
-
-    a = jnp.sum(diff * v0[None, :, :], axis=-1)  # (Q, M)
-    b = jnp.sum(diff * v1[None, :, :], axis=-1)
-
-    b0 = (a * d11 - b * d01) / denom  # (Q, M)
-    b1 = (b * d00 - a * d01) / denom
-
-    # Inside test
-    inside = (b0 >= 0.0) & (b1 >= 0.0) & (b0 + b1 <= 1.0)  # (Q, M)
-
-    # Remove padded simplices
-    inside = inside & valid[None, :]
-
-    # First valid simplex per point
-    simplex_idx = jnp.argmax(inside, axis=1)  # (Q,)
-
-    # Detect points with no simplex match
-    has_match = jnp.any(inside, axis=1)  # (Q,)
-
-    # Replace unmatched with -1
-    simplex_idx = jnp.where(has_match, simplex_idx, -1)
-
-    return simplex_idx
+# def find_simplex_from(query_points, points, simplices):
+#     """
+#     Return simplex index for each query point.
+#     Returns -1 where no simplex contains the point.
+#     """
+#
+#     import jax.numpy as jnp
+#
+#     # Mask padded simplices (marked with -1)
+#     valid = simplices[:, 0] >= 0  # (M,)
+#     simplices_clipped = simplices.clip(min=0)
+#
+#     # Triangle vertices: (M, 3, 2)
+#     tri = points[simplices_clipped]
+#
+#     p0 = tri[:, 0]  # (M, 2)
+#     p1 = tri[:, 1]
+#     p2 = tri[:, 2]
+#
+#     # Edges
+#     v0 = p1 - p0  # (M, 2)
+#     v1 = p2 - p0
+#
+#     # Precomputed dot products
+#     d00 = jnp.sum(v0 * v0, axis=1)  # (M,)
+#     d01 = jnp.sum(v0 * v1, axis=1)
+#     d11 = jnp.sum(v1 * v1, axis=1)
+#     denom = d00 * d11 - d01 * d01  # (M,)
+#
+#     # Barycentric computation for each query point vs each triangle
+#     diff = query_points[:, None, :] - p0[None, :, :]  # (Q, M, 2)
+#
+#     a = jnp.sum(diff * v0[None, :, :], axis=-1)  # (Q, M)
+#     b = jnp.sum(diff * v1[None, :, :], axis=-1)
+#
+#     b0 = (a * d11 - b * d01) / denom  # (Q, M)
+#     b1 = (b * d00 - a * d01) / denom
+#
+#     # Inside test
+#     inside = (b0 >= 0.0) & (b1 >= 0.0) & (b0 + b1 <= 1.0)  # (Q, M)
+#
+#     # Remove padded simplices
+#     inside = inside & valid[None, :]
+#
+#     # First valid simplex per point
+#     simplex_idx = jnp.argmax(inside, axis=1)  # (Q,)
+#
+#     # Detect points with no simplex match
+#     has_match = jnp.any(inside, axis=1)  # (Q,)
+#
+#     # Replace unmatched with -1
+#     simplex_idx = jnp.where(has_match, simplex_idx, -1)
+#
+#     return simplex_idx
 
 
 def split_points_from(points, area_weights, xp=np):
@@ -223,19 +251,18 @@ def split_points_from(points, area_weights, xp=np):
 
 class DelaunayInterface:
 
-    def __init__(self, ppoints, simplices, voronoi_areas, vertex_neighbor_vertices):
+    def __init__(self, points, simplices, voronoi_areas, vertex_neighbor_vertices, simplex_index_for_sub_slim_index, splitted_simplex_index_for_sub_slim_index):
 
-        self.points = ppoints
+        self.points = points
         self.simplices = simplices
         self.voronoi_areas = voronoi_areas
         self.vertex_neighbor_vertices = vertex_neighbor_vertices
-
-    def find_simplex(self, query_points):
-        return find_simplex_from(query_points, self.points, self.simplices)
+        self.simplex_index_for_sub_slim_index = simplex_index_for_sub_slim_index
+        self.splitted_simplex_index_for_sub_slim_index = splitted_simplex_index_for_sub_slim_index
 
 
 class Mesh2DDelaunay(Abstract2DMesh):
-    def __init__(self, values: Union[np.ndarray, List], _xp=np):
+    def __init__(self, values: Union[np.ndarray, List], source_plane_data_grid_over_sampled=None, _xp=np):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
 
@@ -267,6 +294,8 @@ class Mesh2DDelaunay(Abstract2DMesh):
             values = np.asarray(values)
 
         super().__init__(values, xp=_xp)
+
+        self._source_plane_data_grid_over_sampled = source_plane_data_grid_over_sampled
 
     @property
     def geometry(self):
@@ -312,7 +341,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
             import jax.numpy as jnp
 
-            points, simplices, voronoi_areas = jax_delaunay_voronoi(mesh_grid)
+            points, simplices, voronoi_areas, simplex_index_for_sub_slim_index, splitted_simplex_index_for_sub_slim_index = jax_delaunay_voronoi(mesh_grid, self._source_plane_data_grid_over_sampled)
             vertex_neighbor_vertices = None
 
         else:
@@ -324,9 +353,14 @@ class Mesh2DDelaunay(Abstract2DMesh):
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
             voronoi_areas = voronoi_areas_from(mesh_grid)
+            split_points = self.split_cross
+            simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid.over_sampled)
+            splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
+                self.split_cross
+            )
 
         return DelaunayInterface(
-            points, simplices, voronoi_areas, vertex_neighbor_vertices
+            points, simplices, voronoi_areas, vertex_neighbor_vertices, simplex_index_for_sub_slim_index, splitted_simplex_index_for_sub_slim_index
         )
 
     @property
