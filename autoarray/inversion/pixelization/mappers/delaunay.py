@@ -283,6 +283,9 @@ class MapperDelaunay(AbstractMapper):
         mappings = mappings.astype("int")
         sizes = sizes.astype("int")
 
+        print(mappings)
+        print(sizes)
+
         weights = pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_data_grid.over_sampled,
             source_plane_mesh_grid=self.source_plane_mesh_grid.array,

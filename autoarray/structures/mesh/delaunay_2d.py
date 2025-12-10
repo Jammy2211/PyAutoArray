@@ -353,7 +353,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
             vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
 
             voronoi_areas = voronoi_areas_from(mesh_grid)
-            split_points = self.split_cross
+
             simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid.over_sampled)
             splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
                 self.split_cross
