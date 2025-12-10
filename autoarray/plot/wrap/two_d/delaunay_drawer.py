@@ -67,6 +67,9 @@ class DelaunayDrawer(AbstractMatWrap2D):
                 "pixel_values input to DelaunayPlotter are None and thus cannot be plotted."
             )
 
+        if pixel_values is not None:
+            pixel_values = np.asarray(pixel_values)
+
         if ax is None:
             ax = plt.gca()
 
