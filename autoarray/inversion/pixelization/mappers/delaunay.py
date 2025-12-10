@@ -6,87 +6,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
 
-def pix_indexes_for_sub_slim_index_delaunay_from(
-    source_plane_data_grid,  # (N_sub, 2)
-    simplex_index_for_sub_slim_index,  # (N_sub,)
-    pix_indexes_for_simplex_index,  # (M, 3)
-    delaunay_points,  # (N_points, 2)
-    xp=np,  # <--- choose backend: np or jnp
-):
-    """
-    XP-compatible version of pix_indexes_for_sub_slim_index_delaunay_from.
 
-    If xp=np: runs with NumPy (no JAX needed)
-    If xp=jnp: runs inside JAX (jit, vmap, GPU)
-
-    Returns
-    -------
-    pix_indexes_for_sub_slim_index : (N_sub, 3)
-    pix_indexes_for_sub_slim_index_sizes : (N_sub,)
-    """
-
-    # Helper: xp.ones_like that supports setting dtype
-    def ones_like(x, dtype):
-        return xp.ones(x.shape, dtype=dtype)
-
-    N_sub = source_plane_data_grid.shape[0]
-
-    # Boolean mask for points that fall inside simplices
-    inside_mask = simplex_index_for_sub_slim_index >= 0  # shape (N_sub,)
-    outside_mask = ~inside_mask
-
-    # ----------------------------
-    # Case 1: inside a simplex
-    # ----------------------------
-    # (N_sub, 3)
-    pix_inside = xp.where(
-        inside_mask[:, None],
-        pix_indexes_for_simplex_index[simplex_index_for_sub_slim_index],
-        -ones_like((inside_mask[:, None] + 0), dtype=np.int32),  # -1 filler
-    )
-
-    # ----------------------------
-    # Case 2: outside any simplex → nearest delaunay point
-    # ----------------------------
-    # Squared distances: (N_sub, N_points)
-    d2 = xp.sum(
-        (source_plane_data_grid[:, None, :] - delaunay_points[None, :, :]) ** 2.0,
-        axis=-1,
-    )
-
-    nearest = xp.argmin(d2, axis=1).astype(np.int32)  # (N_sub,)
-
-    # (N_sub, 3) → [nearest, -1, -1]
-    nn_triplets = xp.stack(
-        [
-            nearest,
-            -ones_like(nearest, dtype=np.int32),
-            -ones_like(nearest, dtype=np.int32),
-        ],
-        axis=1,
-    )
-
-    pix_outside = xp.where(
-        outside_mask[:, None],
-        nn_triplets,
-        -ones_like((outside_mask[:, None] + 0), dtype=np.int32),
-    )
-
-    # ----------------------------
-    # Combine inside + outside
-    # ----------------------------
-    pix_indexes_for_sub_slim_index = xp.where(
-        inside_mask[:, None],
-        pix_inside,
-        pix_outside,
-    )
-
-    # ----------------------------
-    # Count valid entries
-    # ----------------------------
-    pix_sizes = xp.sum(pix_indexes_for_sub_slim_index >= 0, axis=1)
-
-    return pix_indexes_for_sub_slim_index, pix_sizes
 
 
 def triangle_area_xp(c0, c1, c2, xp):
@@ -269,22 +189,8 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        simplex_index_for_sub_slim_index = delaunay.simplex_index_for_sub_slim_index
-        pix_indexes_for_simplex_index = delaunay.simplices
-
-        mappings, sizes = pix_indexes_for_sub_slim_index_delaunay_from(
-            source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-            simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
-            pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
-            delaunay_points=delaunay.points,
-            xp=self._xp,
-        )
-
-        mappings = mappings.astype("int")
-        sizes = sizes.astype("int")
-
-        print(mappings)
-        print(sizes)
+        mappings = delaunay.mappings.astype("int")
+        sizes = delaunay.sizes.astype("int")
 
         weights = pixel_weights_delaunay_from(
             source_plane_data_grid=self.source_plane_data_grid.over_sampled,
@@ -310,24 +216,10 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        splitted_simplex_index_for_sub_slim_index = delaunay.splitted_simplex_index_for_sub_slim_index
-        pix_indexes_for_simplex_index = delaunay.simplices
-
-        (
-            splitted_mappings,
-            splitted_sizes,
-        ) = pix_indexes_for_sub_slim_index_delaunay_from(
-            source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
-            simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
-            pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
-            delaunay_points=delaunay.points,
-            xp=self._xp,
-        )
-
         splitted_weights = pixel_weights_delaunay_from(
-            source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
+            source_plane_data_grid=delaunay.split_cross,
             source_plane_mesh_grid=self.source_plane_mesh_grid.array,
-            pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
+            pix_indexes_for_sub_slim_index=delaunay.splitted_mappings.astype("int"),
             xp=self._xp,
         )
 
@@ -336,8 +228,8 @@ class MapperDelaunay(AbstractMapper):
 
         return PixSubWeights(
             mappings=self._xp.hstack(
-                (splitted_mappings.astype(self._xp.int32), append_line_int)
+                (delaunay.splitted_mappings.astype(self._xp.int32), append_line_int)
             ),
-            sizes=splitted_sizes.astype(self._xp.int32),
+            sizes=delaunay.splitted_sizes.astype(self._xp.int32),
             weights=self._xp.hstack((splitted_weights, append_line_float)),
         )

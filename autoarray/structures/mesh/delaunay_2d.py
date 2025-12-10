@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.spatial
+from scipy.spatial import cKDTree
 from typing import List, Union, Optional, Tuple
 
 from autoconf import cached_property
@@ -10,7 +11,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 
 from autoarray import exc
-from autoarray.structures.grids import grid_2d_util
 from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 def voronoi_areas_from(points_np):
@@ -81,10 +81,31 @@ def scipy_delaunay_voronoi(points_np, query_points_np, max_simplices):
     # ---------- find_simplex ----------
     simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
 
+    mappings, sizes = pix_indexes_for_sub_slim_index_delaunay_from(
+        source_plane_data_grid=query_points_np,
+        simplex_index_for_sub_slim_index=simplex_idx,
+        pix_indexes_for_simplex_index=simplices,
+        delaunay_points=points_np,
+    )
+
+    mappings = mappings.astype(np.int32)
+
     # ---------- find_simplex for split cross points ----------
     split_cross_idx = tri.find_simplex(split_points)
 
-    return pts, padded, areas, simplex_idx, split_cross_idx
+    (
+        splitted_mappings,
+        splitted_sizes,
+    ) = pix_indexes_for_sub_slim_index_delaunay_from(
+        source_plane_data_grid=split_points,
+        simplex_index_for_sub_slim_index=split_cross_idx,
+        pix_indexes_for_simplex_index=simplices,
+        delaunay_points=points_np,
+    )
+
+    splitted_mappings = splitted_mappings.astype(np.int32)
+
+    return pts, padded, areas, split_points, mappings, splitted_mappings
 
 
 def jax_delaunay_voronoi(points, query_points):
@@ -100,99 +121,17 @@ def jax_delaunay_voronoi(points, query_points):
     pts_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
     simp_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
     area_shape = jax.ShapeDtypeStruct((N,), points.dtype)
-    sx_shape    = jax.ShapeDtypeStruct((Q,), jnp.int32)
-    sc_shape = jax.ShapeDtypeStruct((N*4,), jnp.int32)
+    split_points_shape = jax.ShapeDtypeStruct((N*4, 2), points.dtype)
+    mappings_shape    = jax.ShapeDtypeStruct((Q, 3), jnp.int32)
+    splitted_mappings_shape = jax.ShapeDtypeStruct((N*4, 3), jnp.int32)
 
     return jax.pure_callback(
         lambda pts, qpts: scipy_delaunay_voronoi(
-            np.asarray(pts), np.asarray(qpts),  max_simplices
+            np.asarray(pts), np.asarray(qpts), max_simplices
         ),
-        (pts_shape, simp_shape, area_shape, sx_shape, sc_shape),
+        (pts_shape, simp_shape, area_shape, split_points_shape, mappings_shape, splitted_mappings_shape),
         points, query_points,
     )
-
-
-# def delaunay_no_vmap(points):
-#
-#     import jax
-#     import jax.numpy as jnp
-#
-#     # prevent batching
-#     points = jax.lax.stop_gradient(points)
-#
-#     N = points.shape[0]
-#     max_simplices = 2 * N
-#
-#     pts_spec  = jax.ShapeDtypeStruct((N, 2), points.dtype)
-#     simp_spec = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
-#
-#     def _cb(pts):
-#         return scipy_delaunay_padded(pts, max_simplices)
-#
-#     pts_out, simplices_out = jax.pure_callback(
-#         _cb,
-#         (pts_spec, simp_spec),
-#         points,
-#         vectorized=False,   # ← VERY IMPORTANT (JAX 0.4.33+)
-#     )
-#
-#     return pts_out, simplices_out
-
-
-# def find_simplex_from(query_points, points, simplices):
-#     """
-#     Return simplex index for each query point.
-#     Returns -1 where no simplex contains the point.
-#     """
-#
-#     import jax.numpy as jnp
-#
-#     # Mask padded simplices (marked with -1)
-#     valid = simplices[:, 0] >= 0  # (M,)
-#     simplices_clipped = simplices.clip(min=0)
-#
-#     # Triangle vertices: (M, 3, 2)
-#     tri = points[simplices_clipped]
-#
-#     p0 = tri[:, 0]  # (M, 2)
-#     p1 = tri[:, 1]
-#     p2 = tri[:, 2]
-#
-#     # Edges
-#     v0 = p1 - p0  # (M, 2)
-#     v1 = p2 - p0
-#
-#     # Precomputed dot products
-#     d00 = jnp.sum(v0 * v0, axis=1)  # (M,)
-#     d01 = jnp.sum(v0 * v1, axis=1)
-#     d11 = jnp.sum(v1 * v1, axis=1)
-#     denom = d00 * d11 - d01 * d01  # (M,)
-#
-#     # Barycentric computation for each query point vs each triangle
-#     diff = query_points[:, None, :] - p0[None, :, :]  # (Q, M, 2)
-#
-#     a = jnp.sum(diff * v0[None, :, :], axis=-1)  # (Q, M)
-#     b = jnp.sum(diff * v1[None, :, :], axis=-1)
-#
-#     b0 = (a * d11 - b * d01) / denom  # (Q, M)
-#     b1 = (b * d00 - a * d01) / denom
-#
-#     # Inside test
-#     inside = (b0 >= 0.0) & (b1 >= 0.0) & (b0 + b1 <= 1.0)  # (Q, M)
-#
-#     # Remove padded simplices
-#     inside = inside & valid[None, :]
-#
-#     # First valid simplex per point
-#     simplex_idx = jnp.argmax(inside, axis=1)  # (Q,)
-#
-#     # Detect points with no simplex match
-#     has_match = jnp.any(inside, axis=1)  # (Q,)
-#
-#     # Replace unmatched with -1
-#     simplex_idx = jnp.where(has_match, simplex_idx, -1)
-#
-#     return simplex_idx
 
 
 def split_points_from(points, area_weights, xp=np):
@@ -249,16 +188,143 @@ def split_points_from(points, area_weights, xp=np):
     return out.reshape((N * 4, 2))
 
 
+def pix_indexes_for_sub_slim_index_delaunay_from(
+    source_plane_data_grid,          # (N_sub, 2)
+    simplex_index_for_sub_slim_index,# (N_sub,)
+    pix_indexes_for_simplex_index,   # (M, 3)
+    delaunay_points,                 # (N_pix, 2)
+):
+
+    N_sub = source_plane_data_grid.shape[0]
+
+    inside_mask = simplex_index_for_sub_slim_index >= 0
+    outside_mask = ~inside_mask
+
+    # ---------------------------
+    # Preallocate output
+    # ---------------------------
+    out = np.full((N_sub, 3), -1, dtype=np.int32)
+
+    # ---------------------------
+    # Case 1: Inside simplex (fast gather)
+    # ---------------------------
+    if inside_mask.any():
+        out[inside_mask] = pix_indexes_for_simplex_index[
+            simplex_index_for_sub_slim_index[inside_mask]
+        ]
+
+    # ---------------------------
+    # Case 2: Outside → KDTree NN
+    # ---------------------------
+    if outside_mask.any():
+        tree = cKDTree(delaunay_points)
+        _, idx = tree.query(source_plane_data_grid[outside_mask], k=1)
+        out[outside_mask, 0] = idx.astype(np.int32)
+
+    # ---------------------------
+    # Sizes
+    # ---------------------------
+    sizes = np.sum(out >= 0, axis=1).astype(np.int32)
+
+    return out, sizes
+
+
+# def pix_indexes_for_sub_slim_index_delaunay_from(
+#     source_plane_data_grid,  # (N_sub, 2)
+#     simplex_index_for_sub_slim_index,  # (N_sub,)
+#     pix_indexes_for_simplex_index,  # (M, 3)
+#     delaunay_points,  # (N_points, 2)
+#     xp=np,  # <--- choose backend: np or jnp
+# ):
+#     """
+#     XP-compatible version of pix_indexes_for_sub_slim_index_delaunay_from.
+#
+#     If xp=np: runs with NumPy (no JAX needed)
+#     If xp=jnp: runs inside JAX (jit, vmap, GPU)
+#
+#     Returns
+#     -------
+#     pix_indexes_for_sub_slim_index : (N_sub, 3)
+#     pix_indexes_for_sub_slim_index_sizes : (N_sub,)
+#     """
+#
+#     # Helper: xp.ones_like that supports setting dtype
+#     def ones_like(x, dtype):
+#         return xp.ones(x.shape, dtype=dtype)
+#
+#     N_sub = source_plane_data_grid.shape[0]
+#
+#     # Boolean mask for points that fall inside simplices
+#     inside_mask = simplex_index_for_sub_slim_index >= 0  # shape (N_sub,)
+#     outside_mask = ~inside_mask
+#
+#     # ----------------------------
+#     # Case 1: inside a simplex
+#     # ----------------------------
+#     # (N_sub, 3)
+#     pix_inside = xp.where(
+#         inside_mask[:, None],
+#         pix_indexes_for_simplex_index[simplex_index_for_sub_slim_index],
+#         -ones_like((inside_mask[:, None] + 0), dtype=np.int32),  # -1 filler
+#     )
+#
+#     # ----------------------------
+#     # Case 2: outside any simplex → nearest delaunay point
+#     # ----------------------------
+#     # Squared distances: (N_sub, N_points)
+#     d2 = xp.sum(
+#         (source_plane_data_grid[:, None, :] - delaunay_points[None, :, :]) ** 2.0,
+#         axis=-1,
+#     )
+#
+#     nearest = xp.argmin(d2, axis=1).astype(np.int32)  # (N_sub,)
+#
+#     # (N_sub, 3) → [nearest, -1, -1]
+#     nn_triplets = xp.stack(
+#         [
+#             nearest,
+#             -ones_like(nearest, dtype=np.int32),
+#             -ones_like(nearest, dtype=np.int32),
+#         ],
+#         axis=1,
+#     )
+#
+#     pix_outside = xp.where(
+#         outside_mask[:, None],
+#         nn_triplets,
+#         -ones_like((outside_mask[:, None] + 0), dtype=np.int32),
+#     )
+#
+#     # ----------------------------
+#     # Combine inside + outside
+#     # ----------------------------
+#     pix_indexes_for_sub_slim_index = xp.where(
+#         inside_mask[:, None],
+#         pix_inside,
+#         pix_outside,
+#     )
+#
+#     # ----------------------------
+#     # Count valid entries
+#     # ----------------------------
+#     pix_sizes = xp.sum(pix_indexes_for_sub_slim_index >= 0, axis=1)
+#
+#     return pix_indexes_for_sub_slim_index, pix_sizes
+
+
 class DelaunayInterface:
 
-    def __init__(self, points, simplices, voronoi_areas, vertex_neighbor_vertices, simplex_index_for_sub_slim_index, splitted_simplex_index_for_sub_slim_index):
+    def __init__(self, points, simplices, voronoi_areas, split_cross, vertex_neighbor_vertices, mappings, sizes, splitted_mappings, splitted_sizes):
 
         self.points = points
         self.simplices = simplices
         self.voronoi_areas = voronoi_areas
+        self.split_cross = split_cross
         self.vertex_neighbor_vertices = vertex_neighbor_vertices
-        self.simplex_index_for_sub_slim_index = simplex_index_for_sub_slim_index
-        self.splitted_simplex_index_for_sub_slim_index = splitted_simplex_index_for_sub_slim_index
+        self.mappings = mappings
+        self.sizes = sizes
+        self.splitted_mappings = splitted_mappings
+        self.splitted_sizes = splitted_sizes
 
 
 class Mesh2DDelaunay(Abstract2DMesh):
@@ -341,7 +407,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
             import jax.numpy as jnp
 
-            points, simplices, voronoi_areas, simplex_index_for_sub_slim_index, splitted_simplex_index_for_sub_slim_index = jax_delaunay_voronoi(mesh_grid, self._source_plane_data_grid_over_sampled)
+            points, simplices, voronoi_areas, split_cross, mappings, splitted_mappings = jax_delaunay_voronoi(mesh_grid, self._source_plane_data_grid_over_sampled)
             vertex_neighbor_vertices = None
 
         else:
@@ -354,13 +420,32 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
             voronoi_areas = voronoi_areas_from(mesh_grid)
 
-            simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid.over_sampled)
+            simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid_over_sampled)
             splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
                 self.split_cross
             )
 
+            mappings = pix_indexes_for_sub_slim_index_delaunay_from(
+                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
+                simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
+                pix_indexes_for_simplex_index=delaunay.simplices,
+                delaunay_points=delaunay.points,
+            )
+
+            (
+                splitted_mappings
+            ) = pix_indexes_for_sub_slim_index_delaunay_from(
+                source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
+                simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
+                pix_indexes_for_simplex_index=delaunay.simplices,
+                delaunay_points=delaunay.points,
+            )
+
+        sizes = self._xp.sum(mappings >= 0, axis=1).astype(self._xp.int32)
+        splitted_sizes = self._xp.sum(splitted_mappings >= 0, axis=1).astype(self._xp.int32)
+
         return DelaunayInterface(
-            points, simplices, voronoi_areas, vertex_neighbor_vertices, simplex_index_for_sub_slim_index, splitted_simplex_index_for_sub_slim_index
+            points, simplices, voronoi_areas, split_cross, vertex_neighbor_vertices, mappings, sizes, splitted_mappings, splitted_sizes
         )
 
     @property
