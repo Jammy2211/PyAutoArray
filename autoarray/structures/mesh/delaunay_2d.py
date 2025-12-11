@@ -14,7 +14,7 @@ from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
-def scipy_delaunay(points_np, query_points_np, max_simplices):
+def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices, max_simplices=None):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
 
     # --- Delaunay mesh using source plane data grid ---
@@ -44,6 +44,12 @@ def scipy_delaunay(points_np, query_points_np, max_simplices):
         xp=np,
     )
 
+    # max_area = np.percentile(barycentric_dual_areas, 90.0)
+    # barycentric_dual_areas[source_pixel_zeroed_indices] = max_area
+
+    max_area = 100.0 * np.max(barycentric_dual_areas)
+    barycentric_dual_areas[source_pixel_zeroed_indices] = max_area
+
     # ---------- Areas used to weight split points ----------
     split_point_areas = 0.5 * np.sqrt(barycentric_dual_areas)
 
@@ -66,7 +72,7 @@ def scipy_delaunay(points_np, query_points_np, max_simplices):
     return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
-def jax_delaunay(points, query_points):
+def jax_delaunay(points, query_points, source_pixel_zeroed_indices):
     import jax
     import jax.numpy as jnp
 
@@ -81,8 +87,8 @@ def jax_delaunay(points, query_points):
     splitted_mappings_shape = jax.ShapeDtypeStruct((N * 4, 3), jnp.int32)
 
     return jax.pure_callback(
-        lambda points, qpts: scipy_delaunay(
-            np.asarray(points), np.asarray(qpts), max_simplices
+        lambda points, qpts, spzi: scipy_delaunay(
+            np.asarray(points), np.asarray(qpts), np.asarray(spzi), max_simplices
         ),
         (
             points_shape,
@@ -93,6 +99,7 @@ def jax_delaunay(points, query_points):
         ),
         points,
         query_points,
+        source_pixel_zeroed_indices
     )
 
 
@@ -272,6 +279,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
         self,
         values: Union[np.ndarray, List],
         source_plane_data_grid_over_sampled=None,
+        preloads=None,
         _xp=np,
     ):
         """
@@ -307,6 +315,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
         super().__init__(values, xp=_xp)
 
         self._source_plane_data_grid_over_sampled = source_plane_data_grid_over_sampled
+        self.preloads = preloads
 
     @property
     def geometry(self):
@@ -361,14 +370,16 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
             points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
                 points=self.mesh_grid_xy,
-                query_points=self._source_plane_data_grid_over_sampled
+                query_points=self._source_plane_data_grid_over_sampled,
+                source_pixel_zeroed_indices=self.preloads.source_pixel_zeroed_indices
             )
 
         else:
 
             points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
                 points=self.mesh_grid_xy,
-                query_points_np=self.source_plane_data_grid_over_sampled
+                query_points_np=self.source_plane_data_grid_over_sampled,
+                source_pixel_zeroed_indices=self.preloads.source_pixel_zeroed_indices
             )
 
         return DelaunayInterface(

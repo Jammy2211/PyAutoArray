@@ -25,6 +25,7 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
+        preloads=None,
         xp=np,
     ):
         """
@@ -88,6 +89,7 @@ class AbstractMapper(LinearObj):
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
+        self.preloads = preloads
 
     @property
     def params(self) -> int:

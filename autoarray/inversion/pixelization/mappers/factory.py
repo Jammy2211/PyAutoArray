@@ -13,6 +13,7 @@ def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
     border_relocator: Optional[BorderRelocator] = None,
+    preloads=None,
     xp=np,
 ):
     """
@@ -66,5 +67,6 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            preloads=preloads,
             xp=xp,
         )

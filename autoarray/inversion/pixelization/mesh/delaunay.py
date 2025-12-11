@@ -40,6 +40,7 @@ class Delaunay(AbstractMesh):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
+        preloads=None,
         xp=np,
     ):
         """
@@ -62,6 +63,7 @@ class Delaunay(AbstractMesh):
         return Mesh2DDelaunay(
             values=source_plane_mesh_grid,
             source_plane_data_grid_over_sampled=source_plane_data_grid,
+            preloads=preloads,
             _xp=xp,
         )
 
@@ -73,6 +75,7 @@ class Delaunay(AbstractMesh):
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: np.ndarray = None,
+        preloads=None,
         xp=np,
     ) -> MapperGrids:
         """
@@ -132,6 +135,7 @@ class Delaunay(AbstractMesh):
             source_plane_mesh_grid = self.mesh_grid_from(
                 source_plane_data_grid=relocated_grid.over_sampled,
                 source_plane_mesh_grid=relocated_mesh_grid,
+                preloads=preloads,
                 xp=xp,
             )
         except ValueError as e:
