@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.spatial
-from scipy.spatial import cKDTree, Delaunay
+from scipy.spatial import cKDTree, Delaunay, Voronoi
 from typing import List, Union, Optional, Tuple
 
 from autoconf import cached_property
@@ -14,8 +14,10 @@ from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
-def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices, max_simplices=None):
+def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
+
+    max_simplices = 2 * points_np.shape[0]
 
     # --- Delaunay mesh using source plane data grid ---
     tri = Delaunay(points_np)
@@ -37,21 +39,31 @@ def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices, max_
         delaunay_points=points_np,
     )
 
-    # ---------- Baronicentric Dual areas ----------
-    barycentric_dual_areas = barycentric_dual_area_from(
-        points,
-        simplices,
-        xp=np,
-    )
+    # ---------- Baronicentric Dual used to weight split points ----------
+    # barycentric_dual_areas = np.abs(voronoi_areas_numpy(
+    #     points,
+    # ))
+
+    # barycentric_dual_areas = barycentric_dual_area_from(
+    #     points,
+    #     simplices,
+    #     xp=np,
+    # )
 
     # max_area = np.percentile(barycentric_dual_areas, 90.0)
     # barycentric_dual_areas[source_pixel_zeroed_indices] = max_area
 
-    max_area = 100.0 * np.max(barycentric_dual_areas)
-    barycentric_dual_areas[source_pixel_zeroed_indices] = max_area
+    # ---------- Voronoi Areas used to weight split points ----------
+    areas = voronoi_areas_numpy(
+        points,
+    )
 
-    # ---------- Areas used to weight split points ----------
-    split_point_areas = 0.5 * np.sqrt(barycentric_dual_areas)
+    max_area = np.percentile(areas, 90.0)
+
+    areas[areas == -1] = max_area
+    areas[areas > max_area] = max_area
+
+    split_point_areas = 0.5 * np.sqrt(areas)
 
     # ---------- Compute split cross points for Split regularization ----------
     split_points = split_points_from(
@@ -88,7 +100,7 @@ def jax_delaunay(points, query_points, source_pixel_zeroed_indices):
 
     return jax.pure_callback(
         lambda points, qpts, spzi: scipy_delaunay(
-            np.asarray(points), np.asarray(qpts), np.asarray(spzi), max_simplices
+            np.asarray(points), np.asarray(qpts), np.asarray(spzi),
         ),
         (
             points_shape,
@@ -159,6 +171,84 @@ def barycentric_dual_area_from(
         xp.add.at(dual_area, simplices[:, k], contrib)
 
     return dual_area
+
+
+def voronoi_areas_numpy(points, qhull_options="Qbb Qc Qx Qm"):
+    """
+    Compute Voronoi cell areas with a fully optimized pure-NumPy pipeline.
+    Exact match to the per-cell SciPy Voronoi loop but much faster.
+    """
+    vor = Voronoi(points, qhull_options=qhull_options)
+
+    vertices = vor.vertices
+    point_region = vor.point_region
+    regions = vor.regions
+    N = len(point_region)
+
+    # ------------------------------------------------------------
+    # 1) Collect all region lists in one go (list comprehension is fast)
+    # ------------------------------------------------------------
+    region_lists = [regions[r] for r in point_region]
+
+    # Precompute which regions are unbounded (vectorized test)
+    unbounded = np.array([(-1 in r) for r in region_lists], dtype=bool)
+
+    # Filter only bounded region vertex indices
+    clean_regions = [np.asarray([v for v in r if v != -1], dtype=int)
+                     for r in region_lists]
+
+    # Compute lengths once
+    lengths = np.array([len(r) for r in clean_regions], dtype=int)
+    max_len = lengths.max()
+
+    # ------------------------------------------------------------
+    # 2) Build padded idx + mask in a vectorized-like way
+    #
+    # Instead of doing Python work inside the loop, we pre-pack
+    # the flattened data and then reshape.
+    # ------------------------------------------------------------
+    idx = np.full((N, max_len), -1, dtype=int)
+    mask = np.zeros((N, max_len), dtype=bool)
+
+    # Single loop remaining: extremely cheap
+    for i, (r, L) in enumerate(zip(clean_regions, lengths)):
+        if L:
+            idx[i, :L] = r
+            mask[i, :L] = True
+
+    # ------------------------------------------------------------
+    # 3) Gather polygon vertices (vectorized)
+    # ------------------------------------------------------------
+    safe_idx = idx.clip(min=0)
+    verts = vertices[safe_idx]                     # (N, max_len, 2)
+
+    # Extract x, y with masked invalid entries zeroed
+    x = np.where(mask, verts[..., 1], 0.0)
+    y = np.where(mask, verts[..., 0], 0.0)
+
+    # ------------------------------------------------------------
+    # 4) Vectorized "previous index" per polygon
+    # ------------------------------------------------------------
+    safe_lengths = np.where(lengths == 0, 1, lengths)
+    j = np.arange(max_len)
+    prev = (j[None, :] - 1) % safe_lengths[:, None]
+
+    # Efficient take-along-axis
+    x_prev = np.take_along_axis(x, prev, axis=1)
+    y_prev = np.take_along_axis(y, prev, axis=1)
+
+    # ------------------------------------------------------------
+    # 5) Shoelace vectorized
+    # ------------------------------------------------------------
+    cross = x * y_prev - y * x_prev
+    areas = 0.5 * np.abs(cross.sum(axis=1))
+
+    # ------------------------------------------------------------
+    # 6) Mark unbounded regions
+    # ------------------------------------------------------------
+    areas[unbounded] = -1.0
+
+    return areas
 
 
 def split_points_from(points, area_weights, xp=np):
@@ -348,7 +438,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
         Therefore, this property simply converts the (y,x) grid of irregular coordinates into an (x,y) grid.
         """
-        return self._xp.stack([self.array[:, 1], self.array[:, 0]]).T
+        return self._xp.stack([self.array[:, 0], self.array[:, 1]]).T
 
     @cached_property
     def delaunay(self) -> "scipy.spatial.Delaunay":
@@ -377,9 +467,9 @@ class Mesh2DDelaunay(Abstract2DMesh):
         else:
 
             points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
-                points=self.mesh_grid_xy,
-                query_points_np=self.source_plane_data_grid_over_sampled,
-                source_pixel_zeroed_indices=self.preloads.source_pixel_zeroed_indices
+                points_np=self.mesh_grid_xy,
+                query_points_np=self._source_plane_data_grid_over_sampled,
+                source_pixel_zeroed_indices=self.preloads.source_pixel_zeroed_indices,
             )
 
         return DelaunayInterface(
@@ -509,27 +599,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
     @property
     def voronoi_areas(self):
-
-        N = self.mesh_grid_xy.shape[0]
-
-        voronoi_areas = np.zeros(N)
-
-        for i in range(N):
-            region_vertices_indexes = self.voronoi.regions[self.voronoi.point_region[i]]
-            if -1 in region_vertices_indexes:
-                voronoi_areas[i] = -1
-            else:
-
-                points_of_region = self.voronoivertices[region_vertices_indexes]
-
-                x = points_of_region[:, 1]
-                y = points_of_region[:, 0]
-
-                voronoi_areas[i] = 0.5 * np.abs(
-                    np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))
-                )
-
-        return voronoi_areas
+        return voronoi_areas_numpy(points=self.mesh_grid_xy)
 
     @property
     def areas_for_magnification(self) -> np.ndarray:
