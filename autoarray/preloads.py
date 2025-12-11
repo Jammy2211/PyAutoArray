@@ -24,7 +24,8 @@ class Preloads:
         source_pixel_zeroed_indices: np.ndarray = None,
         image_plane_mesh_grid_list: np.ndarray = None,
         linear_light_profile_blurred_mapping_matrix=None,
-        mapper_pixels_zeroed_indices: np.ndarray = None,
+        use_voronoi_areas : bool = True,
+        areas_factor : float = 0.5
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
@@ -114,14 +115,11 @@ class Preloads:
                 else:
                     self.image_plane_mesh_grid_list.append(None)
 
-        if mapper_pixels_zeroed_indices is not None:
-
-            self.mapper_pixels_zeroed_indices = np.array(
-                mapper_pixels_zeroed_indices
-            )
-
         if linear_light_profile_blurred_mapping_matrix is not None:
 
             self.linear_light_profile_blurred_mapping_matrix = np.array(
                 linear_light_profile_blurred_mapping_matrix
             )
+
+        self.use_voronoi_areas = use_voronoi_areas
+        self.areas_factor = areas_factor

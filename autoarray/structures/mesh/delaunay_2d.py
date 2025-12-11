@@ -14,7 +14,7 @@ from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
-def scipy_delaunay(points_np, query_points_np, mapper_pixel_zeroed_indices):
+def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
 
     max_simplices = 2 * points_np.shape[0]
@@ -39,27 +39,28 @@ def scipy_delaunay(points_np, query_points_np, mapper_pixel_zeroed_indices):
         delaunay_points=points_np,
     )
 
-    # ---------- Baronicentric Dual used to weight split points ----------
-    # areas = barycentric_dual_area_from(
-    #     points,
-    #     simplices,
-    #     xp=np,
-    # )
+    # ---------- Voronoi or Barycentric Areas used to weight split points ----------
 
-    # ---------- Voronoi Areas used to weight split points ----------
-    areas = voronoi_areas_numpy(
-        points,
-    )
+    if use_voronoi_areas:
 
-    max_area = np.percentile(areas, 90.0)
+        areas = voronoi_areas_numpy(
+            points,
+        )
 
-    areas[areas == -1] = max_area
-    areas[areas > max_area] = max_area
+        max_area = np.percentile(areas, 90.0)
 
-    # ---------- Set zeroed source pixels to max area ----------
-    areas[mapper_pixel_zeroed_indices] = max_area
+        areas[areas == -1] = max_area
+        areas[areas > max_area] = max_area
 
-    split_point_areas = 0.5 * np.sqrt(areas)
+    else:
+
+        areas = barycentric_dual_area_from(
+            points,
+            simplices,
+            xp=np,
+        )
+
+    split_point_areas = areas_factor * np.sqrt(areas)
 
     # ---------- Compute split cross points for Split regularization ----------
     split_points = split_points_from(
@@ -80,7 +81,7 @@ def scipy_delaunay(points_np, query_points_np, mapper_pixel_zeroed_indices):
     return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
-def jax_delaunay(points, query_points, mapper_pixel_zeroed_indices):
+def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
     import jax
     import jax.numpy as jnp
 
@@ -95,8 +96,8 @@ def jax_delaunay(points, query_points, mapper_pixel_zeroed_indices):
     splitted_mappings_shape = jax.ShapeDtypeStruct((N * 4, 3), jnp.int32)
 
     return jax.pure_callback(
-        lambda points, qpts, spzi: scipy_delaunay(
-            np.asarray(points), np.asarray(qpts), np.asarray(spzi),
+        lambda points, qpts: scipy_delaunay(
+            np.asarray(points), np.asarray(qpts), use_voronoi_areas, areas_factor
         ),
         (
             points_shape,
@@ -107,7 +108,6 @@ def jax_delaunay(points, query_points, mapper_pixel_zeroed_indices):
         ),
         points,
         query_points,
-        mapper_pixel_zeroed_indices
     )
 
 
@@ -457,7 +457,8 @@ class Mesh2DDelaunay(Abstract2DMesh):
             points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
                 points=self.mesh_grid_xy,
                 query_points=self._source_plane_data_grid_over_sampled,
-                mapper_pixel_zeroed_indices=self.preloads.mapper_pixel_zeroed_indices
+                use_voronoi_areas=self.preloads.use_voronoi_areas,
+                areas_factor=self.preloads.areas_factor
             )
 
         else:
@@ -465,7 +466,8 @@ class Mesh2DDelaunay(Abstract2DMesh):
             points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
                 points_np=self.mesh_grid_xy,
                 query_points_np=self._source_plane_data_grid_over_sampled,
-                mapper_pixel_zeroed_indices=self.preloads.mapper_pixel_zeroed_indices,
+                use_voronoi_areas=self.preloads.use_voronoi_areas,
+                areas_factor=self.preloads.areas_factor
             )
 
         return DelaunayInterface(
