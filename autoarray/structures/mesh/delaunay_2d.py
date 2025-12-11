@@ -14,7 +14,7 @@ from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
-def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices):
+def scipy_delaunay(points_np, query_points_np, mapper_pixel_zeroed_indices):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
 
     max_simplices = 2 * points_np.shape[0]
@@ -57,7 +57,7 @@ def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices):
     areas[areas > max_area] = max_area
 
     # ---------- Set zeroed source pixels to max area ----------
-    areas[source_pixel_zeroed_indices] = max_area
+    areas[mapper_pixel_zeroed_indices] = max_area
 
     split_point_areas = 0.5 * np.sqrt(areas)
 
@@ -80,7 +80,7 @@ def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices):
     return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
-def jax_delaunay(points, query_points, source_pixel_zeroed_indices):
+def jax_delaunay(points, query_points, mapper_pixel_zeroed_indices):
     import jax
     import jax.numpy as jnp
 
@@ -107,7 +107,7 @@ def jax_delaunay(points, query_points, source_pixel_zeroed_indices):
         ),
         points,
         query_points,
-        source_pixel_zeroed_indices
+        mapper_pixel_zeroed_indices
     )
 
 
@@ -457,7 +457,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
             points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
                 points=self.mesh_grid_xy,
                 query_points=self._source_plane_data_grid_over_sampled,
-                source_pixel_zeroed_indices=self.preloads.source_pixel_zeroed_indices
+                mapper_pixel_zeroed_indices=self.preloads.mapper_pixel_zeroed_indices
             )
 
         else:
@@ -465,7 +465,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
             points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
                 points_np=self.mesh_grid_xy,
                 query_points_np=self._source_plane_data_grid_over_sampled,
-                source_pixel_zeroed_indices=self.preloads.source_pixel_zeroed_indices,
+                mapper_pixel_zeroed_indices=self.preloads.mapper_pixel_zeroed_indices,
             )
 
         return DelaunayInterface(
