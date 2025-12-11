@@ -39,7 +39,6 @@ def pixel_weights_delaunay_from(
     # -----------------------------
     # If pix_indexes_for_sub_slim_index[sub][1] == -1 → NOT in simplex
     has_simplex = pix_indexes_for_sub_slim_index[:, 1] != -1  # (N_sub,)
-    no_simplex = xp.logical_not(has_simplex)
 
     # -----------------------------
     # GATHER TRIANGLE VERTICES
