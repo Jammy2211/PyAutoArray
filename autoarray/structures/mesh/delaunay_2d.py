@@ -439,15 +439,6 @@ class Mesh2DDelaunay(Abstract2DMesh):
         except (ValueError, OverflowError, QhullError) as e:
             raise exc.MeshException() from e
 
-    @property
-    def edge_pixel_list(self) -> List:
-        """
-        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
-        """
-        return mesh_numba_util.voronoi_edge_pixels_from(
-            regions=self.voronoi.regions, point_region=self.voronoi.point_region
-        )
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

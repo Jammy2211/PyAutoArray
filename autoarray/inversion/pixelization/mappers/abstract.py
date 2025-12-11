@@ -114,10 +114,6 @@ class AbstractMapper(LinearObj):
         return self.mapper_grids.source_plane_data_grid.over_sampler
 
     @property
-    def edge_pixel_list(self) -> List[int]:
-        return self.source_plane_mesh_grid.edge_pixel_list
-
-    @property
     def adapt_data(self) -> np.ndarray:
         return self.mapper_grids.adapt_data
 

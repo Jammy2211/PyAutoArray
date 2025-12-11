@@ -130,12 +130,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
-    def edge_pixel_list(self) -> List:
-        return mesh_util.rectangular_edge_pixel_list_from(
-            shape_native=self.shape_native
-        )
-
-    @property
     def pixels(self) -> int:
         """
         The total number of pixels in the rectangular pixelization.
