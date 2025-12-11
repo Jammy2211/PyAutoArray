@@ -17,7 +17,7 @@ class MockMapper(AbstractMapper):
         edge_pixel_list=None,
         regularization=None,
         pix_sub_weights=None,
-        pix_sub_weights_split_cross=None,
+        pix_sub_weights_split_points=None,
         mapping_matrix=None,
         pixel_signals=None,
         parameters=None,
@@ -39,7 +39,7 @@ class MockMapper(AbstractMapper):
         self._over_sampler = over_sampler
         self._edge_pixel_list = edge_pixel_list
         self._pix_sub_weights = pix_sub_weights
-        self._pix_sub_weights_split_cross = pix_sub_weights_split_cross
+        self._pix_sub_weights_split_points = pix_sub_weights_split_points
         self._mapping_matrix = mapping_matrix
         self._parameters = parameters
         self._pixel_signals = pixel_signals
@@ -71,8 +71,8 @@ class MockMapper(AbstractMapper):
         return self._pix_sub_weights
 
     @property
-    def pix_sub_weights_split_cross(self):
-        return self._pix_sub_weights_split_cross
+    def pix_sub_weights_split_points(self):
+        return self._pix_sub_weights_split_points
 
     @property
     def mapping_matrix(self):

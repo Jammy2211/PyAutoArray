@@ -13,125 +13,147 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
-def voronoi_areas_from(points_np):
 
-    from scipy.spatial import Voronoi
-
-    N = points_np.shape[0]
-
-    # --- Voronoi ---
-    vor = Voronoi(points_np, qhull_options="Qbb Qc Qx Qm")
-
-    voronoi_vertices = vor.vertices
-    voronoi_regions = vor.regions
-    voronoi_point_region = vor.point_region
-    voronoi_areas = np.zeros(N)
-
-    for i in range(N):
-        region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
-        if -1 in region_vertices_indexes:
-            voronoi_areas[i] = -1
-        else:
-
-            points_of_region = voronoi_vertices[region_vertices_indexes]
-
-            x = points_of_region[:, 1]
-            y = points_of_region[:, 0]
-
-            voronoi_areas[i] = 0.5 * np.abs(
-                np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))
-            )
-
-    voronoi_pixel_areas_for_split = voronoi_areas.copy()
-
-    # 90th percentile
-    max_area = np.percentile(voronoi_pixel_areas_for_split, 90.0)
-
-    voronoi_pixel_areas_for_split[voronoi_pixel_areas_for_split == -1] = max_area
-    voronoi_pixel_areas_for_split[voronoi_pixel_areas_for_split > max_area] = max_area
-
-    half_region_area_sqrt_lengths = 0.5 * np.sqrt(voronoi_pixel_areas_for_split)
-
-    split_points = split_points_from(
-        points=points_np,
-        area_weights=half_region_area_sqrt_lengths,
-    )
-
-    return voronoi_areas, split_points
-
-
-def scipy_delaunay_voronoi(points_np, query_points_np, max_simplices):
-    """Compute Delaunay simplices (padded) and Voronoi areas in one call."""
+def scipy_delaunay(points_np, query_points_np, max_simplices):
+    """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
     from scipy.spatial import Delaunay
     import numpy as np
 
-    # --- Delaunay ---
+    # --- Delaunay mesh using source plane data grid ---
     tri = Delaunay(points_np)
 
-    pts = tri.points.astype(points_np.dtype)
+    points = tri.points.astype(points_np.dtype)
     simplices = tri.simplices.astype(np.int32)
 
     # Pad simplices to max_simplices
-    padded = -np.ones((max_simplices, 3), dtype=np.int32)
-    padded[: simplices.shape[0]] = simplices
+    simplices_padded = -np.ones((max_simplices, 3), dtype=np.int32)
+    simplices_padded[: simplices.shape[0]] = simplices
 
-    # ---------- Voronoi cell areas ----------
-    areas, split_points = voronoi_areas_from(points_np)
-
-    # ---------- find_simplex ----------
+    # ---------- find_simplex for source plane data grid ----------
     simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
 
-    mappings, sizes = pix_indexes_for_sub_slim_index_delaunay_from(
+    mappings = pix_indexes_for_sub_slim_index_delaunay_from(
         source_plane_data_grid=query_points_np,
         simplex_index_for_sub_slim_index=simplex_idx,
         pix_indexes_for_simplex_index=simplices,
         delaunay_points=points_np,
     )
 
-    mappings = mappings.astype(np.int32)
+    # ---------- Baronicentric Dual areas ----------
+    barycentric_dual_areas = barycentric_dual_area_from(
+        points,
+        simplices,
+        xp=np,
+    )
+
+    # ---------- Areas used to weight split points ----------
+    split_point_areas = 0.5 * np.sqrt(barycentric_dual_areas)
+
+    # ---------- Compute split cross points for Split regularization ----------
+    split_points = split_points_from(
+        points=points_np,
+        area_weights=split_point_areas,
+    )
 
     # ---------- find_simplex for split cross points ----------
-    split_cross_idx = tri.find_simplex(split_points)
+    split_points_idx = tri.find_simplex(split_points)
 
-    (
-        splitted_mappings,
-        splitted_sizes,
-    ) = pix_indexes_for_sub_slim_index_delaunay_from(
+    (splitted_mappings,) = pix_indexes_for_sub_slim_index_delaunay_from(
         source_plane_data_grid=split_points,
-        simplex_index_for_sub_slim_index=split_cross_idx,
+        simplex_index_for_sub_slim_index=split_points_idx,
         pix_indexes_for_simplex_index=simplices,
         delaunay_points=points_np,
     )
 
-    splitted_mappings = splitted_mappings.astype(np.int32)
-
-    return pts, padded, areas, split_points, mappings, splitted_mappings
+    return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
-def jax_delaunay_voronoi(points, query_points):
+def jax_delaunay(points, query_points):
     import jax
     import jax.numpy as jnp
 
     N = points.shape[0]
     Q = query_points.shape[0]
+    max_simplices = 2 * N
 
-    # Conservative pad (you can pass exact M if you want)
-    max_simplices = 2 * N  # same logic as before
-
-    pts_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
-    simp_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
-    area_shape = jax.ShapeDtypeStruct((N,), points.dtype)
-    split_points_shape = jax.ShapeDtypeStruct((N*4, 2), points.dtype)
-    mappings_shape    = jax.ShapeDtypeStruct((Q, 3), jnp.int32)
-    splitted_mappings_shape = jax.ShapeDtypeStruct((N*4, 3), jnp.int32)
+    points_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
+    simplices_padded_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
+    mappings_shape = jax.ShapeDtypeStruct((Q, 3), jnp.int32)
+    split_points_shape = jax.ShapeDtypeStruct((N * 4, 2), points.dtype)
+    splitted_mappings_shape = jax.ShapeDtypeStruct((N * 4, 3), jnp.int32)
 
     return jax.pure_callback(
-        lambda pts, qpts: scipy_delaunay_voronoi(
-            np.asarray(pts), np.asarray(qpts), max_simplices
+        lambda points, qpts: scipy_delaunay(
+            np.asarray(points), np.asarray(qpts), max_simplices
         ),
-        (pts_shape, simp_shape, area_shape, split_points_shape, mappings_shape, splitted_mappings_shape),
-        points, query_points,
+        (
+            points_shape,
+            simplices_padded_shape,
+            mappings_shape,
+            split_points_shape,
+            splitted_mappings_shape,
+        ),
+        points,
+        query_points,
     )
+
+
+def barycentric_dual_area_from(
+    mesh_grid,  # (N_pix, 2) vertex positions
+    simplices,  # (N_tri, 3) triangle vertex indices
+    xp=np,  # xp = np or jnp
+):
+    """
+    Compute barycentric dual area for each vertex in a Delaunay triangulation.
+
+    Dual area A_i = sum over triangles containing vertex i of (triangle_area / 3).
+
+    Parameters
+    ----------
+    mesh_grid : (N_pix, 2)
+        Coordinates of all mesh vertices.
+    simplices : (N_tri, 3)
+        Vertex indices for each triangle.
+    xp : module
+        numpy or jax.numpy
+
+    Returns
+    -------
+    dual_area : (N_pix,)
+        Barycentric dual area for each vertex.
+    """
+
+    # -------------------------------
+    # gather triangle vertices
+    # -------------------------------
+    p0 = mesh_grid[simplices[:, 0]]  # (N_tri, 2)
+    p1 = mesh_grid[simplices[:, 1]]
+    p2 = mesh_grid[simplices[:, 2]]
+
+    # -------------------------------
+    # triangle areas
+    # -------------------------------
+    # parallelogram area = |(p1 - p0) × (p2 - p0)|
+    cross = (p1[:, 0] - p0[:, 0]) * (p2[:, 1] - p0[:, 1]) - (p1[:, 1] - p0[:, 1]) * (
+        p2[:, 0] - p0[:, 0]
+    )
+
+    tri_area = 0.5 * xp.abs(cross)  # (N_tri,)
+
+    # each triangle contributes area/3 to 3 vertices
+    contrib = tri_area / 3.0
+
+    # -------------------------------
+    # scatter-add into dual area array
+    # -------------------------------
+    N_pix = mesh_grid.shape[0]
+    dual_area = xp.zeros(N_pix)
+
+    # xp.add.at works for np and jnp
+    for k in range(3):
+        xp.add.at(dual_area, simplices[:, k], contrib)
+
+    return dual_area
 
 
 def split_points_from(points, area_weights, xp=np):
@@ -189,10 +211,10 @@ def split_points_from(points, area_weights, xp=np):
 
 
 def pix_indexes_for_sub_slim_index_delaunay_from(
-    source_plane_data_grid,          # (N_sub, 2)
-    simplex_index_for_sub_slim_index,# (N_sub,)
-    pix_indexes_for_simplex_index,   # (M, 3)
-    delaunay_points,                 # (N_pix, 2)
+    source_plane_data_grid,  # (N_sub, 2)
+    simplex_index_for_sub_slim_index,  # (N_sub,)
+    pix_indexes_for_simplex_index,  # (M, 3)
+    delaunay_points,  # (N_pix, 2)
 ):
 
     N_sub = source_plane_data_grid.shape[0]
@@ -221,114 +243,37 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
         _, idx = tree.query(source_plane_data_grid[outside_mask], k=1)
         out[outside_mask, 0] = idx.astype(np.int32)
 
-    # ---------------------------
-    # Sizes
-    # ---------------------------
-    sizes = np.sum(out >= 0, axis=1).astype(np.int32)
+    out = out.astype(np.int32)
 
-    return out, sizes
-
-
-# def pix_indexes_for_sub_slim_index_delaunay_from(
-#     source_plane_data_grid,  # (N_sub, 2)
-#     simplex_index_for_sub_slim_index,  # (N_sub,)
-#     pix_indexes_for_simplex_index,  # (M, 3)
-#     delaunay_points,  # (N_points, 2)
-#     xp=np,  # <--- choose backend: np or jnp
-# ):
-#     """
-#     XP-compatible version of pix_indexes_for_sub_slim_index_delaunay_from.
-#
-#     If xp=np: runs with NumPy (no JAX needed)
-#     If xp=jnp: runs inside JAX (jit, vmap, GPU)
-#
-#     Returns
-#     -------
-#     pix_indexes_for_sub_slim_index : (N_sub, 3)
-#     pix_indexes_for_sub_slim_index_sizes : (N_sub,)
-#     """
-#
-#     # Helper: xp.ones_like that supports setting dtype
-#     def ones_like(x, dtype):
-#         return xp.ones(x.shape, dtype=dtype)
-#
-#     N_sub = source_plane_data_grid.shape[0]
-#
-#     # Boolean mask for points that fall inside simplices
-#     inside_mask = simplex_index_for_sub_slim_index >= 0  # shape (N_sub,)
-#     outside_mask = ~inside_mask
-#
-#     # ----------------------------
-#     # Case 1: inside a simplex
-#     # ----------------------------
-#     # (N_sub, 3)
-#     pix_inside = xp.where(
-#         inside_mask[:, None],
-#         pix_indexes_for_simplex_index[simplex_index_for_sub_slim_index],
-#         -ones_like((inside_mask[:, None] + 0), dtype=np.int32),  # -1 filler
-#     )
-#
-#     # ----------------------------
-#     # Case 2: outside any simplex → nearest delaunay point
-#     # ----------------------------
-#     # Squared distances: (N_sub, N_points)
-#     d2 = xp.sum(
-#         (source_plane_data_grid[:, None, :] - delaunay_points[None, :, :]) ** 2.0,
-#         axis=-1,
-#     )
-#
-#     nearest = xp.argmin(d2, axis=1).astype(np.int32)  # (N_sub,)
-#
-#     # (N_sub, 3) → [nearest, -1, -1]
-#     nn_triplets = xp.stack(
-#         [
-#             nearest,
-#             -ones_like(nearest, dtype=np.int32),
-#             -ones_like(nearest, dtype=np.int32),
-#         ],
-#         axis=1,
-#     )
-#
-#     pix_outside = xp.where(
-#         outside_mask[:, None],
-#         nn_triplets,
-#         -ones_like((outside_mask[:, None] + 0), dtype=np.int32),
-#     )
-#
-#     # ----------------------------
-#     # Combine inside + outside
-#     # ----------------------------
-#     pix_indexes_for_sub_slim_index = xp.where(
-#         inside_mask[:, None],
-#         pix_inside,
-#         pix_outside,
-#     )
-#
-#     # ----------------------------
-#     # Count valid entries
-#     # ----------------------------
-#     pix_sizes = xp.sum(pix_indexes_for_sub_slim_index >= 0, axis=1)
-#
-#     return pix_indexes_for_sub_slim_index, pix_sizes
+    return out
 
 
 class DelaunayInterface:
 
-    def __init__(self, points, simplices, voronoi_areas, split_cross, vertex_neighbor_vertices, mappings, sizes, splitted_mappings, splitted_sizes):
+    def __init__(self, points, simplices, mappings, split_points, splitted_mappings):
 
         self.points = points
         self.simplices = simplices
-        self.voronoi_areas = voronoi_areas
-        self.split_cross = split_cross
-        self.vertex_neighbor_vertices = vertex_neighbor_vertices
         self.mappings = mappings
-        self.sizes = sizes
+        self.split_points = split_points
         self.splitted_mappings = splitted_mappings
-        self.splitted_sizes = splitted_sizes
+
+    @cached_property
+    def sizes(self):
+        return np.sum(self.mappings >= 0, axis=1).astype(np.int32)
+
+    @cached_property
+    def splitted_sizes(self):
+        return np.sum(self.splitted_mappings >= 0, axis=1).astype(np.int32)
 
 
 class Mesh2DDelaunay(Abstract2DMesh):
-    def __init__(self, values: Union[np.ndarray, List], source_plane_data_grid_over_sampled=None, _xp=np):
+    def __init__(
+        self,
+        values: Union[np.ndarray, List],
+        source_plane_data_grid_over_sampled=None,
+        _xp=np,
+    ):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
 
@@ -407,58 +352,28 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
             import jax.numpy as jnp
 
-            points, simplices, voronoi_areas, split_cross, mappings, splitted_mappings = jax_delaunay_voronoi(mesh_grid, self._source_plane_data_grid_over_sampled)
-            vertex_neighbor_vertices = None
+            points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
+                points=mesh_grid,
+                query_points=self._source_plane_data_grid_over_sampled
+            )
 
         else:
 
-            delaunay = scipy.spatial.Delaunay(mesh_grid)
-
-            points = delaunay.points
-            simplices = delaunay.simplices.astype(np.int32)
-            vertex_neighbor_vertices = delaunay.vertex_neighbor_vertices
-
-            voronoi_areas = voronoi_areas_from(mesh_grid)
-
-            simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid_over_sampled)
-            splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
-                self.split_cross
+            points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
+                points_np=mesh_grid,
+                query_points_np=self.source_plane_data_grid_over_sampled
             )
-
-            mappings = pix_indexes_for_sub_slim_index_delaunay_from(
-                source_plane_data_grid=self.source_plane_data_grid.over_sampled,
-                simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
-                pix_indexes_for_simplex_index=delaunay.simplices,
-                delaunay_points=delaunay.points,
-            )
-
-            (
-                splitted_mappings
-            ) = pix_indexes_for_sub_slim_index_delaunay_from(
-                source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
-                simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
-                pix_indexes_for_simplex_index=delaunay.simplices,
-                delaunay_points=delaunay.points,
-            )
-
-        sizes = self._xp.sum(mappings >= 0, axis=1).astype(self._xp.int32)
-        splitted_sizes = self._xp.sum(splitted_mappings >= 0, axis=1).astype(self._xp.int32)
 
         return DelaunayInterface(
-            points, simplices, voronoi_areas, split_cross, vertex_neighbor_vertices, mappings, sizes, splitted_mappings, splitted_sizes
+            points,
+            simplices,
+            split_points,
+            mappings,
+            splitted_mappings,
         )
 
     @property
-    def edge_pixel_list(self) -> List:
-        """
-        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
-        """
-        return mesh_numba_util.voronoi_edge_pixels_from(
-            regions=self.voronoi.regions, point_region=self.voronoi.point_region
-        )
-
-    @property
-    def split_cross(self) -> np.ndarray:
+    def split_points(self) -> np.ndarray:
         """
         For every 2d (y,x) coordinate corresponding to a Voronoi pixel centre, this property splits them into a cross
         of four coordinates in the vertical and horizontal directions. The function therefore returns a irregular
@@ -474,45 +389,31 @@ class Mesh2DDelaunay(Abstract2DMesh):
         The grid returned by this function is used by certain regularization schemes in the `Inversion` module to apply
         gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
         """
-
-        half_region_area_sqrt_lengths = 0.5 * self._xp.sqrt(
-            self.voronoi_pixel_areas_for_split
-        )
-
-        return split_points_from(
-            points=self.array,
-            area_weights=half_region_area_sqrt_lengths,
-            xp=self._xp,
-        )
+        return self.delaunay.split_points
 
     @property
-    def voronoi_pixel_areas_for_split(self) -> np.ndarray:
+    def neighbors(self) -> Neighbors:
         """
-        Returns the area of every Voronoi pixel in the Voronoi mesh.
+        Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is
+        defined as two Delaunay triangles which are directly connected to one another in the triangulation.
 
-        These areas are used when performing gradient regularization in order to determine the size of the cross of
-        points where the derivative is evaluated and therefore where regularization is evaluated (see `split_cross`).
+        see `Neighbors` for a complete description of the neighboring scheme.
 
-        Pixels at boundaries can sometimes have large unrealistic areas, in which case we set the maximum area to be
-        90.0% the maximum area of the Voronoi mesh. This large area values ensures that the pixels are regularized
-        with large regularization coefficients, which is preferred at the edge of the mesh where the reconstruction
-        goes to zero.
+        The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
+        object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
-        areas = self._xp.asarray(self.delaunay.voronoi_areas)
+        indptr, indices = self.delaunay.vertex_neighbor_vertices
 
-        # 90th percentile
-        max_area = self._xp.percentile(areas, 90.0)
+        sizes = indptr[1:] - indptr[:-1]
 
-        if self._xp is np:
-            # NumPy allows in-place mutation
-            areas[areas == -1] = max_area
-            areas[areas > max_area] = max_area
-            return areas
+        neighbors = -1 * np.ones(
+            shape=(self.parameters, int(np.max(sizes))), dtype="int"
+        )
 
-        # JAX arrays are immutable → use .at[]
-        areas = self._xp.where(areas == -1, max_area, areas)
-        areas = self._xp.where(areas > max_area, max_area, areas)
-        return areas
+        for k in range(self.parameters):
+            neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
+
+        return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
     def voronoi(self) -> "scipy.spatial.Voronoi":
@@ -539,28 +440,13 @@ class Mesh2DDelaunay(Abstract2DMesh):
             raise exc.MeshException() from e
 
     @property
-    def neighbors(self) -> Neighbors:
+    def edge_pixel_list(self) -> List:
         """
-        Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is
-        defined as two Delaunay triangles which are directly connected to one another in the triangulation.
-
-        see `Neighbors` for a complete description of the neighboring scheme.
-
-        The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
-        object, as described in the method `mesh_util.voronoi_neighbors_from`.
+        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
         """
-        indptr, indices = self.delaunay.vertex_neighbor_vertices
-
-        sizes = indptr[1:] - indptr[:-1]
-
-        neighbors = -1 * np.ones(
-            shape=(self.parameters, int(np.max(sizes))), dtype="int"
+        return mesh_numba_util.voronoi_edge_pixels_from(
+            regions=self.voronoi.regions, point_region=self.voronoi.point_region
         )
-
-        for k in range(self.parameters):
-            neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
-
-        return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     def interpolated_array_from(
         self,

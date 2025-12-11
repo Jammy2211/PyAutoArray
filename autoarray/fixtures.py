@@ -380,6 +380,7 @@ def make_delaunay_mesh_grid_9():
 
     return aa.Mesh2DDelaunay(values=grid_9)
 
+
 def make_over_sampler_2d_7x7():
     return aa.OverSampler(mask=make_mask_2d_7x7(), sub_size=2)
 
@@ -421,6 +422,7 @@ def make_delaunay_mapper_9_3x3():
         regularization=make_regularization_constant(),
     )
 
+
 def make_rectangular_inversion_7x7_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
@@ -433,6 +435,7 @@ def make_delaunay_inversion_9_3x3():
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_delaunay_mapper_9_3x3()],
     )
+
 
 ### EUCLID DATA ####
 

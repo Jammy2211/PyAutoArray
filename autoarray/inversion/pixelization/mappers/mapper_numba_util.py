@@ -103,4 +103,3 @@ def data_slim_to_pixelization_unique_from(
         pix_lengths[ip] = pix_size
 
     return data_to_pix_unique, data_weights, pix_lengths
-

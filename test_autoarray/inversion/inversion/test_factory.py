@@ -153,6 +153,7 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
+
 def test__inversion_imaging__source_pixel_zeroed_indices(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,

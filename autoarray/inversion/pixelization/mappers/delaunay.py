@@ -6,9 +6,6 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
 
-
-
-
 def triangle_area_xp(c0, c1, c2, xp):
     """
     Twice triangle area using vector cross product magnitude.
@@ -201,7 +198,7 @@ class MapperDelaunay(AbstractMapper):
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
     @property
-    def pix_sub_weights_split_cross(self) -> PixSubWeights:
+    def pix_sub_weights_split_points(self) -> PixSubWeights:
         """
         The property `pix_sub_weights` property describes the calculation of the `PixSubWeights` object, which contains
         numpy arrays describing how data-points and mapper pixels map to one another and the weights of these mappings.
@@ -216,7 +213,7 @@ class MapperDelaunay(AbstractMapper):
         delaunay = self.delaunay
 
         splitted_weights = pixel_weights_delaunay_from(
-            source_plane_data_grid=delaunay.split_cross,
+            source_plane_data_grid=delaunay.split_points,
             source_plane_mesh_grid=self.source_plane_mesh_grid.array,
             pix_indexes_for_sub_slim_index=delaunay.splitted_mappings.astype("int"),
             xp=self._xp,

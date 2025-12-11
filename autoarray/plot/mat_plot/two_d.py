@@ -738,4 +738,3 @@ class MatPlot2D(AbstractMatPlot):
                 structure=interpolation_array, auto_filename=auto_labels.filename
             )
             self.figure.close()
-

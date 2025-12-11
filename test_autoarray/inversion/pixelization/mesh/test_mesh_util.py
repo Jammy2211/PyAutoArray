@@ -106,7 +106,6 @@ def test__rectangular_neighbors_from():
     ).all()
 
 
-
 def test__delaunay_interpolated_grid_from():
     shape_native = (3, 3)
 

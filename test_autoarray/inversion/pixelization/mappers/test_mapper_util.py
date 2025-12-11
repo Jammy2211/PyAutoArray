@@ -2,7 +2,10 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from autoarray.inversion.pixelization.mappers.delaunay import pixel_weights_delaunay_from
+from autoarray.inversion.pixelization.mappers.delaunay import (
+    pixel_weights_delaunay_from,
+)
+
 
 @pytest.fixture(name="three_pixels")
 def make_three_pixels():

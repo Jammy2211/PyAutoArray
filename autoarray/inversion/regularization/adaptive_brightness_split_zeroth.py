@@ -96,16 +96,16 @@ class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
             linear_obj=linear_obj, xp=xp
         )
 
-        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
+        pix_sub_weights_split_points = linear_obj.pix_sub_weights_split_points
 
         (
             splitted_mappings,
             splitted_sizes,
             splitted_weights,
         ) = regularization_util.reg_split_from(
-            splitted_mappings=pix_sub_weights_split_cross.mappings,
-            splitted_sizes=pix_sub_weights_split_cross.sizes,
-            splitted_weights=pix_sub_weights_split_cross.weights,
+            splitted_mappings=pix_sub_weights_split_points.mappings,
+            splitted_sizes=pix_sub_weights_split_points.sizes,
+            splitted_weights=pix_sub_weights_split_points.weights,
             xp=xp,
         )
 

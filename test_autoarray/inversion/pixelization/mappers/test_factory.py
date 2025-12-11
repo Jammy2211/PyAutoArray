@@ -106,4 +106,3 @@ def test__delaunay_mapper():
         ),
         1.0e-2,
     )
-

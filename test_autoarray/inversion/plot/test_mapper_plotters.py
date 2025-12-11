@@ -51,7 +51,6 @@ def test__figure_2d(
     assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
 
-
 def test__subplot_image_and_mapper(
     imaging_7x7,
     rectangular_mapper_7x7_3x3,

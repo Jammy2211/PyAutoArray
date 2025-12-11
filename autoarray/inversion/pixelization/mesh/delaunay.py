@@ -8,6 +8,7 @@ from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
+
 class Delaunay(AbstractMesh):
     def __init__(self):
         """
@@ -58,7 +59,11 @@ class Delaunay(AbstractMesh):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Mesh2DDelaunay(values=source_plane_mesh_grid, source_plane_data_grid_over_sampled=source_plane_data_grid, _xp=xp)
+        return Mesh2DDelaunay(
+            values=source_plane_mesh_grid,
+            source_plane_data_grid_over_sampled=source_plane_data_grid,
+            _xp=xp,
+        )
 
     def mapper_grids_from(
         self,
