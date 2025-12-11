@@ -190,8 +190,9 @@ def voronoi_areas_numpy(points, qhull_options="Qbb Qc Qx Qm"):
     unbounded = np.array([(-1 in r) for r in region_lists], dtype=bool)
 
     # Filter only bounded region vertex indices
-    clean_regions = [np.asarray([v for v in r if v != -1], dtype=int)
-                     for r in region_lists]
+    clean_regions = [
+        np.asarray([v for v in r if v != -1], dtype=int) for r in region_lists
+    ]
 
     # Compute lengths once
     lengths = np.array([len(r) for r in clean_regions], dtype=int)
@@ -216,7 +217,7 @@ def voronoi_areas_numpy(points, qhull_options="Qbb Qc Qx Qm"):
     # 3) Gather polygon vertices (vectorized)
     # ------------------------------------------------------------
     safe_idx = idx.clip(min=0)
-    verts = vertices[safe_idx]                     # (N, max_len, 2)
+    verts = vertices[safe_idx]  # (N, max_len, 2)
 
     # Extract x, y with masked invalid entries zeroed
     x = np.where(mask, verts[..., 1], 0.0)
@@ -341,7 +342,9 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 class DelaunayInterface:
 
-    def __init__(self, points, simplices, mappings, split_points, splitted_mappings, xp=np):
+    def __init__(
+        self, points, simplices, mappings, split_points, splitted_mappings, xp=np
+    ):
 
         self.points = points
         self.simplices = simplices
@@ -458,16 +461,18 @@ class Mesh2DDelaunay(Abstract2DMesh):
                 points=self.mesh_grid_xy,
                 query_points=self._source_plane_data_grid_over_sampled,
                 use_voronoi_areas=self.preloads.use_voronoi_areas,
-                areas_factor=self.preloads.areas_factor
+                areas_factor=self.preloads.areas_factor,
             )
 
         else:
 
-            points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
-                points_np=self.mesh_grid_xy,
-                query_points_np=self._source_plane_data_grid_over_sampled,
-                use_voronoi_areas=self.preloads.use_voronoi_areas,
-                areas_factor=self.preloads.areas_factor
+            points, simplices, mappings, split_points, splitted_mappings = (
+                scipy_delaunay(
+                    points_np=self.mesh_grid_xy,
+                    query_points_np=self._source_plane_data_grid_over_sampled,
+                    use_voronoi_areas=self.preloads.use_voronoi_areas,
+                    areas_factor=self.preloads.areas_factor,
+                )
             )
 
         return DelaunayInterface(
@@ -523,10 +528,10 @@ class Mesh2DDelaunay(Abstract2DMesh):
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     def interpolated_array_from(
-            self,
-            values: np.ndarray,
-            shape_native: Tuple[int, int] = (401, 401),
-            extent: Optional[Tuple[float, float, float, float]] = None,
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
         """
         The reconstruction of data on a `Delaunay` triangulation (e.g. the `reconstruction` output from an `Inversion`)

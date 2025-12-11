@@ -74,4 +74,3 @@ def test__voronoi_areas_via_delaunay_from():
     assert voronoi_areas[1] == pytest.approx(1.39137102, 1.0e-4)
     assert voronoi_areas[3] == pytest.approx(29.836324, 1.0e-4)
     assert voronoi_areas[4] == pytest.approx(-1.0, 1.0e-4)
-
