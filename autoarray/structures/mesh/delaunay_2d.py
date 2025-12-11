@@ -44,26 +44,28 @@ def scipy_delaunay(points_np, query_points_np, source_pixel_zeroed_indices):
     #     points,
     # ))
 
-    # barycentric_dual_areas = barycentric_dual_area_from(
-    #     points,
-    #     simplices,
-    #     xp=np,
-    # )
+    barycentric_dual_areas = barycentric_dual_area_from(
+        points,
+        simplices,
+        xp=np,
+    )
 
     # max_area = np.percentile(barycentric_dual_areas, 90.0)
     # barycentric_dual_areas[source_pixel_zeroed_indices] = max_area
 
     # ---------- Voronoi Areas used to weight split points ----------
-    areas = voronoi_areas_numpy(
-        points,
-    )
+    # areas = voronoi_areas_numpy(
+    #     points,
+    # )
+    #
+    # # max_area = np.percentile(areas, 90.0)
+    #
+    # max_area = np.max(areas[areas != -1])
+    #
+    # areas[areas == -1] = max_area
+    # areas[areas > max_area] = max_area
 
-    max_area = np.percentile(areas, 90.0)
-
-    areas[areas == -1] = max_area
-    areas[areas > max_area] = max_area
-
-    split_point_areas = 0.5 * np.sqrt(areas)
+    split_point_areas = 0.5 * np.sqrt(barycentric_dual_areas)
 
     # ---------- Compute split cross points for Split regularization ----------
     split_points = split_points_from(
