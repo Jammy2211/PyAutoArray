@@ -56,7 +56,7 @@ def scipy_delaunay(points_np, query_points_np, max_simplices):
     # ---------- find_simplex for split cross points ----------
     split_points_idx = tri.find_simplex(split_points)
 
-    (splitted_mappings,) = pix_indexes_for_sub_slim_index_delaunay_from(
+    splitted_mappings = pix_indexes_for_sub_slim_index_delaunay_from(
         source_plane_data_grid=split_points,
         simplex_index_for_sub_slim_index=split_points_idx,
         pix_indexes_for_simplex_index=simplices,
@@ -248,7 +248,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 class DelaunayInterface:
 
-    def __init__(self, points, simplices, mappings, split_points, splitted_mappings):
+    def __init__(self, points, simplices, mappings, split_points, splitted_mappings, xp=np):
 
         self.points = points
         self.simplices = simplices
@@ -256,13 +256,15 @@ class DelaunayInterface:
         self.split_points = split_points
         self.splitted_mappings = splitted_mappings
 
+        self.xp = xp
+
     @cached_property
     def sizes(self):
-        return np.sum(self.mappings >= 0, axis=1).astype(np.int32)
+        return self.xp.sum(self.mappings >= 0, axis=1).astype(np.int32)
 
     @cached_property
     def splitted_sizes(self):
-        return np.sum(self.splitted_mappings >= 0, axis=1).astype(np.int32)
+        return self.xp.sum(self.splitted_mappings >= 0, axis=1).astype(np.int32)
 
 
 class Mesh2DDelaunay(Abstract2DMesh):
@@ -370,11 +372,12 @@ class Mesh2DDelaunay(Abstract2DMesh):
             )
 
         return DelaunayInterface(
-            points,
-            simplices,
-            split_points,
-            mappings,
-            splitted_mappings,
+            points=points,
+            simplices=simplices,
+            mappings=mappings,
+            split_points=split_points,
+            splitted_mappings=splitted_mappings,
+            xp=self._xp,
         )
 
     @property
