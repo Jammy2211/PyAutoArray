@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.spatial
-from scipy.spatial import cKDTree
+from scipy.spatial import cKDTree, Delaunay
 from typing import List, Union, Optional, Tuple
 
 from autoconf import cached_property
@@ -16,8 +16,6 @@ from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 def scipy_delaunay(points_np, query_points_np, max_simplices):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
-    from scipy.spatial import Delaunay
-    import numpy as np
 
     # --- Delaunay mesh using source plane data grid ---
     tri = Delaunay(points_np)
@@ -332,6 +330,16 @@ class Mesh2DDelaunay(Abstract2DMesh):
         )
 
     @cached_property
+    def mesh_grid_xy(self):
+        """
+        The default convention in `scipy.spatial` is to represent 2D coordinates as (x,y) pairs, whereas PyAutoArray
+        represents 2D coordinates as (y,x) pairs.
+
+        Therefore, this property simply converts the (y,x) grid of irregular coordinates into an (x,y) grid.
+        """
+        return self._xp.stack([self.array[:, 1], self.array[:, 0]]).T
+
+    @cached_property
     def delaunay(self) -> "scipy.spatial.Delaunay":
         """
         Returns a `scipy.spatial.Delaunay` object from the 2D (y,x) grid of irregular coordinates, which correspond to
@@ -345,22 +353,19 @@ class Mesh2DDelaunay(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
-
-        mesh_grid = self._xp.stack([self.array[:, 0], self.array[:, 1]]).T
-
         if self._xp.__name__.startswith("jax"):
 
             import jax.numpy as jnp
 
             points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
-                points=mesh_grid,
+                points=self.mesh_grid_xy,
                 query_points=self._source_plane_data_grid_over_sampled
             )
 
         else:
 
             points, simplices, mappings, split_points, splitted_mappings = scipy_delaunay(
-                points_np=mesh_grid,
+                points=self.mesh_grid_xy,
                 query_points_np=self.source_plane_data_grid_over_sampled
             )
 
@@ -415,35 +420,11 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @property
-    def voronoi(self) -> "scipy.spatial.Voronoi":
-        """
-        Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
-        the centre of every Voronoi pixel.
-
-        This object contains numerous attributes describing a Voronoi mesh. PyAutoArray uses
-        the `vertex_neighbor_vertices` attribute to determine the neighbors of every Delaunay triangle.
-
-        There are numerous exceptions that `scipy.spatial.Delaunay` may raise when the input grid of coordinates used
-        to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
-        `MeshException`, which helps exception handling in the `inversion` package.
-        """
-        import scipy.spatial
-        from scipy.spatial import QhullError
-
-        try:
-            return scipy.spatial.Voronoi(
-                np.asarray([self.array[:, 1], self.array[:, 0]]).T,
-                qhull_options="Qbb Qc Qx Qm",
-            )
-        except (ValueError, OverflowError, QhullError) as e:
-            raise exc.MeshException() from e
-
     def interpolated_array_from(
-        self,
-        values: np.ndarray,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
+            self,
+            values: np.ndarray,
+            shape_native: Tuple[int, int] = (401, 401),
+            extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
         """
         The reconstruction of data on a `Delaunay` triangulation (e.g. the `reconstruction` output from an `Inversion`)
@@ -470,6 +451,9 @@ class Mesh2DDelaunay(Abstract2DMesh):
             The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
             is input.
         """
+        # Uses find simplex so recomputes delaunay internally
+        delaunay = Delaunay(self.mesh_grid_xy)
+
         interpolation_grid = self.interpolation_grid_from(
             shape_native=shape_native, extent=extent
         )
@@ -477,13 +461,61 @@ class Mesh2DDelaunay(Abstract2DMesh):
         interpolated_array = mesh_numba_util.delaunay_interpolated_array_from(
             shape_native=shape_native,
             interpolation_grid_slim=np.array(interpolation_grid.slim.array),
-            delaunay=self.delaunay,
+            delaunay=delaunay,
             pixel_values=values,
         )
 
         return Array2D.no_mask(
             values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )
+
+    @cached_property
+    def voronoi(self) -> "scipy.spatial.Voronoi":
+        """
+        Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
+        the centre of every Voronoi pixel.
+
+        This object contains numerous attributes describing a Voronoi mesh. PyAutoArray uses
+        the `vertex_neighbor_vertices` attribute to determine the neighbors of every Delaunay triangle.
+
+        There are numerous exceptions that `scipy.spatial.Delaunay` may raise when the input grid of coordinates used
+        to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
+        `MeshException`, which helps exception handling in the `inversion` package.
+        """
+        import scipy.spatial
+        from scipy.spatial import QhullError
+
+        try:
+            return scipy.spatial.Voronoi(
+                self.mesh_grid_xy,
+                qhull_options="Qbb Qc Qx Qm",
+            )
+        except (ValueError, OverflowError, QhullError) as e:
+            raise exc.MeshException() from e
+
+    @property
+    def voronoi_areas(self):
+
+        N = self.mesh_grid_xy.shape[0]
+
+        voronoi_areas = np.zeros(N)
+
+        for i in range(N):
+            region_vertices_indexes = self.voronoi.regions[self.voronoi.point_region[i]]
+            if -1 in region_vertices_indexes:
+                voronoi_areas[i] = -1
+            else:
+
+                points_of_region = self.voronoivertices[region_vertices_indexes]
+
+                x = points_of_region[:, 1]
+                y = points_of_region[:, 0]
+
+                voronoi_areas[i] = 0.5 * np.abs(
+                    np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1))
+                )
+
+        return voronoi_areas
 
     @property
     def areas_for_magnification(self) -> np.ndarray:
@@ -494,7 +526,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
         calculation. This method therefore sets their areas to zero so they do not impact the magnification
         calculation.
         """
-        areas = self.delaunay.voronoi_areas
+        areas = self.voronoi_areas
 
         areas[areas == -1] = 0.0
 
