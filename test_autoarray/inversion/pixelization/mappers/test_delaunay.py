@@ -17,7 +17,11 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid, _xp=np)
+    mesh_grid = aa.Mesh2DDelaunay(
+        values=mesh_grid,
+        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7.over_sampled,
+        _xp=np
+    )
 
     mapper_grids = aa.MapperGrids(
         mask=grid_2d_sub_1_7x7.mask,

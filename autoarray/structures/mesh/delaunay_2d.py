@@ -454,6 +454,15 @@ class Mesh2DDelaunay(Abstract2DMesh):
         `MeshException`, which helps exception handling in the `inversion` package.
         """
 
+        if self._source_plane_data_grid_over_sampled is None:
+
+            raise ValueError(
+                """
+                You must input the `source_plane_data_grid_over_sampled` parameter of the `Mesh2DDelaunay` object
+                in order to compute the Delaunay triangulation.
+                """
+            )
+
         if self.preloads is not None:
 
             use_voronoi_areas = self.preloads.use_voronoi_areas
