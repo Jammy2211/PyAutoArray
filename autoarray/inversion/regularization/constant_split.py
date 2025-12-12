@@ -70,7 +70,7 @@ class ConstantSplit(Constant):
         )
 
         pixels = int(len(splitted_mappings) / 4)
-        regularization_weights = np.full(fill_value=self.coefficient, shape=(pixels,))
+        regularization_weights = xp.full(fill_value=self.coefficient, shape=(pixels,))
 
         return regularization_util.pixel_splitted_regularization_matrix_from(
             regularization_weights=regularization_weights,
