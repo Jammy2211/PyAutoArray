@@ -340,61 +340,82 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     return out
 
 
-# def edges_from_simplices(simplices):
-#     """
-#     simplices: (M, 3), padded with -1
-#     returns edges: (3M, 2)
-#     """
-#     a = simplices[:, [0, 1]]
-#     b = simplices[:, [1, 2]]
-#     c = simplices[:, [2, 0]]
-#     edges = np.concatenate([a, b, c], axis=0)
-#     return edges
-#
-#
-# def neighbors_from_simplices(simplices, N):
-#     """
-#     simplices: (M, 3) padded with -1
-#     N: number of vertices
-#
-#     Returns
-#     -------
-#     neighbors : (N, max_deg)
-#     sizes     : (N,)
-#     """
-#     edges = edges_from_simplices(simplices)
-#
-#     # remove invalid
-#     edges = edges[np.all(edges >= 0, axis=1)]
-#
-#     # symmetric
-#     edges = np.concatenate([edges, edges[:, ::-1]], axis=0)
-#
-#     src = edges[:, 0]
-#     dst = edges[:, 1]
-#
-#     # sort by source vertex
-#     order = np.argsort(src)
-#     src = src[order]
-#     dst = dst[order]
-#
-#     # count neighbors per vertex
-#     sizes = np.bincount(src, minlength=N)
-#
-#     max_deg = sizes.max()
-#
-#     neighbors = -np.ones((N, max_deg), dtype=np.int32)
-#
-#     # scatter
-#     start = np.concatenate([[0], np.cumsum(sizes[:-1])])
-#     idx = np.arange(len(dst)) - start[src]
-#
-#     neighbors[src, idx] = dst
-#
-#     # optional: deduplicate per row (can be skipped in practice)
-#     # neighbors = unique_per_row(neighbors)
-#
-#     return neighbors, sizes
+def edges_from_simplices(simplices):
+    """
+    simplices: (M, 3), padded with -1
+    returns edges: (3M, 2)
+    """
+    a = simplices[:, [0, 1]]
+    b = simplices[:, [1, 2]]
+    c = simplices[:, [2, 0]]
+    edges = np.concatenate([a, b, c], axis=0)
+    return edges
+
+
+def neighbors_from_simplices(simplices, N):
+    """
+    Compute per-vertex neighbors from Delaunay simplices.
+
+    Parameters
+    ----------
+    simplices : (M, 3) int
+        Delaunay simplices (may include padding -1 rows).
+    N : int
+        Number of vertices.
+
+    Returns
+    -------
+    neighbors : (N, max_deg)
+        Neighbor indices per vertex, padded with -1.
+    sizes : (N,)
+        Number of neighbors per vertex.
+    """
+    simplices = np.asarray(simplices)
+
+    # --- 1. Extract edges ---
+    edges = np.concatenate(
+        [
+            simplices[:, [0, 1]],
+            simplices[:, [1, 2]],
+            simplices[:, [2, 0]],
+        ],
+        axis=0,
+    )
+
+    # Remove invalid (-1) edges
+    edges = edges[np.all(edges >= 0, axis=1)]
+
+    # --- 2. Symmetrise ---
+    edges = np.concatenate([edges, edges[:, ::-1]], axis=0)
+
+    src = edges[:, 0]
+    dst = edges[:, 1]
+
+    # --- 3. Sort by (src, dst) ---
+    order = np.lexsort((dst, src))
+    src = src[order]
+    dst = dst[order]
+
+    # --- 4. Deduplicate (remove repeated dst per src) ---
+    keep = np.ones(len(dst), dtype=bool)
+    keep[1:] = (src[1:] != src[:-1]) | (dst[1:] != dst[:-1])
+
+    src = src[keep]
+    dst = dst[keep]
+
+    # --- 5. Count neighbors ---
+    sizes = np.bincount(src, minlength=N)
+    max_deg = sizes.max() if sizes.size > 0 else 0
+
+    # --- 6. Build padded neighbor array ---
+    neighbors = -np.ones((N, max_deg), dtype=np.int32)
+
+    start = np.concatenate([[0], np.cumsum(sizes[:-1])])
+    pos = np.arange(len(dst)) - start[src]
+
+    neighbors[src, pos] = dst
+
+    return neighbors, sizes
 
 
 
@@ -584,18 +605,10 @@ class Mesh2DDelaunay(Abstract2DMesh):
         object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
 
-        delaunay = scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
-
-        indptr, indices = delaunay.vertex_neighbor_vertices
-
-        sizes = indptr[1:] - indptr[:-1]
-
-        neighbors = -1 * np.ones(
-            shape=(self.parameters, int(np.max(sizes))), dtype="int"
+        neighbors, sizes = neighbors_from_simplices(
+            simplices=self.delaunay.simplices,
+            N=self.delaunay.points.shape[0]
         )
-
-        for k in range(self.parameters):
-            neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
