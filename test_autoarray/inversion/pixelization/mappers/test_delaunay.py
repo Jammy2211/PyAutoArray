@@ -3,8 +3,8 @@ import scipy.spatial
 
 import autoarray as aa
 
-from autoarray.structures.mesh.delaunay_2d import find_simplex_from
-from autoarray.inversion.pixelization.mappers.delaunay import (
+from autoarray.structures.mesh.delaunay_2d import scipy_delaunay
+from autoarray.structures.mesh.delaunay_2d import (
     pix_indexes_for_sub_slim_index_delaunay_from,
 )
 
@@ -73,7 +73,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     ).all()
 
 
-def test__find_simplex_jax(grid_2d_sub_1_7x7):
+def test__scipy_delaunay__simplices(grid_2d_sub_1_7x7):
 
     mesh_grid = aa.Grid2D.no_mask(
         values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
@@ -82,16 +82,13 @@ def test__find_simplex_jax(grid_2d_sub_1_7x7):
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid)
-
-    source_plane_mesh_grid = np.asarray(
-        [mesh_grid.array[:, 0], mesh_grid.array[:, 1]]
-    ).T
-
-    delaunay = scipy.spatial.Delaunay(source_plane_mesh_grid)
-
-    simplices = find_simplex_from(
-        grid_2d_sub_1_7x7, delaunay.points, delaunay.simplices
+    mesh_grid = aa.Mesh2DDelaunay(
+        values=mesh_grid,
+        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
     )
 
-    assert (delaunay.find_simplex(grid_2d_sub_1_7x7) == simplices).all()
+    print(mesh_grid.delaunay.simplices)
+
+    assert (mesh_grid.delaunay.simplices[0,:] == np.array([3, 4, 0])).all()
+    assert (mesh_grid.delaunay.simplices[1,:] == np.array([3, 5, 4])).all()
+    assert (mesh_grid.delaunay.simplices[-1,:] == np.array([-1, -1, -1])).all()

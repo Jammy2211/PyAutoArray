@@ -453,6 +453,17 @@ class Mesh2DDelaunay(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
+
+        if self.preloads is not None:
+
+            use_voronoi_areas = self.preloads.use_voronoi_areas
+            areas_factor = self.preloads.areas_factor
+
+        else:
+
+            use_voronoi_areas = True
+            areas_factor = 0.5
+
         if self._xp.__name__.startswith("jax"):
 
             import jax.numpy as jnp
@@ -460,8 +471,8 @@ class Mesh2DDelaunay(Abstract2DMesh):
             points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
                 points=self.mesh_grid_xy,
                 query_points=self._source_plane_data_grid_over_sampled,
-                use_voronoi_areas=self.preloads.use_voronoi_areas,
-                areas_factor=self.preloads.areas_factor,
+                use_voronoi_areas=use_voronoi_areas,
+                areas_factor=areas_factor,
             )
 
         else:
@@ -470,8 +481,8 @@ class Mesh2DDelaunay(Abstract2DMesh):
                 scipy_delaunay(
                     points_np=self.mesh_grid_xy,
                     query_points_np=self._source_plane_data_grid_over_sampled,
-                    use_voronoi_areas=self.preloads.use_voronoi_areas,
-                    areas_factor=self.preloads.areas_factor,
+                    use_voronoi_areas=use_voronoi_areas,
+                    areas_factor=areas_factor,
                 )
             )
 
