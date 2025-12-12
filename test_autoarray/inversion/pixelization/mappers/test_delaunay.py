@@ -31,24 +31,20 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    simplex_index_for_sub_slim_index = mapper.delaunay.find_simplex(
+    delaunay = scipy.spatial.Delaunay(mesh_grid.mesh_grid_xy)
+
+    simplex_index_for_sub_slim_index = delaunay.find_simplex(
         mapper.source_plane_data_grid
     )
     pix_indexes_for_simplex_index = mapper.delaunay.simplices
 
-    (
-        pix_indexes_for_sub_slim_index_util,
-        sizes,
-    ) = pix_indexes_for_sub_slim_index_delaunay_from(
+    pix_indexes_for_sub_slim_index_util = pix_indexes_for_sub_slim_index_delaunay_from(
         source_plane_data_grid=mapper.source_plane_data_grid.array,
         simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
         delaunay_points=mapper.delaunay.points,
     )
-    pix_indexes_for_sub_slim_index_util = pix_indexes_for_sub_slim_index_util.astype(
-        "int"
-    )
-    sizes = sizes.astype("int")
+    sizes = np.sum(pix_indexes_for_sub_slim_index_util >= 0, axis=1).astype(np.int32).astype("int")
 
     assert (
         mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
