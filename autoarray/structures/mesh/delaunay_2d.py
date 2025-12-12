@@ -340,7 +340,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     return out
 
 
-def edges_from_simplices(simplices):
+def edges_from_simplices(simplices, xp=np):
     """
     simplices: (M, 3), padded with -1
     returns edges: (3M, 2)
@@ -348,20 +348,22 @@ def edges_from_simplices(simplices):
     a = simplices[:, [0, 1]]
     b = simplices[:, [1, 2]]
     c = simplices[:, [2, 0]]
-    edges = np.concatenate([a, b, c], axis=0)
+    edges = xp.concatenate([a, b, c], axis=0)
     return edges
 
-
-def neighbors_from_simplices(simplices, N):
+def neighbors_from_simplices(simplices, N, xp=np):
     """
     Compute per-vertex neighbors from Delaunay simplices.
+    NumPy / JAX compatible.
 
     Parameters
     ----------
-    simplices : (M, 3) int
+    simplices : (M, 3)
         Delaunay simplices (may include padding -1 rows).
     N : int
         Number of vertices.
+    xp : module
+        np or jax.numpy
 
     Returns
     -------
@@ -370,52 +372,63 @@ def neighbors_from_simplices(simplices, N):
     sizes : (N,)
         Number of neighbors per vertex.
     """
-    simplices = np.asarray(simplices)
+    simplices = xp.asarray(simplices)
 
     # --- 1. Extract edges ---
-    edges = np.concatenate(
-        [
-            simplices[:, [0, 1]],
-            simplices[:, [1, 2]],
-            simplices[:, [2, 0]],
-        ],
-        axis=0,
-    )
+    edges = edges_from_simplices(simplices, xp)
 
-    # Remove invalid (-1) edges
-    edges = edges[np.all(edges >= 0, axis=1)]
+    # --- 2. Remove invalid (-1) edges ---
+    valid = xp.all(edges >= 0, axis=1)
+    edges = edges[valid]
 
-    # --- 2. Symmetrise ---
-    edges = np.concatenate([edges, edges[:, ::-1]], axis=0)
+    # --- 3. Symmetrise ---
+    edges = xp.concatenate([edges, edges[:, ::-1]], axis=0)
 
     src = edges[:, 0]
     dst = edges[:, 1]
 
-    # --- 3. Sort by (src, dst) ---
-    order = np.lexsort((dst, src))
+    # --- 4. Sort by (src, dst) ---
+    # JAX has no lexsort, so pack into a single sortable key
+    key = src * N + dst
+    order = xp.argsort(key)
     src = src[order]
     dst = dst[order]
 
-    # --- 4. Deduplicate (remove repeated dst per src) ---
-    keep = np.ones(len(dst), dtype=bool)
-    keep[1:] = (src[1:] != src[:-1]) | (dst[1:] != dst[:-1])
+    # --- 5. Deduplicate ---
+    keep = xp.ones(dst.shape[0], dtype=bool)
+    keep = keep.at[1:].set((src[1:] != src[:-1]) | (dst[1:] != dst[:-1])) \
+        if xp.__name__.startswith("jax") else \
+        xp.concatenate(
+            [xp.array([True]), (src[1:] != src[:-1]) | (dst[1:] != dst[:-1])]
+        )
 
     src = src[keep]
     dst = dst[keep]
 
-    # --- 5. Count neighbors ---
-    sizes = np.bincount(src, minlength=N)
-    max_deg = sizes.max() if sizes.size > 0 else 0
+    # --- 6. Count neighbors ---
+    if xp.__name__.startswith("jax"):
+        sizes = xp.bincount(src, length=N)
+    else:
+        sizes = xp.bincount(src, minlength=N)
 
-    # --- 6. Build padded neighbor array ---
-    neighbors = -np.ones((N, max_deg), dtype=np.int32)
+    max_deg = int(sizes.max()) if sizes.size > 0 else 0
 
-    start = np.concatenate([[0], np.cumsum(sizes[:-1])])
-    pos = np.arange(len(dst)) - start[src]
+    # --- 7. Build padded neighbor array ---
+    neighbors = -xp.ones((N, max_deg), dtype=simplices.dtype)
 
-    neighbors[src, pos] = dst
+    start = xp.concatenate(
+        [xp.array([0], dtype=sizes.dtype), xp.cumsum(sizes[:-1])]
+    )
+
+    pos = xp.arange(dst.shape[0]) - start[src]
+
+    if xp.__name__.startswith("jax"):
+        neighbors = neighbors.at[src, pos].set(dst)
+    else:
+        neighbors[src, pos] = dst
 
     return neighbors, sizes
+
 
 
 
