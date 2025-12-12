@@ -78,19 +78,21 @@ def test__neighbors(grid_2d_sub_1_7x7):
 
     neighbors = mesh_grid.neighbors
 
-    assert (
-        neighbors
-        == np.array(
-            [
-                [1, 2, 3, 4],
-                [0, 2, 3, 5],
-                [0, 1, 5, -1],
-                [0, 1, 4, 5],
-                [0, 3, 5, -1],
-                [1, 2, 3, 4],
-            ]
-        )
-    ).all()
+    expected = np.array(
+        [
+            [1, 2, 3, 4],
+            [0, 2, 3, 5],
+            [0, 1, 5, -1],
+            [0, 1, 4, 5],
+            [0, 3, 5, -1],
+            [1, 2, 3, 4],
+        ]
+    )
+
+    assert all(
+        set(neighbors[i]) - {-1} == set(expected[i]) - {-1}
+        for i in range(neighbors.shape[0])
+    )
 
 
 def test__voronoi_areas_via_delaunay_from():

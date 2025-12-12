@@ -340,98 +340,6 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     return out
 
 
-def edges_from_simplices(simplices, xp=np):
-    """
-    simplices: (M, 3), padded with -1
-    returns edges: (3M, 2)
-    """
-    a = simplices[:, [0, 1]]
-    b = simplices[:, [1, 2]]
-    c = simplices[:, [2, 0]]
-    edges = xp.concatenate([a, b, c], axis=0)
-    return edges
-
-def neighbors_from_simplices(simplices, N, xp=np):
-    """
-    Compute per-vertex neighbors from Delaunay simplices.
-    NumPy / JAX compatible.
-
-    Parameters
-    ----------
-    simplices : (M, 3)
-        Delaunay simplices (may include padding -1 rows).
-    N : int
-        Number of vertices.
-    xp : module
-        np or jax.numpy
-
-    Returns
-    -------
-    neighbors : (N, max_deg)
-        Neighbor indices per vertex, padded with -1.
-    sizes : (N,)
-        Number of neighbors per vertex.
-    """
-    simplices = xp.asarray(simplices)
-
-    # --- 1. Extract edges ---
-    edges = edges_from_simplices(simplices, xp)
-
-    # --- 2. Remove invalid (-1) edges ---
-    valid = xp.all(edges >= 0, axis=1)
-    edges = edges[valid]
-
-    # --- 3. Symmetrise ---
-    edges = xp.concatenate([edges, edges[:, ::-1]], axis=0)
-
-    src = edges[:, 0]
-    dst = edges[:, 1]
-
-    # --- 4. Sort by (src, dst) ---
-    # JAX has no lexsort, so pack into a single sortable key
-    key = src * N + dst
-    order = xp.argsort(key)
-    src = src[order]
-    dst = dst[order]
-
-    # --- 5. Deduplicate ---
-    keep = xp.ones(dst.shape[0], dtype=bool)
-    keep = keep.at[1:].set((src[1:] != src[:-1]) | (dst[1:] != dst[:-1])) \
-        if xp.__name__.startswith("jax") else \
-        xp.concatenate(
-            [xp.array([True]), (src[1:] != src[:-1]) | (dst[1:] != dst[:-1])]
-        )
-
-    src = src[keep]
-    dst = dst[keep]
-
-    # --- 6. Count neighbors ---
-    if xp.__name__.startswith("jax"):
-        sizes = xp.bincount(src, length=N)
-    else:
-        sizes = xp.bincount(src, minlength=N)
-
-    max_deg = int(sizes.max()) if sizes.size > 0 else 0
-
-    # --- 7. Build padded neighbor array ---
-    neighbors = -xp.ones((N, max_deg), dtype=simplices.dtype)
-
-    start = xp.concatenate(
-        [xp.array([0], dtype=sizes.dtype), xp.cumsum(sizes[:-1])]
-    )
-
-    pos = xp.arange(dst.shape[0]) - start[src]
-
-    if xp.__name__.startswith("jax"):
-        neighbors = neighbors.at[src, pos].set(dst)
-    else:
-        neighbors[src, pos] = dst
-
-    return neighbors, sizes
-
-
-
-
 class DelaunayInterface:
 
     def __init__(
@@ -618,10 +526,18 @@ class Mesh2DDelaunay(Abstract2DMesh):
         object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
 
-        neighbors, sizes = neighbors_from_simplices(
-            simplices=self.delaunay.simplices,
-            N=self.delaunay.points.shape[0]
+        delaunay = scipy.spatial.Delaunay(self.mesh_grid_xy)
+
+        indptr, indices = delaunay.vertex_neighbor_vertices
+
+        sizes = indptr[1:] - indptr[:-1]
+
+        neighbors = -1 * np.ones(
+            shape=(self.mesh_grid_xy.shape[0], int(np.max(sizes))), dtype="int"
         )
+
+        for k in range(self.mesh_grid_xy.shape[0]):
+            neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
