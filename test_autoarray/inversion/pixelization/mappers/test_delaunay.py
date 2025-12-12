@@ -83,13 +83,12 @@ def test__scipy_delaunay__simplices(grid_2d_sub_1_7x7):
     )
 
     mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid,
-        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
+        values=mesh_grid, source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
     )
 
-    assert (mesh_grid.delaunay.simplices[0,:] == np.array([3, 4, 0])).all()
-    assert (mesh_grid.delaunay.simplices[1,:] == np.array([3, 5, 4])).all()
-    assert (mesh_grid.delaunay.simplices[-1,:] == np.array([-1, -1, -1])).all()
+    assert (mesh_grid.delaunay.simplices[0, :] == np.array([3, 4, 0])).all()
+    assert (mesh_grid.delaunay.simplices[1, :] == np.array([3, 5, 4])).all()
+    assert (mesh_grid.delaunay.simplices[-1, :] == np.array([-1, -1, -1])).all()
 
 
 def test__scipy_delaunay__split(grid_2d_sub_1_7x7):
@@ -102,17 +101,29 @@ def test__scipy_delaunay__split(grid_2d_sub_1_7x7):
     )
 
     mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid,
-        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
+        values=mesh_grid, source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
     )
 
-    assert mesh_grid.delaunay.split_points[0,:] == pytest.approx([2.30929334,  0.1], 1.0e-4)
-    assert mesh_grid.delaunay.split_points[1,:] == pytest.approx([-2.10929334,  0.1       ], 1.0e-4)
-    assert mesh_grid.delaunay.split_points[-1,:] == pytest.approx([2.1,       -1.10929334], 1.0e-4)
+    assert mesh_grid.delaunay.split_points[0, :] == pytest.approx(
+        [2.30929334, 0.1], 1.0e-4
+    )
+    assert mesh_grid.delaunay.split_points[1, :] == pytest.approx(
+        [-2.10929334, 0.1], 1.0e-4
+    )
+    assert mesh_grid.delaunay.split_points[-1, :] == pytest.approx(
+        [2.1, -1.10929334], 1.0e-4
+    )
 
-    assert mesh_grid.delaunay.splitted_mappings[0,:] == pytest.approx([ 2, -1, -1], 1.0e-4)
-    assert mesh_grid.delaunay.splitted_mappings[1,:] == pytest.approx([0, -1, -1], 1.0e-4)
-    assert mesh_grid.delaunay.splitted_mappings[-1,:] == pytest.approx([2, -1, -1], 1.0e-4)
+    assert mesh_grid.delaunay.splitted_mappings[0, :] == pytest.approx(
+        [2, -1, -1], 1.0e-4
+    )
+    assert mesh_grid.delaunay.splitted_mappings[1, :] == pytest.approx(
+        [0, -1, -1], 1.0e-4
+    )
+    assert mesh_grid.delaunay.splitted_mappings[-1, :] == pytest.approx(
+        [2, -1, -1], 1.0e-4
+    )
+
 
 def test__scipy_delaunay__split__uses_barycentric_dual_area_from(grid_2d_sub_1_7x7):
 
@@ -126,9 +137,15 @@ def test__scipy_delaunay__split__uses_barycentric_dual_area_from(grid_2d_sub_1_7
     mesh_grid = aa.Mesh2DDelaunay(
         values=mesh_grid,
         source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7,
-        preloads=aa.Preloads(use_voronoi_areas=False)
+        preloads=aa.Preloads(use_voronoi_areas=False),
     )
 
-    assert mesh_grid.delaunay.split_points[0,:] == pytest.approx([0.45059473 ,  0.1], 1.0e-4)
-    assert mesh_grid.delaunay.split_points[1,:] == pytest.approx([-0.25059473,  0.1       ], 1.0e-4)
-    assert mesh_grid.delaunay.split_points[-1,:] == pytest.approx([2.1,       0.39142161], 1.0e-4)
+    assert mesh_grid.delaunay.split_points[0, :] == pytest.approx(
+        [0.45059473, 0.1], 1.0e-4
+    )
+    assert mesh_grid.delaunay.split_points[1, :] == pytest.approx(
+        [-0.25059473, 0.1], 1.0e-4
+    )
+    assert mesh_grid.delaunay.split_points[-1, :] == pytest.approx(
+        [2.1, 0.39142161], 1.0e-4
+    )

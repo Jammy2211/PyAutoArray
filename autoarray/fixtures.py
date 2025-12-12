@@ -378,7 +378,10 @@ def make_delaunay_mesh_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Mesh2DDelaunay(values=grid_9)
+    return aa.Mesh2DDelaunay(
+        values=grid_9,
+        source_plane_data_grid_over_sampled=make_grid_2d_sub_2_7x7().over_sampled,
+    )
 
 
 def make_over_sampler_2d_7x7():

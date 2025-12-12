@@ -61,6 +61,24 @@ def test__interpolated_array_from():
     )
 
 
+def test__neighbors():
+
+    mesh_grid = np.array(
+        [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]]
+    )
+
+    mesh = aa.Mesh2DDelaunay(mesh_grid)
+
+    neighbors = mesh.neighbors
+
+    assert (neighbors == np.array([[ 3,  4,  2, 1],
+                         [ 5,  2,  3,  0],
+                         [ 5,  1,  0, -1],
+                         [ 4,  0,  5,  1],
+                         [ 3,  0,  5, -1],
+                         [ 3,  4,  1,  2]])).all()
+
+
 def test__voronoi_areas_via_delaunay_from():
 
     mesh_grid = np.array(

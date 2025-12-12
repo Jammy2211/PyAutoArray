@@ -340,6 +340,64 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     return out
 
 
+# def edges_from_simplices(simplices):
+#     """
+#     simplices: (M, 3), padded with -1
+#     returns edges: (3M, 2)
+#     """
+#     a = simplices[:, [0, 1]]
+#     b = simplices[:, [1, 2]]
+#     c = simplices[:, [2, 0]]
+#     edges = np.concatenate([a, b, c], axis=0)
+#     return edges
+#
+#
+# def neighbors_from_simplices(simplices, N):
+#     """
+#     simplices: (M, 3) padded with -1
+#     N: number of vertices
+#
+#     Returns
+#     -------
+#     neighbors : (N, max_deg)
+#     sizes     : (N,)
+#     """
+#     edges = edges_from_simplices(simplices)
+#
+#     # remove invalid
+#     edges = edges[np.all(edges >= 0, axis=1)]
+#
+#     # symmetric
+#     edges = np.concatenate([edges, edges[:, ::-1]], axis=0)
+#
+#     src = edges[:, 0]
+#     dst = edges[:, 1]
+#
+#     # sort by source vertex
+#     order = np.argsort(src)
+#     src = src[order]
+#     dst = dst[order]
+#
+#     # count neighbors per vertex
+#     sizes = np.bincount(src, minlength=N)
+#
+#     max_deg = sizes.max()
+#
+#     neighbors = -np.ones((N, max_deg), dtype=np.int32)
+#
+#     # scatter
+#     start = np.concatenate([[0], np.cumsum(sizes[:-1])])
+#     idx = np.arange(len(dst)) - start[src]
+#
+#     neighbors[src, idx] = dst
+#
+#     # optional: deduplicate per row (can be skipped in practice)
+#     # neighbors = unique_per_row(neighbors)
+#
+#     return neighbors, sizes
+
+
+
 class DelaunayInterface:
 
     def __init__(
@@ -514,7 +572,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
         """
         return self.delaunay.split_points
 
-    @property
+    @cached_property
     def neighbors(self) -> Neighbors:
         """
         Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is
@@ -525,7 +583,10 @@ class Mesh2DDelaunay(Abstract2DMesh):
         The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
         object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
-        indptr, indices = self.delaunay.vertex_neighbor_vertices
+
+        delaunay = scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
+
+        indptr, indices = delaunay.vertex_neighbor_vertices
 
         sizes = indptr[1:] - indptr[:-1]
 
