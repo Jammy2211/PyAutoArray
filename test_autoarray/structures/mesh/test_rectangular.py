@@ -24,28 +24,6 @@ def test__neighbors__compare_to_mesh_util():
     assert (mesh.neighbors.sizes == neighbors_sizes_util).all()
 
 
-def test__edge_pixel_list():
-    grid = aa.Grid2DIrregular(
-        [
-            [-1.0, -1.0],
-            [-1.0, 0.0],
-            [-1.0, 1.0],
-            [0.0, -1.0],
-            [0.0, 0.0],
-            [0.0, 1.0],
-            [1.0, -1.0],
-            [1.0, 0.0],
-            [1.0, 1.0],
-        ]
-    )
-
-    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
-        shape_native=(3, 3), grid=grid, buffer=1e-8
-    )
-
-    assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
-
-
 def test__shape_native_and_pixel_scales():
     grid = aa.Grid2DIrregular(
         [

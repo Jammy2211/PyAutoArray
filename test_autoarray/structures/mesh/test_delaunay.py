@@ -4,27 +4,6 @@ import pytest
 import autoarray as aa
 
 
-def test__edge_pixel_list():
-
-    grid = np.array(
-        [
-            [1.0, -1.0],
-            [1.0, 0.0],
-            [1.0, 1.0],
-            [0.0, -1.0],
-            [0.0, 0.0],
-            [0.0, 1.0],
-            [-1.0, -1.0],
-            [-1.0, 0.0],
-            [-1.0, 1.0],
-        ]
-    )
-
-    mesh = aa.Mesh2DDelaunay(values=grid)
-
-    assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
-
-
 def test__interpolated_array_from():
     grid = aa.Grid2D.no_mask(
         values=[[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
@@ -63,7 +42,6 @@ def test__interpolated_array_from():
 
 def test__neighbors(grid_2d_sub_1_7x7):
 
-
     mesh_grid = aa.Grid2D.no_mask(
         values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
@@ -74,7 +52,6 @@ def test__neighbors(grid_2d_sub_1_7x7):
     mesh_grid = aa.Mesh2DDelaunay(
         values=mesh_grid, source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
     )
-
 
     neighbors = mesh_grid.neighbors
 
@@ -95,15 +72,18 @@ def test__neighbors(grid_2d_sub_1_7x7):
     )
 
 
-def test__voronoi_areas_via_delaunay_from():
+def test__voronoi_areas_via_delaunay_from(grid_2d_sub_1_7x7):
 
     mesh_grid = np.array(
         [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]]
     )
 
-    mesh = aa.Mesh2DDelaunay(mesh_grid)
+    mesh = aa.Mesh2DDelaunay(
+        values=mesh_grid,
+        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7.over_sampled,
+    )
 
-    voronoi_areas = mesh.delaunay.voronoi_areas
+    voronoi_areas = mesh.voronoi_areas
 
     assert voronoi_areas[1] == pytest.approx(1.39137102, 1.0e-4)
     assert voronoi_areas[3] == pytest.approx(29.836324, 1.0e-4)

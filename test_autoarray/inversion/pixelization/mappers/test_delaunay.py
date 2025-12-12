@@ -20,7 +20,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     mesh_grid = aa.Mesh2DDelaunay(
         values=mesh_grid,
         source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7.over_sampled,
-        _xp=np
+        _xp=np,
     )
 
     mapper_grids = aa.MapperGrids(
@@ -44,7 +44,11 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
         delaunay_points=mapper.delaunay.points,
     )
-    sizes = np.sum(pix_indexes_for_sub_slim_index_util >= 0, axis=1).astype(np.int32).astype("int")
+    sizes = (
+        np.sum(pix_indexes_for_sub_slim_index_util >= 0, axis=1)
+        .astype(np.int32)
+        .astype("int")
+    )
 
     assert (
         mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
