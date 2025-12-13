@@ -29,7 +29,7 @@ class Abstract2DMesh(Structure):
     ) -> Grid2D:
         """
         Returns a 2D grid of (y,x) coordinates on to which a reconstruction from a pixelization (e.g. a `Delaunay`,
-        `Voronoi`) can be interpolated.
+        `Delaunay`) can be interpolated.
 
         The interpolation grid is computed from the pixelization's `extent`, which describes the [x0, x1, y0, y1]
         extent that the pixelization covers. This `extent` is converted to an `extent_square` such

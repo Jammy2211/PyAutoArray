@@ -80,9 +80,9 @@ class AbstractRegularization:
         Whilst the example above used a square-grid with regularization to the right and downwards, this matrix \
         formalism can be extended to describe regularization in more directions (e.g. upwards, to the left).
 
-        It can also describe irpixelizations, e.g. an irVoronoi mesh, where a B matrix is \
-        computed for every shared Voronoi vertex of each Voronoi pixel. The number of B matrices is now equal to the \
-        number of Voronoi vertices in the pixel with the most Voronoi vertices. However, we describe below a scheme to \
+        It can also describe irregular meshes, e.g. a Delaunay mesh, where a B matrix is \
+        computed for every shared Delaunay vertex of each Delaunay pixel. The number of B matrices is now equal to the \
+        number of Delaunay vertices in the pixel with the most Delaunay vertices. However, we describe below a scheme to \
         compute this solution more efficiently.
 
         ### COMBINING B MATRICES ###
@@ -101,7 +101,7 @@ class AbstractRegularization:
             [ 0, 0, -1 , 1] # [2->3]
             [ 1, 0,  0 ,-1] # [3->0] This is valid!
 
-        So, for a Voronoi pixelzation, we don't have to make the same number of B matrices as Voronoi vertices,  \
+        So, for a Delaunay pixelzation, we don't have to make the same number of B matrices as Delaunay vertices,  \
         we can combine them into fewer B matrices as above.
 
         # SKIPPING THE B MATRIX CALCULATION #

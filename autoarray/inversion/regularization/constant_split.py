@@ -17,7 +17,7 @@ class ConstantSplit(Constant):
         value to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
-        Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
+        Delaunay pixel the area of the pixel is computed and the distance of each point of the cross is given by
         the area times 0.5.
 
         For this regularization scheme, there is only 1 regularization coefficient that is applied to
@@ -56,24 +56,26 @@ class ConstantSplit(Constant):
         -------
         The regularization matrix.
         """
-        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
+        pix_sub_weights_split_points = linear_obj.pix_sub_weights_split_points
 
         (
             splitted_mappings,
             splitted_sizes,
             splitted_weights,
         ) = regularization_util.reg_split_from(
-            splitted_mappings=pix_sub_weights_split_cross.mappings,
-            splitted_sizes=pix_sub_weights_split_cross.sizes,
-            splitted_weights=pix_sub_weights_split_cross.weights,
+            splitted_mappings=pix_sub_weights_split_points.mappings,
+            splitted_sizes=pix_sub_weights_split_points.sizes,
+            splitted_weights=pix_sub_weights_split_points.weights,
+            xp=xp,
         )
 
         pixels = int(len(splitted_mappings) / 4)
-        regularization_weights = np.full(fill_value=self.coefficient, shape=(pixels,))
+        regularization_weights = xp.full(fill_value=self.coefficient, shape=(pixels,))
 
         return regularization_util.pixel_splitted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             splitted_mappings=splitted_mappings,
             splitted_sizes=splitted_sizes,
             splitted_weights=splitted_weights,
+            xp=xp,
         )

@@ -256,11 +256,6 @@ def make_delaunay_mapper_9_3x3():
     return fixtures.make_delaunay_mapper_9_3x3()
 
 
-@pytest.fixture(name="voronoi_mapper_9_3x3")
-def make_voronoi_mapper_9_3x3():
-    return fixtures.make_voronoi_mapper_9_3x3()
-
-
 @pytest.fixture(name="rectangular_inversion_7x7_3x3")
 def make_rectangular_inversion_7x7_3x3():
     return fixtures.make_rectangular_inversion_7x7_3x3()
@@ -269,11 +264,6 @@ def make_rectangular_inversion_7x7_3x3():
 @pytest.fixture(name="delaunay_inversion_9_3x3")
 def make_delaunay_inversion_9_3x3():
     return fixtures.make_delaunay_inversion_9_3x3()
-
-
-@pytest.fixture(name="voronoi_inversion_9_3x3")
-def make_voronoi_inversion_9_3x3():
-    return fixtures.make_voronoi_inversion_9_3x3()
 
 
 @pytest.fixture(name="euclid_data")

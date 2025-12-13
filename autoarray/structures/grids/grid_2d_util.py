@@ -647,13 +647,6 @@ def grid_2d_of_points_within_radius(
     return np.asarray(y_inside, x_inside)
 
 
-def compute_polygon_area(points):
-    x = points[:, 1]
-    y = points[:, 0]
-
-    return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-
-
 def grid_pixels_in_mask_pixels_from(
     grid, shape_native, pixel_scales, origin
 ) -> np.ndarray:

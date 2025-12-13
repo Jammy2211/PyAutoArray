@@ -8,7 +8,6 @@ from autoarray.inversion.pixelization.mappers.rectangular import (
     MapperRectangular,
 )
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
@@ -52,7 +51,6 @@ class MatPlot2D(AbstractMatPlot):
         patch_overlay: Optional[w2d.PatchOverlay] = None,
         interpolated_reconstruction: Optional[w2d.InterpolatedReconstruction] = None,
         delaunay_drawer: Optional[w2d.DelaunayDrawer] = None,
-        voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
         origin_scatter: Optional[w2d.OriginScatter] = None,
         mask_scatter: Optional[w2d.MaskScatter] = None,
         border_scatter: Optional[w2d.BorderScatter] = None,
@@ -81,7 +79,6 @@ class MatPlot2D(AbstractMatPlot):
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `MapperVoronoi`: using `plt.fill`.
 
         Parameters
         ----------
@@ -138,8 +135,6 @@ class MatPlot2D(AbstractMatPlot):
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
         delaunay_drawer
             Draws a colored Delaunay mesh of pixels using `plt.tripcolor`.
-        voronoi_drawer
-            Draws a colored Voronoi mesh of pixels using `plt.fill`.
         interpolated_reconstruction
             Draws a colored Delaunay mesh of pixels using `plt.fill`.
         origin_scatter
@@ -200,7 +195,6 @@ class MatPlot2D(AbstractMatPlot):
             or w2d.InterpolatedReconstruction(is_default=True)
         )
         self.delaunay_drawer = delaunay_drawer or w2d.DelaunayDrawer(is_default=True)
-        self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer(is_default=True)
 
         self.origin_scatter = origin_scatter or w2d.OriginScatter(is_default=True)
         self.mask_scatter = mask_scatter or w2d.MaskScatter(is_default=True)
@@ -521,15 +515,6 @@ class MatPlot2D(AbstractMatPlot):
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
             )
-        else:
-            self._plot_voronoi_mapper(
-                mapper=mapper,
-                visuals_2d=visuals_2d,
-                auto_labels=auto_labels,
-                interpolate_to_uniform=interpolate_to_uniform,
-                pixel_values=pixel_values,
-                zoom_to_brightest=zoom_to_brightest,
-            )
 
     def _plot_rectangular_mapper(
         self,
@@ -725,6 +710,10 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         else:
+
+            if hasattr(pixel_values, "array"):
+                pixel_values = pixel_values.array
+
             self.delaunay_drawer.draw_delaunay_pixels(
                 mapper=mapper,
                 pixel_values=pixel_values,
@@ -743,91 +732,6 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d.plot_via_plotter(
             plotter=self, grid_indexes=mapper.source_plane_data_grid.over_sampled
         )
-
-        if not self.is_for_subplot:
-            self.output.to_figure(
-                structure=interpolation_array, auto_filename=auto_labels.filename
-            )
-            self.figure.close()
-
-    def _plot_voronoi_mapper(
-        self,
-        mapper: MapperVoronoi,
-        visuals_2d: Visuals2D,
-        auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = False,
-        pixel_values: np.ndarray = Optional[None],
-        zoom_to_brightest: bool = True,
-    ):
-        extent = self.axis.config_dict.get("extent")
-
-        if extent is None:
-            extent = mapper.extent_from(
-                values=pixel_values, zoom_to_brightest=zoom_to_brightest
-            )
-
-        aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
-
-        if not self.is_for_subplot:
-            fig, ax = self.figure.open()
-        else:
-            ax = self.setup_subplot(aspect=aspect_inv)
-
-        self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
-
-        plt.gca().set_aspect(aspect_inv)
-
-        self.tickparams.set()
-        self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
-        self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
-
-        if not isinstance(self.text, list):
-            self.text.set()
-        else:
-            [text.set() for text in self.text]
-
-        if not isinstance(self.annotate, list):
-            self.annotate.set()
-        else:
-            [annotate.set() for annotate in self.annotate]
-
-        if not interpolate_to_uniform:
-            self.voronoi_drawer.draw_voronoi_pixels(
-                mapper=mapper,
-                units=self.units,
-                pixel_values=pixel_values,
-                cmap=self.cmap,
-                colorbar=self.colorbar,
-                colorbar_tickparams=self.colorbar_tickparams,
-                ax=ax,
-                use_log10=self.use_log10,
-            )
-
-        else:
-            self.interpolated_reconstruction.imshow_reconstruction(
-                mapper=mapper,
-                pixel_values=pixel_values,
-                units=self.units,
-                cmap=self.cmap,
-                colorbar=self.colorbar,
-                colorbar_tickparams=self.colorbar_tickparams,
-                aspect=aspect_inv,
-                ax=ax,
-                use_log10=self.use_log10,
-            )
-
-        self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set()
-        self.xlabel.set()
-
-        visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid.over_sampled
-        )
-
-        if pixel_values is not None:
-            interpolation_array = mapper.interpolated_array_from(values=pixel_values)
-        else:
-            interpolation_array = None
 
         if not self.is_for_subplot:
             self.output.to_figure(

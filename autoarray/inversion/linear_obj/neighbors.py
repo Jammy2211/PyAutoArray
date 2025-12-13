@@ -4,8 +4,7 @@ import numpy as np
 class Neighbors(np.ndarray):
     def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
         """
-        Class packaging ndarrays describing the neighbors of every pixel in a mesh (e.g. `RectangularMagnification`,
-        `Voronoi`).
+        Class packaging ndarrays describing the neighbors of every pixel in a mesh (e.g. `RectangularMagnification`).
 
         The array `arr` contains the pixel indexes of the neighbors of every pixel. Its has shape [total_pixels,
         max_neighbors_in_single_pixel].
@@ -28,7 +27,7 @@ class Neighbors(np.ndarray):
 
         - For pixel 4, the central pixel, neighbors[4,:] = [1, 3, 5, 7] and neighbors_sizes[4] = 4.
 
-        The same arrays can be generalized for other pixelizations, for example a `Voronoi` grid.
+        The same arrays can be generalized for other pixelizations, for example a `Delaunay` grid.
 
         Parameters
         ----------

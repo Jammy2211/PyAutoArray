@@ -73,6 +73,7 @@ class RectangularMagnification(AbstractMesh):
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,
+        preloads=None,
         xp=np,
     ) -> MapperGrids:
         """

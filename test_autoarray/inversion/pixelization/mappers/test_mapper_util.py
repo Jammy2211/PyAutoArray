@@ -1,6 +1,10 @@
-import autoarray as aa
 import numpy as np
 import pytest
+
+import autoarray as aa
+from autoarray.inversion.pixelization.mappers.delaunay import (
+    pixel_weights_delaunay_from,
+)
 
 
 @pytest.fixture(name="three_pixels")
@@ -334,19 +338,16 @@ def test__data_to_pix_unique_from():
     assert (pix_lengths == np.array([3, 3])).all()
 
 
-def test__weights():
+def test__pixel_weights_delaunay_from():
     source_plane_data_grid = np.array([[0.1, 0.1], [1.0, 1.0]])
 
     source_plane_mesh_grid = np.array([[0.0, 0.0], [0.1, 0.0], [0.2, 0.0]])
 
-    slim_index_for_sub_slim_index = np.array([0, 1])
-
     pix_indexes_for_sub_slim_index = np.array([[0, 1, 2], [2, -1, -1]])
 
-    pixel_weights = aa.util.mapper_numba.pixel_weights_delaunay_from(
+    pixel_weights = pixel_weights_delaunay_from(
         source_plane_data_grid=source_plane_data_grid,
         source_plane_mesh_grid=source_plane_mesh_grid,
-        slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
     )
 

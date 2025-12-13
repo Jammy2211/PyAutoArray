@@ -201,7 +201,6 @@ class Overlay(AbstractImageMesh):
         adapt_data
             Not used by this image mesh.
         """
-
         pixel_scales = mask.pixel_scales
 
         grid = mask.derive_grid.unmasked

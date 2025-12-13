@@ -95,7 +95,7 @@ class Pixelization:
         - ``Regularization``: Apply smoothing to the solutions computed using an ``Inversion``.
 
         In the example above, a ``RectangularMagnification`` ``Mesh`` object is used. Other meshes are available (e.g.
-        ``Delaunay``, ``Voronoi``).
+        ``Delaunay``).
 
         **Source Code API**
 
@@ -112,7 +112,7 @@ class Pixelization:
         Parameters
         ----------
         mesh
-            The mesh object (e.g. RectangularMagnification grid of pixels, Delaunay triangulation, Voronoi mesh) describing the
+            The mesh object (e.g. RectangularMagnification grid of pixels, Delaunay triangulation) describing the
             pixels of the `Pixelization`.
         regularization
             The regularization object that can smooth ``Pixelization`` pixels with one another when it is used to

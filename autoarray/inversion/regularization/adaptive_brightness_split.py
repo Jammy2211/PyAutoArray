@@ -25,7 +25,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         and interpolates to these points in order to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
-        Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
+        Delaunay pixel the area of the pixel is computed and the distance of each point of the cross is given by
         the area times 0.5.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is
@@ -94,16 +94,17 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             linear_obj=linear_obj, xp=xp
         )
 
-        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
+        pix_sub_weights_split_points = linear_obj.pix_sub_weights_split_points
 
         (
             splitted_mappings,
             splitted_sizes,
             splitted_weights,
         ) = regularization_util.reg_split_from(
-            splitted_mappings=pix_sub_weights_split_cross.mappings,
-            splitted_sizes=pix_sub_weights_split_cross.sizes,
-            splitted_weights=pix_sub_weights_split_cross.weights,
+            splitted_mappings=pix_sub_weights_split_points.mappings,
+            splitted_sizes=pix_sub_weights_split_points.sizes,
+            splitted_weights=pix_sub_weights_split_points.weights,
+            xp=xp,
         )
 
         return regularization_util.pixel_splitted_regularization_matrix_from(
@@ -111,4 +112,5 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             splitted_mappings=splitted_mappings,
             splitted_sizes=splitted_sizes,
             splitted_weights=splitted_weights,
+            xp=xp,
         )

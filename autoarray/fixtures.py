@@ -378,28 +378,9 @@ def make_delaunay_mesh_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Mesh2DDelaunay(values=grid_9)
-
-
-def make_voronoi_mesh_grid_9():
-    grid_9 = aa.Grid2D.no_mask(
-        values=[
-            [0.6, -0.3],
-            [0.5, -0.8],
-            [0.2, 0.1],
-            [0.0, 0.5],
-            [-0.3, -0.8],
-            [-0.6, -0.5],
-            [-0.4, -1.1],
-            [-1.2, 0.8],
-            [-1.5, 0.9],
-        ],
-        shape_native=(3, 3),
-        pixel_scales=1.0,
-    )
-
-    return aa.Mesh2DVoronoi(
+    return aa.Mesh2DDelaunay(
         values=grid_9,
+        source_plane_data_grid_over_sampled=make_grid_2d_sub_2_7x7().over_sampled,
     )
 
 
@@ -445,22 +426,6 @@ def make_delaunay_mapper_9_3x3():
     )
 
 
-def make_voronoi_mapper_9_3x3():
-    mapper_grids = aa.MapperGrids(
-        mask=make_mask_2d_7x7(),
-        source_plane_data_grid=make_grid_2d_sub_2_7x7(),
-        source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
-        image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
-    )
-
-    return aa.MapperVoronoi(
-        mapper_grids=mapper_grids,
-        border_relocator=make_border_relocator_2d_7x7(),
-        regularization=make_regularization_constant(),
-    )
-
-
 def make_rectangular_inversion_7x7_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
@@ -472,12 +437,6 @@ def make_delaunay_inversion_9_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_delaunay_mapper_9_3x3()],
-    )
-
-
-def make_voronoi_inversion_9_3x3():
-    return aa.Inversion(
-        dataset=make_masked_imaging_7x7(), linear_obj_list=[make_voronoi_mapper_9_3x3()]
     )
 
 

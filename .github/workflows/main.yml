@@ -40,13 +40,6 @@ jobs:
         pip install ./PyAutoArray
         pip install ./PyAutoArray[optional]
 
-        cd PyAutoArray/autoarray/util/nn/src/nn
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/runner/work/PyAutoArray/PyAutoArray/PyAutoArray/autoarray/util/nn/src/nn
-        bash ./configure
-        cp makefile_autolens makefile
-        make
-        cd /home/runner/work/PyAutoArray/PyAutoArray
-
     - name: Extract branch name
       shell: bash
       run: |
@@ -75,7 +68,6 @@ jobs:
         export ROOT_DIR=`pwd`
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/runner/work/PyAutoArray/PyAutoArray/PyAutoArray/autoarray/util/nn/src/nn
         pushd PyAutoArray
         python3 -m pytest --cov autoarray --cov-report xml:coverage.xml
     - name: Slack send

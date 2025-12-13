@@ -16,7 +16,7 @@ class MapperValued:
         mapper pixel) in order to perform calculations which use both the `Mapper` and these values.
 
         For example, a common use case is to interpolate the reconstruction of values on a mapper from the
-        mesh of the mapper (e.g. a Voronoi mesh) to a uniform Cartesian grid of values, because the irregular mesh
+        mesh of the mapper (e.g. a Delaunay mesh) to a uniform Cartesian grid of values, because the irregular mesh
         is difficult to plot and analyze.
 
         This class also provides functionality to compute the magnification of the reconstruction, by comparing the
@@ -26,7 +26,7 @@ class MapperValued:
         Parameters
         ----------
         mapper
-            The `Mapper` object which pairs with the values, for example a `MapperVoronoi` object.
+            The `Mapper` object which pairs with the values, for example a `MapperDelaunay` object.
         values
             The values of each pixel of the mapper, which could be the `reconstruction` values of an `Inversion`,
             but alternatively could be other quantities such as the noise-map of these values.
@@ -71,7 +71,7 @@ class MapperValued:
         extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
         """
-        The values of a mapper can be on an irregular pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
+        The values of a mapper can be on an irregular pixelization (e.g. a Delaunay triangulation).
 
         Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
         this irregular grid.
@@ -166,7 +166,7 @@ class MapperValued:
         max_pixel = np.argmax(self.values_masked)
 
         max_pixel_centre = Grid2DIrregular(
-            values=[self.mapper.source_plane_mesh_grid[max_pixel]]
+            values=[self.mapper.source_plane_mesh_grid.array[max_pixel]]
         )
 
         return max_pixel_centre
@@ -218,7 +218,8 @@ class MapperValued:
         PSF, as the source plane reconstruction is a non-convolved image.
 
         In the source-plane, this is computed by summing the reconstruction values multiplied by the area of each
-        mesh pixel, for example if the source-plane is a `Voronoi` mesh this is the area of each Voronoi pixel.
+        mesh pixel, for example if the source-plane is a `Delaunay` mesh this is the area of each corresponding
+        Delaunay pixel.
 
         This calculatiion is generally more robust that using an interpolated
         image (see `magnification_via_interpolation_from`), because it uses the exact the source-plane reconstruction
@@ -244,7 +245,7 @@ class MapperValued:
 
                 To compute the magnification of a `Delaunay` mesh, use the method `magnification_via_interpolation_from`.
 
-                This method only supports a `RectangularMagnification` or `Voronoi` mesh.
+                This method only supports a `RectangularMagnification`.
                 """
             )
 
@@ -257,8 +258,7 @@ class MapperValued:
                 """
                 The magnification cannot be computed because the areas of the source-plane mesh pixels are all zero.
 
-                This probably means you have specified an invalid source-plane mesh, for example a `Voronoi` mesh
-                where all pixels are on the edge of the source-plane and therefore have an infinite border.
+                This probably means you have specified an invalid source-plane mesh.
                 """
             )
 

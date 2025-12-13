@@ -171,7 +171,7 @@ class Colorbar(AbstractMatWrap):
         """
         Set the figure's colorbar using an array of already known color values.
 
-        This method is used for producing the color bar on a Voronoi mesh plot, which is unable to use the in-built
+        This method is used for producing the color bar on a Delaunay mesh plot, which is unable to use the in-built
         Matplotlib colorbar method.
 
         Parameters
@@ -180,7 +180,7 @@ class Colorbar(AbstractMatWrap):
             The colormap used to map normalized data values to RGBA
             colors (see https://matplotlib.org/3.3.2/api/cm_api.html).
         color_values
-            The values of the pixels on the Voronoi mesh which are used to create the colorbar.
+            The values of the pixels on the mesh which are used to create the colorbar.
         """
         import matplotlib.pyplot as plt
         import matplotlib.cm as cm

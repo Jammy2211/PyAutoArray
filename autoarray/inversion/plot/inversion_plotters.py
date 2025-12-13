@@ -241,8 +241,6 @@ class InversionPlotter(AbstractPlotter):
             except TypeError:
                 pass
 
-        # TODO : NEed to understand why this raises an error in voronoi_drawer.
-
         if regularization_weights:
             try:
                 mapper_plotter.plot_source_from(

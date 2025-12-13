@@ -526,29 +526,31 @@ def test__brightness_zeroth_regularization_matrix_from():
     )
 
 
-def test__constant_pixel_splitted_regularization_matrix():
+@pytest.fixture
+def splitted_data():
+
     splitted_mappings = np.array(
         [
-            [0, -1, -1, -1, -1],
-            [1, 3, -1, -1, -1],
-            [1, 4, 2, -1, -1],
-            [2, 3, -1, -1, -1],
-            [1, 2, 3, 4, -1],
-            [0, 3, 4, -1, -1],
-            [4, -1, -1, -1, -1],
-            [3, -1, -1, -1, -1],
-            [0, 3, -1, -1, -1],
-            [2, 3, -1, -1, -1],
-            [0, -1, -1, -1, -1],
-            [3, -1, -1, -1, -1],
-            [4, 2, -1, -1, -1],
-            [1, 4, -1, -1, -1],
-            [2, 4, -1, -1, -1],
-            [3, 1, 2, -1, -1],
-            [2, 1, 4, -1, -1],
-            [2, -1, -1, -1, -1],
-            [3, 4, -1, -1, -1],
-            [1, 4, -1, -1, -1],
+            [0, -1, -1, -1],
+            [1, 3, -1, -1],
+            [1, 4, 2, -1],
+            [2, 3, -1, -1],
+            [1, 2, 3, 4],
+            [0, 3, 4, -1],
+            [4, -1, -1, -1],
+            [3, -1, -1, -1],
+            [0, 3, -1, -1],
+            [2, 3, -1, -1],
+            [0, -1, -1, -1],
+            [3, -1, -1, -1],
+            [4, 2, -1, -1],
+            [1, 4, -1, -1],
+            [2, 4, -1, -1],
+            [3, 1, 2, -1],
+            [2, 1, 4, -1],
+            [2, -1, -1, -1],
+            [3, 4, -1, -1],
+            [1, 4, -1, -1],
         ]
     )
 
@@ -556,43 +558,106 @@ def test__constant_pixel_splitted_regularization_matrix():
 
     splitted_weights = np.array(
         [
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [0.2, 0.8, 0.0, 0.0, 0.0],
-            [0.1, 0.3, 0.6, 0.0, 0.0],
-            [0.15, 0.85, 0.0, 0.0, 0.0],
-            [0.2, 0.25, 0.1, 0.45, 0.0],
-            [0.3, 0.6, 0.1, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [0.7, 0.3, 0.0, 0.0, 0.0],
-            [0.36, 0.64, 0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [0.95, 0.05, 0.0, 0.0, 0.0],
-            [0.1, 0.9, 0.0, 0.0, 0.0],
-            [0.77, 0.23, 0.0, 0.0, 0.0],
-            [0.12, 0.4, 0.48, 0.0, 0.0],
-            [0.6, 0.15, 0.25, 0.0, 0.0],
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [0.66, 0.34, 0.0, 0.0, 0.0],
-            [0.57, 0.43, 0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [0.2, 0.8, 0.0, 0.0],
+            [0.1, 0.3, 0.6, 0.0],
+            [0.15, 0.85, 0.0, 0.0],
+            [0.2, 0.25, 0.1, 0.45],
+            [0.3, 0.6, 0.1, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [0.7, 0.3, 0.0, 0.0],
+            [0.36, 0.64, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [0.95, 0.05, 0.0, 0.0],
+            [0.1, 0.9, 0.0, 0.0],
+            [0.77, 0.23, 0.0, 0.0],
+            [0.12, 0.4, 0.48, 0.0],
+            [0.6, 0.15, 0.25, 0.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [0.66, 0.34, 0.0, 0.0],
+            [0.57, 0.43, 0.0, 0.0],
         ]
     )
 
-    splitted_weights *= -1.0
+    return splitted_mappings, splitted_sizes, splitted_weights
 
-    for i in range(len(splitted_mappings)):
-        pixel_index = i // 4
-        flag = 0
-        for j in range(splitted_sizes[i]):
-            if splitted_mappings[i][j] == pixel_index:
-                splitted_weights[i][j] += 1.0
-                flag = 1
 
-        if flag == 0:
-            splitted_mappings[i][j + 1] = pixel_index
-            splitted_sizes[i] += 1
-            splitted_weights[i][j + 1] = 1.0
+def test__reg_split_from(splitted_data):
+
+    splitted_mappings, splitted_sizes, splitted_weights = splitted_data
+
+    splitted_mappings, splitted_sizes, splitted_weights = (
+        aa.util.regularization.reg_split_from(
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
+        )
+    )
+
+    expected_mappings = np.array(
+        [
+            [0, -1, -1, -1],
+            [1, 3, 0, -1],
+            [1, 4, 2, 0],
+            [2, 3, 0, -1],
+            [1, 2, 3, 4],
+            [0, 3, 4, 1],
+            [4, 1, -1, -1],
+            [3, 1, -1, -1],
+            [0, 3, 2, -1],
+            [2, 3, -1, -1],
+            [0, 2, -1, -1],
+            [3, 2, -1, -1],
+            [4, 2, 3, -1],
+            [1, 4, 3, -1],
+            [2, 4, 3, -1],
+            [3, 1, 2, -1],
+            [2, 1, 4, -1],
+            [2, 4, -1, -1],
+            [3, 4, -1, -1],
+            [1, 4, -1, -1],
+        ]
+    )
+
+    expected_sizes = np.array(
+        [1, 3, 4, 3, 4, 4, 2, 2, 3, 2, 2, 2, 3, 3, 3, 3, 3, 2, 2, 2]
+    )
+
+    expected_weights = np.array(
+        [
+            [0.00, -0.00, -0.00, -0.00],
+            [-0.20, -0.80, 1.00, -0.00],
+            [-0.10, -0.30, -0.60, 1.00],
+            [-0.15, -0.85, 1.00, -0.00],
+            [0.80, -0.25, -0.10, -0.45],
+            [-0.30, -0.60, -0.10, 1.00],
+            [-1.00, 1.00, -0.00, -0.00],
+            [-1.00, 1.00, -0.00, -0.00],
+            [-0.70, -0.30, 1.00, -0.00],
+            [0.64, -0.64, -0.00, -0.00],
+            [-1.00, 1.00, -0.00, -0.00],
+            [-1.00, 1.00, -0.00, -0.00],
+            [-0.95, -0.05, 1.00, -0.00],
+            [-0.10, -0.90, 1.00, -0.00],
+            [-0.77, -0.23, 1.00, -0.00],
+            [0.88, -0.40, -0.48, -0.00],
+            [-0.60, -0.15, 0.75, -0.00],
+            [-1.00, 1.00, -0.00, -0.00],
+            [-0.66, 0.66, -0.00, -0.00],
+            [-0.57, 0.57, -0.00, -0.00],
+        ]
+    )
+
+    assert splitted_mappings == pytest.approx(expected_mappings, abs=1.0e-4)
+    assert splitted_sizes == pytest.approx(expected_sizes, abs=1.0e-4)
+    assert splitted_weights == pytest.approx(expected_weights, abs=1.0e-4)
+
+
+def test__constant_pixel_splitted_regularization_matrix(splitted_data):
+
+    splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 
     pixels = int(len(splitted_mappings) / 4)
 
@@ -605,9 +670,17 @@ def test__constant_pixel_splitted_regularization_matrix():
         )
     )
 
-    assert pytest.approx(regularization_matrix[0], 1e-4) == np.array(
-        [4.58, -0.6, -2.45, -1.26, -0.27]
+    expected_reg_matrix = np.array(
+        [
+            [2.58000001, 0.0, 0.0, 0.39, 0.03],
+            [0.0, 0.60740001, 0.392, 0.228, 0.4926],
+            [0.0, 0.392, 2.76040001, 0.4405, 0.6671],
+            [0.39, 0.228, 0.4405, 4.68210001, 0.3294],
+            [0.03, 0.4926, 0.6671, 0.3294, 3.43090001],
+        ]
     )
+
+    assert pytest.approx(regularization_matrix, 1e-4) == np.array(expected_reg_matrix)
 
     regularization_weights = np.array([2.0, 4.0, 2.0, 2.0, 2.0])
 
@@ -620,6 +693,14 @@ def test__constant_pixel_splitted_regularization_matrix():
         )
     )
 
-    assert pytest.approx(regularization_matrix[0], 1e-4) == np.array(
-        [19.4, -6, -9.8, -2.88, -0.72]
+    expected_reg_matrix = np.array(
+        [
+            [11.40000001, 0.0, 0.0, 3.72, 0.48],
+            [0.0, 2.90960001, 2.168, 1.152, 3.0504],
+            [0.0, 2.168, 11.79160001, 2.062, 4.0184],
+            [3.72, 1.152, 2.062, 35.16840001, 2.5776],
+            [0.48, 3.0504, 4.0184, 2.5776, 28.27360001],
+        ]
     )
+
+    assert pytest.approx(regularization_matrix, 1e-4) == np.array(expected_reg_matrix)

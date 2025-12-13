@@ -25,6 +25,7 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
+        preloads=None,
         xp=np,
     ):
         """
@@ -88,6 +89,7 @@ class AbstractMapper(LinearObj):
 
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
+        self.preloads = preloads
 
     @property
     def params(self) -> int:
@@ -112,10 +114,6 @@ class AbstractMapper(LinearObj):
     @property
     def over_sampler(self):
         return self.mapper_grids.source_plane_data_grid.over_sampler
-
-    @property
-    def edge_pixel_list(self) -> List[int]:
-        return self.source_plane_mesh_grid.edge_pixel_list
 
     @property
     def adapt_data(self) -> np.ndarray:
@@ -420,7 +418,7 @@ class AbstractMapper(LinearObj):
     ) -> Array2D:
         """
         The reconstructed values of a mapper (e.g. the `reconstruction` of an `Inversion` may be on an irregular
-        pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
+        pixelization (e.g. a Delaunay triangulation).
 
         Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
         this irregular grid.
@@ -437,7 +435,7 @@ class AbstractMapper(LinearObj):
         ----------
         values
             The value corresponding to the reconstructed value of every pixelization pixel (e.g. Delaunay triangle
-            vertexes, Voronoi mesh cells).
+            vertexes).
         shape_native
             The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
         extent
