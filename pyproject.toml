@@ -52,7 +52,8 @@ local_scheme = "no-local-version"
 [project.optional-dependencies]
 optional=[
     "numba",
-    "pynufft"
+    "pynufft",
+    "ensorflow-probability==0.25.0"
 ]
 test = ["pytest"]
 dev = ["pytest", "black"]
