@@ -53,7 +53,7 @@ local_scheme = "no-local-version"
 optional=[
     "numba",
     "pynufft",
-    "ensorflow-probability==0.25.0"
+    "tensorflow-probability==0.25.0"
 ]
 test = ["pytest"]
 dev = ["pytest", "black"]
