@@ -13,7 +13,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.inversion.inversion import inversion_util
-from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
+from autoarray.inversion.inversion.interferometer import inversion_interferometer_numba_util
 
 from autoarray import exc
 
@@ -129,7 +129,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
         if not self.settings.use_source_loop:
-            return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+            return inversion_interferometer_numba_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
                 curvature_preload=self.w_tilde.curvature_preload,
                 pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
                 pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
@@ -144,13 +144,13 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             sub_slim_indexes_for_pix_index,
             sub_slim_sizes_for_pix_index,
             sub_slim_weights_for_pix_index,
-        ) = inversion_interferometer_util.sub_slim_indexes_for_pix_index(
+        ) = inversion_interferometer_numba_util.sub_slim_indexes_for_pix_index(
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=mapper.pixels,
         )
 
-        return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
+        return inversion_interferometer_numba_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
             curvature_preload=self.w_tilde.curvature_preload,
             native_index_for_slim_index=np.array(
                 self.transformer.real_space_mask.derive_indexes.native_for_slim

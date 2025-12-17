@@ -74,7 +74,7 @@ def test__w_tilde_curvature_interferometer_from():
 
     grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.0005)
 
-    w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
+    w_tilde = aa.util.inversion_interferometer_numba.w_tilde_curvature_interferometer_from(
         noise_map_real=noise_map,
         uv_wavelengths=uv_wavelengths,
         grid_radians_slim=grid.array,
@@ -101,7 +101,7 @@ def test__curvature_matrix_via_w_tilde_preload_from():
 
     grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.0005)
 
-    w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
+    w_tilde = aa.util.inversion_interferometer_numba.w_tilde_curvature_interferometer_from(
         noise_map_real=noise_map,
         uv_wavelengths=uv_wavelengths,
         grid_radians_slim=grid.array,
@@ -126,7 +126,7 @@ def test__curvature_matrix_via_w_tilde_preload_from():
     )
 
     w_tilde_preload = (
-        aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
+        aa.util.inversion_interferometer_numba.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=noise_map,
             uv_wavelengths=uv_wavelengths,
             shape_masked_pixels_2d=(3, 3),
@@ -145,7 +145,7 @@ def test__curvature_matrix_via_w_tilde_preload_from():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    curvature_matrix_via_preload = aa.util.inversion_interferometer.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+    curvature_matrix_via_preload = aa.util.inversion_interferometer_numba.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
         curvature_preload=w_tilde_preload,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_size_for_sub_slim_index=pix_size_for_sub_slim_index,
@@ -167,14 +167,14 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
     grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.0005)
 
-    w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
+    w_tilde = aa.util.inversion_interferometer_numba.w_tilde_curvature_interferometer_from(
         noise_map_real=noise_map,
         uv_wavelengths=uv_wavelengths,
         grid_radians_slim=grid.array,
     )
 
     w_tilde_preload = (
-        aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
+        aa.util.inversion_interferometer_numba.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=np.array(noise_map),
             uv_wavelengths=np.array(uv_wavelengths),
             shape_masked_pixels_2d=(3, 3),
@@ -186,7 +186,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    w_tilde_via_preload = aa.util.inversion_interferometer.w_tilde_via_preload_from(
+    w_tilde_via_preload = aa.util.inversion_interferometer_numba.w_tilde_via_preload_from(
         w_tilde_preload=w_tilde_preload,
         native_index_for_slim_index=native_index_for_slim_index,
     )

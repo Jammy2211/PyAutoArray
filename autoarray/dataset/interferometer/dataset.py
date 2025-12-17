@@ -15,7 +15,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
+from autoarray.inversion.inversion.interferometer import inversion_interferometer_numba_util
 
 from autoarray import exc
 
@@ -182,15 +182,15 @@ class Interferometer(AbstractDataset):
             )
 
         curvature_preload = (
-            inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-                noise_map_real=self.noise_map.real,
+            inversion_interferometer_numba_util.w_tilde_curvature_preload_interferometer_from(
+                noise_map_real=self.noise_map.array.real,
                 uv_wavelengths=self.uv_wavelengths,
                 shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
                 grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array
             )
         )
 
-        w_matrix = inversion_interferometer_util.w_tilde_via_preload_from(
+        w_matrix = inversion_interferometer_numba_util.w_tilde_via_preload_from(
             w_tilde_preload=curvature_preload,
             native_index_for_slim_index=self.real_space_mask.derive_indexes.native_for_slim.astype("int"),
         )
