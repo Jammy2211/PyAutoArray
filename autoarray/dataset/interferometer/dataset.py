@@ -183,22 +183,16 @@ class Interferometer(AbstractDataset):
 
         curvature_preload = (
             inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-                noise_map_real=np.array(self.noise_map.real),
-                uv_wavelengths=np.array(self.uv_wavelengths),
-                shape_masked_pixels_2d=np.array(
-                    self.transformer.grid.mask.shape_native_masked_pixels
-                ),
-                grid_radians_2d=np.array(
-                    self.transformer.grid.mask.derive_grid.all_false.in_radians.native
-                ),
+                noise_map_real=self.noise_map.real,
+                uv_wavelengths=self.uv_wavelengths,
+                shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
+                grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array
             )
         )
 
         w_matrix = inversion_interferometer_util.w_tilde_via_preload_from(
             w_tilde_preload=curvature_preload,
-            native_index_for_slim_index=np.array(
-                self.real_space_mask.derive_indexes.native_for_slim
-            ).astype("int"),
+            native_index_for_slim_index=self.real_space_mask.derive_indexes.native_for_slim.astype("int"),
         )
 
         dirty_image = self.transformer.image_from(
@@ -210,7 +204,7 @@ class Interferometer(AbstractDataset):
         w_tilde = WTildeInterferometer(
             w_matrix=w_matrix,
             curvature_preload=curvature_preload,
-            dirty_image=np.array(dirty_image.array),
+            dirty_image=dirty_image.array,
             real_space_mask=self.real_space_mask,
         )
 
