@@ -223,6 +223,21 @@ class Interferometer(AbstractDataset):
         return self.real_space_mask
 
     @property
+    def mask_rectangular_w_tilde(self):
+
+        ys, xs = np.where(~mask)
+
+        y_min, y_max = ys.min(), ys.max()
+        x_min, x_max = xs.min(), xs.max()
+
+        z = np.ones(mask.shape, dtype=bool)
+        z[
+        y_min: y_max, x_min: x_max
+        ] = False
+
+        return z
+
+    @property
     def amplitudes(self):
         return self.data.amplitudes
 

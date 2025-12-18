@@ -137,7 +137,12 @@ def w_tilde_curvature_interferometer_from(
     return w_tilde
 
 
-@numba_util.jit()
+from typing import Tuple
+import numpy as np
+import numba
+import math
+
+@numba.njit(parallel=True, fastmath=True)
 def w_tilde_curvature_preload_interferometer_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
@@ -243,104 +248,106 @@ def w_tilde_curvature_preload_interferometer_from(
     y_shape = shape_masked_pixels_2d[0]
     x_shape = shape_masked_pixels_2d[1]
 
-    curvature_preload = np.zeros((y_shape * 2, x_shape * 2))
+    # Preallocate output
+    curvature_preload = np.zeros((y_shape * 2, x_shape * 2), dtype=np.float64)
 
-    #  For the second preload to index backwards correctly we have to extracted the 2D grid to its shape.
+    # Restrict grid to region
     grid_radians_2d = grid_radians_2d[0:y_shape, 0:x_shape]
 
     grid_y_shape = grid_radians_2d.shape[0]
     grid_x_shape = grid_radians_2d.shape[1]
 
-    for i in range(y_shape):
+    K = uv_wavelengths.shape[0]
+
+    # Precompute weights and scaled uv once
+    w = np.empty(K, dtype=np.float64)
+    ku = np.empty(K, dtype=np.float64)
+    kv = np.empty(K, dtype=np.float64)
+
+    two_pi = 2.0 * math.pi
+    for k in range(K):
+        nk = noise_map_real[k]
+        w[k] = 1.0 / (nk * nk)
+        ku[k] = two_pi * uv_wavelengths[k, 0]
+        kv[k] = two_pi * uv_wavelengths[k, 1]
+
+    # Corner coordinates (hoist loads)
+    y00 = grid_radians_2d[0, 0, 0]
+    x00 = grid_radians_2d[0, 0, 1]
+
+    y0m = grid_radians_2d[0, grid_x_shape - 1, 0]
+    x0m = grid_radians_2d[0, grid_x_shape - 1, 1]
+
+    ym0 = grid_radians_2d[grid_y_shape - 1, 0, 0]
+    xm0 = grid_radians_2d[grid_y_shape - 1, 0, 1]
+
+    ymm = grid_radians_2d[grid_y_shape - 1, grid_x_shape - 1, 0]
+    xmm = grid_radians_2d[grid_y_shape - 1, grid_x_shape - 1, 1]
+
+    # =================================================
+    # Main quadrant (i >= 0, j >= 0): preload[i, j]
+    # =================================================
+    for i in numba.prange(y_shape):
         for j in range(x_shape):
-            y_offset = grid_radians_2d[0, 0, 0] - grid_radians_2d[i, j, 0]
-            x_offset = grid_radians_2d[0, 0, 1] - grid_radians_2d[i, j, 1]
+            y_offset = y00 - grid_radians_2d[i, j, 0]
+            x_offset = x00 - grid_radians_2d[i, j, 1]
 
-            for vis_1d_index in range(uv_wavelengths.shape[0]):
-                curvature_preload[i, j] += noise_map_real[
-                    vis_1d_index
-                ] ** -2.0 * np.cos(
-                    2.0
-                    * np.pi
-                    * (
-                        x_offset * uv_wavelengths[vis_1d_index, 0]
-                        + y_offset * uv_wavelengths[vis_1d_index, 1]
-                    )
-                )
+            acc = 0.0
+            for k in range(K):
+                acc += w[k] * math.cos(x_offset * ku[k] + y_offset * kv[k])
+            curvature_preload[i, j] = acc
 
-    for i in range(y_shape):
+    # =================================================
+    # Flip in x: preload[i, -j]
+    # =================================================
+    for i in numba.prange(y_shape):
+        for j in range(1, x_shape):
+            ii = i
+            jj = grid_x_shape - j - 1
+
+            y_offset = y0m - grid_radians_2d[ii, jj, 0]
+            x_offset = x0m - grid_radians_2d[ii, jj, 1]
+
+            acc = 0.0
+            for k in range(K):
+                acc += w[k] * math.cos(x_offset * ku[k] + y_offset * kv[k])
+            curvature_preload[i, -j] = acc
+
+    # =================================================
+    # Flip in y: preload[-i, j]
+    # =================================================
+    for i in numba.prange(1, y_shape):
         for j in range(x_shape):
-            if j > 0:
-                y_offset = (
-                    grid_radians_2d[0, -1, 0]
-                    - grid_radians_2d[i, grid_x_shape - j - 1, 0]
-                )
-                x_offset = (
-                    grid_radians_2d[0, -1, 1]
-                    - grid_radians_2d[i, grid_x_shape - j - 1, 1]
-                )
+            ii = grid_y_shape - i - 1
+            jj = j
 
-                for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    curvature_preload[i, -j] += noise_map_real[
-                        vis_1d_index
-                    ] ** -2.0 * np.cos(
-                        2.0
-                        * np.pi
-                        * (
-                            x_offset * uv_wavelengths[vis_1d_index, 0]
-                            + y_offset * uv_wavelengths[vis_1d_index, 1]
-                        )
-                    )
+            y_offset = ym0 - grid_radians_2d[ii, jj, 0]
+            x_offset = xm0 - grid_radians_2d[ii, jj, 1]
 
-    for i in range(y_shape):
-        for j in range(x_shape):
-            if i > 0:
-                y_offset = (
-                    grid_radians_2d[-1, 0, 0]
-                    - grid_radians_2d[grid_y_shape - i - 1, j, 0]
-                )
-                x_offset = (
-                    grid_radians_2d[-1, 0, 1]
-                    - grid_radians_2d[grid_y_shape - i - 1, j, 1]
-                )
+            acc = 0.0
+            for k in range(K):
+                acc += w[k] * math.cos(x_offset * ku[k] + y_offset * kv[k])
+            curvature_preload[-i, j] = acc
 
-                for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    curvature_preload[-i, j] += noise_map_real[
-                        vis_1d_index
-                    ] ** -2.0 * np.cos(
-                        2.0
-                        * np.pi
-                        * (
-                            x_offset * uv_wavelengths[vis_1d_index, 0]
-                            + y_offset * uv_wavelengths[vis_1d_index, 1]
-                        )
-                    )
+    # =================================================
+    # Flip in x and y: preload[-i, -j]
+    # =================================================
+    for i in numba.prange(1, y_shape):
+        for j in range(1, x_shape):
+            ii = grid_y_shape - i - 1
+            jj = grid_x_shape - j - 1
 
-    for i in range(y_shape):
-        for j in range(x_shape):
-            if i > 0 and j > 0:
-                y_offset = (
-                    grid_radians_2d[-1, -1, 0]
-                    - grid_radians_2d[grid_y_shape - i - 1, grid_x_shape - j - 1, 0]
-                )
-                x_offset = (
-                    grid_radians_2d[-1, -1, 1]
-                    - grid_radians_2d[grid_y_shape - i - 1, grid_x_shape - j - 1, 1]
-                )
+            y_offset = ymm - grid_radians_2d[ii, jj, 0]
+            x_offset = xmm - grid_radians_2d[ii, jj, 1]
 
-                for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    curvature_preload[-i, -j] += noise_map_real[
-                        vis_1d_index
-                    ] ** -2.0 * np.cos(
-                        2.0
-                        * np.pi
-                        * (
-                            x_offset * uv_wavelengths[vis_1d_index, 0]
-                            + y_offset * uv_wavelengths[vis_1d_index, 1]
-                        )
-                    )
+            acc = 0.0
+            for k in range(K):
+                acc += w[k] * math.cos(x_offset * ku[k] + y_offset * kv[k])
+            curvature_preload[-i, -j] = acc
 
     return curvature_preload
+
+
 
 
 @numba_util.jit()

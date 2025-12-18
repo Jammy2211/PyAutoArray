@@ -158,7 +158,6 @@ def test__curvature_matrix_via_w_tilde_preload_from():
         curvature_matrix_via_preload, 1.0e-4
     )
 
-
 def test__curvature_matrix_via_w_tilde_two_methods_agree():
     noise_map = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
     uv_wavelengths = np.array(
