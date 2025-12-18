@@ -119,46 +119,20 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         This function computes the diagonal terms of F using the w_tilde formalism.
         """
 
-        if self.settings.use_w_tilde_numpy:
-            return inversion_util.curvature_matrix_via_w_tilde_from(
-                w_tilde=self.w_tilde.w_matrix,
-                mapping_matrix=self.mapping_matrix,
-                xp=self._xp,
-            )
-
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
-        if not self.settings.use_source_loop:
-            return inversion_interferometer_numba_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
-                curvature_preload=self.w_tilde.curvature_preload,
-                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-                pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
-                pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-                native_index_for_slim_index=np.array(
-                    self.transformer.real_space_mask.derive_indexes.native_for_slim
-                ).astype("int"),
-                pix_pixels=self.linear_obj_list[0].params,
-            )
-
-        (
-            sub_slim_indexes_for_pix_index,
-            sub_slim_sizes_for_pix_index,
-            sub_slim_weights_for_pix_index,
-        ) = inversion_interferometer_numba_util.sub_slim_indexes_for_pix_index(
-            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-            pix_pixels=mapper.pixels,
-        )
-
-        return inversion_interferometer_numba_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
+        return inversion_interferometer_numba_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
+            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+            pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             native_index_for_slim_index=np.array(
                 self.transformer.real_space_mask.derive_indexes.native_for_slim
             ).astype("int"),
             pix_pixels=self.linear_obj_list[0].params,
-            sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index.astype("int"),
-            sub_slim_sizes_for_pix_index=sub_slim_sizes_for_pix_index.astype("int"),
-            sub_slim_weights_for_pix_index=sub_slim_weights_for_pix_index,
+            mask_rectangular=self.w_tilde.mask_rectangular_w_tilde,
+            rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index_w_tilde,
+            batch_size=128,
         )
 
     @property
