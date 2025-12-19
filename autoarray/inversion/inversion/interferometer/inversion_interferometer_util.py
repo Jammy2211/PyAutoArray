@@ -84,8 +84,8 @@ def w_tilde_curvature_preload_interferometer_from(
     grid_radians_2d: np.ndarray,
     *,
     chunk_k: int = 2048,
-    show_progress: bool = True,
-    show_memory: bool = True,
+    show_progress: bool = False,
+    show_memory: bool = False,
 ) -> np.ndarray:
     """
     The matrix w_tilde is a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels] that encodes the
