@@ -150,7 +150,7 @@ class Interferometer(AbstractDataset):
             dft_preload_transform=dft_preload_transform,
         )
 
-    def apply_w_tilde(self):
+    def apply_w_tilde(self, curvature_preload=None, batch_size: int = 128):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).
@@ -161,20 +161,31 @@ class Interferometer(AbstractDataset):
         This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
         ensuring efficient set up of the `Interferometer` class.
 
+        Parameters
+        ----------
+        curvature_preload
+            An already computed curvature preload matrix for this dataset (e.g. loaded from hard-disk), to prevent
+            long recalculations of this matrix for large datasets.
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed.
+
         Returns
         -------
         WTildeInterferometer
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+        if curvature_preload is None:
 
-        curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-            noise_map_real=self.noise_map.array.real,
-            uv_wavelengths=self.uv_wavelengths,
-            shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
-            grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
-        )
+            logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+
+            curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
+                noise_map_real=self.noise_map.array.real,
+                uv_wavelengths=self.uv_wavelengths,
+                shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
+                grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+            )
 
         dirty_image = self.transformer.image_from(
             visibilities=self.data.real * self.noise_map.real**-2.0
@@ -186,6 +197,7 @@ class Interferometer(AbstractDataset):
             curvature_preload=curvature_preload,
             dirty_image=dirty_image.array,
             real_space_mask=self.real_space_mask,
+            batch_size=batch_size,
         )
 
         return Interferometer(

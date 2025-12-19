@@ -10,6 +10,7 @@ class WTildeInterferometer(AbstractWTilde):
         curvature_preload: np.ndarray,
         dirty_image: np.ndarray,
         real_space_mask: Mask2D,
+        batch_size: int = 128,
     ):
         """
         Packages together all derived data quantities necessary to fit `Interferometer` data using an ` Inversion` via
@@ -33,6 +34,9 @@ class WTildeInterferometer(AbstractWTilde):
         real_space_mask
             The 2D mask in real-space defining the area where the interferometer data's visibilities are observing
             a signal.
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed.
         """
         super().__init__(
             curvature_preload=curvature_preload,
@@ -46,7 +50,7 @@ class WTildeInterferometer(AbstractWTilde):
         )
 
         self.fft_state = inversion_interferometer_util.w_tilde_fft_state_from(
-            curvature_preload=self.curvature_preload, batch_size=450
+            curvature_preload=self.curvature_preload, batch_size=batch_size
         )
 
     @property
