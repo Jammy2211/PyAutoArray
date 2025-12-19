@@ -29,6 +29,7 @@ class MockInversion(AbstractInversion):
         regularization_term=None,
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
+        fast_chi_squared: float = None,
         settings: SettingsInversion = None,
     ):
         dataset = DatasetInterface(
@@ -64,6 +65,7 @@ class MockInversion(AbstractInversion):
         self._regularization_term = regularization_term
         self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
+        self._fast_chi_squared = fast_chi_squared
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -201,3 +203,10 @@ class MockInversion(AbstractInversion):
             return super().log_det_regularization_matrix_term
 
         return self._log_det_regularization_matrix_term
+
+    @property
+    def fast_chi_squared(self) -> float:
+        if self._fast_chi_squared is None:
+            return super().fast_chi_squared
+
+        return self._fast_chi_squared

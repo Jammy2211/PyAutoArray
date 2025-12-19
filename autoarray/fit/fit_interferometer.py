@@ -127,6 +127,38 @@ class FitInterferometer(FitDataset):
         )
 
     @property
+    def log_evidence(self) -> float:
+        """
+        Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
+        which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
+
+        Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
+                           Log(Regularization_Matrix_Term) + Noise_Term]
+
+        Parameters
+        ----------
+        chi_squared
+            The chi-squared term of the inversion's fit to the data.
+        regularization_term
+            The regularization term of the inversion, which is the sum of the difference between reconstructed \
+            flux of every pixel multiplied by the regularization coefficient.
+        log_curvature_regularization_term
+            The log of the determinant of the sum of the curvature and regularization matrices.
+        log_regularization_term
+            The log of the determinant o the regularization matrix.
+        noise_normalization
+            The normalization noise_map-term for the data's noise-map.
+        """
+        if self.inversion is not None:
+            return fit_util.log_evidence_from(
+                chi_squared=self.inversion.fast_chi_squared,
+                regularization_term=self.inversion.regularization_term,
+                log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=self.inversion.log_det_regularization_matrix_term,
+                noise_normalization=self.noise_normalization,
+            )
+
+    @property
     def dirty_image(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.data)
 

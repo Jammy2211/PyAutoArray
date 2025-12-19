@@ -356,7 +356,7 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        if not self.use_w_tilde:
+        if self.use_w_tilde is False or xp.__name__.startswith("jax"):
 
             values = relocated_grid_from(
                 grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
@@ -408,7 +408,7 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return mesh_grid
 
-        if not self.use_w_tilde:
+        if self.use_w_tilde is False or xp.__name__.startswith("jax"):
 
             relocated_grid = relocated_grid_from(
                 grid=mesh_grid.array,

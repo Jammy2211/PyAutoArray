@@ -42,7 +42,8 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     assert inversion.curvature_matrix[2, 2] - 4.0 < 1.0e-12
 
 
-def test__fast_chi_squared(    interferometer_7_no_fft,
+def test__fast_chi_squared(
+    interferometer_7_no_fft,
     rectangular_mapper_7x7_3x3,
 ):
 
@@ -62,8 +63,6 @@ def test__fast_chi_squared(    interferometer_7_no_fft,
         noise_map=interferometer_7_no_fft.noise_map,
     )
 
-    chi_squared = aa.util.fit.chi_squared_complex_from(
-        chi_squared_map=chi_squared_map
-    )
+    chi_squared = aa.util.fit.chi_squared_complex_from(chi_squared_map=chi_squared_map)
 
     assert inversion.fast_chi_squared == pytest.approx(chi_squared, 1.0e-4)

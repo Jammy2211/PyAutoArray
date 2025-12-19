@@ -142,18 +142,10 @@ class AbstractInversionInterferometer(AbstractInversion):
             ]
         )
 
-        chi_squared_term_3 = (
-                xp.sum(self.dataset.data.array.real ** 2.0 / self.dataset.noise_map.array.real ** 2.0)
-                + xp.sum(self.dataset.data.array.imag ** 2.0 / self.dataset.noise_map.array.imag ** 2.0)
+        chi_squared_term_3 = xp.sum(
+            self.dataset.data.array.real**2.0 / self.dataset.noise_map.array.real**2.0
+        ) + xp.sum(
+            self.dataset.data.array.imag**2.0 / self.dataset.noise_map.array.imag**2.0
         )
 
         return chi_squared_term_1 + chi_squared_term_2 + chi_squared_term_3
-
-    @property
-    def fast_chi_squared_with_regularization(self):
-
-        # (K,)
-        chi_real = self.dataset.data.real / self.dataset.noise_map.real
-        # (K,)
-        chi_imag = self.dataset.data.imag / self.dataset.noise_map.imag
-        return float(chi_real.array @ chi_real.array + chi_imag.array @ chi_imag.array - self.reconstruction @ self.data_vector)

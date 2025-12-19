@@ -12,8 +12,8 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.visibilities import Visibilities
 
-from autoarray.inversion.inversion import inversion_util
-from autoarray.inversion.inversion.interferometer import inversion_interferometer_numba_util
+from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
+
 
 from autoarray import exc
 
@@ -90,7 +90,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         The calculation is described in more detail in `inversion_util.w_tilde_data_interferometer_from`.
         """
-        return np.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
+        return self._xp.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
 
     @property
     def curvature_matrix(self) -> np.ndarray:
@@ -121,19 +121,15 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
-        return inversion_interferometer_numba_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
-            curvature_preload=self.w_tilde.curvature_preload,
+        curvature_matrix = inversion_interferometer_util.curvature_matrix_via_w_tilde_interferometer_from(
+            fft_state=self.w_tilde.operator_state,
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-            pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-            native_index_for_slim_index=np.array(
-                self.transformer.real_space_mask.derive_indexes.native_for_slim
-            ).astype("int"),
             pix_pixels=self.linear_obj_list[0].params,
-            mask_rectangular=self.w_tilde.mask_rectangular_w_tilde,
-            rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index_w_tilde,
-            batch_size=128,
+            rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index,
         )
+
+        return curvature_matrix
 
     @property
     def mapped_reconstructed_data_dict(
@@ -168,7 +164,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         for linear_obj in self.linear_obj_list:
             visibilities = self.transformer.visibilities_from(
-                image=image_dict[linear_obj]
+                image=image_dict[linear_obj], xp=self._xp
             )
 
             visibilities = Visibilities(visibilities=visibilities)

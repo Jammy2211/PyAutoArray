@@ -100,12 +100,19 @@ def test__data_and_model_are_identical__inversion_included__changes_certain_prop
 
     model_data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
+    chi_squared = data - model_data
+    chi_squared = np.sum(
+        (chi_squared.real**2.0 / noise_map.real**2.0)
+        + (chi_squared.imag**2.0 / noise_map.imag**2.0)
+    )
+
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper()],
         data_vector=1,
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
         log_det_regularization_matrix_term=4.0,
+        fast_chi_squared=chi_squared,
     )
 
     fit = aa.m.MockFitInterferometer(

@@ -107,6 +107,8 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
                 xp=self._xp,
             )
 
+        print(curvature_matrix)
+
         return curvature_matrix
 
     @property

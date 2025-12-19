@@ -142,6 +142,7 @@ import numpy as np
 import numba
 import math
 
+
 @numba.njit(parallel=True, fastmath=True)
 def w_tilde_curvature_preload_interferometer_from(
     noise_map_real: np.ndarray,
@@ -346,8 +347,6 @@ def w_tilde_curvature_preload_interferometer_from(
             curvature_preload[-i, -j] = acc
 
     return curvature_preload
-
-
 
 
 @numba_util.jit()

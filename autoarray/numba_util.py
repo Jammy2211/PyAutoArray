@@ -23,7 +23,13 @@ def jit(nopython=nopython, cache=cache, parallel=parallel, fastmath=False):
 
             import numba
 
-            return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel, fastmath=fastmath)
+            return numba.jit(
+                func,
+                nopython=nopython,
+                cache=cache,
+                parallel=parallel,
+                fastmath=fastmath,
+            )
 
         except ModuleNotFoundError:
 
