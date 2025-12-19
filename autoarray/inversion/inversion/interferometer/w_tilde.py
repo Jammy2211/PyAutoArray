@@ -110,7 +110,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
         return inversion_interferometer_util.curvature_matrix_via_w_tilde_interferometer_from(
-            fft_state=self.w_tilde.operator_state,
+            fft_state=self.w_tilde.fft_state,
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=self.linear_obj_list[0].params,

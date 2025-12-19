@@ -45,7 +45,7 @@ class WTildeInterferometer(AbstractWTilde):
             inversion_interferometer_util,
         )
 
-        self.operator_state = inversion_interferometer_util.w_tilde_fft_state_from(
+        self.fft_state = inversion_interferometer_util.w_tilde_fft_state_from(
             curvature_preload=self.curvature_preload, batch_size=450
         )
 

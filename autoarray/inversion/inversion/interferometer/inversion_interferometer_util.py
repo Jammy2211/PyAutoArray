@@ -67,12 +67,12 @@ def _report_memory(arr):
     """
     try:
         import resource
+
         rss_mb = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
         arr_mb = arr.nbytes / 1024**2
         from tqdm import tqdm
-        tqdm.write(
-            f"    Memory: array={arr_mb:.1f} MB, RSS≈{rss_mb:.1f} MB"
-        )
+
+        tqdm.write(f"    Memory: array={arr_mb:.1f} MB, RSS≈{rss_mb:.1f} MB")
     except Exception:
         pass
 
@@ -141,26 +141,26 @@ def w_tilde_curvature_preload_interferometer_from(
     - The values of pixels paired with themselves are also computed repeatedly for the standard calculation (e.g. 9
     times using the mask above).
 
-    The `w_tilde_preload` method instead only computes each value once. To do this, it stores the preload values in a
+    The `curvature_preload` method instead only computes each value once. To do this, it stores the preload values in a
     matrix of dimensions [shape_masked_pixels_y, shape_masked_pixels_x, 2], where `shape_masked_pixels` is the (y,x)
     size of the vertical and horizontal extent of unmasked pixels, e.g. the spatial extent over which the real space
     grid extends.
 
-    Each entry in the matrix `w_tilde_preload[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
+    Each entry in the matrix `curvature_preload[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
     to a pixel offset by that much in the y and x directions, for example:
 
-    - w_tilde_preload[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+    - curvature_preload[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
     in the x direction by 0 - the values of pixels paired with themselves.
-    - w_tilde_preload[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
+    - curvature_preload[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
     in the x direction by 0 - the values of pixel pairs [0,3], [1,4], [2,5], [3,6], [4,7] and [5,8]
-    - w_tilde_preload[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+    - curvature_preload[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
     in the x direction by 1 - the values of pixel pairs [0,1], [1,2], [3,4], [4,5], [6,7] and [7,9].
 
     Flipped pairs:
 
     The above preloaded values pair all image pixel NUFFT values when a pixel is to the right and / or down of the
     first image pixel. However, one must also precompute pairs where the paired pixel is to the left of the host
-    pixels. These pairings are stored in `w_tilde_preload[:,:,1]`, and the ordering of these pairings is flipped in the
+    pixels. These pairings are stored in `curvature_preload[:,:,1]`, and the ordering of these pairings is flipped in the
     x direction to make it straight forward to use this matrix when computing w_tilde.
 
     Parameters
@@ -196,7 +196,7 @@ def w_tilde_curvature_preload_interferometer_from(
 
     K = uv_wavelengths.shape[0]
 
-    w = 1.0 / (noise_map_real ** 2)
+    w = 1.0 / (noise_map_real**2)
     ku = 2.0 * np.pi * uv_wavelengths[:, 0]
     kv = 2.0 * np.pi * uv_wavelengths[:, 1]
 
@@ -225,10 +225,7 @@ def w_tilde_curvature_preload_interferometer_from(
         for k0 in iterator:
             k1 = min(K, k0 + chunk_k)
 
-            phase = (
-                dx[..., None] * ku[k0:k1]
-                + dy[..., None] * kv[k0:k1]
-            )
+            phase = dx[..., None] * ku[k0:k1] + dy[..., None] * kv[k0:k1]
             acc += np.sum(
                 np.cos(phase) * w[k0:k1],
                 axis=2,
@@ -242,27 +239,21 @@ def w_tilde_curvature_preload_interferometer_from(
     # -----------------------------
     # Main quadrant (+,+)
     # -----------------------------
-    out[:y_shape, :x_shape] = accum_from_corner(
-        y00, x00, gy, gx, label="(+,+)"
-    )
+    out[:y_shape, :x_shape] = accum_from_corner(y00, x00, gy, gx, label="(+,+)")
 
     # -----------------------------
     # Flip in x (+,-)
     # -----------------------------
     if x_shape > 1:
-        block = accum_from_corner(
-            y0m, x0m, gy[:, ::-1], gx[:, ::-1], label="(+,-)"
-        )
-        out[:y_shape, -1:-(x_shape): -1] = block[:, 1:]
+        block = accum_from_corner(y0m, x0m, gy[:, ::-1], gx[:, ::-1], label="(+,-)")
+        out[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
 
     # -----------------------------
     # Flip in y (-,+)
     # -----------------------------
     if y_shape > 1:
-        block = accum_from_corner(
-            ym0, xm0, gy[::-1, :], gx[::-1, :], label="(-,+)"
-        )
-        out[-1:-(y_shape): -1, :x_shape] = block[1:, :]
+        block = accum_from_corner(ym0, xm0, gy[::-1, :], gx[::-1, :], label="(-,+)")
+        out[-1:-(y_shape):-1, :x_shape] = block[1:, :]
 
     # -----------------------------
     # Flip in x and y (-,-)
@@ -271,21 +262,19 @@ def w_tilde_curvature_preload_interferometer_from(
         block = accum_from_corner(
             ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1], label="(-,-)"
         )
-        out[-1:-(y_shape): -1, -1:-(x_shape): -1] = block[1:, 1:]
+        out[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
 
     return out
 
 
-
-
-def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
+def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
     """
-    Use the preloaded w_tilde matrix (see `w_tilde_preload_interferometer_from`) to compute
+    Use the preloaded w_tilde matrix (see `curvature_preload_interferometer_from`) to compute
     w_tilde (see `w_tilde_interferometer_from`) efficiently.
 
     Parameters
     ----------
-    w_tilde_preload
+    curvature_preload
         The preloaded values of the NUFFT that enable efficient computation of w_tilde.
     native_index_for_slim_index
         An array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its corresponding
@@ -311,7 +300,7 @@ def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
             y_diff = j_y - i_y
             x_diff = j_x - i_x
 
-            w_tilde_via_preload[i, j] = w_tilde_preload[y_diff, x_diff]
+            w_tilde_via_preload[i, j] = curvature_preload[y_diff, x_diff]
 
     for i in range(slim_size):
         for j in range(i, slim_size):
