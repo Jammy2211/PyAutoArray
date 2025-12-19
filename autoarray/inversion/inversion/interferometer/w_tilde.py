@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
@@ -53,18 +53,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         """
-
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
         self.w_tilde = w_tilde
 
         super().__init__(
@@ -121,15 +109,13 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
-        curvature_matrix = inversion_interferometer_util.curvature_matrix_via_w_tilde_interferometer_from(
+        return inversion_interferometer_util.curvature_matrix_via_w_tilde_interferometer_from(
             fft_state=self.w_tilde.operator_state,
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=self.linear_obj_list[0].params,
             rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index,
         )
-
-        return curvature_matrix
 
     @property
     def mapped_reconstructed_data_dict(

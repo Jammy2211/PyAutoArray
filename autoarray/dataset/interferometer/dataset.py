@@ -1,9 +1,6 @@
 import logging
 import numpy as np
-from pathlib import Path
 from typing import Optional
-
-from autoconf import cached_property
 
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
@@ -16,7 +13,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.inversion.interferometer import (
-    inversion_interferometer_numba_util,
+    inversion_interferometer_util,
 )
 
 from autoarray import exc
@@ -172,18 +169,7 @@ class Interferometer(AbstractDataset):
 
         logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
-        curvature_preload = inversion_interferometer_numba_util.w_tilde_curvature_preload_interferometer_from(
+        curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=self.noise_map.array.real,
             uv_wavelengths=self.uv_wavelengths,
             shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
