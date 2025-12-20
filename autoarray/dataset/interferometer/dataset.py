@@ -29,7 +29,6 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        dft_preload_transform: bool = True,
         w_tilde: Optional[WTildeInterferometer] = None,
     ):
         """
@@ -76,9 +75,6 @@ class Interferometer(AbstractDataset):
         transformer_class
             The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
             the uv-plane.
-        dft_preload_transform
-            If True, precomputes and stores the cosine and sine terms for the Fourier transform.
-            This accelerates repeated transforms but consumes additional memory (~1GB+ for large datasets).
         """
         self.real_space_mask = real_space_mask
 
@@ -94,10 +90,7 @@ class Interferometer(AbstractDataset):
         self.transformer = transformer_class(
             uv_wavelengths=uv_wavelengths,
             real_space_mask=real_space_mask,
-            preload_transform=dft_preload_transform,
         )
-
-        self.dft_preload_transform = dft_preload_transform
 
         use_w_tilde = True if w_tilde is not None else False
 
@@ -121,7 +114,6 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
-        dft_preload_transform: bool = True,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
@@ -147,10 +139,12 @@ class Interferometer(AbstractDataset):
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
-            dft_preload_transform=dft_preload_transform,
         )
 
-    def apply_w_tilde(self, curvature_preload=None, batch_size: int = 128):
+    def apply_w_tilde(self, curvature_preload=None, batch_size: int = 128,
+                      show_progress: bool = False,
+                      show_memory: bool = False,
+                      ):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).
@@ -185,6 +179,8 @@ class Interferometer(AbstractDataset):
                 uv_wavelengths=self.uv_wavelengths,
                 shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
                 grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+                show_memory=show_memory,
+                show_progress=show_progress,
             )
 
         dirty_image = self.transformer.image_from(
@@ -205,8 +201,7 @@ class Interferometer(AbstractDataset):
             data=self.data,
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
-            transformer_class=lambda uv_wavelengths, real_space_mask, preload_transform: self.transformer,
-            dft_preload_transform=self.dft_preload_transform,
+            transformer_class=lambda uv_wavelengths, real_space_mask: self.transformer,
             w_tilde=w_tilde,
         )
 

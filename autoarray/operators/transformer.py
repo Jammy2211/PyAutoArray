@@ -38,7 +38,6 @@ class TransformerDFT:
         self,
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
-        preload_transform: bool = True,
     ):
         """
         A direct Fourier transform (DFT) operator for radio interferometric imaging.
@@ -56,9 +55,6 @@ class TransformerDFT:
             The (u, v) coordinates in wavelengths of the measured visibilities.
         real_space_mask
             The real-space mask that defines the image grid and which pixels are valid.
-        preload_transform
-            If True, precomputes and stores the cosine and sine terms for the Fourier transform.
-            This accelerates repeated transforms but consumes additional memory (~1GB+ for large datasets).
 
         Attributes
         ----------
@@ -86,26 +82,6 @@ class TransformerDFT:
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
 
-        self.preload_transform = preload_transform
-
-        if preload_transform:
-
-            self.preload_real_transforms = (
-                transformer_util.preload_real_transforms_from(
-                    grid_radians=np.array(self.grid.array),
-                    uv_wavelengths=self.uv_wavelengths,
-                )
-            )
-
-            self.preload_imag_transforms = (
-                transformer_util.preload_imag_transforms_from(
-                    grid_radians=np.array(self.grid.array),
-                    uv_wavelengths=self.uv_wavelengths,
-                )
-            )
-
-        self.real_space_pixels = self.real_space_mask.pixels_in_mask
-
         # NOTE: This is the scaling factor that needs to be applied to the adjoint operator
         self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
             2.0 * self.grid.shape_native[1]
@@ -118,8 +94,6 @@ class TransformerDFT:
         This method transforms the input image into the uv-plane (Fourier space), simulating the
         measurements made by an interferometer at specified uv-wavelengths.
 
-        If `preload_transform` is True, it uses precomputed sine and cosine terms to accelerate the computation.
-
         Parameters
         ----------
         image
@@ -130,22 +104,15 @@ class TransformerDFT:
         -------
         The complex visibilities resulting from the Fourier transform of the input image.
         """
-        if self.preload_transform:
-            visibilities = transformer_util.visibilities_via_preload_from(
-                image_1d=image.array,
-                preloaded_reals=self.preload_real_transforms,
-                preloaded_imags=self.preload_imag_transforms,
-                xp=xp,
-            )
-        else:
-            visibilities = transformer_util.visibilities_from(
-                image_1d=image.slim.array,
-                grid_radians=self.grid.array,
-                uv_wavelengths=self.uv_wavelengths,
-                xp=xp,
-            )
 
-        return Visibilities(visibilities=xp.array(visibilities))
+        visibilities = transformer_util.visibilities_from(
+            image_1d=image.slim.array,
+            grid_radians=self.grid.array,
+            uv_wavelengths=self.uv_wavelengths,
+            xp=xp,
+        )
+
+        return Visibilities(visibilities=visibilities)
 
     def image_from(
         self, visibilities: Visibilities, use_adjoint_scaling: bool = False, xp=np
@@ -189,8 +156,6 @@ class TransformerDFT:
         (represented by a column of the mapping matrix) is computed individually. The result is a matrix
         mapping source pixels directly to visibilities.
 
-        If `preload_transform` is True, the computation is accelerated using precomputed sine and cosine terms.
-
         Parameters
         ----------
         mapping_matrix
@@ -201,17 +166,12 @@ class TransformerDFT:
         A 2D complex-valued array of shape (n_visibilities, n_source_pixels) that maps source-plane basis
         functions directly to the visibilities.
         """
-        if self.preload_transform:
-            return transformer_util.transformed_mapping_matrix_via_preload_from(
-                mapping_matrix=mapping_matrix,
-                preloaded_reals=self.preload_real_transforms,
-                preloaded_imags=self.preload_imag_transforms,
-            )
 
         return transformer_util.transformed_mapping_matrix_from(
             mapping_matrix=mapping_matrix,
             grid_radians=self.grid.array,
             uv_wavelengths=self.uv_wavelengths,
+            xp=xp
         )
 
 
@@ -256,8 +216,6 @@ class TransformerNUFFT(NUFFT_cpu):
             Index map converting from slim (1D) grid to native (2D) indexing, for image reshaping.
         shift : np.ndarray
             Complex exponential phase shift applied to account for real-space pixel centering.
-        real_space_pixels : int
-            Total number of valid real-space pixels defined by the mask.
         total_visibilities : int
             Total number of visibilities across all uv-wavelength components.
         adjoint_scaling : float
@@ -297,8 +255,6 @@ class TransformerNUFFT(NUFFT_cpu):
                 * self.uv_wavelengths[:, 0]
             )
         )
-
-        self.real_space_pixels = self.real_space_mask.pixels_in_mask
 
         # NOTE: If reshaped the shape of the operator is (2 x Nvis, Np) else it is (Nvis, Np)
         self.total_visibilities = int(uv_wavelengths.shape[0] * uv_wavelengths.shape[1])
@@ -362,32 +318,72 @@ class TransformerNUFFT(NUFFT_cpu):
             Jd=interp_kernel,
         )
 
-    def visibilities_from(self, image: Array2D, xp=np) -> Visibilities:
+    def _pynufft_forward_numpy(self, image_np: np.ndarray) -> np.ndarray:
         """
-        Computes visibilities from a real-space image using the NUFFT forward transform.
-
-        Parameters
-        ----------
-        image
-            The input image in real space, represented as a 2D array object.
-
-        Returns
-        -------
-        The complex visibilities in the uv-plane computed via the NUFFT forward operation.
-
-        Notes
-        -----
-        - The image is flipped vertically before transformation to account for PyNUFFT’s internal data layout.
-        - Warnings during the NUFFT computation are suppressed for cleaner output.
+        NumPy-only forward NUFFT. Runs on host.
         """
-
         warnings.filterwarnings("ignore")
 
-        return Visibilities(
-            visibilities=self.forward(
-                image.native.array[::-1, :]
-            )  # flip due to PyNUFFT internal flip
+        # Flip vertically (PyNUFFT internal convention)
+        image_np = image_np[::-1, :]
+
+        # PyNUFFT forward
+        vis = self.forward(image_np)
+
+        return vis
+
+    def visibilities_from_jax(self, image: np.ndarray) -> np.ndarray:
+        """
+        JAX-compatible wrapper around PyNUFFT forward.
+        Can be used inside jax.jit.
+        """
+
+        import jax
+        import jax.numpy as jnp
+        from jax import ShapeDtypeStruct
+
+        # You MUST tell JAX the output shape & dtype
+
+        out_shape = (self.total_visibilities // 2,)  # example
+        out_dtype = jnp.complex128
+
+        result_shape = ShapeDtypeStruct(
+            shape=out_shape,
+            dtype=out_dtype,
         )
+
+        return jax.pure_callback(
+            lambda img: self._pynufft_forward_numpy(img),
+            result_shape,
+            image,
+        )
+
+    def visibilities_from(self, image, xp=np):
+
+        # start with native image padded with zeros
+        image_native = xp.zeros(image.mask.shape, dtype=image.dtype)
+
+        if xp.__name__.startswith("jax"):
+
+            image_native = image_native.at[image.mask.slim_to_native_tuple].set(
+                image.array
+            )
+
+        else:
+
+            image_native[image.mask.slim_to_native_tuple] = image.array
+
+        if xp is np:
+            warnings.filterwarnings("ignore")
+            return Visibilities(
+                visibilities=self.forward(image_native[::-1, :])
+            )
+
+        else:
+
+            vis = self.visibilities_from_jax(image_native)
+
+            return Visibilities(visibilities=vis)
 
     def image_from(
         self, visibilities: Visibilities, use_adjoint_scaling: bool = False, xp=np
@@ -446,16 +442,27 @@ class TransformerNUFFT(NUFFT_cpu):
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
 
-            image_2d = array_2d_util.array_2d_native_from(
-                array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
-                mask_2d=self.grid.mask,
-                xp=xp,
-            )
+            image_2d = xp.zeros(self.grid.shape_native, dtype=mapping_matrix.dtype)
+
+            if xp.__name__.startswith("jax"):
+
+                image_2d = image_2d.at[self.grid.mask.slim_to_native_tuple].set(
+                    mapping_matrix[:, source_pixel_1d_index]
+                )
+
+            else:
+
+                image_2d[self.grid.mask.slim_to_native_tuple] = mapping_matrix[
+                    :, source_pixel_1d_index
+                ]
 
             image = Array2D(values=image_2d, mask=self.grid.mask)
 
             visibilities = self.visibilities_from(image=image, xp=xp)
 
-            transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities
+            if xp.__name__.startswith("jax"):
+                transformed_mapping_matrix = transformed_mapping_matrix.at[:, source_pixel_1d_index].set(visibilities.array)
+            else:
+                transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities.array
 
         return transformed_mapping_matrix
