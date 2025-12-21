@@ -32,7 +32,8 @@ dependencies = [
     "matplotlib>=3.7.0",
     "scipy<=1.14.0",
     "scikit-image<=0.24.0",
-    "scikit-learn<=1.5.1"
+    "scikit-learn<=1.5.1",
+    "tqdm"
 ]
 
 [project.urls]

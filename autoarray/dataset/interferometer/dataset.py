@@ -105,7 +105,10 @@ class Interferometer(AbstractDataset):
         self.w_tilde = w_tilde
 
         if raise_error_dft_visibilities_limit:
-            if self.uv_wavelengths.shape[0] > 10000 and transformer_class == TransformerDFT:
+            if (
+                self.uv_wavelengths.shape[0] > 10000
+                and transformer_class == TransformerDFT
+            ):
                 raise exc.DatasetException(
                     """
                     Interferometer datasets with more than 10,000 visibilities should use the TransformerNUFFT class for 
