@@ -371,7 +371,7 @@ class TransformerNUFFT(NUFFT_cpu):
 
         else:
 
-            image_native[image.mask.slim_to_native_tuple] = image.array
+            image_native = image.native.array
 
         if xp is np:
             warnings.filterwarnings("ignore")

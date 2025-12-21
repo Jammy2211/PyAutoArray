@@ -7,16 +7,16 @@ from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
+from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
+from autoarray import exc
 from autoarray.inversion.inversion.interferometer import (
     inversion_interferometer_util,
 )
-
-from autoarray import exc
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ class Interferometer(AbstractDataset):
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
         w_tilde: Optional[WTildeInterferometer] = None,
+        raise_error_dft_visibilities_limit: bool = True,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -102,6 +103,19 @@ class Interferometer(AbstractDataset):
         )
 
         self.w_tilde = w_tilde
+
+        if raise_error_dft_visibilities_limit:
+            if self.uv_wavelengths.shape[0] > 10000 and transformer_class == TransformerDFT:
+                raise exc.DatasetException(
+                    """
+                    Interferometer datasets with more than 10,000 visibilities should use the TransformerNUFFT class for 
+                    efficient Fourier transforms between real and uv-space. The DFT (Discrete Fourier Transform) is too slow for 
+                    large datasets.
+                    
+                    If you are certain you want to use the TransformerDFT class, you can disable this error by passing 
+                    the input `raise_error_dft_visibilities_limit=False` when loading the Interferometer dataset.
+                    """
+                )
 
     @classmethod
     def from_fits(
