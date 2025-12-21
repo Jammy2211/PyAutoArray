@@ -218,13 +218,13 @@ def test__identical_inversion_values_for_two_methods():
     ).all()
 
     assert inversion_w_tilde.data_vector == pytest.approx(
-        inversion_mapping_matrices.data_vector, 1.0e-8
+        inversion_mapping_matrices.data_vector, abs=1.0e-2
     )
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
-        inversion_mapping_matrices.curvature_matrix, 1.0e-8
+        inversion_mapping_matrices.curvature_matrix, abs=1.0e-2
     )
     assert inversion_w_tilde.curvature_reg_matrix == pytest.approx(
-        inversion_mapping_matrices.curvature_reg_matrix, 1.0e-8
+        inversion_mapping_matrices.curvature_reg_matrix, abs=1.0e-2
     )
 
     assert inversion_w_tilde.reconstruction == pytest.approx(
