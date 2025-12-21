@@ -141,10 +141,13 @@ class Interferometer(AbstractDataset):
             transformer_class=transformer_class,
         )
 
-    def apply_w_tilde(self, curvature_preload=None, batch_size: int = 128,
-                      show_progress: bool = False,
-                      show_memory: bool = False,
-                      ):
+    def apply_w_tilde(
+        self,
+        curvature_preload=None,
+        batch_size: int = 128,
+        show_progress: bool = False,
+        show_memory: bool = False,
+    ):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).

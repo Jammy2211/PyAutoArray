@@ -171,7 +171,7 @@ class TransformerDFT:
             mapping_matrix=mapping_matrix,
             grid_radians=self.grid.array,
             uv_wavelengths=self.uv_wavelengths,
-            xp=xp
+            xp=xp,
         )
 
 
@@ -375,9 +375,7 @@ class TransformerNUFFT(NUFFT_cpu):
 
         if xp is np:
             warnings.filterwarnings("ignore")
-            return Visibilities(
-                visibilities=self.forward(image_native[::-1, :])
-            )
+            return Visibilities(visibilities=self.forward(image_native[::-1, :]))
 
         else:
 
@@ -461,8 +459,12 @@ class TransformerNUFFT(NUFFT_cpu):
             visibilities = self.visibilities_from(image=image, xp=xp)
 
             if xp.__name__.startswith("jax"):
-                transformed_mapping_matrix = transformed_mapping_matrix.at[:, source_pixel_1d_index].set(visibilities.array)
+                transformed_mapping_matrix = transformed_mapping_matrix.at[
+                    :, source_pixel_1d_index
+                ].set(visibilities.array)
             else:
-                transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities.array
+                transformed_mapping_matrix[:, source_pixel_1d_index] = (
+                    visibilities.array
+                )
 
         return transformed_mapping_matrix

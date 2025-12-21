@@ -133,12 +133,7 @@ def transformed_mapping_matrix_from(
 
         # phase: (n_image_pixels, chunk)
         phase = (
-            -2.0
-            * xp.pi
-            * (
-                xp.outer(y, uv_chunk[:, 0]) +
-                xp.outer(x, uv_chunk[:, 1])
-            )
+            -2.0 * xp.pi * (xp.outer(y, uv_chunk[:, 0]) + xp.outer(x, uv_chunk[:, 1]))
         )
 
         # Compute Fourier response for this chunk
@@ -154,4 +149,3 @@ def transformed_mapping_matrix_from(
             transformed[i0:i1, :] = vis_chunk
 
     return transformed
-

@@ -50,8 +50,6 @@ def test__dft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
     assert image[0:3] == pytest.approx([-1.49022481, -0.22395855, -0.45588535], 1.0e-4)
 
 
-
-
 def test__nufft__visibilities_from():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
