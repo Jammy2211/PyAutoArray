@@ -162,7 +162,7 @@ def test__identical_inversion_values_for_two_methods():
         source_plane_mesh_grid=mesh_grid,
     )
 
-    reg = aa.reg.Constant(coefficient=0.0)
+    reg = aa.reg.Constant(coefficient=1.0)
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=reg)
 
