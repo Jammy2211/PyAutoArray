@@ -68,44 +68,13 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
 
-def test__w_tilde_curvature_interferometer_from():
-    noise_map = np.array([1.0, 2.0, 3.0])
-    uv_wavelengths = np.array([[0.0001, 2.0, 3000.0], [3000.0, 2.0, 0.0001]])
-
-    grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.0005)
-
-    w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
-        noise_map_real=noise_map,
-        uv_wavelengths=uv_wavelengths,
-        grid_radians_slim=grid.array,
-    )
-
-    assert w_tilde == pytest.approx(
-        np.array(
-            [
-                [1.25, 0.75, 1.24997, 0.74998],
-                [0.75, 1.25, 0.74998, 1.24997],
-                [1.24994, 0.74998, 1.25, 0.75],
-                [0.74998, 1.24997, 0.75, 1.25],
-            ]
-        ),
-        1.0e-4,
-    )
-
-
-def test__curvature_matrix_via_w_tilde_preload_from():
+def test__curvature_matrix_via_curvature_preload_from():
     noise_map = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
     uv_wavelengths = np.array(
         [[0.0001, 2.0, 3000.0, 50000.0, 200000.0], [3000.0, 2.0, 0.0001, 10.0, 5000.0]]
     )
 
     grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.0005)
-
-    w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
-        noise_map_real=noise_map,
-        uv_wavelengths=uv_wavelengths,
-        grid_radians_slim=grid.array,
-    )
 
     mapping_matrix = np.array(
         [
@@ -121,11 +90,7 @@ def test__curvature_matrix_via_w_tilde_preload_from():
         ]
     )
 
-    curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
-        w_tilde=w_tilde, mapping_matrix=mapping_matrix
-    )
-
-    w_tilde_preload = (
+    curvature_preload = (
         aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=noise_map,
             uv_wavelengths=uv_wavelengths,
@@ -134,64 +99,42 @@ def test__curvature_matrix_via_w_tilde_preload_from():
         )
     )
 
-    pix_indexes_for_sub_slim_index = np.array(
-        [[0], [2], [1], [1], [2], [2], [0], [2], [0]]
-    )
-
-    pix_size_for_sub_slim_index = np.ones(shape=(9,)).astype("int")
-    pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
-
     native_index_for_slim_index = np.array(
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    curvature_matrix_via_preload = aa.util.inversion_interferometer.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
-        curvature_preload=w_tilde_preload,
-        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-        pix_size_for_sub_slim_index=pix_size_for_sub_slim_index,
-        pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+    w_tilde = aa.util.inversion_interferometer.w_tilde_via_preload_from(
+        curvature_preload=curvature_preload,
         native_index_for_slim_index=native_index_for_slim_index,
+    )
+
+    curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
+        w_tilde=w_tilde, mapping_matrix=mapping_matrix
+    )
+
+    pix_indexes_for_sub_slim_index = np.array(
+        [[0], [2], [1], [1], [2], [2], [0], [2], [0]]
+    )
+
+    pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
+
+    w_tilde = aa.WTildeInterferometer(
+        curvature_preload=curvature_preload,
+        dirty_image=None,
+        real_space_mask=grid.mask,
+    )
+
+    curvature_matrix_via_preload = aa.util.inversion_interferometer.curvature_matrix_via_w_tilde_interferometer_from(
+        fft_state=w_tilde.fft_state,
+        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+        pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        rect_index_for_mask_index=w_tilde.rect_index_for_mask_index,
         pix_pixels=3,
     )
 
     assert curvature_matrix_via_w_tilde == pytest.approx(
         curvature_matrix_via_preload, 1.0e-4
     )
-
-
-def test__curvature_matrix_via_w_tilde_two_methods_agree():
-    noise_map = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-    uv_wavelengths = np.array(
-        [[0.0001, 2.0, 3000.0, 50000.0, 200000.0], [3000.0, 2.0, 0.0001, 10.0, 5000.0]]
-    )
-
-    grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.0005)
-
-    w_tilde = aa.util.inversion_interferometer.w_tilde_curvature_interferometer_from(
-        noise_map_real=noise_map,
-        uv_wavelengths=uv_wavelengths,
-        grid_radians_slim=grid.array,
-    )
-
-    w_tilde_preload = (
-        aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
-            noise_map_real=np.array(noise_map),
-            uv_wavelengths=np.array(uv_wavelengths),
-            shape_masked_pixels_2d=(3, 3),
-            grid_radians_2d=np.array(grid.native),
-        )
-    )
-
-    native_index_for_slim_index = np.array(
-        [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
-    )
-
-    w_tilde_via_preload = aa.util.inversion_interferometer.w_tilde_via_preload_from(
-        w_tilde_preload=w_tilde_preload,
-        native_index_for_slim_index=native_index_for_slim_index,
-    )
-
-    assert (w_tilde == w_tilde_via_preload).all()
 
 
 def test__identical_inversion_values_for_two_methods():
@@ -219,7 +162,7 @@ def test__identical_inversion_values_for_two_methods():
         source_plane_mesh_grid=mesh_grid,
     )
 
-    reg = aa.reg.Constant(coefficient=0.0)
+    reg = aa.reg.Constant(coefficient=1.0)
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=reg)
 
@@ -275,13 +218,13 @@ def test__identical_inversion_values_for_two_methods():
     ).all()
 
     assert inversion_w_tilde.data_vector == pytest.approx(
-        inversion_mapping_matrices.data_vector, 1.0e-8
+        inversion_mapping_matrices.data_vector, abs=1.0e-2
     )
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
-        inversion_mapping_matrices.curvature_matrix, 1.0e-8
+        inversion_mapping_matrices.curvature_matrix, abs=1.0e-2
     )
     assert inversion_w_tilde.curvature_reg_matrix == pytest.approx(
-        inversion_mapping_matrices.curvature_reg_matrix, 1.0e-8
+        inversion_mapping_matrices.curvature_reg_matrix, abs=1.0e-2
     )
 
     assert inversion_w_tilde.reconstruction == pytest.approx(

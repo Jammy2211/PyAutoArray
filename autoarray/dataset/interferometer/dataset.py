@@ -1,23 +1,22 @@
 import logging
 import numpy as np
-from pathlib import Path
 from typing import Optional
-
-from autoconf import cached_property
 
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
+from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
-
 from autoarray import exc
+from autoarray.inversion.inversion.interferometer import (
+    inversion_interferometer_util,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +29,8 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        dft_preload_transform: bool = True,
         w_tilde: Optional[WTildeInterferometer] = None,
+        raise_error_dft_visibilities_limit: bool = True,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -77,9 +76,6 @@ class Interferometer(AbstractDataset):
         transformer_class
             The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
             the uv-plane.
-        dft_preload_transform
-            If True, precomputes and stores the cosine and sine terms for the Fourier transform.
-            This accelerates repeated transforms but consumes additional memory (~1GB+ for large datasets).
         """
         self.real_space_mask = real_space_mask
 
@@ -95,10 +91,7 @@ class Interferometer(AbstractDataset):
         self.transformer = transformer_class(
             uv_wavelengths=uv_wavelengths,
             real_space_mask=real_space_mask,
-            preload_transform=dft_preload_transform,
         )
-
-        self.dft_preload_transform = dft_preload_transform
 
         use_w_tilde = True if w_tilde is not None else False
 
@@ -111,6 +104,22 @@ class Interferometer(AbstractDataset):
 
         self.w_tilde = w_tilde
 
+        if raise_error_dft_visibilities_limit:
+            if (
+                self.uv_wavelengths.shape[0] > 10000
+                and transformer_class == TransformerDFT
+            ):
+                raise exc.DatasetException(
+                    """
+                    Interferometer datasets with more than 10,000 visibilities should use the TransformerNUFFT class for 
+                    efficient Fourier transforms between real and uv-space. The DFT (Discrete Fourier Transform) is too slow for 
+                    large datasets.
+                    
+                    If you are certain you want to use the TransformerDFT class, you can disable this error by passing 
+                    the input `raise_error_dft_visibilities_limit=False` when loading the Interferometer dataset.
+                    """
+                )
+
     @classmethod
     def from_fits(
         cls,
@@ -122,7 +131,6 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
-        dft_preload_transform: bool = True,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
@@ -148,10 +156,15 @@ class Interferometer(AbstractDataset):
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
-            dft_preload_transform=dft_preload_transform,
         )
 
-    def apply_w_tilde(self):
+    def apply_w_tilde(
+        self,
+        curvature_preload=None,
+        batch_size: int = 128,
+        show_progress: bool = False,
+        show_memory: bool = False,
+    ):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).
@@ -162,44 +175,33 @@ class Interferometer(AbstractDataset):
         This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
         ensuring efficient set up of the `Interferometer` class.
 
+        Parameters
+        ----------
+        curvature_preload
+            An already computed curvature preload matrix for this dataset (e.g. loaded from hard-disk), to prevent
+            long recalculations of this matrix for large datasets.
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed.
+
         Returns
         -------
         WTildeInterferometer
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+        if curvature_preload is None:
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+
+            curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
+                noise_map_real=self.noise_map.array.real,
+                uv_wavelengths=self.uv_wavelengths,
+                shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
+                grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+                show_memory=show_memory,
+                show_progress=show_progress,
             )
-
-        curvature_preload = (
-            inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-                noise_map_real=np.array(self.noise_map.real),
-                uv_wavelengths=np.array(self.uv_wavelengths),
-                shape_masked_pixels_2d=np.array(
-                    self.transformer.grid.mask.shape_native_masked_pixels
-                ),
-                grid_radians_2d=np.array(
-                    self.transformer.grid.mask.derive_grid.all_false.in_radians.native
-                ),
-            )
-        )
-
-        w_matrix = inversion_interferometer_util.w_tilde_via_preload_from(
-            w_tilde_preload=curvature_preload,
-            native_index_for_slim_index=np.array(
-                self.real_space_mask.derive_indexes.native_for_slim
-            ).astype("int"),
-        )
 
         dirty_image = self.transformer.image_from(
             visibilities=self.data.real * self.noise_map.real**-2.0
@@ -208,10 +210,10 @@ class Interferometer(AbstractDataset):
         )
 
         w_tilde = WTildeInterferometer(
-            w_matrix=w_matrix,
             curvature_preload=curvature_preload,
-            dirty_image=np.array(dirty_image.array),
+            dirty_image=dirty_image.array,
             real_space_mask=self.real_space_mask,
+            batch_size=batch_size,
         )
 
         return Interferometer(
@@ -219,8 +221,7 @@ class Interferometer(AbstractDataset):
             data=self.data,
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
-            transformer_class=lambda uv_wavelengths, real_space_mask, preload_transform: self.transformer,
-            dft_preload_transform=self.dft_preload_transform,
+            transformer_class=lambda uv_wavelengths, real_space_mask: self.transformer,
             w_tilde=w_tilde,
         )
 

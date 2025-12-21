@@ -40,3 +40,29 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     assert inversion.curvature_matrix[0, 0] - 4.0 > 0.0
     assert inversion.curvature_matrix[2, 2] - 4.0 < 1.0e-12
+
+
+def test__fast_chi_squared(
+    interferometer_7_no_fft,
+    rectangular_mapper_7x7_3x3,
+):
+
+    inversion = aa.Inversion(
+        dataset=interferometer_7_no_fft,
+        linear_obj_list=[rectangular_mapper_7x7_3x3],
+        settings=aa.SettingsInversion(),
+    )
+
+    residual_map = aa.util.fit.residual_map_from(
+        data=interferometer_7_no_fft.data,
+        model_data=inversion.mapped_reconstructed_data,
+    )
+
+    chi_squared_map = aa.util.fit.chi_squared_map_complex_from(
+        residual_map=residual_map,
+        noise_map=interferometer_7_no_fft.noise_map,
+    )
+
+    chi_squared = aa.util.fit.chi_squared_complex_from(chi_squared_map=chi_squared_map)
+
+    assert inversion.fast_chi_squared == pytest.approx(chi_squared, 1.0e-4)

@@ -15,7 +15,7 @@ except Exception:
     parallel = False
 
 
-def jit(nopython=nopython, cache=cache, parallel=parallel):
+def jit(nopython=nopython, cache=cache, parallel=parallel, fastmath=False):
 
     def wrapper(func):
 
@@ -23,7 +23,13 @@ def jit(nopython=nopython, cache=cache, parallel=parallel):
 
             import numba
 
-            return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
+            return numba.jit(
+                func,
+                nopython=nopython,
+                cache=cache,
+                parallel=parallel,
+                fastmath=fastmath,
+            )
 
         except ModuleNotFoundError:
 

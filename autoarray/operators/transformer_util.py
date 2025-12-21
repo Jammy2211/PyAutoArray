@@ -1,124 +1,6 @@
 import numpy as np
 
 
-def preload_real_transforms_from(
-    grid_radians: np.ndarray, uv_wavelengths: np.ndarray
-) -> np.ndarray:
-    """
-    Sets up the real preloaded values used by the direct Fourier transform (`TransformerDFT`) to speed up
-    the Fourier transform calculations.
-
-    The preloaded values are the cosine terms of every (y,x) radian coordinate on the real-space grid multiplied by
-    every `uv_wavelength` value.
-
-    For large numbers of visibilities (> 100000) this array requires large amounts of memory (> 1 GB) and it is
-    recommended this preloading is not used.
-
-    Parameters
-    ----------
-    grid_radians
-        The grid in radians corresponding to real-space mask within which the image that is Fourier transformed is
-        computed.
-    uv_wavelengths
-        The wavelengths of the coordinates in the uv-plane for the interferometer dataset that is to be Fourier
-        transformed.
-
-    Returns
-    -------
-    The preloaded values of the cosine terms in the calculation of real entries of the direct Fourier transform.
-    """
-    # Compute the phase matrix: shape (n_pixels, n_visibilities)
-    phase = (
-        -2.0
-        * np.pi
-        * (
-            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
-            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
-        )
-    )
-
-    # Compute cosine of the phase matrix
-    preloaded_real_transforms = np.cos(phase)
-
-    return preloaded_real_transforms
-
-
-def preload_imag_transforms_from(
-    grid_radians: np.ndarray, uv_wavelengths: np.ndarray
-) -> np.ndarray:
-    """
-    Sets up the imaginary preloaded values used by the direct Fourier transform (`TransformerDFT`) to speed up
-    the Fourier transform calculations in interferometric imaging.
-
-    The preloaded values are the sine terms of every (y,x) radian coordinate on the real-space grid multiplied by
-    every `uv_wavelength` value. These are used to compute the imaginary components of visibilities.
-
-    For large numbers of visibilities (> 100000), this array can require significant memory (> 1 GB), so preloading
-    should be used with care.
-
-    Parameters
-    ----------
-    grid_radians
-        The grid in radians corresponding to the (y,x) coordinates in real space.
-    uv_wavelengths
-        The (u,v) coordinates in the Fourier plane (in units of wavelengths).
-
-    Returns
-    -------
-    The sine term preloads used in imaginary-part DFT calculations.
-    """
-    # Compute the phase matrix: shape (n_pixels, n_visibilities)
-    phase = (
-        -2.0
-        * np.pi
-        * (
-            np.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
-            + np.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
-        )
-    )
-
-    # Compute sine of the phase matrix
-    preloaded_imag_transforms = np.sin(phase)
-
-    return preloaded_imag_transforms
-
-
-def visibilities_via_preload_from(
-    image_1d: np.ndarray,
-    preloaded_reals: np.ndarray,
-    preloaded_imags: np.ndarray,
-    xp=np,
-) -> np.ndarray:
-    """
-    Computes interferometric visibilities using preloaded real and imaginary DFT transform components.
-
-    This function performs a direct Fourier transform (DFT) using precomputed cosine (real) and sine (imaginary)
-    terms. It is used in radio astronomy to compute visibilities from an image for a given interferometric
-    observation setup.
-
-    Parameters
-    ----------
-    image_1d : ndarray of shape (n_pixels,)
-        The 1D image vector (real-space brightness values).
-    preloaded_reals : ndarray of shape (n_pixels, n_visibilities)
-        The preloaded cosine terms (real part of DFT matrix).
-    preloaded_imags : ndarray of shape (n_pixels, n_visibilities)
-        The preloaded sine terms (imaginary part of DFT matrix).
-
-    Returns
-    -------
-    visibilities : ndarray of shape (n_visibilities,)
-        The complex visibilities computed by summing over all pixels.
-    """
-    # Perform the dot product between the image and preloaded transform matrices
-    vis_real = xp.dot(image_1d, preloaded_reals)  # shape (n_visibilities,)
-    vis_imag = xp.dot(image_1d, preloaded_imags)  # shape (n_visibilities,)
-
-    visibilities = vis_real + 1j * vis_imag
-
-    return visibilities
-
-
 def visibilities_from(
     image_1d: np.ndarray, grid_radians: np.ndarray, uv_wavelengths: np.ndarray, xp=np
 ) -> np.ndarray:
@@ -211,87 +93,59 @@ def image_direct_from(
     return image_1d
 
 
-def transformed_mapping_matrix_via_preload_from(
-    mapping_matrix: np.ndarray, preloaded_reals: np.ndarray, preloaded_imags: np.ndarray
-) -> np.ndarray:
-    """
-    Computes the Fourier-transformed mapping matrix using preloaded sine and cosine terms for efficiency.
-
-    This function transforms each source pixel's mapping to visibilities by using precomputed
-    real (cosine) and imaginary (sine) terms from the direct Fourier transform.
-    It is used in radio interferometric imaging where source-to-image mappings are projected
-    into the visibility space.
-
-    Parameters
-    ----------
-    mapping_matrix
-        The mapping matrix from image-plane pixels to source-plane pixels.
-    preloaded_reals
-        Precomputed cosine terms for each pixel-vis pair: cos(-2π(yu + xv)).
-    preloaded_imags
-        Precomputed sine terms for each pixel-vis pair: sin(-2π(yu + xv)).
-
-    Returns
-    -------
-    Complex-valued matrix mapping source pixels to visibilities.
-    """
-
-    # Broadcasted multiplication and matrix multiplication over non-zero entries
-
-    vis_real = preloaded_reals.T @ mapping_matrix  # (n_visibilities, n_source_pixels)
-    vis_imag = preloaded_imags.T @ mapping_matrix
-
-    transformed_matrix = vis_real + 1j * vis_imag
-
-    return transformed_matrix
-
-
 def transformed_mapping_matrix_from(
-    mapping_matrix: np.ndarray,
-    grid_radians: np.ndarray,
-    uv_wavelengths: np.ndarray,
+    mapping_matrix,
+    grid_radians,
+    uv_wavelengths,
     xp=np,
-) -> np.ndarray:
+    chunk_size: int = 256,
+):
     """
-    Computes the Fourier-transformed mapping matrix used in radio interferometric imaging.
-
-    This function applies a direct Fourier transform to each pixel column of the mapping matrix using the
-    uv-wavelength coordinates. The result is a matrix that maps source pixel intensities to complex visibilities,
-    which represent how a model image would appear to an interferometer.
+    Computes the Fourier-transformed mapping matrix in chunks to avoid
+    materialising large (n_image_pixels x n_visibilities) arrays.
 
     Parameters
     ----------
-    mapping_matrix : ndarray of shape (n_image_pixels, n_source_pixels)
-        The mapping matrix from image-plane pixels to source-plane pixels.
-    grid_radians : ndarray of shape (n_image_pixels, 2)
-        The (y,x) positions of each image pixel in radians.
-    uv_wavelengths : ndarray of shape (n_visibilities, 2)
-        The (u,v) coordinates of the sampled Fourier modes in units of wavelength.
+    mapping_matrix : (n_image_pixels, n_source_pixels)
+    grid_radians : (n_image_pixels, 2)
+    uv_wavelengths : (n_visibilities, 2)
+    xp : np or jax.numpy
+    chunk_size : int
+        Number of visibilities per chunk.
 
     Returns
     -------
-    transformed_matrix : ndarray of shape (n_visibilities, n_source_pixels)
-        The transformed mapping matrix in the visibility domain (complex-valued).
+    transformed_matrix : (n_visibilities, n_source_pixels), complex
     """
-    # Compute phase term: (n_image_pixels, n_visibilities)
-    phase = (
-        -2.0
-        * xp.pi
-        * (
-            xp.outer(grid_radians[:, 1], uv_wavelengths[:, 0])  # y * u
-            + xp.outer(grid_radians[:, 0], uv_wavelengths[:, 1])  # x * v
+    n_vis = uv_wavelengths.shape[0]
+    n_src = mapping_matrix.shape[1]
+
+    # Preallocate output (this is small enough to be safe)
+    transformed = xp.zeros((n_vis, n_src), dtype=xp.complex128)
+
+    y = grid_radians[:, 1]  # (n_image_pixels,)
+    x = grid_radians[:, 0]
+
+    for i0 in range(0, n_vis, chunk_size):
+        i1 = min(i0 + chunk_size, n_vis)
+
+        uv_chunk = uv_wavelengths[i0:i1]  # (chunk, 2)
+
+        # phase: (n_image_pixels, chunk)
+        phase = (
+            -2.0 * xp.pi * (xp.outer(y, uv_chunk[:, 0]) + xp.outer(x, uv_chunk[:, 1]))
         )
-    )
 
-    # Compute real and imaginary Fourier matrices
-    fourier_real = xp.cos(phase)
-    fourier_imag = xp.sin(phase)
+        # Compute Fourier response for this chunk
+        fourier = xp.cos(phase) + 1j * xp.sin(phase)  # (n_img, chunk)
 
-    # Only compute contributions from non-zero mapping entries
-    # This matrix multiplication is: (n_visibilities x n_image_pixels) dot (n_image_pixels x n_source_pixels)
-    vis_real = fourier_real.T @ mapping_matrix  # (n_vis, n_src)
-    vis_imag = fourier_imag.T @ mapping_matrix  # (n_vis, n_src)
+        # Accumulate: (chunk, n_src)
+        vis_chunk = fourier.T @ mapping_matrix
 
-    transformed_matrix = vis_real + 1j * vis_imag
+        # Write back
+        if xp.__name__.startswith("jax"):
+            transformed = transformed.at[i0:i1, :].set(vis_chunk)
+        else:
+            transformed[i0:i1, :] = vis_chunk
 
-    return transformed_matrix
+    return transformed

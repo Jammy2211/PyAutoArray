@@ -68,7 +68,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.operated_mapping_matrix,
             visibilities=self.data,
-            noise_map=np.array(self.noise_map),
+            noise_map=self.noise_map,
         )
 
     @property

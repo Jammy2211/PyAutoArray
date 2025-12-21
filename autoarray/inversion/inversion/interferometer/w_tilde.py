@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Union
 
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
@@ -12,8 +12,8 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.visibilities import Visibilities
 
-from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
+
 
 from autoarray import exc
 
@@ -53,18 +53,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         """
-
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
         self.w_tilde = w_tilde
 
         super().__init__(
@@ -90,7 +78,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         The calculation is described in more detail in `inversion_util.w_tilde_data_interferometer_from`.
         """
-        return np.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
+        return self._xp.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
 
     @property
     def curvature_matrix(self) -> np.ndarray:
@@ -119,46 +107,14 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         This function computes the diagonal terms of F using the w_tilde formalism.
         """
 
-        if self.settings.use_w_tilde_numpy:
-            return inversion_util.curvature_matrix_via_w_tilde_from(
-                w_tilde=self.w_tilde.w_matrix,
-                mapping_matrix=self.mapping_matrix,
-                xp=self._xp,
-            )
-
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
-        if not self.settings.use_source_loop:
-            return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
-                curvature_preload=self.w_tilde.curvature_preload,
-                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-                pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
-                pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-                native_index_for_slim_index=np.array(
-                    self.transformer.real_space_mask.derive_indexes.native_for_slim
-                ).astype("int"),
-                pix_pixels=self.linear_obj_list[0].params,
-            )
-
-        (
-            sub_slim_indexes_for_pix_index,
-            sub_slim_sizes_for_pix_index,
-            sub_slim_weights_for_pix_index,
-        ) = inversion_interferometer_util.sub_slim_indexes_for_pix_index(
+        return inversion_interferometer_util.curvature_matrix_via_w_tilde_interferometer_from(
+            fft_state=self.w_tilde.fft_state,
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-            pix_pixels=mapper.pixels,
-        )
-
-        return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
-            curvature_preload=self.w_tilde.curvature_preload,
-            native_index_for_slim_index=np.array(
-                self.transformer.real_space_mask.derive_indexes.native_for_slim
-            ).astype("int"),
             pix_pixels=self.linear_obj_list[0].params,
-            sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index.astype("int"),
-            sub_slim_sizes_for_pix_index=sub_slim_sizes_for_pix_index.astype("int"),
-            sub_slim_weights_for_pix_index=sub_slim_weights_for_pix_index,
+            rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index,
         )
 
     @property
@@ -194,7 +150,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         for linear_obj in self.linear_obj_list:
             visibilities = self.transformer.visibilities_from(
-                image=image_dict[linear_obj]
+                image=image_dict[linear_obj], xp=self._xp
             )
 
             visibilities = Visibilities(visibilities=visibilities)

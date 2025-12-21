@@ -121,3 +121,31 @@ class AbstractInversionInterferometer(AbstractInversion):
             mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
 
         return mapped_reconstructed_image_dict
+
+    @property
+    def fast_chi_squared(self):
+
+        xp = self._xp
+
+        chi_squared_term_1 = xp.linalg.multi_dot(
+            [
+                self.reconstruction.T,  # (M,)
+                self.curvature_matrix,  # (M, M)
+                self.reconstruction,  # (M,)
+            ]
+        )
+
+        chi_squared_term_2 = -2.0 * xp.linalg.multi_dot(
+            [
+                self.reconstruction.T,  # (M,)
+                self.data_vector,  # (M,)
+            ]
+        )
+
+        chi_squared_term_3 = xp.sum(
+            self.dataset.data.array.real**2.0 / self.dataset.noise_map.array.real**2.0
+        ) + xp.sum(
+            self.dataset.data.array.imag**2.0 / self.dataset.noise_map.array.imag**2.0
+        )
+
+        return chi_squared_term_1 + chi_squared_term_2 + chi_squared_term_3
