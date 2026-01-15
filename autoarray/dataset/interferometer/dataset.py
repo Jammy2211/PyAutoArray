@@ -212,7 +212,7 @@ class Interferometer(AbstractDataset):
         w_tilde = WTildeInterferometer(
             curvature_preload=curvature_preload,
             dirty_image=dirty_image.array,
-            real_space_mask=self.real_space_mask,
+            fft_mask=self.real_space_mask,
             batch_size=batch_size,
         )
 

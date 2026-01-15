@@ -522,7 +522,7 @@ class Imaging(AbstractDataset):
             lengths=lengths.astype("int"),
             noise_map=self.noise_map,
             psf=self.psf,
-            mask=self.mask,
+            fft_mask=self.mask,
         )
 
         return Imaging(

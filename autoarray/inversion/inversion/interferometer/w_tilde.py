@@ -114,7 +114,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=self.linear_obj_list[0].params,
-            rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index,
+            fft_index_for_masked_pixel=self.w_tilde.fft_index_for_masked_pixel,
         )
 
     @property

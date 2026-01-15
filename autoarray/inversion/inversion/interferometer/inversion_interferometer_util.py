@@ -364,7 +364,7 @@ def curvature_matrix_via_w_tilde_interferometer_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index: np.ndarray,
     pix_pixels: int,
-    rect_index_for_mask_index: np.ndarray,
+    fft_index_for_masked_pixel: np.ndarray,
 ):
     """
     Compute curvature matrix for an interferometer inversion using a precomputed FFT state.
@@ -462,5 +462,5 @@ def curvature_matrix_via_w_tilde_interferometer_from(
     return _curvature_rect_jax(
         pix_indexes_for_sub_slim_index,
         pix_weights_for_sub_slim_index,
-        rect_index_for_mask_index,
+        fft_index_for_masked_pixel,
     )

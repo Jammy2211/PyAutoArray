@@ -17,7 +17,7 @@ class WTildeImaging(AbstractWTilde):
         lengths: np.ndarray,
         noise_map: np.ndarray,
         psf: np.ndarray,
-        mask: np.ndarray,
+        fft_mask: np.ndarray,
     ):
         """
         Packages together all derived data quantities necessary to fit `Imaging` data using an ` Inversion` via the
@@ -40,14 +40,13 @@ class WTildeImaging(AbstractWTilde):
             matrix efficienctly.
         """
         super().__init__(
-            curvature_preload=curvature_preload,
+            curvature_preload=curvature_preload, fft_mask=fft_mask
         )
 
         self.indexes = indexes
         self.lengths = lengths
         self.noise_map = noise_map
         self.psf = psf
-        self.mask = mask
 
     @property
     def w_matrix(self):
