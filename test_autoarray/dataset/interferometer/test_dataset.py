@@ -4,6 +4,7 @@ from os import path
 import shutil
 
 import autoarray as aa
+import pytest
 
 from autoarray.operators import transformer
 
@@ -148,3 +149,54 @@ def test__different_interferometer_without_mock_objects__customize_constructor_i
     assert (dataset.data == 1.0 + 1.0j * np.ones((19,))).all()
     assert (dataset.noise_map == 2.0 + 2.0j * np.ones((19,))).all()
     assert (dataset.uv_wavelengths == 3.0 * np.ones((19, 2))).all()
+
+
+def test__curvature_preload_metadata_from(
+        visibilities_7,
+        visibilities_noise_map_7,
+        uv_wavelengths_7x2,
+        mask_2d_7x7,
+):
+
+    dataset = aa.Interferometer(
+        data=visibilities_7,
+        noise_map=visibilities_noise_map_7,
+        uv_wavelengths=uv_wavelengths_7x2,
+        real_space_mask=mask_2d_7x7,
+    )
+
+    dataset = dataset.apply_w_tilde(use_jax=False)
+
+    file = f"{test_data_path}/curvature_preload_metadata"
+
+    dataset.w_tilde.save_curvature_preload(
+        file=file,
+        overwrite=True,
+    )
+
+    curvature_preload = aa.load_curvature_preload_if_compatible(
+        file=file,
+        real_space_mask=dataset.real_space_mask
+    )
+
+    real_space_mask_changed = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, True, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    real_space_mask_changed = aa.Mask2D(mask=real_space_mask_changed, pixel_scales=(1.0, 1.0))
+
+    with pytest.raises(ValueError):
+
+        curvature_preload = aa.load_curvature_preload_if_compatible(
+            file=file,
+            real_space_mask=real_space_mask_changed
+        )
+
