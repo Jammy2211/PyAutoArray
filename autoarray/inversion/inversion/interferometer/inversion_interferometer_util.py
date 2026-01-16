@@ -405,7 +405,7 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
     idx = jnp.arange(chunk_k)
 
 
-    def _compute_all_quadrants(gy, gx):
+    def _compute_all_quadrants(gy, gx, *, chunk_k: int):
         # Corner coordinates
         y00, x00 = gy[0, 0], gx[0, 0]
         y0m, x0m = gy[0, x_shape - 1], gx[0, x_shape - 1]
@@ -457,11 +457,9 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
 
         return out
 
-    # JIT it here (explicit) rather than using @jax.jit above the nested definition.
-    # This avoids some “new function object per call” weirdness and makes caching explicit.
-    _compute_all_quadrants_jit = jax.jit(_compute_all_quadrants)
+    _compute_all_quadrants_jit = jax.jit(_compute_all_quadrants, static_argnames=("chunk_k",))
 
-    out = _compute_all_quadrants_jit(gy, gx)
+    out = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
     return np.asarray(out)
 
 
