@@ -193,7 +193,7 @@ class Interferometer(AbstractDataset):
 
         if curvature_preload is None:
 
-            logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+            logger.info("INTERFEROMETER – Computing W-Tilde; runtime scales with visibility count and mask resolution, extreme inputs may exceed hours.")
 
             curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
                 noise_map_real=self.noise_map.array.real,

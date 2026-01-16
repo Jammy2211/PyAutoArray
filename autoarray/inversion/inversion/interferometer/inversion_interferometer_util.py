@@ -3,6 +3,7 @@ import logging
 import numpy as np
 from tqdm import tqdm
 import os
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -263,7 +264,6 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     if chunk_k <= 0:
         raise ValueError("chunk_k must be a positive integer")
 
-    # Enforce float64 everywhere (matches your original implementation)
     noise_map_real = np.asarray(noise_map_real, dtype=np.float64)
     uv_wavelengths = np.asarray(uv_wavelengths, dtype=np.float64)
     grid_radians_2d = np.asarray(grid_radians_2d, dtype=np.float64)
@@ -274,8 +274,9 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     gx = grid[..., 1]
 
     K = uv_wavelengths.shape[0]
+    n_chunks = (K + chunk_k - 1) // chunk_k
 
-    w = 1.0 / (noise_map_real**2)
+    w = 1.0 / (noise_map_real ** 2)
     ku = 2.0 * np.pi * uv_wavelengths[:, 0]
     kv = 2.0 * np.pi * uv_wavelengths[:, 1]
 
@@ -287,30 +288,43 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     ym0, xm0 = gy[y_shape - 1, 0], gx[y_shape - 1, 0]
     ymm, xmm = gy[y_shape - 1, x_shape - 1], gx[y_shape - 1, x_shape - 1]
 
-    def accum_from_corner_np(y_ref, x_ref, gy_block, gx_block, label=""):
+    # -------------------------------------------------
+    # Set up a single global progress bar
+    # -------------------------------------------------
+    pbar = None
+    if show_progress:
+        try:
+            from tqdm import tqdm  # type: ignore
+
+            n_quadrants = 1
+            if x_shape > 1:
+                n_quadrants += 1
+            if y_shape > 1:
+                n_quadrants += 1
+            if (y_shape > 1) and (x_shape > 1):
+                n_quadrants += 1
+
+            pbar = tqdm(
+                total=n_chunks * n_quadrants,
+                desc="Accumulating visibilities (W-tilde preload)",
+            )
+        except Exception:
+            pbar = None
+
+    def accum_from_corner_np(y_ref, x_ref, gy_block, gx_block):
         dy = y_ref - gy_block
         dx = x_ref - gx_block
 
         acc = np.zeros(gy_block.shape, dtype=np.float64)
 
-        iterator = range(0, K, chunk_k)
-        if show_progress:
-            try:
-                from tqdm import tqdm  # type: ignore
-
-                iterator = tqdm(
-                    iterator,
-                    desc=f"Accumulating visibilities {label}",
-                    total=(K + chunk_k - 1) // chunk_k,
-                )
-            except Exception:
-                pass  # tqdm not installed; silently fall back
-
-        for k0 in iterator:
+        for k0 in range(0, K, chunk_k):
             k1 = min(K, k0 + chunk_k)
 
             phase = dx[..., None] * ku[k0:k1] + dy[..., None] * kv[k0:k1]
             acc += np.sum(np.cos(phase) * w[k0:k1], axis=2)
+
+            if pbar is not None:
+                pbar.update(1)
 
             if show_memory and show_progress and "_report_memory" in globals():
                 try:
@@ -323,30 +337,31 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     # -----------------------------
     # Main quadrant (+,+)
     # -----------------------------
-    out[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx, label="(+,+)")
+    out[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx)
 
     # -----------------------------
     # Flip in x (+,-)
     # -----------------------------
     if x_shape > 1:
-        block = accum_from_corner_np(y0m, x0m, gy[:, ::-1], gx[:, ::-1], label="(+,-)")
+        block = accum_from_corner_np(y0m, x0m, gy[:, ::-1], gx[:, ::-1])
         out[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
 
     # -----------------------------
     # Flip in y (-,+)
     # -----------------------------
     if y_shape > 1:
-        block = accum_from_corner_np(ym0, xm0, gy[::-1, :], gx[::-1, :], label="(-,+)")
+        block = accum_from_corner_np(ym0, xm0, gy[::-1, :], gx[::-1, :])
         out[-1:-(y_shape):-1, :x_shape] = block[1:, :]
 
     # -----------------------------
     # Flip in x and y (-,-)
     # -----------------------------
     if (y_shape > 1) and (x_shape > 1):
-        block = accum_from_corner_np(
-            ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1], label="(-,-)"
-        )
+        block = accum_from_corner_np(ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1])
         out[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
+
+    if pbar is not None:
+        pbar.close()
 
     return out
 
@@ -466,7 +481,13 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
         _compute_all_quadrants, static_argnames=("chunk_k",)
     )
 
+    t0 = time.time()
     out = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
+    out.block_until_ready()  # ensure timing includes actual device execution
+    t1 = time.time()
+
+    logger.info("INTERFEROMETER - Finished W-Tilde (JAX) in %.3f seconds", (t1 - t0))
+
     return np.asarray(out)
 
 
