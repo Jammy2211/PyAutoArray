@@ -152,10 +152,10 @@ def test__different_interferometer_without_mock_objects__customize_constructor_i
 
 
 def test__curvature_preload_metadata_from(
-        visibilities_7,
-        visibilities_noise_map_7,
-        uv_wavelengths_7x2,
-        mask_2d_7x7,
+    visibilities_7,
+    visibilities_noise_map_7,
+    uv_wavelengths_7x2,
+    mask_2d_7x7,
 ):
 
     dataset = aa.Interferometer(
@@ -175,8 +175,7 @@ def test__curvature_preload_metadata_from(
     )
 
     curvature_preload = aa.load_curvature_preload_if_compatible(
-        file=file,
-        real_space_mask=dataset.real_space_mask
+        file=file, real_space_mask=dataset.real_space_mask
     )
 
     real_space_mask_changed = np.array(
@@ -191,12 +190,12 @@ def test__curvature_preload_metadata_from(
         ]
     )
 
-    real_space_mask_changed = aa.Mask2D(mask=real_space_mask_changed, pixel_scales=(1.0, 1.0))
+    real_space_mask_changed = aa.Mask2D(
+        mask=real_space_mask_changed, pixel_scales=(1.0, 1.0)
+    )
 
     with pytest.raises(ValueError):
 
         curvature_preload = aa.load_curvature_preload_if_compatible(
-            file=file,
-            real_space_mask=real_space_mask_changed
+            file=file, real_space_mask=real_space_mask_changed
         )
-
