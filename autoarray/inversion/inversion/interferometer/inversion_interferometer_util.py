@@ -76,6 +76,7 @@ def _report_memory(arr):
     except Exception:
         pass
 
+
 def w_tilde_curvature_preload_interferometer_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
@@ -342,7 +343,9 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     # Flip in x and y (-,-)
     # -----------------------------
     if (y_shape > 1) and (x_shape > 1):
-        block = accum_from_corner_np(ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1], label="(-,-)")
+        block = accum_from_corner_np(
+            ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1], label="(-,-)"
+        )
         out[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
 
     return out
@@ -404,7 +407,6 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
     # A fixed [chunk_k] index vector used to mask the padded tail (last chunk).
     idx = jnp.arange(chunk_k)
 
-
     def _compute_all_quadrants(gy, gx, *, chunk_k: int):
         # Corner coordinates
         y00, x00 = gy[0, 0], gx[0, 0]
@@ -430,7 +432,10 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
                 valid = (idx + k0) < K
                 w_s = jnp.where(valid, w_s, 0.0)
 
-                phase = dx[..., None] * ku_s[None, None, :] + dy[..., None] * kv_s[None, None, :]
+                phase = (
+                    dx[..., None] * ku_s[None, None, :]
+                    + dy[..., None] * kv_s[None, None, :]
+                )
                 return acc_ + jnp.sum(jnp.cos(phase) * w_s[None, None, :], axis=2)
 
             return jax.lax.fori_loop(0, n_chunks, body, acc)
@@ -457,11 +462,12 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
 
         return out
 
-    _compute_all_quadrants_jit = jax.jit(_compute_all_quadrants, static_argnames=("chunk_k",))
+    _compute_all_quadrants_jit = jax.jit(
+        _compute_all_quadrants, static_argnames=("chunk_k",)
+    )
 
     out = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
     return np.asarray(out)
-
 
 
 def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):

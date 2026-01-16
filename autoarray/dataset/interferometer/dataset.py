@@ -202,7 +202,7 @@ class Interferometer(AbstractDataset):
                 grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
                 show_memory=show_memory,
                 show_progress=show_progress,
-                use_jax=use_jax
+                use_jax=use_jax,
             )
 
         dirty_image = self.transformer.image_from(
