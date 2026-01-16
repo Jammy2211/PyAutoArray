@@ -76,7 +76,6 @@ def _report_memory(arr):
     except Exception:
         pass
 
-
 def w_tilde_curvature_preload_interferometer_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
@@ -86,82 +85,130 @@ def w_tilde_curvature_preload_interferometer_from(
     chunk_k: int = 2048,
     show_progress: bool = False,
     show_memory: bool = False,
+    use_jax: bool = False,
 ) -> np.ndarray:
     """
-    The matrix w_tilde is a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels] that encodes the
-    NUFFT of every pair of image pixels given the noise map. This can be used to efficiently compute the curvature
-    matrix via the mapping matrix, in a way that omits having to perform the NUFFT on every individual source pixel.
-    This provides a significant speed up for inversions of interferometer datasets with large number of visibilities.
+     Compute the interferometer W-tilde curvature preload on a rectangular offset grid,
+     exploiting translational symmetry of the NUFFT kernel.
 
-    The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
-    making it impossible to store in memory and its use in linear algebra calculations extremely. This methods creates
-    a preload matrix that can compute the matrix w_tilde via an efficient preloading scheme which exploits the
-    symmetries in the NUFFT.
+     This function computes a compact 2D preload array that depends only on the relative
+     (dy, dx) offsets between image pixels, avoiding construction of the dense
+     W-tilde matrix of shape [N_image_pixels, N_image_pixels].
 
-    To compute w_tilde, one first defines a real space mask where every False entry is an unmasked pixel which is
-    used in the calculation, for example:
+     The result can be used to rapidly assemble or apply W-tilde during curvature
+     matrix construction without performing a NUFFT per source pixel.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
-        IxIxIxIoIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
-        IxIxIxIoIoIoIxIxIxIxI
-        IxIxIxIoIoIoIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+     -------------------------------------------------------------------------------
+     Backend behaviour
+     -------------------------------------------------------------------------------
+     - NumPy backend (use_jax=False, default):
+         * CPU execution
+         * Explicit Python loop over visibility chunks
+         * Supports progress bars and optional memory reporting
+         * Numerically closest to the original reference implementation
 
+     - JAX backend (use_jax=True):
+         * JIT-compilable and GPU/TPU capable
+         * Uses fixed-size chunking and lax.fori_loop
+         * No Python-side loops during execution
+         * Progress bars and memory reporting are disabled
+         * Floating-point results are numerically stable but not guaranteed to be
+           bitwise-identical to NumPy due to parallel reduction order
 
-    Here, there are 9 unmasked pixels. Indexing of each unmasked pixel goes from the top-left corner right and
-    downwards, therefore:
+     -------------------------------------------------------------------------------
+     Numerical notes
+     -------------------------------------------------------------------------------
+     The preload values are computed as:
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxI0I1I2IxIxIxIxI
-        IxIxIxI3I4I5IxIxIxIxI
-        IxIxIxI6I7I8IxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         sum_k w_k * cos(dx * ku_k + dy * kv_k)
 
-    In the standard calculation of `w_tilde` it is a matrix of
-    dimensions [unmasked_image_pixels, unmasked_pixel_images], therefore for the example mask above it would be
-    dimensions [9, 9]. One performs a double for loop over `unmasked_image_pixels`, using the (y,x) spatial offset
-    between every possible pair of unmasked image pixels to precompute values that depend on the properties of the NUFFT.
+     where ku_k = 2π u_k and kv_k = 2π v_k. This corresponds to the real part of the
+     adjoint NUFFT evaluated on a uniform real-space offset grid.
 
-    This calculation has a lot of redundancy, because it uses the (y,x) *spatial offset* between the image pixels. For
-    example, if two image pixel are next to one another by the same spacing the same value will be computed via the
-    NUFFT. For the example mask above:
+     The chunking strategy controls temporary memory usage and GPU occupancy. Changing
+     `chunk_k` in JAX mode triggers recompilation.
 
-    - The value precomputed for pixel pair [0,1] is the same as pixel pairs [1,2], [3,4], [4,5], [6,7] and [7,9].
-    - The value precomputed for pixel pair [0,3] is the same as pixel pairs [1,4], [2,5], [3,6], [4,7] and [5,8].
-    - The values of pixels paired with themselves are also computed repeatedly for the standard calculation (e.g. 9
-    times using the mask above).
+     -------------------------------------------------------------------------------
+     Full Description (Original Documentation)
+     -------------------------------------------------------------------------------
+     The matrix w_tilde is a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels] that encodes the
+     NUFFT of every pair of image pixels given the noise map. This can be used to efficiently compute the curvature
+     matrix via the mapping matrix, in a way that omits having to perform the NUFFT on every individual source pixel.
+     This provides a significant speed up for inversions of interferometer datasets with large number of visibilities.
 
-    The `curvature_preload` method instead only computes each value once. To do this, it stores the preload values in a
-    matrix of dimensions [shape_masked_pixels_y, shape_masked_pixels_x, 2], where `shape_masked_pixels` is the (y,x)
-    size of the vertical and horizontal extent of unmasked pixels, e.g. the spatial extent over which the real space
-    grid extends.
+     The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
+     making it impossible to store in memory and its use in linear algebra calculations extremely. This methods creates
+     a preload matrix that can compute the matrix w_tilde via an efficient preloading scheme which exploits the
+     symmetries in the NUFFT.
 
-    Each entry in the matrix `curvature_preload[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
-    to a pixel offset by that much in the y and x directions, for example:
+     To compute w_tilde, one first defines a real space mask where every False entry is an unmasked pixel which is
+     used in the calculation, for example:
 
-    - curvature_preload[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
-    in the x direction by 0 - the values of pixels paired with themselves.
-    - curvature_preload[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
-    in the x direction by 0 - the values of pixel pairs [0,3], [1,4], [2,5], [3,6], [4,7] and [5,8]
-    - curvature_preload[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
-    in the x direction by 1 - the values of pixel pairs [0,1], [1,2], [3,4], [4,5], [6,7] and [7,9].
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
+         IxIxIxIoIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
+         IxIxIxIoIoIoIxIxIxIxI
+         IxIxIxIoIoIoIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
 
-    Flipped pairs:
+     Here, there are 9 unmasked pixels. Indexing of each unmasked pixel goes from the top-left corner right and
+     downwards, therefore:
 
-    The above preloaded values pair all image pixel NUFFT values when a pixel is to the right and / or down of the
-    first image pixel. However, one must also precompute pairs where the paired pixel is to the left of the host
-    pixels. These pairings are stored in `curvature_preload[:,:,1]`, and the ordering of these pairings is flipped in the
-    x direction to make it straight forward to use this matrix when computing w_tilde.
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxI0I1I2IxIxIxIxI
+         IxIxIxI3I4I5IxIxIxIxI
+         IxIxIxI6I7I8IxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+         IxIxIxIxIxIxIxIxIxIxI
+
+     In the standard calculation of `w_tilde` it is a matrix of
+     dimensions [unmasked_image_pixels, unmasked_pixel_images], therefore for the example mask above it would be
+     dimensions [9, 9]. One performs a double for loop over `unmasked_image_pixels`, using the (y,x) spatial offset
+     between every possible pair of unmasked image pixels to precompute values that depend on the properties of the NUFFT.
+
+     This calculation has a lot of redundancy, because it uses the (y,x) *spatial offset* between the image pixels. For
+     example, if two image pixel are next to one another by the same spacing the same value will be computed via the
+     NUFFT. For the example mask above:
+
+     - The value precomputed for pixel pair [0,1] is the same as pixel pairs [1,2], [3,4], [4,5], [6,7] and [7,9].
+     - The value precomputed for pixel pair [0,3] is the same as pixel pairs [1,4], [2,5], [3,6], [4,7] and [5,8].
+     - The values of pixels paired with themselves are also computed repeatedly for the standard calculation (e.g. 9
+       times using the mask above).
+
+     The `curvature_preload` method instead only computes each value once. To do this, it stores the preload values in a
+     matrix of dimensions [shape_masked_pixels_y, shape_masked_pixels_x, 2], where `shape_masked_pixels` is the (y,x)
+     size of the vertical and horizontal extent of unmasked pixels, e.g. the spatial extent over which the real space
+     grid extends.
+
+     Each entry in the matrix `curvature_preload[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
+     to a pixel offset by that much in the y and x directions, for example:
+
+     - curvature_preload[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+       in the x direction by 0 - the values of pixels paired with themselves.
+     - curvature_preload[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
+       in the x direction by 0 - the values of pixel pairs [0,3], [1,4], [2,5], [3,6], [4,7] and [5,8]
+     - curvature_preload[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+       in the x direction by 1 - the values of pixel pairs [0,1], [1,2], [3,4], [4,5], [6,7] and [7,9].
+
+     Flipped pairs:
+
+     The above preloaded values pair all image pixel NUFFT values when a pixel is to the right and / or down of the
+     first image pixel. However, one must also precompute pairs where the paired pixel is to the left of the host
+     pixels. These pairings are stored in `curvature_preload[:,:,1]`, and the ordering of these pairings is flipped in the
+     x direction to make it straight forward to use this matrix when computing w_tilde.
+
+    Notes
+    -----
+    - If use_jax=True, the JAX implementation is used (requires JAX installed).
+    - If use_jax=False, the NumPy implementation is used.
 
     Parameters
     ----------
@@ -176,15 +223,46 @@ def w_tilde_curvature_preload_interferometer_from(
     grid_radians_2d
         The 2D (y,x) grid of coordinates in radians corresponding to real-space mask within which the image that is
         Fourier transformed is computed.
-
-    Returns
-    -------
-    ndarray
-        A matrix that precomputes the values for fast computation of w_tilde.
     """
-    # -----------------------------
-    # Enforce float64 everywhere
-    # -----------------------------
+    if use_jax:
+        return w_tilde_curvature_preload_interferometer_via_jax_from(
+            noise_map_real=noise_map_real,
+            uv_wavelengths=uv_wavelengths,
+            shape_masked_pixels_2d=shape_masked_pixels_2d,
+            grid_radians_2d=grid_radians_2d,
+            chunk_k=chunk_k,
+        )
+
+    return w_tilde_curvature_preload_interferometer_via_np_from(
+        noise_map_real=noise_map_real,
+        uv_wavelengths=uv_wavelengths,
+        shape_masked_pixels_2d=shape_masked_pixels_2d,
+        grid_radians_2d=grid_radians_2d,
+        chunk_k=chunk_k,
+        show_progress=show_progress,
+        show_memory=show_memory,
+    )
+
+
+def w_tilde_curvature_preload_interferometer_via_np_from(
+    noise_map_real: np.ndarray,
+    uv_wavelengths: np.ndarray,
+    shape_masked_pixels_2d,
+    grid_radians_2d: np.ndarray,
+    *,
+    chunk_k: int = 2048,
+    show_progress: bool = False,
+    show_memory: bool = False,
+) -> np.ndarray:
+    """
+    NumPy/CPU implementation of the interferometer W-tilde curvature preload.
+
+    See `w_tilde_curvature_preload_interferometer_from` for full description.
+    """
+    if chunk_k <= 0:
+        raise ValueError("chunk_k must be a positive integer")
+
+    # Enforce float64 everywhere (matches your original implementation)
     noise_map_real = np.asarray(noise_map_real, dtype=np.float64)
     uv_wavelengths = np.asarray(uv_wavelengths, dtype=np.float64)
     grid_radians_2d = np.asarray(grid_radians_2d, dtype=np.float64)
@@ -208,7 +286,7 @@ def w_tilde_curvature_preload_interferometer_from(
     ym0, xm0 = gy[y_shape - 1, 0], gx[y_shape - 1, 0]
     ymm, xmm = gy[y_shape - 1, x_shape - 1], gx[y_shape - 1, x_shape - 1]
 
-    def accum_from_corner(y_ref, x_ref, gy_block, gx_block, label=""):
+    def accum_from_corner_np(y_ref, x_ref, gy_block, gx_block, label=""):
         dy = y_ref - gy_block
         dx = x_ref - gx_block
 
@@ -216,55 +294,176 @@ def w_tilde_curvature_preload_interferometer_from(
 
         iterator = range(0, K, chunk_k)
         if show_progress:
-            iterator = tqdm(
-                iterator,
-                desc=f"Accumulating visibilities {label}",
-                total=(K + chunk_k - 1) // chunk_k,
-            )
+            try:
+                from tqdm import tqdm  # type: ignore
+
+                iterator = tqdm(
+                    iterator,
+                    desc=f"Accumulating visibilities {label}",
+                    total=(K + chunk_k - 1) // chunk_k,
+                )
+            except Exception:
+                pass  # tqdm not installed; silently fall back
 
         for k0 in iterator:
             k1 = min(K, k0 + chunk_k)
 
             phase = dx[..., None] * ku[k0:k1] + dy[..., None] * kv[k0:k1]
-            acc += np.sum(
-                np.cos(phase) * w[k0:k1],
-                axis=2,
-            )
+            acc += np.sum(np.cos(phase) * w[k0:k1], axis=2)
 
-            if show_memory and show_progress:
-                _report_memory(acc)
+            if show_memory and show_progress and "_report_memory" in globals():
+                try:
+                    globals()["_report_memory"](acc)
+                except Exception:
+                    pass
 
         return acc
 
     # -----------------------------
     # Main quadrant (+,+)
     # -----------------------------
-    out[:y_shape, :x_shape] = accum_from_corner(y00, x00, gy, gx, label="(+,+)")
+    out[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx, label="(+,+)")
 
     # -----------------------------
     # Flip in x (+,-)
     # -----------------------------
     if x_shape > 1:
-        block = accum_from_corner(y0m, x0m, gy[:, ::-1], gx[:, ::-1], label="(+,-)")
+        block = accum_from_corner_np(y0m, x0m, gy[:, ::-1], gx[:, ::-1], label="(+,-)")
         out[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
 
     # -----------------------------
     # Flip in y (-,+)
     # -----------------------------
     if y_shape > 1:
-        block = accum_from_corner(ym0, xm0, gy[::-1, :], gx[::-1, :], label="(-,+)")
+        block = accum_from_corner_np(ym0, xm0, gy[::-1, :], gx[::-1, :], label="(-,+)")
         out[-1:-(y_shape):-1, :x_shape] = block[1:, :]
 
     # -----------------------------
     # Flip in x and y (-,-)
     # -----------------------------
     if (y_shape > 1) and (x_shape > 1):
-        block = accum_from_corner(
-            ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1], label="(-,-)"
-        )
+        block = accum_from_corner_np(ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1], label="(-,-)")
         out[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
 
     return out
+
+
+def w_tilde_curvature_preload_interferometer_via_jax_from(
+    noise_map_real: np.ndarray,
+    uv_wavelengths: np.ndarray,
+    shape_masked_pixels_2d,
+    grid_radians_2d: np.ndarray,
+    *,
+    chunk_k: int = 2048,
+) -> np.ndarray:
+    """
+    JAX implementation of the interferometer W-tilde curvature preload.
+
+    This version is intended for performance (CPU/GPU/TPU) and therefore:
+      - uses JIT compilation internally
+      - uses a compiled for-loop (lax.fori_loop) over fixed-size visibility chunks
+      - does not support progress bars or memory reporting (those require Python loops)
+
+    See `w_tilde_curvature_preload_interferometer_from` for full description.
+    """
+    import jax
+    import jax.numpy as jnp
+
+    if chunk_k <= 0:
+        raise ValueError("chunk_k must be a positive integer")
+
+    y_shape, x_shape = shape_masked_pixels_2d
+
+    # Device arrays; keep float64 to match NumPy path as closely as possible.
+    noise_map_real_x = jnp.asarray(noise_map_real, dtype=jnp.float64)
+    uv_wavelengths_x = jnp.asarray(uv_wavelengths, dtype=jnp.float64)
+    grid_radians_2d_x = jnp.asarray(grid_radians_2d, dtype=jnp.float64)
+
+    # Precompute weights and angular frequencies on device
+    w_x = 1.0 / (noise_map_real_x**2)
+    ku_x = 2.0 * jnp.pi * uv_wavelengths_x[:, 0]
+    kv_x = 2.0 * jnp.pi * uv_wavelengths_x[:, 1]
+
+    grid = grid_radians_2d_x[:y_shape, :x_shape]
+    gy = grid[..., 0]
+    gx = grid[..., 1]
+
+    # -----------------------------
+    # IMPORTANT: pad so dynamic_slice(chunk_k) is always legal
+    # -----------------------------
+    K = int(uv_wavelengths_x.shape[0])  # known at trace/compile time
+    n_chunks = (K + chunk_k - 1) // chunk_k
+    K_pad = n_chunks * chunk_k
+    pad_len = K_pad - K
+
+    if pad_len > 0:
+        ku_x = jnp.pad(ku_x, (0, pad_len))
+        kv_x = jnp.pad(kv_x, (0, pad_len))
+        w_x = jnp.pad(w_x, (0, pad_len))
+
+    # A fixed [chunk_k] index vector used to mask the padded tail (last chunk).
+    idx = jnp.arange(chunk_k)
+
+
+    def _compute_all_quadrants(gy, gx):
+        # Corner coordinates
+        y00, x00 = gy[0, 0], gx[0, 0]
+        y0m, x0m = gy[0, x_shape - 1], gx[0, x_shape - 1]
+        ym0, xm0 = gy[y_shape - 1, 0], gx[y_shape - 1, 0]
+        ymm, xmm = gy[y_shape - 1, x_shape - 1], gx[y_shape - 1, x_shape - 1]
+
+        def accum_from_corner_jax(y_ref, x_ref, gy_block, gx_block):
+            dy = y_ref - gy_block
+            dx = x_ref - gx_block
+
+            acc = jnp.zeros(gy_block.shape, dtype=jnp.float64)
+
+            def body(i, acc_):
+                k0 = i * chunk_k
+
+                # Always legal because ku_x/kv_x/w_x were padded to length K_pad.
+                ku_s = jax.lax.dynamic_slice(ku_x, (k0,), (chunk_k,))
+                kv_s = jax.lax.dynamic_slice(kv_x, (k0,), (chunk_k,))
+                w_s = jax.lax.dynamic_slice(w_x, (k0,), (chunk_k,))
+
+                # Mask the padded tail (only the first K entries are real).
+                valid = (idx + k0) < K
+                w_s = jnp.where(valid, w_s, 0.0)
+
+                phase = dx[..., None] * ku_s[None, None, :] + dy[..., None] * kv_s[None, None, :]
+                return acc_ + jnp.sum(jnp.cos(phase) * w_s[None, None, :], axis=2)
+
+            return jax.lax.fori_loop(0, n_chunks, body, acc)
+
+        out = jnp.zeros((2 * y_shape, 2 * x_shape), dtype=jnp.float64)
+
+        # (+,+)
+        out = out.at[:y_shape, :x_shape].set(accum_from_corner_jax(y00, x00, gy, gx))
+
+        # (+,-) x-flip
+        if x_shape > 1:
+            block = accum_from_corner_jax(y0m, x0m, gy[:, ::-1], gx[:, ::-1])
+            out = out.at[:y_shape, -1:-(x_shape):-1].set(block[:, 1:])
+
+        # (-,+) y-flip
+        if y_shape > 1:
+            block = accum_from_corner_jax(ym0, xm0, gy[::-1, :], gx[::-1, :])
+            out = out.at[-1:-(y_shape):-1, :x_shape].set(block[1:, :])
+
+        # (-,-) x- and y-flip
+        if (y_shape > 1) and (x_shape > 1):
+            block = accum_from_corner_jax(ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1])
+            out = out.at[-1:-(y_shape):-1, -1:-(x_shape):-1].set(block[1:, 1:])
+
+        return out
+
+    # JIT it here (explicit) rather than using @jax.jit above the nested definition.
+    # This avoids some “new function object per call” weirdness and makes caching explicit.
+    _compute_all_quadrants_jit = jax.jit(_compute_all_quadrants)
+
+    out = _compute_all_quadrants_jit(gy, gx)
+    return np.asarray(out)
+
 
 
 def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):

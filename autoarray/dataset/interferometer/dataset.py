@@ -164,6 +164,7 @@ class Interferometer(AbstractDataset):
         batch_size: int = 128,
         show_progress: bool = False,
         show_memory: bool = False,
+        use_jax: bool = False,
     ):
         """
         The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
@@ -201,6 +202,7 @@ class Interferometer(AbstractDataset):
                 grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
                 show_memory=show_memory,
                 show_progress=show_progress,
+                use_jax=use_jax
             )
 
         dirty_image = self.transformer.image_from(
