@@ -293,23 +293,21 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     # -------------------------------------------------
     pbar = None
     if show_progress:
-        try:
-            from tqdm import tqdm  # type: ignore
 
-            n_quadrants = 1
-            if x_shape > 1:
-                n_quadrants += 1
-            if y_shape > 1:
-                n_quadrants += 1
-            if (y_shape > 1) and (x_shape > 1):
-                n_quadrants += 1
+        from tqdm import tqdm  # type: ignore
 
-            pbar = tqdm(
-                total=n_chunks * n_quadrants,
-                desc="Accumulating visibilities (W-tilde preload)",
-            )
-        except Exception:
-            pbar = None
+        n_quadrants = 1
+        if x_shape > 1:
+            n_quadrants += 1
+        if y_shape > 1:
+            n_quadrants += 1
+        if (y_shape > 1) and (x_shape > 1):
+            n_quadrants += 1
+
+        pbar = tqdm(
+            total=n_chunks * n_quadrants,
+            desc="Accumulating visibilities (W-tilde preload)",
+        )
 
     def accum_from_corner_np(y_ref, x_ref, gy_block, gx_block):
         dy = y_ref - gy_block
@@ -327,10 +325,7 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
                 pbar.update(1)
 
             if show_memory and show_progress and "_report_memory" in globals():
-                try:
-                    globals()["_report_memory"](acc)
-                except Exception:
-                    pass
+                globals()["_report_memory"](acc)
 
         return acc
 

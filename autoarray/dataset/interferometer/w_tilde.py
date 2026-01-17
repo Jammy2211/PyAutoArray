@@ -1,6 +1,5 @@
 import json
 import hashlib
-from dataclasses import dataclass
 import numpy as np
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
@@ -98,7 +97,7 @@ def is_preload_metadata_compatible(
     require_mask_hash
         If True, require the full mask sha256 to match (safest).
         If False, only check bbox + shape + pixel scales.
-    rtol, atol
+    atol
         Tolerances for pixel scale comparisons (normally exact is fine
         because these are configuration constants, but tolerances allow
         for tiny float repr differences).
@@ -172,8 +171,8 @@ def load_curvature_preload_if_compatible(
 
     Returns
     -------
-    np.ndarray or None
-        The loaded curvature_preload if compatible, otherwise None (unless raise_on_mismatch=True).
+    np.ndarray
+        The loaded curvature_preload if compatible, otherwise raises ValueError.
     """
     file = Path(file)
     if file.suffix.lower() != ".npz":
