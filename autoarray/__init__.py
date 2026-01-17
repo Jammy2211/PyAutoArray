@@ -9,6 +9,7 @@ from . import type
 from . import util
 from . import fixtures
 from . import mock as m
+from .dataset.interferometer.w_tilde import load_curvature_preload_if_compatible
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
