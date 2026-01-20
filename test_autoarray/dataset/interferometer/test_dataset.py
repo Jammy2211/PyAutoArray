@@ -178,7 +178,7 @@ def test__curvature_preload_metadata_from(
         file=file, real_space_mask=dataset.real_space_mask
     )
 
-    assert curvature_preload[0,0] == pytest.approx(1.75, 1.0e-4)
+    assert curvature_preload[0, 0] == pytest.approx(1.75, 1.0e-4)
 
     real_space_mask_changed = np.array(
         [

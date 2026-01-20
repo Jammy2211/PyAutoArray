@@ -245,7 +245,7 @@ class MapperValued:
 
                 To compute the magnification of a `Delaunay` mesh, use the method `magnification_via_interpolation_from`.
 
-                This method only supports a `RectangularMagnification`.
+                This method only supports a `RectangularAdaptDensity`.
                 """
             )
 

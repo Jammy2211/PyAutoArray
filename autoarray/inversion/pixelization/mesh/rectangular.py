@@ -13,7 +13,7 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray import exc
 
 
-class RectangularMagnification(AbstractMesh):
+class RectangularAdaptDensity(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
@@ -25,7 +25,7 @@ class RectangularMagnification(AbstractMesh):
         The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
         in the top-left corner and going rightwards and downwards.
 
-        A ``Pixelization`` using a ``RectangularMagnification`` mesh has three grids associated with it:
+        A ``Pixelization`` using a ``RectangularAdaptDensity`` mesh has three grids associated with it:
 
         - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
           the source-plane).
@@ -153,7 +153,7 @@ class RectangularMagnification(AbstractMesh):
         )
 
 
-class RectangularSource(RectangularMagnification):
+class RectangularAdaptImage(RectangularAdaptDensity):
 
     def __init__(
         self,
@@ -171,7 +171,7 @@ class RectangularSource(RectangularMagnification):
         The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
         in the top-left corner and going rightwards and downwards.
 
-        A ``Pixelization`` using a ``RectangularMagnification`` mesh has three grids associated with it:
+        A ``Pixelization`` using a ``RectangularAdaptDensity`` mesh has three grids associated with it:
 
         - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
           the source-plane).

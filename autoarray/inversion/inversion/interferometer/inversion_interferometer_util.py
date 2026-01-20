@@ -276,7 +276,7 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     K = uv_wavelengths.shape[0]
     n_chunks = (K + chunk_k - 1) // chunk_k
 
-    w = 1.0 / (noise_map_real ** 2)
+    w = 1.0 / (noise_map_real**2)
     ku = 2.0 * np.pi * uv_wavelengths[:, 0]
     kv = 2.0 * np.pi * uv_wavelengths[:, 1]
 
