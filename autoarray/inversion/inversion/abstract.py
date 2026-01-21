@@ -75,7 +75,15 @@ class AbstractInversion:
 
         self.preloads = preloads or Preloads()
 
-        self._xp = xp
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def data(self):

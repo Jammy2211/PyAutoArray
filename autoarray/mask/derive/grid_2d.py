@@ -61,7 +61,16 @@ class DeriveGrid2D:
             print(derive_grid_2d.border)
         """
         self.mask = mask
-        self._xp = xp
+
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     def tree_flatten(self):
         return (self.mask,), ()

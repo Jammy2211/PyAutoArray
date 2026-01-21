@@ -57,7 +57,16 @@ class Mask(AbstractNDArray, ABC):
 
         self.pixel_scales = pixel_scales
         self.origin = origin
-        self._xp = xp
+
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def mask(self):

@@ -73,7 +73,16 @@ class AbstractNDArray(ABC):
         while isinstance(array, AbstractNDArray):
             array = array.array
         self._array = array
-        self._xp = xp
+
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     def invert(self):
         new = self.copy()

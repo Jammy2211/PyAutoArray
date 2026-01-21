@@ -52,9 +52,18 @@ class AbstractMaker:
         self.func = func
         self.obj = obj
         self.grid = grid
-        self._xp = xp
         self.args = args
         self.kwargs = kwargs
+
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def mask(self) -> Union[Mask1D, Mask2D]:
