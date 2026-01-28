@@ -781,6 +781,9 @@ class AbstractInversion:
         filter_neighbors
             If True, the peak pixels are filtered such that they are the brightest pixel in the mapper and all
             of its neighbors.
+        mapper_index
+            The index of the mapper in the inversion to compute the max pixels for, where there may be multiple
+            mappers in the inversion.
 
         Returns
         -------
@@ -820,6 +823,12 @@ class AbstractInversion:
     def max_pixel_centre(self, mapper_index: int = 0) -> Grid2DIrregular:
         """
         Returns the centre of the brightest pixel in the mapper values.
+
+        Parameters
+        ----------
+        mapper_index
+            The index of the mapper in the inversion to compute the max pixels for, where there may be multiple
+            mappers in the inversion.
 
         Returns
         -------
