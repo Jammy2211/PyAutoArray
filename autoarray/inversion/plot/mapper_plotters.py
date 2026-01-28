@@ -47,24 +47,19 @@ class MapperPlotter(AbstractPlotter):
         self.mapper = mapper
 
     def figure_2d(
-        self, interpolate_to_uniform: bool = False, solution_vector: bool = None
+        self, solution_vector: bool = None
     ):
         """
         Plots the plotter's `Mapper` object in 2D.
 
         Parameters
         ----------
-        interpolate_to_uniform
-            By default, the mesh's reconstruction is interpolated to a uniform 2D array for plotting. If the
-            reconstruction can be plotted in an alternative format (e.g. using a Delaunay mesh)
-            settings `interpolate_to_uniform=False` plots the reconstruction using this.
         solution_vector
             A vector of values which can culor the pixels of the mapper's source pixels.
         """
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
             visuals_2d=self.visuals_2d,
-            interpolate_to_uniform=interpolate_to_uniform,
             pixel_values=solution_vector,
             auto_labels=AutoLabels(
                 title="Pixelization Mesh (Source-Plane)", filename="mapper"
@@ -83,7 +78,7 @@ class MapperPlotter(AbstractPlotter):
         )
 
     def subplot_image_and_mapper(
-        self, image: Array2D, interpolate_to_uniform: bool = False
+        self, image: Array2D,
     ):
         """
         Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.
@@ -94,17 +89,13 @@ class MapperPlotter(AbstractPlotter):
 
         Parameters
         ----------
-        interpolate_to_uniform
-            By default, the mesh's reconstruction is interpolated to a uniform 2D array for plotting. If the
-            reconstruction can be plotted in an alternative format (e.g. a Delaunay mesh)
-            settings `interpolate_to_uniform=False` plots the reconstruction using this.
         image
             The image which is plotted on the subplot.
         """
         self.open_subplot_figure(number_subplots=2)
 
         self.figure_2d_image(image=image)
-        self.figure_2d(interpolate_to_uniform=interpolate_to_uniform)
+        self.figure_2d()
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_image_and_mapper"
@@ -115,7 +106,6 @@ class MapperPlotter(AbstractPlotter):
         self,
         pixel_values: np.ndarray,
         zoom_to_brightest: bool = True,
-        interpolate_to_uniform: bool = False,
         auto_labels: AutoLabels = AutoLabels(),
     ):
         """
@@ -128,9 +118,6 @@ class MapperPlotter(AbstractPlotter):
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
-        interpolate_to_uniform
-            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
-            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         auto_labels
             The labels given to the figure.
         """
@@ -141,7 +128,6 @@ class MapperPlotter(AbstractPlotter):
                 auto_labels=auto_labels,
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
-                interpolate_to_uniform=interpolate_to_uniform,
             )
         except ValueError:
             logger.info(

@@ -486,7 +486,6 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperRectangular,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = False,
         pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
@@ -504,7 +503,6 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
-                interpolate_to_uniform=interpolate_to_uniform,
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
             )
@@ -650,7 +648,6 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperDelaunay,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = False,
         pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):

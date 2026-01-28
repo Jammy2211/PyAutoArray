@@ -102,7 +102,6 @@ class InversionPlotter(AbstractPlotter):
         image_pixels_per_mesh_pixel: bool = False,
         magnification_per_mesh_pixel: bool = False,
         zoom_to_brightest: bool = True,
-        interpolate_to_uniform: bool = False,
     ):
         """
         Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D.
@@ -137,9 +136,6 @@ class InversionPlotter(AbstractPlotter):
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
-        interpolate_to_uniform
-            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
-            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
 
         if not self.inversion.has(cls=AbstractMapper):
@@ -199,7 +195,6 @@ class InversionPlotter(AbstractPlotter):
             mapper_plotter.plot_source_from(
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
-                interpolate_to_uniform=interpolate_to_uniform,
                 auto_labels=AutoLabels(
                     title="Source Reconstruction", filename="reconstruction"
                 ),
