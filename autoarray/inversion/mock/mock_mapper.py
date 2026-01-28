@@ -20,7 +20,6 @@ class MockMapper(AbstractMapper):
         mapping_matrix=None,
         pixel_signals=None,
         parameters=None,
-        interpolated_array=None,
     ):
         mapper_grids = MapperGrids(
             mask=mask,
@@ -41,7 +40,6 @@ class MockMapper(AbstractMapper):
         self._mapping_matrix = mapping_matrix
         self._parameters = parameters
         self._pixel_signals = pixel_signals
-        self._interpolated_array = interpolated_array
 
     def pixel_signals_from(self, signal_scale, xp=np):
         if self._pixel_signals is None:
@@ -71,11 +69,3 @@ class MockMapper(AbstractMapper):
     @property
     def mapping_matrix(self):
         return self._mapping_matrix
-
-    def interpolated_array_from(
-        self,
-        values: np.ndarray,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ):
-        return self._interpolated_array

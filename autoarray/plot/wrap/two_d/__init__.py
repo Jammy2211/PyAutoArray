@@ -6,9 +6,6 @@ from .grid_plot import GridPlot
 from .grid_errorbar import GridErrorbar
 from .vector_yx_quiver import VectorYXQuiver
 from .patch_overlay import PatchOverlay
-from .interpolated_reconstruction import (
-    InterpolatedReconstruction,
-)
 from .delaunay_drawer import DelaunayDrawer
 from .origin_scatter import OriginScatter
 from .mask_scatter import MaskScatter
