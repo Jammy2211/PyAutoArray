@@ -416,7 +416,7 @@ class InversionPlotter(AbstractPlotter):
         pix_indexes = self.inversion.max_pixel_list_from(
             total_pixels=total_pixels,
             filter_neighbors=True,
-            mapper_index=pixelization_index
+            mapper_index=pixelization_index,
         )
 
         indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)

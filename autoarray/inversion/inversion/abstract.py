@@ -757,7 +757,10 @@ class AbstractInversion:
         raise NotImplementedError
 
     def max_pixel_list_from(
-        self, total_pixels: int = 1, filter_neighbors: bool = False, mapper_index : int = 0
+        self,
+        total_pixels: int = 1,
+        filter_neighbors: bool = False,
+        mapper_index: int = 0,
     ) -> List[List[int]]:
         """
         Returns a list of lists of the maximum cell or pixel values in the mapper.
@@ -814,7 +817,7 @@ class AbstractInversion:
 
         return max_pixel_list
 
-    def max_pixel_centre(self, mapper_index : int = 0) -> Grid2DIrregular:
+    def max_pixel_centre(self, mapper_index: int = 0) -> Grid2DIrregular:
         """
         Returns the centre of the brightest pixel in the mapper values.
 
