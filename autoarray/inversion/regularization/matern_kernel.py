@@ -1,6 +1,4 @@
 from __future__ import annotations
-import jax.numpy as jnp
-import jax.scipy.special as jsp
 import numpy as np
 import math
 from typing import TYPE_CHECKING
@@ -9,10 +7,6 @@ if TYPE_CHECKING:
     from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-
-from autoarray import numba_util
-
-import jax.numpy as jnp
 
 
 def kv_xp(v, z, xp=np):
