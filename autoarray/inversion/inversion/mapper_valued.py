@@ -65,40 +65,6 @@ class MapperValued:
 
         return values
 
-    def interpolated_array_from(
-        self,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> Array2D:
-        """
-        The values of a mapper can be on an irregular pixelization (e.g. a Delaunay triangulation).
-
-        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
-        this irregular grid.
-
-        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
-        The routine that performs the interpolation is specific to each pixelization and contained in its
-        corresponding `Mapper`` objects, which are called by this function.
-
-        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
-        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
-        be returned by instead inputting the optional `shape_scaled` tuple.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
-        extent
-            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
-            is input.
-        """
-
-        return self.mapper.interpolated_array_from(
-            values=self.values_masked,
-            shape_native=shape_native,
-            extent=extent,
-        )
-
     def max_pixel_list_from(
         self, total_pixels: int = 1, filter_neighbors: bool = False
     ) -> List[List[int]]:
@@ -251,7 +217,10 @@ class MapperValued:
 
         mapped_reconstructed_image = self.mapped_reconstructed_image_from()
 
-        mesh_areas = self.mapper.source_plane_mesh_grid.areas_for_magnification
+        try:
+            mesh_areas = self.mapper.source_plane_mesh_grid.areas_for_magnification
+        except AttributeError:
+            mesh_areas = self.mapper.areas_for_magnification
 
         if np.all(mesh_areas == 0.0):
             raise exc.MeshException(

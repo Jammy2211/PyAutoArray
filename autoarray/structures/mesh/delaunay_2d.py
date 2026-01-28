@@ -550,55 +550,6 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    def interpolated_array_from(
-        self,
-        values: np.ndarray,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> Array2D:
-        """
-        The reconstruction of data on a `Delaunay` triangulation (e.g. the `reconstruction` output from an `Inversion`)
-        is on  irregular pixelization.
-
-        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to the
-        `Delaunay` triangulation.
-
-        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
-        The routine uses the Delaunay triangulation interpolation weights based on the area of each triangle to
-        perform this interpolation.
-
-        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
-        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
-        be returned by instead inputting the optional `shape_scaled` tuple.
-
-        Parameters
-        ----------
-        values
-            The value corresponding to the reconstructed value of Delaunay triangle vertex.
-        shape_native
-            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
-        extent
-            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
-            is input.
-        """
-        # Uses find simplex so recomputes delaunay internally
-        delaunay = Delaunay(self.mesh_grid_xy)
-
-        interpolation_grid = self.interpolation_grid_from(
-            shape_native=shape_native, extent=extent
-        )
-
-        interpolated_array = mesh_numba_util.delaunay_interpolated_array_from(
-            shape_native=shape_native,
-            interpolation_grid_slim=np.array(interpolation_grid.slim.array),
-            delaunay=delaunay,
-            pixel_values=values,
-        )
-
-        return Array2D.no_mask(
-            values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
-        )
-
     @cached_property
     def voronoi(self) -> "scipy.spatial.Voronoi":
         """
