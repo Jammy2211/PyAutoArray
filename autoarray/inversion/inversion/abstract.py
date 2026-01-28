@@ -14,6 +14,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.util import misc_util
@@ -756,7 +757,7 @@ class AbstractInversion:
         raise NotImplementedError
 
     def max_pixel_list_from(
-        self, total_pixels: int = 1, filter_neighbors: bool = False
+        self, total_pixels: int = 1, filter_neighbors: bool = False, mapper_index : int = 0
     ) -> List[List[int]]:
         """
         Returns a list of lists of the maximum cell or pixel values in the mapper.
@@ -782,11 +783,14 @@ class AbstractInversion:
         -------
 
         """
+        mapper = self.cls_list_from(cls=AbstractMapper)[mapper_index]
+        reconstruction = self.reconstruction_dict[mapper]
+
         max_pixel_list = []
 
         pixel_list = []
 
-        pixels_ascending_list = list(reversed(np.argsort(self.values_masked)))
+        pixels_ascending_list = list(reversed(np.argsort(reconstruction)))
 
         for pixel in range(total_pixels):
             pixel_index = pixels_ascending_list[pixel]
@@ -794,11 +798,11 @@ class AbstractInversion:
             add_pixel = True
 
             if filter_neighbors:
-                pixel_neighbors = self.mapper.neighbors[pixel_index]
+                pixel_neighbors = mapper.neighbors[pixel_index]
                 pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
 
-                max_value = self.values_masked[pixel_index]
-                max_value_neighbors = self.values_masked[pixel_neighbors]
+                max_value = reconstruction[pixel_index]
+                max_value_neighbors = reconstruction[pixel_neighbors]
 
                 if max_value < np.max(max_value_neighbors):
                     add_pixel = False
@@ -810,8 +814,7 @@ class AbstractInversion:
 
         return max_pixel_list
 
-    @property
-    def max_pixel_centre(self) -> Grid2DIrregular:
+    def max_pixel_centre(self, mapper_index : int = 0) -> Grid2DIrregular:
         """
         Returns the centre of the brightest pixel in the mapper values.
 
@@ -819,10 +822,13 @@ class AbstractInversion:
         -------
         The centre of the brightest pixel in the mapper values.
         """
-        max_pixel = np.argmax(self.values_masked)
+        mapper = self.cls_list_from(cls=AbstractMapper)[mapper_index]
+        reconstruction = self.reconstruction_dict[mapper]
+
+        max_pixel = np.argmax(reconstruction)
 
         max_pixel_centre = Grid2DIrregular(
-            values=[self.mapper.source_plane_mesh_grid.array[max_pixel]]
+            values=[mapper.source_plane_mesh_grid.array[max_pixel]]
         )
 
         return max_pixel_centre
