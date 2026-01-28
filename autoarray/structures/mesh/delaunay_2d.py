@@ -11,7 +11,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 
 from autoarray import exc
-from autoarray.inversion.pixelization.mesh import mesh_numba_util
 
 
 def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):

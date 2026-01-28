@@ -410,6 +410,7 @@ class AbstractMapper(LinearObj):
             extent=self.source_plane_mesh_grid.geometry.extent
         )
 
+
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):
         """

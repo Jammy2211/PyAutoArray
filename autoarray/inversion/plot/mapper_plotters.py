@@ -46,9 +46,7 @@ class MapperPlotter(AbstractPlotter):
 
         self.mapper = mapper
 
-    def figure_2d(
-        self, solution_vector: bool = None
-    ):
+    def figure_2d(self, solution_vector: bool = None):
         """
         Plots the plotter's `Mapper` object in 2D.
 
@@ -78,7 +76,8 @@ class MapperPlotter(AbstractPlotter):
         )
 
     def subplot_image_and_mapper(
-        self, image: Array2D,
+        self,
+        image: Array2D,
     ):
         """
         Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.

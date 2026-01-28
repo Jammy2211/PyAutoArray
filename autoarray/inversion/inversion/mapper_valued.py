@@ -39,32 +39,6 @@ class MapperValued:
         self.values = values
         self.mesh_pixel_mask = mesh_pixel_mask
 
-    @property
-    def values_masked(self):
-        """
-        Applies the `mesh_pixel_mask` to the values, setting all masked pixels to 0.0, so that mesh pixels
-        can be removed to prevent them from impacting calculations.
-
-        For example, the magnification calculation uses the values of the reconstruction to compute the magnification,
-        but this can be impacted by pixels with low signal-to-noise. The `mesh_pixel_mask` can be used to remove
-        these pixels from the calculation.
-
-        Returns
-        -------
-        The values of the mapper with the `mesh_pixel_mask` applied.
-        """
-
-        values = self.values
-
-        if self.mesh_pixel_mask is not None:
-            if self.mapper._xp.__name__.startswith("jax"):
-                values = values.at[self.mesh_pixel_mask].set(0.0)
-            else:
-                values = values.copy()
-                values[self.mesh_pixel_mask] = 0.0
-
-        return values
-
     def max_pixel_list_from(
         self, total_pixels: int = 1, filter_neighbors: bool = False
     ) -> List[List[int]]:
@@ -136,37 +110,3 @@ class MapperValued:
         )
 
         return max_pixel_centre
-
-    def mapped_reconstructed_image_from(
-        self,
-    ) -> Array2D:
-        """
-        Returns the image of the reconstruction computed via the mapping matrix, where the image is the reconstruction
-        of the source-plane image in the image-plane without accounting for the PSF convolution.
-
-        This image is computed by mapping the reconstruction to the image, using the mapping matrix of the inversion.
-
-        The image is used to compute magnification, where the magnification is the ratio of the surface brightness of
-        image in the image-plane over the surface brightness of the source in the source-plane.
-
-        Returns
-        -------
-        The image of the reconstruction computed via the mapping matrix, with the PSF convolution not accounted for.
-        """
-
-        mapping_matrix = self.mapper.mapping_matrix
-
-        if self.mesh_pixel_mask is not None:
-            if self.mapper._xp.__name__.startswith("jax"):
-                mapping_matrix = mapping_matrix.at[:, self.mesh_pixel_mask].set(0.0)
-            else:
-                mapping_matrix[:, self.mesh_pixel_mask] = 0.0
-
-        return Array2D(
-            values=inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=mapping_matrix,
-                reconstruction=self.values_masked,
-                xp=self.mapper._xp,
-            ),
-            mask=self.mapper.mapper_grids.mask,
-        )

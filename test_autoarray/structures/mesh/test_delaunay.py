@@ -3,6 +3,7 @@ import pytest
 
 import autoarray as aa
 
+
 def test__neighbors(grid_2d_sub_1_7x7):
 
     mesh_grid = aa.Grid2D.no_mask(
