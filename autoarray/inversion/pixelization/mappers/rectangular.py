@@ -129,6 +129,18 @@ class MapperRectangular(AbstractMapper):
         )
 
     @property
+    def areas_for_magnification(self):
+        """
+        The area of every pixel in the rectangular pixelization.
+
+        Returns
+        -------
+        ndarray
+            The area of every pixel in the rectangular pixelization.
+        """
+        return self.areas_transformed
+
+    @property
     def edges_transformed(self):
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see

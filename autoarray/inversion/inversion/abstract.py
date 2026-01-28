@@ -14,6 +14,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.util import misc_util
@@ -754,3 +755,92 @@ class AbstractInversion:
     @property
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         raise NotImplementedError
+
+    def max_pixel_list_from(
+        self,
+        total_pixels: int = 1,
+        filter_neighbors: bool = False,
+        mapper_index: int = 0,
+    ) -> List[List[int]]:
+        """
+        Returns a list of lists of the maximum cell or pixel values in the mapper.
+
+        Neighbors can be filtered such that each maximum value in a pixel is higher than all surrounding pixels,
+        thus forming a `peak` in the mapper values.
+
+        For example, if a `reconstruction` is the mapper values and neighbor filtering is on, this would return the
+        brightest pixels in the mapper reconstruction which are brighter than all pixels around them.
+
+        In gravitational lensing, these peaks are the brightest regions of the source reconstruction and correspond
+        to features like the centre of the source galaxy and knots of star formation in a galaxy.
+
+        Parameters
+        ----------
+        total_pixels
+            The total number of pixels to return in the list of peak pixels.
+        filter_neighbors
+            If True, the peak pixels are filtered such that they are the brightest pixel in the mapper and all
+            of its neighbors.
+        mapper_index
+            The index of the mapper in the inversion to compute the max pixels for, where there may be multiple
+            mappers in the inversion.
+
+        Returns
+        -------
+
+        """
+        mapper = self.cls_list_from(cls=AbstractMapper)[mapper_index]
+        reconstruction = self.reconstruction_dict[mapper]
+
+        max_pixel_list = []
+
+        pixel_list = []
+
+        pixels_ascending_list = list(reversed(np.argsort(reconstruction)))
+
+        for pixel in range(total_pixels):
+            pixel_index = pixels_ascending_list[pixel]
+
+            add_pixel = True
+
+            if filter_neighbors:
+                pixel_neighbors = mapper.neighbors[pixel_index]
+                pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
+
+                max_value = reconstruction[pixel_index]
+                max_value_neighbors = reconstruction[pixel_neighbors]
+
+                if max_value < np.max(max_value_neighbors):
+                    add_pixel = False
+
+            if add_pixel:
+                pixel_list.append(pixel_index)
+
+        max_pixel_list.append(pixel_list)
+
+        return max_pixel_list
+
+    def max_pixel_centre(self, mapper_index: int = 0) -> Grid2DIrregular:
+        """
+        Returns the centre of the brightest pixel in the mapper values.
+
+        Parameters
+        ----------
+        mapper_index
+            The index of the mapper in the inversion to compute the max pixels for, where there may be multiple
+            mappers in the inversion.
+
+        Returns
+        -------
+        The centre of the brightest pixel in the mapper values.
+        """
+        mapper = self.cls_list_from(cls=AbstractMapper)[mapper_index]
+        reconstruction = self.reconstruction_dict[mapper]
+
+        max_pixel = np.argmax(reconstruction)
+
+        max_pixel_centre = Grid2DIrregular(
+            values=[mapper.source_plane_mesh_grid.array[max_pixel]]
+        )
+
+        return max_pixel_centre

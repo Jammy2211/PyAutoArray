@@ -1,12 +1,7 @@
 import numpy as np
 from typing import Tuple
 
-from autoconf import conf
-
 from autoarray import numba_util
-from autoarray.inversion.pixelization.mesh import mesh_numba_util
-
-from autoarray import exc
 
 
 @numba_util.jit()
