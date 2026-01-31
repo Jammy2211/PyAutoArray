@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 class WTildeImaging(AbstractWTilde):
     def __init__(
         self,
+        data: np.ndarray,
         noise_map: np.ndarray,
         psf: np.ndarray,
         fft_mask: np.ndarray,
@@ -41,8 +42,12 @@ class WTildeImaging(AbstractWTilde):
             fft_mask=fft_mask
         )
 
+        self.data = data
         self.noise_map = noise_map
         self.psf = psf
+
+        self.data_native = data.native
+        self.noise_map_native = noise_map.native
 
     @property
     def psf_operator_matrix_dense(self):

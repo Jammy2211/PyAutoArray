@@ -268,6 +268,20 @@ class AbstractMapper(LinearObj):
             xp=self._xp,
         )
 
+    @cached_property
+    def pixel_triplets(self):
+
+        rows, cols, vals = mapper_util.pixel_triplets_from_subpixel_arrays_from(
+            pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
+            slim_index_for_sub=self.slim_index_for_sub_slim_index,
+            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            sub_fraction_slim=self.over_sampler.sub_fraction.array,
+            xp=self._xp
+        )
+
+        return rows, cols, vals
+
     def pixel_signals_from(self, signal_scale: float, xp=np) -> np.ndarray:
         """
         Returns the signal in each pixelization pixel, where this signal is an estimate of the expected signal
@@ -409,7 +423,6 @@ class AbstractMapper(LinearObj):
         return geometry_util.extent_symmetric_from(
             extent=self.source_plane_mesh_grid.geometry.extent
         )
-
 
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):

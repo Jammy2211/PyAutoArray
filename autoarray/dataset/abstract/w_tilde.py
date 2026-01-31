@@ -52,17 +52,4 @@ class AbstractWTilde:
         - This method is intentionally backend-agnostic and can be used by both
           imaging and interferometer curvature pipelines.
         """
-
-        # Boolean mask defined on the rectangular FFT grid
-        # True  = masked pixel
-        # False = unmasked pixel
-        mask_fft = self.fft_mask
-
-        # Coordinates of unmasked pixels in the FFT grid
-        ys, xs = np.where(~mask_fft)
-
-        # Width of the FFT grid (number of columns)
-        width = mask_fft.shape[1]
-
-        # Convert (y, x) coordinates to flat row-major indices
-        return (ys * width + xs).astype(np.int32)
+        self.fft_mask.fft_index_for_masked_pixel

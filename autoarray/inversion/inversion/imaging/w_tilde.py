@@ -58,10 +58,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @cached_property
     def w_tilde_data(self):
         return inversion_imaging_util.w_tilde_data_imaging_from(
-            image_native=self.data.native.array,
-            noise_map_native=self.noise_map.native.array,
-            kernel_native=self.psf.native.array,
+            image_native=self.w_tilde.data_native.array,
+            noise_map_native=self.w_tilde.noise_map_native.array,
+            kernel_native=self.psf.stored_native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
+            xp=self._xp
         )
 
     @property
@@ -83,15 +84,16 @@ class InversionImagingWTilde(AbstractInversionImaging):
         mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
 
         for mapper_index, mapper in enumerate(mapper_list):
+
+            rows, cols, vals = mapper.pixel_triplets
+
             data_vector_mapper = (
-                inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
+                inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=self.w_tilde_data,
-                    data_to_pix_unique=np.array(
-                        mapper.unique_mappings.data_to_pix_unique
-                    ),
-                    data_weights=np.array(mapper.unique_mappings.data_weights),
-                    pix_lengths=np.array(mapper.unique_mappings.pix_lengths),
-                    pix_pixels=mapper.params,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.total_params,
                 )
             )
             param_range = mapper_param_range[mapper_index]
@@ -131,12 +133,14 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
         linear_obj = self.linear_obj_list[0]
 
-        return inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
+        rows, cols, vals = linear_obj.pixel_triplets
+
+        return inversion_imaging_util.data_vector_via_w_tilde_from(
             w_tilde_data=self.w_tilde_data,
-            data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-            data_weights=linear_obj.unique_mappings.data_weights,
-            pix_lengths=linear_obj.unique_mappings.pix_lengths,
-            pix_pixels=linear_obj.params,
+            rows=rows,
+            cols=cols,
+            vals=vals,
+            S=linear_obj.params,
         )
 
     @property

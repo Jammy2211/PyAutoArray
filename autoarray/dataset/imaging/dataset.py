@@ -505,6 +505,7 @@ class Imaging(AbstractDataset):
         """
 
         w_tilde = WTildeImaging(
+            data=self.data,
             noise_map=self.noise_map,
             psf=self.psf,
             fft_mask=self.mask,

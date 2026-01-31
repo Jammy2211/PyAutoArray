@@ -183,6 +183,12 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
     psf = kernel
 
+    w_tilde = aa.WTildeImaging(
+        noise_map=noise_map,
+        psf=psf,
+        fft_mask=mask
+    )
+
     pixelization = aa.mesh.RectangularUniform(shape=(20, 20))
 
     # TODO : Use pytest.parameterize
@@ -215,6 +221,14 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             )
         )
 
+        rows, cols, vals = aa.util.mapper.pixel_triplets_from_subpixel_arrays_from(
+            pix_indexes_for_sub=mapper.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub=mapper.pix_weights_for_sub_slim_index,
+            slim_index_for_sub=mapper.slim_index_for_sub_slim_index,
+            fft_index_for_masked_pixel=w_tilde.fft_index_for_masked_pixel,
+            sub_fraction_slim=mapper.over_sampler.sub_fraction.array
+        )
+
         w_tilde_data = aa.util.inversion_imaging.w_tilde_data_imaging_from(
             image_native=image.native.array,
             noise_map_native=noise_map.native.array,
@@ -224,28 +238,13 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             ),
         )
 
-        (
-            data_to_pix_unique,
-            data_weights,
-            pix_lengths,
-        ) = aa.util.mapper_numba.data_slim_to_pixelization_unique_from(
-            data_pixels=w_tilde_data.shape[0],
-            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-            pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index.astype(
-                "int"
-            ),
-            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-            pix_pixels=mapper.params,
-            sub_size=grid.over_sample_size.array,
-        )
-
         data_vector_via_w_tilde = (
-            aa.util.inversion_imaging_numba.data_vector_via_w_tilde_data_imaging_from(
+            aa.util.inversion_imaging.data_vector_via_w_tilde_from(
                 w_tilde_data=w_tilde_data,
-                data_to_pix_unique=data_to_pix_unique.astype("int"),
-                data_weights=data_weights,
-                pix_lengths=pix_lengths.astype("int"),
-                pix_pixels=pixelization.pixels,
+                rows=rows,
+                cols=cols,
+                vals=vals,
+                S=pixelization.pixels,
             )
         )
 

@@ -1,38 +1,5 @@
 import numpy as np
 
-def pixel_triplets_from_subpixel_arrays_from(
-    pix_indexes_for_sub,          # (M_sub, P)
-    pix_weights_for_sub,          # (M_sub, P)
-    slim_index_for_sub,           # (M_sub,)
-    fft_index_for_masked_pixel,   # (N_unmasked,)
-    sub_fraction_slim,            # (N_unmasked,)
-):
-    """
-    Build sparse source→image mapping triplets (rows, cols, vals)
-    for a fixed-size interpolation stencil.
-
-    Assumptions:
-    - Every subpixel maps to exactly P source pixels
-    - All entries in pix_indexes_for_sub are valid
-    - No padding / ragged rows needed
-    """
-    import jax.numpy as jnp
-
-
-    M_sub, P = pix_indexes_for_sub.shape
-
-    sub_ids = jnp.repeat(jnp.arange(M_sub, dtype=jnp.int32), P)
-
-    cols = pix_indexes_for_sub.reshape(-1).astype(jnp.int32)
-    vals = pix_weights_for_sub.reshape(-1).astype(jnp.float64)
-
-    slim_rows = slim_index_for_sub[sub_ids].astype(jnp.int32)
-    rows = fft_index_for_masked_pixel[slim_rows].astype(jnp.int32)
-
-    vals = vals * sub_fraction_slim[slim_rows].astype(jnp.float64)
-    return rows, cols, vals
-
-
 def psf_operator_matrix_dense_from(
     kernel_native: np.ndarray,
     native_index_for_slim_index: np.ndarray,  # shape (N_pix, 2), native (y,x) coords of masked pixels
@@ -157,6 +124,29 @@ def w_tilde_data_imaging_from(
     # 4) gather patches and correlate (no kernel flip)
     patches = padded[Y, X]  # (N, Ky, Kx)
     return xp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
+
+
+def data_vector_via_w_tilde_from(
+    w_tilde_data: np.ndarray,     # (M_pix,) float64
+    rows: np.ndarray,             # (nnz,) int32  each triplet's data pixel (slim index)
+    cols: np.ndarray,                  # (nnz,) int32  source pixel index
+    vals: np.ndarray,                  # (nnz,) float64 mapping weights incl sub_fraction
+    S: int,                             # number of source pixels
+) -> np.ndarray:
+    """
+    Replacement for numba data_vector_via_w_tilde_data_imaging_from using triplets.
+
+    Computes:
+        D[p] = sum_{triplets t with col_t=p} vals[t] * w_tilde_data_slim[slim_rows[t]]
+
+    Returns:
+        (S,) float64
+    """
+    from jax.ops import segment_sum
+
+    w = w_tilde_data[rows]          # (nnz,)
+    contrib = vals * w                         # (nnz,)
+    return segment_sum(contrib, cols, num_segments=S)  # (S,)
 
 
 def data_vector_via_blurred_mapping_matrix_from(

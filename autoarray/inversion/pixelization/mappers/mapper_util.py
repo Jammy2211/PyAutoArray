@@ -442,6 +442,102 @@ def adaptive_pixel_signals_from(
     return pixel_signals**signal_scale
 
 
+import numpy as np
+
+def pixel_triplets_from_subpixel_arrays_from(
+    pix_indexes_for_sub,          # (M_sub, P)
+    pix_weights_for_sub,          # (M_sub, P)
+    slim_index_for_sub,           # (M_sub,)
+    fft_index_for_masked_pixel,   # (N_unmasked,)
+    sub_fraction_slim,            # (N_unmasked,)
+    *,
+    xp=np,
+):
+    """
+    Build sparse source→image mapping triplets (rows, cols, vals)
+    for a fixed-size interpolation stencil.
+
+    This supports both:
+      - NumPy (xp=np)
+      - JAX  (xp=jax.numpy)
+
+    Parameters
+    ----------
+    pix_indexes_for_sub
+        Source pixel indices for each subpixel (M_sub, P)
+    pix_weights_for_sub
+        Interpolation weights for each subpixel (M_sub, P)
+    slim_index_for_sub
+        Mapping subpixel -> slim image pixel index (M_sub,)
+    fft_index_for_masked_pixel
+        Mapping slim pixel -> rectangular FFT-grid pixel index (N_unmasked,)
+    sub_fraction_slim
+        Oversampling normalization per slim pixel (N_unmasked,)
+    xp
+        Backend module (np or jnp)
+
+    Returns
+    -------
+    rows : (nnz,) int32
+        Rectangular FFT grid row index per mapping entry
+    cols : (nnz,) int32
+        Source pixel index per mapping entry
+    vals : (nnz,) float64
+        Mapping weight per entry including sub_fraction normalization
+    """
+
+    # ------------------------------------------------------------
+    # Put everything on the right backend
+    # ------------------------------------------------------------
+    pix_indexes_for_sub = xp.asarray(pix_indexes_for_sub)
+    pix_weights_for_sub = xp.asarray(pix_weights_for_sub)
+    slim_index_for_sub = xp.asarray(slim_index_for_sub)
+    fft_index_for_masked_pixel = xp.asarray(fft_index_for_masked_pixel)
+    sub_fraction_slim = xp.asarray(sub_fraction_slim)
+
+    # dtypes (important for JAX scatter / indexing performance)
+    pix_indexes_for_sub = pix_indexes_for_sub.astype(xp.int32)
+    pix_weights_for_sub = pix_weights_for_sub.astype(xp.float64)
+    slim_index_for_sub = slim_index_for_sub.astype(xp.int32)
+    fft_index_for_masked_pixel = fft_index_for_masked_pixel.astype(xp.int32)
+    sub_fraction_slim = sub_fraction_slim.astype(xp.float64)
+
+    # ------------------------------------------------------------
+    # Dimensions
+    # ------------------------------------------------------------
+    M_sub, P = pix_indexes_for_sub.shape
+
+    # ------------------------------------------------------------
+    # Subpixel IDs repeated P times (fixed stencil)
+    # ------------------------------------------------------------
+    sub_ids = xp.repeat(xp.arange(M_sub, dtype=xp.int32), P)  # (M_sub*P,)
+
+    # ------------------------------------------------------------
+    # Flatten interpolation stencil
+    # ------------------------------------------------------------
+    cols = pix_indexes_for_sub.reshape(-1).astype(xp.int32)      # (nnz,)
+    vals = pix_weights_for_sub.reshape(-1).astype(xp.float64)    # (nnz,)
+
+    # ------------------------------------------------------------
+    # subpixel -> slim image pixel
+    # ------------------------------------------------------------
+    slim_rows = slim_index_for_sub[sub_ids].astype(xp.int32)     # (nnz,)
+
+    # ------------------------------------------------------------
+    # slim pixel -> FFT rectangular pixel
+    # ------------------------------------------------------------
+    rows = fft_index_for_masked_pixel[slim_rows].astype(xp.int32)
+
+    # ------------------------------------------------------------
+    # Oversampling normalization
+    # ------------------------------------------------------------
+    vals = vals * sub_fraction_slim[slim_rows].astype(xp.float64)
+
+    return rows, cols, vals
+
+
+
+
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,

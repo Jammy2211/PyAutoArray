@@ -250,8 +250,6 @@ class WTildeInterferometer(AbstractWTilde):
             curvature_preload=self.curvature_preload, batch_size=batch_size
         )
 
-
-
     def save_curvature_preload(
         self,
         file: Union[str, Path],
