@@ -14,7 +14,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray import exc
-from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
 class InversionImagingWTilde(AbstractInversionImaging):
@@ -49,17 +49,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             the simultaneous linear equations are combined and solved simultaneously.
         """
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
         super().__init__(
             dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
         )
@@ -68,8 +57,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @cached_property
     def w_tilde_data(self):
-        return inversion_imaging_numba_util.w_tilde_data_imaging_from(
-            image_native=np.array(self.data.native.array),
+        return inversion_imaging_util.w_tilde_data_imaging_from(
+            image_native=self.data.native.array,
             noise_map_native=self.noise_map.native.array,
             kernel_native=self.psf.native.array,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,

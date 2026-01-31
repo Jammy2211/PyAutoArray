@@ -474,7 +474,12 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_w_tilde(self, disable_fft_pad: bool = False):
+    def apply_w_tilde(
+            self,
+            batch_size: int = 128,
+            disable_fft_pad: bool = False,
+            use_jax: bool = False,
+    ):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
         noise-map values given the PSF (see `inversion.inversion_util`).
@@ -487,39 +492,19 @@ class Imaging(AbstractDataset):
 
         Returns
         -------
-        WTildeImaging
-            Precomputed values used for the w tilde formalism of linear algebra calculations.
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed
+        disable_fft_pad
+            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
+            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
+            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
+            padded.
+        use_jax
+            Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
 
-        logger.info("IMAGING - Computing W-Tilde... May take a moment.")
-
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
-        (
-            curvature_preload,
-            indexes,
-            lengths,
-        ) = inversion_imaging_numba_util.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
-            native_index_for_slim_index=np.array(
-                self.mask.derive_indexes.native_for_slim
-            ).astype("int"),
-        )
-
         w_tilde = WTildeImaging(
-            curvature_preload=curvature_preload,
-            indexes=indexes.astype("int"),
-            lengths=lengths.astype("int"),
             noise_map=self.noise_map,
             psf=self.psf,
             fft_mask=self.mask,
