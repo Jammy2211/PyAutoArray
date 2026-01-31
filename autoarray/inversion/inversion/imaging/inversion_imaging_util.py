@@ -1,5 +1,37 @@
 import numpy as np
 
+def pixel_triplets_from_subpixel_arrays_from(
+    pix_indexes_for_sub,          # (M_sub, P)
+    pix_weights_for_sub,          # (M_sub, P)
+    slim_index_for_sub,           # (M_sub,)
+    fft_index_for_masked_pixel,   # (N_unmasked,)
+    sub_fraction_slim,            # (N_unmasked,)
+):
+    """
+    Build sparse source→image mapping triplets (rows, cols, vals)
+    for a fixed-size interpolation stencil.
+
+    Assumptions:
+    - Every subpixel maps to exactly P source pixels
+    - All entries in pix_indexes_for_sub are valid
+    - No padding / ragged rows needed
+    """
+    import jax.numpy as jnp
+
+
+    M_sub, P = pix_indexes_for_sub.shape
+
+    sub_ids = jnp.repeat(jnp.arange(M_sub, dtype=jnp.int32), P)
+
+    cols = pix_indexes_for_sub.reshape(-1).astype(jnp.int32)
+    vals = pix_weights_for_sub.reshape(-1).astype(jnp.float64)
+
+    slim_rows = slim_index_for_sub[sub_ids].astype(jnp.int32)
+    rows = fft_index_for_masked_pixel[slim_rows].astype(jnp.int32)
+
+    vals = vals * sub_fraction_slim[slim_rows].astype(jnp.float64)
+    return rows, cols, vals
+
 
 def psf_operator_matrix_dense_from(
     kernel_native: np.ndarray,
