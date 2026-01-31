@@ -9,7 +9,6 @@ from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.inversion.mapper_valued import MapperValued
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
 
@@ -102,7 +101,6 @@ class InversionPlotter(AbstractPlotter):
         image_pixels_per_mesh_pixel: bool = False,
         magnification_per_mesh_pixel: bool = False,
         zoom_to_brightest: bool = True,
-        interpolate_to_uniform: bool = False,
     ):
         """
         Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D.
@@ -137,9 +135,6 @@ class InversionPlotter(AbstractPlotter):
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
-        interpolate_to_uniform
-            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
-            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
 
         if not self.inversion.has(cls=AbstractMapper):
@@ -199,7 +194,6 @@ class InversionPlotter(AbstractPlotter):
             mapper_plotter.plot_source_from(
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
-                interpolate_to_uniform=interpolate_to_uniform,
                 auto_labels=AutoLabels(
                     title="Source Reconstruction", filename="reconstruction"
                 ),
@@ -419,12 +413,10 @@ class InversionPlotter(AbstractPlotter):
 
         mapper = self.inversion.cls_list_from(cls=AbstractMapper)[pixelization_index]
 
-        mapper_valued = MapperValued(
-            values=self.inversion.reconstruction_dict[mapper], mapper=mapper
-        )
-
-        pix_indexes = mapper_valued.max_pixel_list_from(
-            total_pixels=total_pixels, filter_neighbors=True
+        pix_indexes = self.inversion.max_pixel_list_from(
+            total_pixels=total_pixels,
+            filter_neighbors=True,
+            mapper_index=pixelization_index,
         )
 
         indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)

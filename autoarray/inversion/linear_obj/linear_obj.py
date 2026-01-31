@@ -27,7 +27,16 @@ class LinearObj:
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
         """
         self.regularization = regularization
-        self._xp = xp
+
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def params(self) -> int:

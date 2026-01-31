@@ -158,7 +158,15 @@ class FitDataset(AbstractFit):
         self.dataset.grids.blurring
         self.dataset.grids.border_relocator
 
-        self._xp = xp
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def mask(self) -> Mask2D:

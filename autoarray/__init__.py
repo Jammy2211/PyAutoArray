@@ -9,6 +9,7 @@ from . import type
 from . import util
 from . import fixtures
 from . import mock as m
+from .dataset.interferometer.w_tilde import load_curvature_preload_if_compatible
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
@@ -33,7 +34,6 @@ from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
 from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
-from .inversion.inversion.mapper_valued import MapperValued
 from .inversion.inversion.dataset_interface import DatasetInterface
 from .inversion.pixelization.border_relocator import BorderRelocator
 from .inversion.pixelization.pixelization import Pixelization
@@ -101,4 +101,4 @@ from autoconf.fitsable import hdu_list_for_output_from
 
 conf.instance.register(__file__)
 
-__version__ = "2025.12.15.2"
+__version__ = "2026.1.21.3"

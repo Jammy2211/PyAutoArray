@@ -38,7 +38,7 @@ class GridPlot(AbstractMatWrap2D):
         Parameters
         ----------
         extent : (float, float, float, float)
-            The extent of the rectangualr grid, with format [xmin, xmax, ymin, ymax]
+            The extent of the rectangular grid, with format [xmin, xmax, ymin, ymax]
         shape_native
             The 2D shape of the mask the array is paired with.
         """

@@ -55,9 +55,7 @@ class FitImaging(FitDataset):
 
     @property
     def data(self) -> ty.DataLike:
-        if self.dataset_model.background_sky_level != 0.0:
-            return self.dataset.data - self.dataset_model.background_sky_level
-        return self.dataset.data
+        return self.dataset.data - self.dataset_model.background_sky_level
 
     @property
     def blurred_image(self) -> Array2D:

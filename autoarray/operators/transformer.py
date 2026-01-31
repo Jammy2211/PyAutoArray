@@ -408,7 +408,7 @@ class TransformerNUFFT(NUFFT_cpu):
         """
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            image = np.real(self.adjoint(visibilities))[::-1, :]
+            image = np.real(self.adjoint(visibilities.array))[::-1, :]
 
         if use_adjoint_scaling:
             image *= self.adjoint_scaling
