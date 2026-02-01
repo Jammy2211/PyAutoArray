@@ -238,7 +238,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = (
-                inversion_imaging_numba_util.curvature_matrix_with_added_to_diag_from(
+                inversion_imaging_util.curvature_matrix_with_added_to_diag_from(
                     curvature_matrix=curvature_matrix,
                     value=self.settings.no_regularization_add_to_curvature_diag_value,
                     no_regularization_index_list=self.no_regularization_index_list,

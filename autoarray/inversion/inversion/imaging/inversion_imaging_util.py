@@ -269,6 +269,60 @@ def curvature_matrix_mirrored_from(
 
     return curvature_matrix_mirrored
 
+from typing import Optional, List
+
+def curvature_matrix_with_added_to_diag_from(
+    curvature_matrix,
+    value: float,
+    no_regularization_index_list: Optional[List[int]] = None,
+    *,
+    xp=np,
+):
+    """
+    Add a small stabilizing value to the diagonal entries of the curvature matrix.
+
+    Supports:
+      - NumPy (xp=np): in-place update
+      - JAX  (xp=jax.numpy): functional `.at[].add()`
+
+    Parameters
+    ----------
+    curvature_matrix : (N, N) array
+        Curvature matrix to modify.
+
+    value : float
+        Value added to selected diagonal entries.
+
+    no_regularization_index_list : list of int
+        Indices where diagonal should be boosted.
+
+    xp : module
+        np or jax.numpy
+
+    Returns
+    -------
+    curvature_matrix : array
+        Updated matrix (new array in JAX, modified in NumPy).
+    """
+
+    if no_regularization_index_list is None:
+        return curvature_matrix
+
+    inds = xp.asarray(no_regularization_index_list, dtype=xp.int32)
+
+    if xp is np:
+        # -----------------------
+        # NumPy: in-place update
+        # -----------------------
+        curvature_matrix[inds, inds] += value
+        return curvature_matrix
+
+    else:
+        # -----------------------
+        # JAX: functional update
+        # -----------------------
+        return curvature_matrix.at[inds, inds].add(value)
+
 
 def build_inv_noise_var(noise):
     inv = np.zeros_like(noise, dtype=np.float64)
