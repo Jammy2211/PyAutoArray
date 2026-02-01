@@ -509,6 +509,7 @@ class Imaging(AbstractDataset):
             noise_map=self.noise_map,
             psf=self.psf,
             fft_mask=self.mask,
+            batch_size=batch_size,
         )
 
         return Imaging(

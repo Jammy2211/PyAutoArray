@@ -486,58 +486,57 @@ def pixel_triplets_from_subpixel_arrays_from(
     vals : (nnz,) float64
         Mapping weight per entry including sub_fraction normalization
     """
+    # ----------------------------
+    # NumPy path (HOST)
+    # ----------------------------
+    if xp is np:
+        pix_indexes_for_sub = np.asarray(pix_indexes_for_sub, dtype=np.int32)
+        pix_weights_for_sub = np.asarray(pix_weights_for_sub, dtype=np.float64)
+        slim_index_for_sub  = np.asarray(slim_index_for_sub,  dtype=np.int32)
+        fft_index_for_masked_pixel = np.asarray(fft_index_for_masked_pixel, dtype=np.int32)
+        sub_fraction_slim    = np.asarray(sub_fraction_slim,    dtype=np.float64)
 
-    # ------------------------------------------------------------
-    # Put everything on the right backend
-    # ------------------------------------------------------------
-    pix_indexes_for_sub = xp.asarray(pix_indexes_for_sub)
-    pix_weights_for_sub = xp.asarray(pix_weights_for_sub)
-    slim_index_for_sub = xp.asarray(slim_index_for_sub)
-    fft_index_for_masked_pixel = xp.asarray(fft_index_for_masked_pixel)
-    sub_fraction_slim = xp.asarray(sub_fraction_slim)
+        M_sub, P = pix_indexes_for_sub.shape
 
-    # dtypes (important for JAX scatter / indexing performance)
-    pix_indexes_for_sub = pix_indexes_for_sub.astype(xp.int32)
-    pix_weights_for_sub = pix_weights_for_sub.astype(xp.float64)
-    slim_index_for_sub = slim_index_for_sub.astype(xp.int32)
-    fft_index_for_masked_pixel = fft_index_for_masked_pixel.astype(xp.int32)
-    sub_fraction_slim = sub_fraction_slim.astype(xp.float64)
+        sub_ids = np.repeat(np.arange(M_sub, dtype=np.int32), P)  # (M_sub*P,)
 
-    # ------------------------------------------------------------
-    # Dimensions
-    # ------------------------------------------------------------
+        cols = pix_indexes_for_sub.reshape(-1)                    # int32
+        vals = pix_weights_for_sub.reshape(-1)                    # float64
+
+        slim_rows = slim_index_for_sub[sub_ids]                   # int32
+        vals = vals * sub_fraction_slim[slim_rows]                # float64
+
+        if return_rows_slim:
+            return slim_rows, cols, vals
+
+        rows = fft_index_for_masked_pixel[slim_rows]
+        return rows, cols, vals
+
+    # ----------------------------
+    # JAX path (DEVICE)
+    # ----------------------------
+    # We intentionally avoid np.asarray anywhere here.
+    # Assume xp is jax.numpy (or a compatible array module).
+    pix_indexes_for_sub = xp.asarray(pix_indexes_for_sub, dtype=xp.int32)
+    pix_weights_for_sub = xp.asarray(pix_weights_for_sub, dtype=xp.float64)
+    slim_index_for_sub  = xp.asarray(slim_index_for_sub,  dtype=xp.int32)
+    fft_index_for_masked_pixel = xp.asarray(fft_index_for_masked_pixel, dtype=xp.int32)
+    sub_fraction_slim    = xp.asarray(sub_fraction_slim,    dtype=xp.float64)
+
     M_sub, P = pix_indexes_for_sub.shape
 
-    # ------------------------------------------------------------
-    # Subpixel IDs repeated P times (fixed stencil)
-    # ------------------------------------------------------------
-    sub_ids = xp.repeat(xp.arange(M_sub, dtype=xp.int32), P)  # (M_sub*P,)
+    sub_ids = xp.repeat(xp.arange(M_sub, dtype=xp.int32), P)
 
-    # ------------------------------------------------------------
-    # Flatten interpolation stencil
-    # ------------------------------------------------------------
-    cols = pix_indexes_for_sub.reshape(-1).astype(xp.int32)      # (nnz,)
-    vals = pix_weights_for_sub.reshape(-1).astype(xp.float64)    # (nnz,)
+    cols = pix_indexes_for_sub.reshape(-1)
+    vals = pix_weights_for_sub.reshape(-1)
 
-    # ------------------------------------------------------------
-    # subpixel -> slim image pixel
-    # ------------------------------------------------------------
-    slim_rows = slim_index_for_sub[sub_ids].astype(xp.int32)     # (nnz,)
-
-    # ------------------------------------------------------------
-    # Oversampling normalization
-    # ------------------------------------------------------------
-    vals = vals * sub_fraction_slim[slim_rows].astype(xp.float64)
-
+    slim_rows = slim_index_for_sub[sub_ids]
+    vals = vals * sub_fraction_slim[slim_rows]
 
     if return_rows_slim:
         return slim_rows, cols, vals
 
-    # ------------------------------------------------------------
-    # slim pixel -> FFT rectangular pixel
-    # ------------------------------------------------------------
-    rows = fft_index_for_masked_pixel[slim_rows].astype(xp.int32)
-
+    rows = fft_index_for_masked_pixel[slim_rows]
     return rows, cols, vals
 
 

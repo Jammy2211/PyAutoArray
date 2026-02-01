@@ -367,21 +367,20 @@ def rfft_convolve2d_same(images: np.ndarray, Khat_r: np.ndarray, Ky: int, Kx: in
     cy, cx = Ky // 2, Kx // 2
     return out_pad[:, cy:cy + Hy, cx:cx + Hx]
 
+
+
 def curvature_matrix_via_w_tilde_from(
-    inv_noise_var,     # (Hy, Hx) float64
-    rows, cols, vals,  # COO mapping arrays
-    y_shape: int,
-    x_shape: int,
+    inv_noise_var,
+    rows, cols, vals,
+    y_shape: int, x_shape: int,
     S: int,
-    Khat_r,            # (Fy, Fx//2+1) complex128
-    Khat_flip_r,       # (Fy, Fx//2+1) complex128
-    Ky: int,
-    Kx: int,
+    Khat_r, Khat_flip_r,
+    Ky: int, Kx: int,
     batch_size: int = 32,
 ):
-    from jax.ops import segment_sum
     from jax import lax
     import jax.numpy as jnp
+    from jax.ops import segment_sum
 
     inv_noise_var = jnp.asarray(inv_noise_var, dtype=jnp.float64)
     rows = jnp.asarray(rows, dtype=jnp.int32)
@@ -397,51 +396,43 @@ def curvature_matrix_via_w_tilde_from(
         blurred = rfft_convolve2d_same(Fimg, Khat_r, Ky, Kx, fft_shape)
         weighted = blurred * inv_noise_var[None, :, :]
         back = rfft_convolve2d_same(weighted, Khat_flip_r, Ky, Kx, fft_shape)
-        return back.reshape((B, M)).T  # (M,B)
+        return back.reshape((B, M)).T  # (M, B)
 
     n_blocks = (S + batch_size - 1) // batch_size
-    C0 = jnp.zeros((S, S), dtype=jnp.float64)
+    S_pad = n_blocks * batch_size  # <-- key
 
-    # Precompute a [0..batch_size-1] vector once (static size)
+    C0 = jnp.zeros((S, S_pad), dtype=jnp.float64)
     col_offsets = jnp.arange(batch_size, dtype=jnp.int32)
 
     def body(block_i, C):
-        start = block_i * batch_size  # dynamic scalar, OK
+        start = block_i * batch_size
 
-        # IMPORTANT: keep the "in block" test using static width batch_size
         in_block = (cols >= start) & (cols < (start + batch_size))
-
         bc = jnp.where(in_block, cols - start, 0).astype(jnp.int32)
         v  = jnp.where(in_block, vals, 0.0)
 
-        # Build Fbatch on pixel grid
         F = jnp.zeros((M, batch_size), dtype=jnp.float64)
         F = F.at[rows, bc].add(v)
 
-        # Apply W
         G = apply_W(F)  # (M, batch_size)
 
-        # Accumulate into curvature columns for this block
-        contrib = vals[:, None] * G[rows, :]  # (nnz, batch_size)
-
-        # ---- fix: segment over source-pixel index, not cols ----
-        # In your earlier diagonal code you did: segment_sum(contrib, cols, num_segments=S)
-        # That only makes sense if `cols` are the "left" index of curvature (i.e. same mapper)
-        # and you are building full C[:, start:start+B]. Keep it as you had:
+        contrib = vals[:, None] * G[rows, :]          # (nnz, batch_size)
         Cblock = segment_sum(contrib, cols, num_segments=S)  # (S, batch_size)
 
-        # Mask out columns beyond S in the last block
-        width = jnp.maximum(0, S - start)         # dynamic scalar
-        width = jnp.minimum(width, batch_size)    # dynamic scalar in [0, batch_size]
-        mask = (col_offsets < width).astype(jnp.float64)  # (batch_size,)
-        Cblock = Cblock * mask[None, :]  # (S, batch_size)
+        # Mask out unused columns in last block (optional but nice)
+        width = jnp.minimum(batch_size, jnp.maximum(0, S - start))
+        mask = (col_offsets < width).astype(jnp.float64)
+        Cblock = Cblock * mask[None, :]
 
-        # Update full (S, batch_size) slice; always legal
+        # SAFE because C has width S_pad, and start+batch_size <= S_pad always
         C = lax.dynamic_update_slice(C, Cblock, (0, start))
         return C
 
-    C = lax.fori_loop(0, n_blocks, body, C0)
+    C_pad = lax.fori_loop(0, n_blocks, body, C0)
+    C = C_pad[:, :S]   # <-- slice back to true width
+
     return 0.5 * (C + C.T)
+
 
 
 def build_curvature_rfft_fn(psf: np.ndarray, y_shape: int, x_shape: int):

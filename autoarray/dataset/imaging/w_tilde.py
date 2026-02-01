@@ -16,6 +16,7 @@ class WTildeImaging(AbstractWTilde):
         noise_map: np.ndarray,
         psf: np.ndarray,
         fft_mask: np.ndarray,
+        batch_size: int = 128
     ):
         """
         Packages together all derived data quantities necessary to fit `Imaging` data using an ` Inversion` via the
@@ -49,9 +50,14 @@ class WTildeImaging(AbstractWTilde):
         self.data_native = data.native
         self.noise_map_native = noise_map.native
 
-        self.inv_noise_map  = inversion_imaging_util.build_inv_noise_var(
+        self.inv_noise_var  = inversion_imaging_util.build_inv_noise_var(
             noise=self.noise_map.native
         )
+        self.inv_noise_var[self.data.mask] = 0.0
+
+        import jax.numpy as jnp
+
+        self.inv_noise_var = jnp.asarray(self.inv_noise_var, dtype=jnp.float64)
 
         self.curv_fn = (inversion_imaging_util.build_curvature_rfft_fn(
             psf=self.psf.native.array,
@@ -59,14 +65,7 @@ class WTildeImaging(AbstractWTilde):
             x_shape=data.shape_native[1],
         ))
 
-        # Ky, Kx = self.psf.shape_native
-        #
-        #
-        # self.Khat_rfft = inversion_imaging_util.precompute_Khat_rfft(
-        #     kernel_2d=self.psf.native, fft_shape=self.mask.shape_native
-        # )
-        # self.Khat_flip_r = inversion_imaging_util.precompute_Khat_rfft(np.flip(self.psf.native, axis=(0, 1)), self.mask.shape_native)
-        #
+        self.batch_size = batch_size
 
 
     @property

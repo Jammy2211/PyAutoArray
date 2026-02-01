@@ -275,15 +275,17 @@ class InversionImagingWTilde(AbstractInversionImaging):
             rows, cols, vals = mapper_i.pixel_triplets_curvature
 
             diag = self.w_tilde.curv_fn(
-                self.w_tilde.inv_noise_map,
+                self.w_tilde.inv_noise_var,
                 rows,
                 cols,
                 vals,
                 y_shape=self.mask.shape_native[0],
                 x_shape=self.mask.shape_native[1],
                 S=mapper_i.params,
-                batch_size=300
+                batch_size=self.w_tilde.batch_size,
             )
+
+            print(self._xp.max(diag), self._xp.min(diag))
 
             start, end = mapper_param_range_i
 
