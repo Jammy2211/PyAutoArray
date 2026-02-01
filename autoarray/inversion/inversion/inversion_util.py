@@ -8,7 +8,7 @@ from autoarray import exc
 from autoarray.util.fnnls import fnnls_cholesky
 
 
-def curvature_matrix_via_w_tilde_from(
+def curvature_matrix_diag_via_w_tilde_from(
     w_tilde: np.ndarray, mapping_matrix: np.ndarray, xp=np
 ) -> np.ndarray:
     """

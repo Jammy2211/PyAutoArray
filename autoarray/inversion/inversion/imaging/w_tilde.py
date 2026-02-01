@@ -153,18 +153,25 @@ class InversionImagingWTilde(AbstractInversionImaging):
         which computes the `data_vector` of each object and concatenates them.
         """
 
-        return np.concatenate(
-            [
-                inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
+        data_vector_list = []
+
+        for mapper in self.cls_list_from(cls=AbstractMapper):
+
+            rows, cols, vals = mapper.pixel_triplets_data
+
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_w_tilde_from(
                     w_tilde_data=self.w_tilde_data,
-                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-                    data_weights=linear_obj.unique_mappings.data_weights,
-                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    pix_pixels=linear_obj.params,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.total_params,
                 )
-                for linear_obj in self.linear_obj_list
-            ]
-        )
+            )
+
+            data_vector_list.append(data_vector_mapper)
+
+        return self._xp.concatenate(data_vector_list)
 
     @property
     def _data_vector_func_list_and_mapper(self) -> np.ndarray:
@@ -284,8 +291,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 S=mapper_i.params,
                 batch_size=self.w_tilde.batch_size,
             )
-
-            print(self._xp.max(diag), self._xp.min(diag))
 
             start, end = mapper_param_range_i
 
@@ -504,7 +509,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             if isinstance(linear_obj, AbstractMapper):
 
-                rows, cols, vals = linear_obj.pixel_triplets_data
+                rows, cols, vals = linear_obj.pixel_triplets_curvature
 
                 mapped_reconstructed_image = inversion_imaging_util.mapped_image_rect_from_triplets(
                     reconstruction=reconstruction,

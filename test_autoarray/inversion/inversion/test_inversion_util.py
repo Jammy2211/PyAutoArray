@@ -17,7 +17,7 @@ def test__curvature_matrix_from_w_tilde():
         [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
     )
 
-    curvature_matrix = aa.util.inversion.curvature_matrix_via_w_tilde_from(
+    curvature_matrix = aa.util.inversion.curvature_matrix_diag_via_w_tilde_from(
         w_tilde=w_tilde, mapping_matrix=mapping_matrix
     )
 

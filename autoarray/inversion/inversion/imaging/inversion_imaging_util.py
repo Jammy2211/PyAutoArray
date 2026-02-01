@@ -369,7 +369,7 @@ def rfft_convolve2d_same(images: np.ndarray, Khat_r: np.ndarray, Ky: int, Kx: in
 
 
 
-def curvature_matrix_via_w_tilde_from(
+def curvature_matrix_diag_via_w_tilde_from(
     inv_noise_var,
     rows, cols, vals,
     y_shape: int, x_shape: int,
@@ -452,7 +452,7 @@ def build_curvature_rfft_fn(psf: np.ndarray, y_shape: int, x_shape: int):
 
     # Jit wrapper with static shapes
     curvature_jit = jax.jit(
-        partial(curvature_matrix_via_w_tilde_from, Khat_r=Khat_r, Khat_flip_r=Khat_flip_r, Ky=Ky, Kx=Kx),
+        partial(curvature_matrix_diag_via_w_tilde_from, Khat_r=Khat_r, Khat_flip_r=Khat_flip_r, Ky=Ky, Kx=Kx),
         static_argnames=("y_shape", "x_shape", "S", "batch_size"),
     )
     return curvature_jit
