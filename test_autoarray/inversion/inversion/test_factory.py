@@ -546,6 +546,7 @@ def test__inversion_matrices__x2_mappers(
     ] == pytest.approx(0.49999704, 1.0e-4)
     assert inversion.mapped_reconstructed_image[4] == pytest.approx(0.99999998, 1.0e-4)
 
+
 def test__inversion_matrices__x2_mappers__compare_mapping_and_w_tilde_values(
     masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
@@ -577,6 +578,7 @@ def test__inversion_matrices__x2_mappers__compare_mapping_and_w_tilde_values(
     assert inversion_w_tilde.log_det_curvature_reg_matrix_term == pytest.approx(
         inversion_mapping.log_det_curvature_reg_matrix_term
     )
+
 
 def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
     mask = masked_imaging_7x7_no_blur.mask

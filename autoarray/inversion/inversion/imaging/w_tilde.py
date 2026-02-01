@@ -62,7 +62,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             noise_map_native=self.w_tilde.noise_map_native.array,
             kernel_native=self.psf.stored_native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
-            xp=self._xp
+            xp=self._xp,
         )
 
     @property
@@ -87,14 +87,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             rows, cols, vals = mapper.pixel_triplets_data
 
-            data_vector_mapper = (
-                inversion_imaging_util.data_vector_via_w_tilde_from(
-                    w_tilde_data=self.w_tilde_data,
-                    rows=rows,
-                    cols=cols,
-                    vals=vals,
-                    S=mapper.params,
-                )
+            data_vector_mapper = inversion_imaging_util.data_vector_via_w_tilde_from(
+                w_tilde_data=self.w_tilde_data,
+                rows=rows,
+                cols=cols,
+                vals=vals,
+                S=mapper.params,
             )
             param_range = mapper_param_range[mapper_index]
 
@@ -165,14 +163,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             rows, cols, vals = mapper.pixel_triplets_data
 
-            data_vector_mapper = (
-                inversion_imaging_util.data_vector_via_w_tilde_from(
-                    w_tilde_data=self.w_tilde_data,
-                    rows=rows,
-                    cols=cols,
-                    vals=vals,
-                    S=mapper.params,
-                )
+            data_vector_mapper = inversion_imaging_util.data_vector_via_w_tilde_from(
+                w_tilde_data=self.w_tilde_data,
+                rows=rows,
+                cols=cols,
+                vals=vals,
+                S=mapper.params,
             )
 
             data_vector_list.append(data_vector_mapper)
@@ -349,7 +345,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             x_shape=x_shape,
             S0=S0,
             S1=S1,
-            )
+        )
 
     @property
     def _curvature_matrix_x1_mapper(self) -> np.ndarray:
@@ -450,7 +446,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                     curvature_matrix[
                         mapper_param_range[0] : mapper_param_range[1],
-                    linear_func_param_range[0] : linear_func_param_range[1],
+                        linear_func_param_range[0] : linear_func_param_range[1],
                     ] = off_diag
                 else:
 
@@ -458,7 +454,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                         mapper_param_range[0] : mapper_param_range[1],
                         linear_func_param_range[0] : linear_func_param_range[1],
                     ].set(off_diag)
-
 
         for index_0, linear_func_0 in enumerate(linear_func_list):
 
@@ -537,13 +532,15 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                 rows, cols, vals = linear_obj.pixel_triplets_curvature
 
-                mapped_reconstructed_image = inversion_imaging_util.mapped_image_rect_from_triplets(
-                    reconstruction=reconstruction,
-                    rows=rows,
-                    cols=cols,
-                    vals=vals,
-                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
-                    data_shape=self.mask.shape_native,
+                mapped_reconstructed_image = (
+                    inversion_imaging_util.mapped_image_rect_from_triplets(
+                        reconstruction=reconstruction,
+                        rows=rows,
+                        cols=cols,
+                        vals=vals,
+                        fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                        data_shape=self.mask.shape_native,
+                    )
                 )
 
                 mapped_reconstructed_image = Array2D(

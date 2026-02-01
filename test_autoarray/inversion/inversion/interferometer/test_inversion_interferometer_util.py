@@ -108,8 +108,10 @@ def test__curvature_matrix_via_curvature_preload_from():
         native_index_for_slim_index=native_index_for_slim_index,
     )
 
-    curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_diag_via_w_tilde_from(
-        w_tilde=w_tilde, mapping_matrix=mapping_matrix
+    curvature_matrix_via_w_tilde = (
+        aa.util.inversion.curvature_matrix_diag_via_w_tilde_from(
+            w_tilde=w_tilde, mapping_matrix=mapping_matrix
+        )
     )
 
     pix_indexes_for_sub_slim_index = np.array(

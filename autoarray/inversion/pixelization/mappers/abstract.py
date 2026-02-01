@@ -277,7 +277,7 @@ class AbstractMapper(LinearObj):
             slim_index_for_sub=self.slim_index_for_sub_slim_index,
             fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
             sub_fraction_slim=self.over_sampler.sub_fraction.array,
-            xp=self._xp
+            xp=self._xp,
         )
 
         return rows, cols, vals
@@ -292,7 +292,7 @@ class AbstractMapper(LinearObj):
             fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
             sub_fraction_slim=self.over_sampler.sub_fraction.array,
             xp=self._xp,
-            return_rows_slim=False
+            return_rows_slim=False,
         )
 
         return rows, cols, vals
@@ -438,6 +438,7 @@ class AbstractMapper(LinearObj):
         return geometry_util.extent_symmetric_from(
             extent=self.source_plane_mesh_grid.geometry.extent
         )
+
 
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):

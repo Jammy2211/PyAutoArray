@@ -223,16 +223,16 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             pix_weights_for_sub=mapper.pix_weights_for_sub_slim_index,
             slim_index_for_sub=mapper.slim_index_for_sub_slim_index,
             fft_index_for_masked_pixel=mask.fft_index_for_masked_pixel,
-            sub_fraction_slim=mapper.over_sampler.sub_fraction.array
+            sub_fraction_slim=mapper.over_sampler.sub_fraction.array,
         )
 
-        w_tilde_data = (
-            aa.util.inversion_imaging.w_tilde_data_imaging_from(
-                image_native=image.native.array,
-                noise_map_native=noise_map.native.array,
-                kernel_native=kernel.native.array,
-                native_index_for_slim_index=mask.derive_indexes.native_for_slim.astype("int")
-            )
+        w_tilde_data = aa.util.inversion_imaging.w_tilde_data_imaging_from(
+            image_native=image.native.array,
+            noise_map_native=noise_map.native.array,
+            kernel_native=kernel.native.array,
+            native_index_for_slim_index=mask.derive_indexes.native_for_slim.astype(
+                "int"
+            ),
         )
 
         data_vector_via_w_tilde = (
@@ -262,11 +262,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     psf = kernel
 
     w_tilde = aa.WTildeImaging(
-        data=noise_map,
-        noise_map=noise_map,
-        psf=kernel,
-       fft_mask=mask,
-        batch_size=32
+        data=noise_map, noise_map=noise_map, psf=kernel, fft_mask=mask, batch_size=32
     )
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(20, 20))
@@ -298,11 +294,13 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         y_shape=mask.shape_native[0],
         x_shape=mask.shape_native[1],
         S=mesh.shape[0] * mesh.shape[1],
-        batch_size=w_tilde.batch_size
+        batch_size=w_tilde.batch_size,
     )
 
-    curvature_matrix_via_w_tilde = aa.util.inversion_imaging.curvature_matrix_mirrored_from(
-        curvature_matrix=curvature_matrix_via_w_tilde,
+    curvature_matrix_via_w_tilde = (
+        aa.util.inversion_imaging.curvature_matrix_mirrored_from(
+            curvature_matrix=curvature_matrix_via_w_tilde,
+        )
     )
 
     blurred_mapping_matrix = psf.convolved_mapping_matrix_from(
@@ -315,4 +313,3 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     )
 
     assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, abs=1.0e-4)
-

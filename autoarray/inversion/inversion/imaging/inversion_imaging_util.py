@@ -2,6 +2,7 @@ import numpy as np
 from functools import partial
 from typing import Optional, List
 
+
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
@@ -74,11 +75,11 @@ def w_tilde_data_imaging_from(
 
 
 def data_vector_via_w_tilde_from(
-    w_tilde_data: np.ndarray,     # (M_pix,) float64
-    rows: np.ndarray,             # (nnz,) int32  each triplet's data pixel (slim index)
-    cols: np.ndarray,                  # (nnz,) int32  source pixel index
-    vals: np.ndarray,                  # (nnz,) float64 mapping weights incl sub_fraction
-    S: int,                             # number of source pixels
+    w_tilde_data: np.ndarray,  # (M_pix,) float64
+    rows: np.ndarray,  # (nnz,) int32  each triplet's data pixel (slim index)
+    cols: np.ndarray,  # (nnz,) int32  source pixel index
+    vals: np.ndarray,  # (nnz,) float64 mapping weights incl sub_fraction
+    S: int,  # number of source pixels
 ) -> np.ndarray:
     """
     Replacement for numba data_vector_via_w_tilde_data_imaging_from using triplets.
@@ -91,8 +92,8 @@ def data_vector_via_w_tilde_from(
     """
     from jax.ops import segment_sum
 
-    w = w_tilde_data[rows]          # (nnz,)
-    contrib = vals * w                         # (nnz,)
+    w = w_tilde_data[rows]  # (nnz,)
+    contrib = vals * w  # (nnz,)
     return segment_sum(contrib, cols, num_segments=S)  # (S,)
 
 
@@ -215,6 +216,7 @@ def curvature_matrix_mirrored_from(
 
     return curvature_matrix_mirrored
 
+
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix,
     value: float,
@@ -271,7 +273,7 @@ def curvature_matrix_with_added_to_diag_from(
 def build_inv_noise_var(noise):
     inv = np.zeros_like(noise, dtype=np.float64)
     good = np.isfinite(noise) & (noise > 0)
-    inv[good] = 1.0 / noise[good]**2
+    inv[good] = 1.0 / noise[good] ** 2
     return inv
 
 
@@ -290,7 +292,9 @@ def precompute_Khat_rfft(kernel_2d: np.ndarray, fft_shape):
     return jnp.fft.rfft2(kernel_pad, s=(Fy, Fx))
 
 
-def rfft_convolve2d_same(images: np.ndarray, Khat_r: np.ndarray, Ky: int, Kx: int, fft_shape):
+def rfft_convolve2d_same(
+    images: np.ndarray, Khat_r: np.ndarray, Ky: int, Kx: int, fft_shape
+):
     """
     Batched real FFT convolution, returning 'same' output.
 
@@ -305,21 +309,25 @@ def rfft_convolve2d_same(images: np.ndarray, Khat_r: np.ndarray, Ky: int, Kx: in
     Fy, Fx = fft_shape
 
     images_pad = jnp.pad(images, ((0, 0), (0, Fy - Hy), (0, Fx - Hx)))
-    Fhat = jnp.fft.rfft2(images_pad, s=(Fy, Fx))                 # (B, Fy, Fx//2+1)
+    Fhat = jnp.fft.rfft2(images_pad, s=(Fy, Fx))  # (B, Fy, Fx//2+1)
     out_pad = jnp.fft.irfft2(Fhat * Khat_r[None, :, :], s=(Fy, Fx))  # (B, Fy, Fx), real
 
     cy, cx = Ky // 2, Kx // 2
-    return out_pad[:, cy:cy + Hy, cx:cx + Hx]
-
+    return out_pad[:, cy : cy + Hy, cx : cx + Hx]
 
 
 def curvature_matrix_diag_via_w_tilde_from(
     inv_noise_var,
-    rows, cols, vals,
-    y_shape: int, x_shape: int,
+    rows,
+    cols,
+    vals,
+    y_shape: int,
+    x_shape: int,
     S: int,
-    Khat_r, Khat_flip_r,
-    Ky: int, Kx: int,
+    Khat_r,
+    Khat_flip_r,
+    Ky: int,
+    Kx: int,
     batch_size: int = 32,
 ):
     from jax import lax
@@ -353,14 +361,14 @@ def curvature_matrix_diag_via_w_tilde_from(
 
         in_block = (cols >= start) & (cols < (start + batch_size))
         bc = jnp.where(in_block, cols - start, 0).astype(jnp.int32)
-        v  = jnp.where(in_block, vals, 0.0)
+        v = jnp.where(in_block, vals, 0.0)
 
         F = jnp.zeros((M, batch_size), dtype=jnp.float64)
         F = F.at[rows, bc].add(v)
 
         G = apply_W(F)  # (M, batch_size)
 
-        contrib = vals[:, None] * G[rows, :]          # (nnz, batch_size)
+        contrib = vals[:, None] * G[rows, :]  # (nnz, batch_size)
         Cblock = segment_sum(contrib, cols, num_segments=S)  # (S, batch_size)
 
         # Mask out unused columns in last block (optional but nice)
@@ -373,13 +381,14 @@ def curvature_matrix_diag_via_w_tilde_from(
         return C
 
     C_pad = lax.fori_loop(0, n_blocks, body, C0)
-    C = C_pad[:, :S]   # <-- slice back to true width
+    C = C_pad[:, :S]  # <-- slice back to true width
 
     return 0.5 * (C + C.T)
 
 
-
-def curvature_matrix_diag_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x_shape: int):
+def curvature_matrix_diag_via_w_tilde_from_func(
+    psf: np.ndarray, y_shape: int, x_shape: int
+):
 
     import jax
     import jax.numpy as jnp
@@ -396,22 +405,32 @@ def curvature_matrix_diag_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x
 
     # Jit wrapper with static shapes
     curvature_jit = jax.jit(
-        partial(curvature_matrix_diag_via_w_tilde_from, Khat_r=Khat_r, Khat_flip_r=Khat_flip_r, Ky=Ky, Kx=Kx),
+        partial(
+            curvature_matrix_diag_via_w_tilde_from,
+            Khat_r=Khat_r,
+            Khat_flip_r=Khat_flip_r,
+            Ky=Ky,
+            Kx=Kx,
+        ),
         static_argnames=("y_shape", "x_shape", "S", "batch_size"),
     )
     return curvature_jit
 
 
 def curvature_matrix_off_diag_via_w_tilde_from(
-    inv_noise_var,     # (Hy, Hx) float64
-    rows0, cols0, vals0,
-    rows1, cols1, vals1,
+    inv_noise_var,  # (Hy, Hx) float64
+    rows0,
+    cols0,
+    vals0,
+    rows1,
+    cols1,
+    vals1,
     y_shape: int,
     x_shape: int,
     S0: int,
     S1: int,
-    Khat_r,            # rfft2(psf padded)
-    Khat_flip_r,       # rfft2(flipped psf padded)
+    Khat_r,  # rfft2(psf padded)
+    Khat_flip_r,  # rfft2(flipped psf padded)
     Ky: int,
     Kx: int,
     batch_size: int = 32,
@@ -463,7 +482,7 @@ def curvature_matrix_off_diag_via_w_tilde_from(
         # Select mapper-1 entries in this column block
         in_block = (cols1 >= start) & (cols1 < (start + batch_size))
         bc = jnp.where(in_block, cols1 - start, 0).astype(jnp.int32)
-        v  = jnp.where(in_block, vals1, 0.0)
+        v = jnp.where(in_block, vals1, 0.0)
 
         # Assemble RHS block: (M, batch_size)
         Fbatch = jnp.zeros((M, batch_size), dtype=jnp.float64)
@@ -491,7 +510,9 @@ def curvature_matrix_off_diag_via_w_tilde_from(
     return F01_pad[:, :S1]
 
 
-def build_curvature_matrix_off_diag_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x_shape: int):
+def build_curvature_matrix_off_diag_via_w_tilde_from_func(
+    psf: np.ndarray, y_shape: int, x_shape: int
+):
     """
     Matches your diagonal curvature_matrix_diag_via_w_tilde_from_func:
       - precomputes Khat_r and Khat_flip_r once
@@ -522,13 +543,15 @@ def build_curvature_matrix_off_diag_via_w_tilde_from_func(psf: np.ndarray, y_sha
 
 
 def curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from(
-    curvature_weights,      # (M_pix, n_funcs) = (H B) / noise^2  on slim grid
+    curvature_weights,  # (M_pix, n_funcs) = (H B) / noise^2  on slim grid
     fft_index_for_masked_pixel,  # (M_pix,) slim -> rect(flat) indices
-    rows, cols, vals,            # triplets for sparse mapper A
+    rows,
+    cols,
+    vals,  # triplets for sparse mapper A
     y_shape: int,
     x_shape: int,
     S: int,
-    Khat_flip_r,                 # precomputed rfft2(flipped PSF padded)
+    Khat_flip_r,  # precomputed rfft2(flipped PSF padded)
     Ky: int,
     Kx: int,
 ):
@@ -542,7 +565,9 @@ def curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from(
     from jax.ops import segment_sum
 
     curvature_weights = jnp.asarray(curvature_weights, dtype=jnp.float64)
-    fft_index_for_masked_pixel = jnp.asarray(fft_index_for_masked_pixel, dtype=jnp.int32)
+    fft_index_for_masked_pixel = jnp.asarray(
+        fft_index_for_masked_pixel, dtype=jnp.int32
+    )
 
     rows = jnp.asarray(rows, dtype=jnp.int32)
     cols = jnp.asarray(cols, dtype=jnp.int32)
@@ -561,16 +586,18 @@ def curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from(
     back_native = rfft_convolve2d_same(images, Khat_flip_r, Ky, Kx, fft_shape)
 
     # 3) gather at mapper rows
-    back_flat = back_native.reshape((n_funcs, M_rect)).T       # (M_rect, n_funcs)
-    back_at_rows = back_flat[rows, :]                          # (nnz, n_funcs)
+    back_flat = back_native.reshape((n_funcs, M_rect)).T  # (M_rect, n_funcs)
+    back_at_rows = back_flat[rows, :]  # (nnz, n_funcs)
 
     # 4) accumulate into sparse pixels
     contrib = vals[:, None] * back_at_rows
-    off_diag = segment_sum(contrib, cols, num_segments=S)      # (S, n_funcs)
+    off_diag = segment_sum(contrib, cols, num_segments=S)  # (S, n_funcs)
     return off_diag
 
 
-def build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x_shape: int):
+def build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(
+    psf: np.ndarray, y_shape: int, x_shape: int
+):
 
     import jax
     import jax.numpy as jnp
@@ -595,12 +622,12 @@ def build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(ps
 
 
 def mapped_image_rect_from_triplets(
-    reconstruction,   # (S,)
+    reconstruction,  # (S,)
     rows,
     cols,
-    vals, # (nnz,)
+    vals,  # (nnz,)
     fft_index_for_masked_pixel,
-    data_shape: int,      # y_shape * x_shape
+    data_shape: int,  # y_shape * x_shape
 ):
     import jax.numpy as jnp
     from jax.ops import segment_sum
@@ -610,8 +637,10 @@ def mapped_image_rect_from_triplets(
     cols = jnp.asarray(cols, dtype=jnp.int32)
     vals = jnp.asarray(vals, dtype=jnp.float64)
 
-    contrib = vals * reconstruction[cols]     # (nnz,)
-    image_rect = segment_sum(contrib, rows, num_segments=data_shape[0] * data_shape[1])  # (M_rect,)
+    contrib = vals * reconstruction[cols]  # (nnz,)
+    image_rect = segment_sum(
+        contrib, rows, num_segments=data_shape[0] * data_shape[1]
+    )  # (M_rect,)
 
-    image_slim = image_rect[fft_index_for_masked_pixel]            # (M_pix,)
+    image_slim = image_rect[fft_index_for_masked_pixel]  # (M_pix,)
     return image_slim

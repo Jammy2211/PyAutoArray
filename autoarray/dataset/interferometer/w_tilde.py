@@ -236,9 +236,7 @@ class WTildeInterferometer(AbstractWTilde):
             The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
             which can be reduced to produce lower memory usage at the cost of speed.
         """
-        super().__init__(
-            curvature_preload=curvature_preload, fft_mask=fft_mask
-        )
+        super().__init__(curvature_preload=curvature_preload, fft_mask=fft_mask)
 
         self.dirty_image = dirty_image
 

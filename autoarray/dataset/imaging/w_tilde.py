@@ -16,7 +16,7 @@ class WTildeImaging(AbstractWTilde):
         noise_map: np.ndarray,
         psf: np.ndarray,
         fft_mask: np.ndarray,
-        batch_size: int = 128
+        batch_size: int = 128,
     ):
         """
         Packages together all derived data quantities necessary to fit `Imaging` data using an ` Inversion` via the
@@ -38,10 +38,7 @@ class WTildeImaging(AbstractWTilde):
             The lengths of how many indexes each curvature preload contains, again used to compute the curvature
             matrix efficienctly.
         """
-        super().__init__(
-            curvature_preload=None,
-            fft_mask=fft_mask
-        )
+        super().__init__(curvature_preload=None, fft_mask=fft_mask)
 
         self.data = data
         self.noise_map = noise_map
@@ -50,7 +47,7 @@ class WTildeImaging(AbstractWTilde):
         self.data_native = data.native
         self.noise_map_native = noise_map.native
 
-        self.inv_noise_var  = inversion_imaging_util.build_inv_noise_var(
+        self.inv_noise_var = inversion_imaging_util.build_inv_noise_var(
             noise=self.noise_map.native
         )
         self.inv_noise_var[self.data.mask] = 0.0
@@ -59,23 +56,24 @@ class WTildeImaging(AbstractWTilde):
 
         self.inv_noise_var = jnp.asarray(self.inv_noise_var, dtype=jnp.float64)
 
-        self.curvature_matrix_diag_func = (inversion_imaging_util.curvature_matrix_diag_via_w_tilde_from_func(
+        self.curvature_matrix_diag_func = (
+            inversion_imaging_util.curvature_matrix_diag_via_w_tilde_from_func(
+                psf=self.psf.native.array,
+                y_shape=data.shape_native[0],
+                x_shape=data.shape_native[1],
+            )
+        )
+
+        self.curvature_matrix_off_diag_func = inversion_imaging_util.build_curvature_matrix_off_diag_via_w_tilde_from_func(
             psf=self.psf.native.array,
             y_shape=data.shape_native[0],
             x_shape=data.shape_native[1],
-        ))
+        )
 
-        self.curvature_matrix_off_diag_func = (inversion_imaging_util.build_curvature_matrix_off_diag_via_w_tilde_from_func(
+        self.curvature_matrix_off_diag_light_profiles_func = inversion_imaging_util.build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(
             psf=self.psf.native.array,
             y_shape=data.shape_native[0],
             x_shape=data.shape_native[1],
-        ))
-
-        self.curvature_matrix_off_diag_light_profiles_func = (inversion_imaging_util.build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(
-            psf=self.psf.native.array,
-            y_shape=data.shape_native[0],
-            x_shape=data.shape_native[1],
-        ))
-
+        )
 
         self.batch_size = batch_size

@@ -444,12 +444,13 @@ def adaptive_pixel_signals_from(
 
 import numpy as np
 
+
 def pixel_triplets_from_subpixel_arrays_from(
-    pix_indexes_for_sub,          # (M_sub, P)
-    pix_weights_for_sub,          # (M_sub, P)
-    slim_index_for_sub,           # (M_sub,)
-    fft_index_for_masked_pixel,   # (N_unmasked,)
-    sub_fraction_slim,            # (N_unmasked,)
+    pix_indexes_for_sub,  # (M_sub, P)
+    pix_weights_for_sub,  # (M_sub, P)
+    slim_index_for_sub,  # (M_sub,)
+    fft_index_for_masked_pixel,  # (N_unmasked,)
+    sub_fraction_slim,  # (N_unmasked,)
     *,
     return_rows_slim: bool = True,
     xp=np,
@@ -492,19 +493,21 @@ def pixel_triplets_from_subpixel_arrays_from(
     if xp is np:
         pix_indexes_for_sub = np.asarray(pix_indexes_for_sub, dtype=np.int32)
         pix_weights_for_sub = np.asarray(pix_weights_for_sub, dtype=np.float64)
-        slim_index_for_sub  = np.asarray(slim_index_for_sub,  dtype=np.int32)
-        fft_index_for_masked_pixel = np.asarray(fft_index_for_masked_pixel, dtype=np.int32)
-        sub_fraction_slim    = np.asarray(sub_fraction_slim,    dtype=np.float64)
+        slim_index_for_sub = np.asarray(slim_index_for_sub, dtype=np.int32)
+        fft_index_for_masked_pixel = np.asarray(
+            fft_index_for_masked_pixel, dtype=np.int32
+        )
+        sub_fraction_slim = np.asarray(sub_fraction_slim, dtype=np.float64)
 
         M_sub, P = pix_indexes_for_sub.shape
 
         sub_ids = np.repeat(np.arange(M_sub, dtype=np.int32), P)  # (M_sub*P,)
 
-        cols = pix_indexes_for_sub.reshape(-1)                    # int32
-        vals = pix_weights_for_sub.reshape(-1)                    # float64
+        cols = pix_indexes_for_sub.reshape(-1)  # int32
+        vals = pix_weights_for_sub.reshape(-1)  # float64
 
-        slim_rows = slim_index_for_sub[sub_ids]                   # int32
-        vals = vals * sub_fraction_slim[slim_rows]                # float64
+        slim_rows = slim_index_for_sub[sub_ids]  # int32
+        vals = vals * sub_fraction_slim[slim_rows]  # float64
 
         if return_rows_slim:
             return slim_rows, cols, vals
@@ -519,9 +522,9 @@ def pixel_triplets_from_subpixel_arrays_from(
     # Assume xp is jax.numpy (or a compatible array module).
     pix_indexes_for_sub = xp.asarray(pix_indexes_for_sub, dtype=xp.int32)
     pix_weights_for_sub = xp.asarray(pix_weights_for_sub, dtype=xp.float64)
-    slim_index_for_sub  = xp.asarray(slim_index_for_sub,  dtype=xp.int32)
+    slim_index_for_sub = xp.asarray(slim_index_for_sub, dtype=xp.int32)
     fft_index_for_masked_pixel = xp.asarray(fft_index_for_masked_pixel, dtype=xp.int32)
-    sub_fraction_slim    = xp.asarray(sub_fraction_slim,    dtype=xp.float64)
+    sub_fraction_slim = xp.asarray(sub_fraction_slim, dtype=xp.float64)
 
     M_sub, P = pix_indexes_for_sub.shape
 
@@ -538,8 +541,6 @@ def pixel_triplets_from_subpixel_arrays_from(
 
     rows = fft_index_for_masked_pixel[slim_rows]
     return rows, cols, vals
-
-
 
 
 def mapping_matrix_from(

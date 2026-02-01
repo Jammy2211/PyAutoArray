@@ -4,7 +4,7 @@ from autoarray import exc
 
 
 class AbstractWTilde:
-    def __init__(self, curvature_preload : np.ndarray, fft_mask: np.ndarray):
+    def __init__(self, curvature_preload: np.ndarray, fft_mask: np.ndarray):
         """
         Packages together all derived data quantities necessary to fit `data (e.g. `Imaging`, Interferometer`) using
         an ` Inversion` via the w_tilde formalism.
