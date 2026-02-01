@@ -78,7 +78,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         if not self.has(cls=AbstractMapper):
             return None
 
-        data_vector = np.zeros(self.total_params)
+        data_vector = self._xp.zeros(self.total_params)
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)
         mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
@@ -98,7 +98,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
             param_range = mapper_param_range[mapper_index]
 
-            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
+            start = param_range[0]
+            end = param_range[1]
+
+            if self._xp is np:
+                data_vector[start:end] = data_vector_mapper
+            else:
+                data_vector = data_vector.at[start:end].set(data_vector_mapper)
 
         return data_vector
 
@@ -186,7 +192,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         separation of functions enables the `data_vector` to be preloaded in certain circumstances.
         """
 
-        data_vector = np.array(self._data_vector_mapper)
+        data_vector = self._xp.array(self._data_vector_mapper)
 
         linear_func_param_range = self.param_range_list_from(
             cls=AbstractLinearObjFuncList

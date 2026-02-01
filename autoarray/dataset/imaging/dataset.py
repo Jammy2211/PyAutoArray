@@ -475,10 +475,10 @@ class Imaging(AbstractDataset):
         return dataset
 
     def apply_w_tilde(
-            self,
-            batch_size: int = 128,
-            disable_fft_pad: bool = False,
-            use_jax: bool = False,
+        self,
+        batch_size: int = 128,
+        disable_fft_pad: bool = False,
+        use_jax: bool = False,
     ):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
