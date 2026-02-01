@@ -466,3 +466,27 @@ def build_curvature_rfft_fn(psf: np.ndarray, y_shape: int, x_shape: int):
     )
     return curvature_jit
 
+
+
+
+def mapped_image_rect_from_triplets(
+    reconstruction,   # (S,)
+    rows,
+    cols,
+    vals, # (nnz,)
+    fft_index_for_masked_pixel,
+    data_shape: int,      # y_shape * x_shape
+):
+    import jax.numpy as jnp
+    from jax.ops import segment_sum
+
+    reconstruction = jnp.asarray(reconstruction, dtype=jnp.float64)
+    rows = jnp.asarray(rows, dtype=jnp.int32)
+    cols = jnp.asarray(cols, dtype=jnp.int32)
+    vals = jnp.asarray(vals, dtype=jnp.float64)
+
+    contrib = vals * reconstruction[cols]     # (nnz,)
+    image_rect = segment_sum(contrib, rows, num_segments=data_shape[0] * data_shape[1])  # (M_rect,)
+
+    image_slim = image_rect[fft_index_for_masked_pixel]            # (M_pix,)
+    return image_slim

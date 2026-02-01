@@ -233,7 +233,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
             curvature_matrix = self._curvature_matrix_multi_mapper
 
         curvature_matrix = inversion_imaging_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
+            curvature_matrix=curvature_matrix,
+            xp=self._xp,
         )
 
         if len(self.no_regularization_index_list) > 0:
@@ -242,6 +243,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     curvature_matrix=curvature_matrix,
                     value=self.settings.no_regularization_add_to_curvature_diag_value,
                     no_regularization_index_list=self.no_regularization_index_list,
+                    xp=self._xp,
                 )
             )
 
@@ -499,12 +501,20 @@ class InversionImagingWTilde(AbstractInversionImaging):
             reconstruction = reconstruction_dict[linear_obj]
 
             if isinstance(linear_obj, AbstractMapper):
-                mapped_reconstructed_image = inversion_imaging_numba_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
-                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-                    data_weights=linear_obj.unique_mappings.data_weights,
-                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    reconstruction=np.array(reconstruction),
+
+                rows, cols, vals = linear_obj.pixel_triplets
+
+                mapped_reconstructed_image = inversion_imaging_util.mapped_image_rect_from_triplets(
+                    reconstruction=reconstruction,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                    data_shape=self.mask.shape_native,
                 )
+
+                print(self.mask.shape_native)
+                print(mapped_reconstructed_image.shape)
 
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask
@@ -524,7 +534,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     linear_obj
                 ]
 
-                mapped_reconstructed_image = np.sum(
+                mapped_reconstructed_image = self._xp.sum(
                     reconstruction * operated_mapping_matrix, axis=1
                 )
 
