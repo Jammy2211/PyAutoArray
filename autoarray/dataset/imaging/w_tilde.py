@@ -71,4 +71,11 @@ class WTildeImaging(AbstractWTilde):
             x_shape=data.shape_native[1],
         ))
 
+        self.curvature_matrix_off_diag_light_profiles_func = (inversion_imaging_util.build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(
+            psf=self.psf.native.array,
+            y_shape=data.shape_native[0],
+            x_shape=data.shape_native[1],
+        ))
+
+
         self.batch_size = batch_size

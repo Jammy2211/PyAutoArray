@@ -521,6 +521,79 @@ def build_curvature_matrix_off_diag_via_w_tilde_from_func(psf: np.ndarray, y_sha
     return offdiag_jit
 
 
+def curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from(
+    curvature_weights,      # (M_pix, n_funcs) = (H B) / noise^2  on slim grid
+    fft_index_for_masked_pixel,  # (M_pix,) slim -> rect(flat) indices
+    rows, cols, vals,            # triplets for sparse mapper A
+    y_shape: int,
+    x_shape: int,
+    S: int,
+    Khat_flip_r,                 # precomputed rfft2(flipped PSF padded)
+    Ky: int,
+    Kx: int,
+):
+    """
+    Computes: off_diag = A^T [ H^T(curvature_weights_native) ]
+    where curvature_weights = (H B) / noise^2 already.
+    """
+
+    import jax
+    import jax.numpy as jnp
+    from jax.ops import segment_sum
+
+    curvature_weights = jnp.asarray(curvature_weights, dtype=jnp.float64)
+    fft_index_for_masked_pixel = jnp.asarray(fft_index_for_masked_pixel, dtype=jnp.int32)
+
+    rows = jnp.asarray(rows, dtype=jnp.int32)
+    cols = jnp.asarray(cols, dtype=jnp.int32)
+    vals = jnp.asarray(vals, dtype=jnp.float64)
+
+    M_pix, n_funcs = curvature_weights.shape
+    M_rect = y_shape * x_shape
+    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
+
+    # 1) scatter slim weights onto rectangular grid (flat)
+    grid_flat = jnp.zeros((M_rect, n_funcs), dtype=jnp.float64)
+    grid_flat = grid_flat.at[fft_index_for_masked_pixel, :].set(curvature_weights)
+
+    # 2) apply H^T = convolution with flipped PSF (one convolution)
+    images = grid_flat.T.reshape((n_funcs, y_shape, x_shape))  # (B=n_funcs, Hy, Hx)
+    back_native = rfft_convolve2d_same(images, Khat_flip_r, Ky, Kx, fft_shape)
+
+    # 3) gather at mapper rows
+    back_flat = back_native.reshape((n_funcs, M_rect)).T       # (M_rect, n_funcs)
+    back_at_rows = back_flat[rows, :]                          # (nnz, n_funcs)
+
+    # 4) accumulate into sparse pixels
+    contrib = vals[:, None] * back_at_rows
+    off_diag = segment_sum(contrib, cols, num_segments=S)      # (S, n_funcs)
+    return off_diag
+
+
+def build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x_shape: int):
+
+    import jax
+    import jax.numpy as jnp
+
+    psf = jnp.asarray(psf, dtype=jnp.float64)
+    Ky, Kx = psf.shape
+    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
+
+    psf_flip = jnp.flip(psf, axis=(0, 1))
+    Khat_flip_r = precompute_Khat_rfft(psf_flip, fft_shape)
+
+    fn_jit = jax.jit(
+        partial(
+            curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from,
+            Khat_flip_r=Khat_flip_r,
+            Ky=Ky,
+            Kx=Kx,
+        ),
+        static_argnames=("y_shape", "x_shape", "S"),
+    )
+    return fn_jit
+
+
 def mapped_image_rect_from_triplets(
     reconstruction,   # (S,)
     rows,

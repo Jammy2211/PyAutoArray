@@ -128,7 +128,7 @@ def test__curvature_matrix_via_curvature_preload_from():
         fft_state=w_tilde.fft_state,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
-        fft_index_for_masked_pixel=w_tilde.fft_index_for_masked_pixel,
+        fft_index_for_masked_pixel=grid.mask.fft_index_for_masked_pixel,
         pix_pixels=3,
     )
 

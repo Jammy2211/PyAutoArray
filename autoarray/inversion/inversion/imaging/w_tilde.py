@@ -88,12 +88,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
             rows, cols, vals = mapper.pixel_triplets_data
 
             data_vector_mapper = (
-                inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
+                inversion_imaging_util.data_vector_via_w_tilde_from(
                     w_tilde_data=self.w_tilde_data,
                     rows=rows,
                     cols=cols,
                     vals=vals,
-                    S=mapper.total_params,
+                    S=mapper.params,
                 )
             )
             param_range = mapper_param_range[mapper_index]
@@ -199,15 +199,21 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 linear_func
             ]
 
-            diag = inversion_imaging_numba_util.data_vector_via_blurred_mapping_matrix_from(
-                blurred_mapping_matrix=np.array(operated_mapping_matrix),
+            diag = inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
+                blurred_mapping_matrix=operated_mapping_matrix,
                 image=self.data.array,
                 noise_map=self.noise_map.array,
             )
 
             param_range = linear_func_param_range[linear_func_index]
 
-            data_vector[param_range[0] : param_range[1],] = diag
+            start = param_range[0]
+            end = param_range[1]
+
+            if self._xp is np:
+                data_vector[start:end] = diag
+            else:
+                data_vector = data_vector.at[start:end].set(diag)
 
         return data_vector
 
@@ -421,22 +427,35 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     / self.noise_map[:, None] ** 2
                 )
 
-                off_diag = inversion_imaging_numba_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
-                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.unique_mappings.data_weights,
-                    pix_lengths=mapper.unique_mappings.pix_lengths,
-                    pix_pixels=mapper.params,
-                    curvature_weights=np.array(curvature_weights),
-                    mask=self.mask.array,
-                    psf_kernel=self.psf.native.array,
+                rows, cols, vals = mapper.pixel_triplets_curvature
+
+                off_diag = self.w_tilde.curvature_matrix_off_diag_light_profiles_func(
+                    curvature_weights=curvature_weights,
+                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    y_shape=self.mask.shape_native[0],
+                    x_shape=self.mask.shape_native[1],
+                    S=mapper.params,
                 )
 
-                curvature_matrix[
-                    mapper_param_range[0] : mapper_param_range[1],
+                if self._xp is np:
+
+                    curvature_matrix[
+                        mapper_param_range[0] : mapper_param_range[1],
                     linear_func_param_range[0] : linear_func_param_range[1],
-                ] = off_diag
+                    ] = off_diag
+                else:
+
+                    curvature_matrix = curvature_matrix.at[
+                        mapper_param_range[0] : mapper_param_range[1],
+                        linear_func_param_range[0] : linear_func_param_range[1],
+                    ].set(off_diag)
+
 
         for index_0, linear_func_0 in enumerate(linear_func_list):
+
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
 
             weighted_vector_0 = (
@@ -452,15 +471,24 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     / self.noise_map[:, None]
                 )
 
-                diag = np.dot(
+                diag = self._xp.dot(
                     weighted_vector_0.T,
                     weighted_vector_1,
                 )
 
-                curvature_matrix[
-                    linear_func_param_range_0[0] : linear_func_param_range_0[1],
-                    linear_func_param_range_1[0] : linear_func_param_range_1[1],
-                ] = diag
+                if self._xp is np:
+
+                    curvature_matrix[
+                        linear_func_param_range_0[0] : linear_func_param_range_0[1],
+                        linear_func_param_range_1[0] : linear_func_param_range_1[1],
+                    ] = diag
+
+                else:
+
+                    curvature_matrix = curvature_matrix.at[
+                        linear_func_param_range_0[0] : linear_func_param_range_0[1],
+                        linear_func_param_range_1[0] : linear_func_param_range_1[1],
+                    ].set(diag)
 
         return curvature_matrix
 
