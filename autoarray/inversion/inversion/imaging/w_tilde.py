@@ -165,7 +165,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     rows=rows,
                     cols=cols,
                     vals=vals,
-                    S=mapper.total_params,
+                    S=mapper.params,
                 )
             )
 
@@ -281,7 +281,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             rows, cols, vals = mapper_i.pixel_triplets_curvature
 
-            diag = self.w_tilde.curv_fn(
+            diag = self.w_tilde.curvature_matrix_diag_func(
                 self.w_tilde.inv_noise_var,
                 rows,
                 cols,
@@ -317,35 +317,27 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This function computes the off-diagonal terms of F using the w_tilde formalism.
         """
 
-        curvature_matrix_off_diag_0 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
-            curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
-            curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
-            data_weights_0=mapper_0.unique_mappings.data_weights,
-            pix_lengths_0=mapper_0.unique_mappings.pix_lengths,
-            pix_pixels_0=mapper_0.params,
-            data_to_pix_unique_1=mapper_1.unique_mappings.data_to_pix_unique,
-            data_weights_1=mapper_1.unique_mappings.data_weights,
-            pix_lengths_1=mapper_1.unique_mappings.pix_lengths,
-            pix_pixels_1=mapper_1.params,
-        )
+        rows0, cols0, vals0 = mapper_0.pixel_triplets_curvature
+        rows1, cols1, vals1 = mapper_1.pixel_triplets_curvature
 
-        curvature_matrix_off_diag_1 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
-            curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
-            curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
-            data_weights_0=mapper_1.unique_mappings.data_weights,
-            pix_lengths_0=mapper_1.unique_mappings.pix_lengths,
-            pix_pixels_0=mapper_1.params,
-            data_to_pix_unique_1=mapper_0.unique_mappings.data_to_pix_unique,
-            data_weights_1=mapper_0.unique_mappings.data_weights,
-            pix_lengths_1=mapper_0.unique_mappings.pix_lengths,
-            pix_pixels_1=mapper_0.params,
-        )
+        S0 = mapper_0.params
+        S1 = mapper_1.params
 
-        return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
+        (y_shape, x_shape) = self.mask.shape_native
+
+        return self.w_tilde.curvature_matrix_off_diag_func(
+            inv_noise_var=self.w_tilde.inv_noise_var,
+            rows0=rows0,
+            cols0=cols0,
+            vals0=vals0,
+            rows1=rows1,
+            cols1=cols1,
+            vals1=vals1,
+            y_shape=y_shape,
+            x_shape=x_shape,
+            S0=S0,
+            S1=S1,
+            )
 
     @property
     def _curvature_matrix_x1_mapper(self) -> np.ndarray:

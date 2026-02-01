@@ -1,6 +1,6 @@
 import numpy as np
 from functools import partial
-
+from typing import Optional, List
 
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
@@ -215,8 +215,6 @@ def curvature_matrix_mirrored_from(
 
     return curvature_matrix_mirrored
 
-from typing import Optional, List
-
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix,
     value: float,
@@ -381,7 +379,7 @@ def curvature_matrix_diag_via_w_tilde_from(
 
 
 
-def build_curvature_rfft_fn(psf: np.ndarray, y_shape: int, x_shape: int):
+def curvature_matrix_diag_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x_shape: int):
 
     import jax
     import jax.numpy as jnp
@@ -404,6 +402,123 @@ def build_curvature_rfft_fn(psf: np.ndarray, y_shape: int, x_shape: int):
     return curvature_jit
 
 
+def curvature_matrix_off_diag_via_w_tilde_from(
+    inv_noise_var,     # (Hy, Hx) float64
+    rows0, cols0, vals0,
+    rows1, cols1, vals1,
+    y_shape: int,
+    x_shape: int,
+    S0: int,
+    S1: int,
+    Khat_r,            # rfft2(psf padded)
+    Khat_flip_r,       # rfft2(flipped psf padded)
+    Ky: int,
+    Kx: int,
+    batch_size: int = 32,
+):
+    """
+    Off-diagonal curvature block:
+        F01 = A0^T W A1
+    Returns: (S0, S1)
+    """
+
+    import jax.numpy as jnp
+    from jax import lax
+    from jax.ops import segment_sum
+
+    inv_noise_var = jnp.asarray(inv_noise_var, dtype=jnp.float64)
+
+    rows0 = jnp.asarray(rows0, dtype=jnp.int32)
+    cols0 = jnp.asarray(cols0, dtype=jnp.int32)
+    vals0 = jnp.asarray(vals0, dtype=jnp.float64)
+
+    rows1 = jnp.asarray(rows1, dtype=jnp.int32)
+    cols1 = jnp.asarray(cols1, dtype=jnp.int32)
+    vals1 = jnp.asarray(vals1, dtype=jnp.float64)
+
+    M = y_shape * x_shape
+    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
+
+    def apply_W(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
+        B = Fbatch_flat.shape[1]
+        Fimg = Fbatch_flat.T.reshape((B, y_shape, x_shape))
+        blurred = rfft_convolve2d_same(Fimg, Khat_r, Ky, Kx, fft_shape)
+        weighted = blurred * inv_noise_var[None, :, :]
+        back = rfft_convolve2d_same(weighted, Khat_flip_r, Ky, Kx, fft_shape)
+        return back.reshape((B, M)).T  # (M, B)
+
+    # -----------------------------
+    # FIX: pad output width so dynamic_update_slice never clamps
+    # -----------------------------
+    n_blocks = (S1 + batch_size - 1) // batch_size
+    S1_pad = n_blocks * batch_size
+
+    F01_0 = jnp.zeros((S0, S1_pad), dtype=jnp.float64)
+
+    col_offsets = jnp.arange(batch_size, dtype=jnp.int32)
+
+    def body(block_i, F01):
+        start = block_i * batch_size
+
+        # Select mapper-1 entries in this column block
+        in_block = (cols1 >= start) & (cols1 < (start + batch_size))
+        bc = jnp.where(in_block, cols1 - start, 0).astype(jnp.int32)
+        v  = jnp.where(in_block, vals1, 0.0)
+
+        # Assemble RHS block: (M, batch_size)
+        Fbatch = jnp.zeros((M, batch_size), dtype=jnp.float64)
+        Fbatch = Fbatch.at[rows1, bc].add(v)
+
+        # Apply W
+        Gbatch = apply_W(Fbatch)  # (M, batch_size)
+
+        # Project with A0^T -> (S0, batch_size)
+        contrib = vals0[:, None] * Gbatch[rows0, :]
+        block = segment_sum(contrib, cols0, num_segments=S0)  # (S0, batch_size)
+
+        # Mask out columns beyond S1 in the last block
+        width = jnp.minimum(batch_size, jnp.maximum(0, S1 - start))
+        mask = (col_offsets < width).astype(jnp.float64)
+        block = block * mask[None, :]
+
+        # Safe because start+batch_size <= S1_pad always
+        F01 = lax.dynamic_update_slice(F01, block, (0, start))
+        return F01
+
+    F01_pad = lax.fori_loop(0, n_blocks, body, F01_0)
+
+    # Slice back to true width
+    return F01_pad[:, :S1]
+
+
+def build_curvature_matrix_off_diag_via_w_tilde_from_func(psf: np.ndarray, y_shape: int, x_shape: int):
+    """
+    Matches your diagonal curvature_matrix_diag_via_w_tilde_from_func:
+      - precomputes Khat_r and Khat_flip_r once
+      - returns a jitted function with the SAME static args pattern
+    """
+
+    import jax
+    import jax.numpy as jnp
+
+    psf = jnp.asarray(psf, dtype=jnp.float64)
+    Ky, Kx = psf.shape
+    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
+
+    Khat_r = precompute_Khat_rfft(psf, fft_shape)
+    Khat_flip_r = precompute_Khat_rfft(jnp.flip(psf, axis=(0, 1)), fft_shape)
+
+    offdiag_jit = jax.jit(
+        partial(
+            curvature_matrix_off_diag_via_w_tilde_from,
+            Khat_r=Khat_r,
+            Khat_flip_r=Khat_flip_r,
+            Ky=Ky,
+            Kx=Kx,
+        ),
+        static_argnames=("y_shape", "x_shape", "S0", "S1", "batch_size"),
+    )
+    return offdiag_jit
 
 
 def mapped_image_rect_from_triplets(

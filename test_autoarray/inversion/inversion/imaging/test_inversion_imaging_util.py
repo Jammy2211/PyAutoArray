@@ -290,7 +290,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         return_rows_slim=False,
     )
 
-    curvature_matrix_via_w_tilde = w_tilde.curv_fn(
+    curvature_matrix_via_w_tilde = w_tilde.curvature_matrix_diag_func(
         w_tilde.inv_noise_var,
         rows,
         cols,

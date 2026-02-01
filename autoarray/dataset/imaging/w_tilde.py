@@ -59,23 +59,16 @@ class WTildeImaging(AbstractWTilde):
 
         self.inv_noise_var = jnp.asarray(self.inv_noise_var, dtype=jnp.float64)
 
-        self.curv_fn = (inversion_imaging_util.build_curvature_rfft_fn(
+        self.curvature_matrix_diag_func = (inversion_imaging_util.curvature_matrix_diag_via_w_tilde_from_func(
+            psf=self.psf.native.array,
+            y_shape=data.shape_native[0],
+            x_shape=data.shape_native[1],
+        ))
+
+        self.curvature_matrix_off_diag_func = (inversion_imaging_util.build_curvature_matrix_off_diag_via_w_tilde_from_func(
             psf=self.psf.native.array,
             y_shape=data.shape_native[0],
             x_shape=data.shape_native[1],
         ))
 
         self.batch_size = batch_size
-
-
-    @property
-    def psf_operator_matrix_dense(self):
-
-        return inversion_imaging_util.psf_operator_matrix_dense_from(
-            kernel_native=self.psf.native.array,
-            native_index_for_slim_index=np.array(
-                self.mask.derive_indexes.native_for_slim
-            ).astype("int"),
-            native_shape=self.noise_map.shape_native,
-            correlate=False,
-        )
