@@ -85,7 +85,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         for mapper_index, mapper in enumerate(mapper_list):
 
-            rows, cols, vals = mapper.pixel_triplets
+            rows, cols, vals = mapper.pixel_triplets_data
 
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
@@ -133,7 +133,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
         linear_obj = self.linear_obj_list[0]
 
-        rows, cols, vals = linear_obj.pixel_triplets
+        rows, cols, vals = linear_obj.pixel_triplets_data
 
         return inversion_imaging_util.data_vector_via_w_tilde_from(
             w_tilde_data=self.w_tilde_data,
@@ -272,7 +272,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            rows, cols, vals = mapper_i.pixel_triplets
+            rows, cols, vals = mapper_i.pixel_triplets_curvature
 
             diag = self.w_tilde.curv_fn(
                 self.w_tilde.inv_noise_map,
@@ -502,7 +502,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             if isinstance(linear_obj, AbstractMapper):
 
-                rows, cols, vals = linear_obj.pixel_triplets
+                rows, cols, vals = linear_obj.pixel_triplets_data
 
                 mapped_reconstructed_image = inversion_imaging_util.mapped_image_rect_from_triplets(
                     reconstruction=reconstruction,
@@ -512,9 +512,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
                     data_shape=self.mask.shape_native,
                 )
-
-                print(self.mask.shape_native)
-                print(mapped_reconstructed_image.shape)
 
                 mapped_reconstructed_image = Array2D(
                     values=mapped_reconstructed_image, mask=self.mask

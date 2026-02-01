@@ -269,7 +269,7 @@ class AbstractMapper(LinearObj):
         )
 
     @cached_property
-    def pixel_triplets(self):
+    def pixel_triplets_data(self):
 
         rows, cols, vals = mapper_util.pixel_triplets_from_subpixel_arrays_from(
             pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
@@ -278,6 +278,21 @@ class AbstractMapper(LinearObj):
             fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
             sub_fraction_slim=self.over_sampler.sub_fraction.array,
             xp=self._xp
+        )
+
+        return rows, cols, vals
+
+    @cached_property
+    def pixel_triplets_curvature(self):
+
+        rows, cols, vals = mapper_util.pixel_triplets_from_subpixel_arrays_from(
+            pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
+            slim_index_for_sub=self.slim_index_for_sub_slim_index,
+            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            sub_fraction_slim=self.over_sampler.sub_fraction.array,
+            xp=self._xp,
+            return_rows_slim=False
         )
 
         return rows, cols, vals

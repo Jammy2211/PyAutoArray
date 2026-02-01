@@ -451,6 +451,7 @@ def pixel_triplets_from_subpixel_arrays_from(
     fft_index_for_masked_pixel,   # (N_unmasked,)
     sub_fraction_slim,            # (N_unmasked,)
     *,
+    return_rows_slim: bool = True,
     xp=np,
 ):
     """
@@ -524,14 +525,18 @@ def pixel_triplets_from_subpixel_arrays_from(
     slim_rows = slim_index_for_sub[sub_ids].astype(xp.int32)     # (nnz,)
 
     # ------------------------------------------------------------
-    # slim pixel -> FFT rectangular pixel
-    # ------------------------------------------------------------
-    rows = fft_index_for_masked_pixel[slim_rows].astype(xp.int32)
-
-    # ------------------------------------------------------------
     # Oversampling normalization
     # ------------------------------------------------------------
     vals = vals * sub_fraction_slim[slim_rows].astype(xp.float64)
+
+
+    if return_rows_slim:
+        return slim_rows, cols, vals
+
+    # ------------------------------------------------------------
+    # slim pixel -> FFT rectangular pixel
+    # ------------------------------------------------------------
+    rows = fft_index_for_masked_pixel[slim_rows].astype(xp.int32)
 
     return rows, cols, vals
 

@@ -183,17 +183,14 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
     psf = kernel
 
-    w_tilde = aa.WTildeImaging(
-        noise_map=noise_map,
-        psf=psf,
-        fft_mask=mask
-    )
-
     pixelization = aa.mesh.RectangularUniform(shape=(20, 20))
 
     # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
+
+        print(sub_size)
+
         grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=sub_size)
 
         mapper_grids = pixelization.mapper_grids_from(
@@ -225,17 +222,17 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             pix_indexes_for_sub=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub=mapper.pix_weights_for_sub_slim_index,
             slim_index_for_sub=mapper.slim_index_for_sub_slim_index,
-            fft_index_for_masked_pixel=w_tilde.fft_index_for_masked_pixel,
+            fft_index_for_masked_pixel=mask.fft_index_for_masked_pixel,
             sub_fraction_slim=mapper.over_sampler.sub_fraction.array
         )
 
-        w_tilde_data = aa.util.inversion_imaging.w_tilde_data_imaging_from(
-            image_native=image.native.array,
-            noise_map_native=noise_map.native.array,
-            kernel_native=kernel.native.array,
-            native_index_for_slim_index=mask.derive_indexes.native_for_slim.astype(
-                "int"
-            ),
+        w_tilde_data = (
+            aa.util.inversion_imaging.w_tilde_data_imaging_from(
+                image_native=image.native.array,
+                noise_map_native=noise_map.native.array,
+                kernel_native=kernel.native.array,
+                native_index_for_slim_index=mask.derive_indexes.native_for_slim.astype("int")
+            )
         )
 
         data_vector_via_w_tilde = (
