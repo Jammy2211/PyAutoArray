@@ -232,7 +232,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         else:
             curvature_matrix = self._curvature_matrix_multi_mapper
 
-        curvature_matrix = inversion_imaging_numba_util.curvature_matrix_mirrored_from(
+        curvature_matrix = inversion_imaging_util.curvature_matrix_mirrored_from(
             curvature_matrix=curvature_matrix
         )
 
@@ -261,7 +261,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         if not self.has(cls=AbstractMapper):
             return None
 
-        curvature_matrix = np.zeros((self.total_params, self.total_params))
+        curvature_matrix = self._xp.zeros((self.total_params, self.total_params))
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
@@ -270,22 +270,25 @@ class InversionImagingWTilde(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            diag = inversion_imaging_numba_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-                curvature_preload=self.w_tilde.curvature_preload,
-                curvature_indexes=self.w_tilde.indexes,
-                curvature_lengths=self.w_tilde.lengths,
-                data_to_pix_unique=np.array(
-                    mapper_i.unique_mappings.data_to_pix_unique
-                ),
-                data_weights=np.array(mapper_i.unique_mappings.data_weights),
-                pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
-                pix_pixels=mapper_i.params,
+            rows, cols, vals = mapper_i.pixel_triplets
+
+            diag = self.w_tilde.curv_fn(
+                self.w_tilde.inv_noise_map,
+                rows,
+                cols,
+                vals,
+                y_shape=self.mask.shape_native[0],
+                x_shape=self.mask.shape_native[1],
+                S=mapper_i.params,
+                batch_size=300
             )
 
-            curvature_matrix[
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-            ] = diag
+            start, end = mapper_param_range_i
+
+            if self._xp is np:
+                curvature_matrix[start:end, start:end] = diag
+            else:
+                curvature_matrix = curvature_matrix.at[start:end, start:end].set(diag)
 
             if self.total(cls=AbstractMapper) == 1:
                 return curvature_matrix

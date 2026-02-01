@@ -49,6 +49,26 @@ class WTildeImaging(AbstractWTilde):
         self.data_native = data.native
         self.noise_map_native = noise_map.native
 
+        self.inv_noise_map  = inversion_imaging_util.build_inv_noise_var(
+            noise=self.noise_map.native
+        )
+
+        self.curv_fn = (inversion_imaging_util.build_curvature_rfft_fn(
+            psf=self.psf.native.array,
+            y_shape=data.shape_native[0],
+            x_shape=data.shape_native[1],
+        ))
+
+        # Ky, Kx = self.psf.shape_native
+        #
+        #
+        # self.Khat_rfft = inversion_imaging_util.precompute_Khat_rfft(
+        #     kernel_2d=self.psf.native, fft_shape=self.mask.shape_native
+        # )
+        # self.Khat_flip_r = inversion_imaging_util.precompute_Khat_rfft(np.flip(self.psf.native, axis=(0, 1)), self.mask.shape_native)
+        #
+
+
     @property
     def psf_operator_matrix_dense(self):
 
