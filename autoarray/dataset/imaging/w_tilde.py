@@ -2,9 +2,9 @@ import logging
 import numpy as np
 
 from autoarray.dataset.abstract.w_tilde import AbstractWTilde
+from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
-from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +47,13 @@ class WTildeImaging(AbstractWTilde):
         self.data_native = data.native
         self.noise_map_native = noise_map.native
 
-        self.inv_noise_var = inversion_imaging_util.build_inv_noise_var(
-            noise=self.noise_map.native
-        )
-        self.inv_noise_var[self.data.mask] = 0.0
+        inverse_noise_variances = 1.0 / noise_map ** 2
+        inverse_noise_variances = Array2D(values=inverse_noise_variances, mask=data.mask)
+        self.inverse_noise_variances_native = inverse_noise_variances.native
 
         import jax.numpy as jnp
 
-        self.inv_noise_var = jnp.asarray(self.inv_noise_var, dtype=jnp.float64)
+#         self.inv_noise_var = jnp.asarray(self.inv_noise_var, dtype=jnp.float64)
 
         self.curvature_matrix_diag_func = (
             inversion_imaging_util.curvature_matrix_diag_via_w_tilde_from_func(

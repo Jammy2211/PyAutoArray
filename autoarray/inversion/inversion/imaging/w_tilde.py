@@ -290,7 +290,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             rows, cols, vals = mapper_i.pixel_triplets_curvature
 
             diag = self.w_tilde.curvature_matrix_diag_func(
-                self.w_tilde.inv_noise_var,
+                self.w_tilde.inverse_noise_variances_native.array,
                 rows,
                 cols,
                 vals,
@@ -334,7 +334,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         (y_shape, x_shape) = self.mask.shape_native
 
         return self.w_tilde.curvature_matrix_off_diag_func(
-            inv_noise_var=self.w_tilde.inv_noise_var,
+            inv_noise_var=self.w_tilde.inverse_noise_variances_native.array,
             rows0=rows0,
             cols0=cols0,
             vals0=vals0,

@@ -270,13 +270,6 @@ def curvature_matrix_with_added_to_diag_from(
         return curvature_matrix.at[inds, inds].add(value)
 
 
-def build_inv_noise_var(noise):
-    inv = np.zeros_like(noise, dtype=np.float64)
-    good = np.isfinite(noise) & (noise > 0)
-    inv[good] = 1.0 / noise[good] ** 2
-    return inv
-
-
 def precompute_Khat_rfft(kernel_2d: np.ndarray, fft_shape):
     """
     kernel_2d: (Ky, Kx) real
