@@ -4,7 +4,7 @@ import numpy as np
 from typing import Optional, List, Tuple
 
 
-def w_tilde_data_imaging_from(
+def operated_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
@@ -18,10 +18,10 @@ def w_tilde_data_imaging_from(
     individual source pixel. This provides a significant speed up for inversions of imaging datasets.
 
     When w_tilde is used to perform an inversion, the mapping matrices are not computed, meaning that they cannot be
-    used to compute the data vector. This method creates the vector `w_tilde_data` which allows for the data
+    used to compute the data vector. This method creates the vector `operated_data` which allows for the data
     vector to be computed efficiently without the mapping matrix.
 
-    The matrix w_tilde_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
+    The matrix operated_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
     where the weights are the image-pixel values divided by the noise-map values squared:
 
     weight = image / noise**2.0
@@ -29,11 +29,11 @@ def w_tilde_data_imaging_from(
     Parameters
     ----------
     image_native
-        The two dimensional masked image of values which `w_tilde_data` is computed from.
+        The two dimensional masked image of values which `operated_data` is computed from.
     noise_map_native
-        The two dimensional masked noise-map of values which `w_tilde_data` is computed from.
+        The two dimensional masked noise-map of values which `operated_data` is computed from.
     kernel_native
-        The two dimensional PSF kernel that `w_tilde_data` encodes the convolution of.
+        The two dimensional PSF kernel that `operated_data` encodes the convolution of.
     native_index_for_slim_index
         An array of shape [total_x_pixels*sub_size] that maps pixels from the slimmed array to the native array.
 
@@ -76,24 +76,24 @@ def w_tilde_data_imaging_from(
 
 
 def data_vector_via_sparse_linalg_from(
-    w_tilde_data: np.ndarray,  # (M_pix,) float64
+    operated_data: np.ndarray,  # (M_pix,) float64
     rows: np.ndarray,  # (nnz,) int32  each triplet's data pixel (slim index)
     cols: np.ndarray,  # (nnz,) int32  source pixel index
     vals: np.ndarray,  # (nnz,) float64 mapping weights incl sub_fraction
     S: int,  # number of source pixels
 ) -> np.ndarray:
     """
-    Replacement for numba data_vector_via_w_tilde_data_imaging_from using triplets.
+    Replacement for numba data_vector_via_operated_data_imaging_from using triplets.
 
     Computes:
-        D[p] = sum_{triplets t with col_t=p} vals[t] * w_tilde_data_slim[slim_rows[t]]
+        D[p] = sum_{triplets t with col_t=p} vals[t] * operated_data_slim[slim_rows[t]]
 
     Returns:
         (S,) float64
     """
     from jax.ops import segment_sum
 
-    w = w_tilde_data[rows]  # (nnz,)
+    w = operated_data[rows]  # (nnz,)
     contrib = vals * w  # (nnz,)
     return segment_sum(contrib, cols, num_segments=S)  # (S,)
 

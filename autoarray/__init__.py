@@ -46,6 +46,7 @@ from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.sparse_linalg import InversionImagingSparseLinAlg
+from .inversion.inversion.imaging.inversion_imaging_util import ImagingSparseLinAlg
 from .inversion.inversion.interferometer.sparse_linalg import (
     InversionInterferometerSparseLingAlg,
 )
