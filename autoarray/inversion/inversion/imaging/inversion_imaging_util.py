@@ -4,9 +4,8 @@ import numpy as np
 from typing import Optional, List, Tuple
 
 
-def operated_data_imaging_from(
-    image_native: np.ndarray,
-    noise_map_native: np.ndarray,
+def weighted_data_imaging_from(
+    weight_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
     xp=np,
@@ -18,10 +17,10 @@ def operated_data_imaging_from(
     individual source pixel. This provides a significant speed up for inversions of imaging datasets.
 
     When w_tilde is used to perform an inversion, the mapping matrices are not computed, meaning that they cannot be
-    used to compute the data vector. This method creates the vector `operated_data` which allows for the data
+    used to compute the data vector. This method creates the vector `weighted_data` which allows for the data
     vector to be computed efficiently without the mapping matrix.
 
-    The matrix operated_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
+    The matrix weighted_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
     where the weights are the image-pixel values divided by the noise-map values squared:
 
     weight = image / noise**2.0
@@ -29,11 +28,11 @@ def operated_data_imaging_from(
     Parameters
     ----------
     image_native
-        The two dimensional masked image of values which `operated_data` is computed from.
+        The two dimensional masked image of values which `weighted_data` is computed from.
     noise_map_native
-        The two dimensional masked noise-map of values which `operated_data` is computed from.
+        The two dimensional masked noise-map of values which `weighted_data` is computed from.
     kernel_native
-        The two dimensional PSF kernel that `operated_data` encodes the convolution of.
+        The two dimensional PSF kernel that `weighted_data` encodes the convolution of.
     native_index_for_slim_index
         An array of shape [total_x_pixels*sub_size] that maps pixels from the slimmed array to the native array.
 
@@ -43,18 +42,12 @@ def operated_data_imaging_from(
         A matrix that encodes the PSF convolution values between the imaging divided by the noise map**2 that enables
         efficient calculation of the data vector.
     """
-
-    # 1) weight map = image / noise^2 (safe where noise==0)
-    weight_map = xp.where(
-        noise_map_native > 0.0, image_native / (noise_map_native**2), 0.0
-    )
-
     Ky, Kx = kernel_native.shape
     ph, pw = Ky // 2, Kx // 2
 
     # 2) pad so neighbourhood gathers never go OOB
     padded = xp.pad(
-        weight_map, ((ph, ph), (pw, pw)), mode="constant", constant_values=0.0
+        weight_map_native, ((ph, ph), (pw, pw)), mode="constant", constant_values=0.0
     )
 
     # 3) build broadcasted neighbourhood indices for all requested pixels
@@ -76,24 +69,24 @@ def operated_data_imaging_from(
 
 
 def data_vector_via_sparse_linalg_from(
-    operated_data: np.ndarray,  # (M_pix,) float64
+    weighted_data: np.ndarray,  # (M_pix,) float64
     rows: np.ndarray,  # (nnz,) int32  each triplet's data pixel (slim index)
     cols: np.ndarray,  # (nnz,) int32  source pixel index
     vals: np.ndarray,  # (nnz,) float64 mapping weights incl sub_fraction
     S: int,  # number of source pixels
 ) -> np.ndarray:
     """
-    Replacement for numba data_vector_via_operated_data_imaging_from using triplets.
+    Replacement for numba data_vector_via_weighted_data_imaging_from using triplets.
 
     Computes:
-        D[p] = sum_{triplets t with col_t=p} vals[t] * operated_data_slim[slim_rows[t]]
+        D[p] = sum_{triplets t with col_t=p} vals[t] * weighted_data_slim[slim_rows[t]]
 
     Returns:
         (S,) float64
     """
     from jax.ops import segment_sum
 
-    w = operated_data[rows]  # (nnz,)
+    w = weighted_data[rows]  # (nnz,)
     contrib = vals * w  # (nnz,)
     return segment_sum(contrib, cols, num_segments=S)  # (S,)
 
@@ -301,6 +294,7 @@ class ImagingSparseLinAlg:
 
     data_native: np.ndarray
     noise_map_native: np.ndarray
+    weight_map : np.ndarray
     inverse_variances_native: "jax.Array"  # (y, x) float64
     y_shape: int
     x_shape: int
@@ -347,6 +341,11 @@ class ImagingSparseLinAlg:
         )
         inverse_variances_native = inverse_variances_native.native
 
+        weight_map = data.array / (noise_map.array ** 2)
+        weight_map = Array2D(
+            values=weight_map, mask=noise_map.mask
+        )
+
         # If you *also* want to zero masked pixels explicitly:
         # mask_native = noise_map.mask  (depends on your API; might be bool native)
         # inverse_variances_native = inverse_variances_native.at[mask_native].set(0.0)
@@ -370,6 +369,7 @@ class ImagingSparseLinAlg:
         return cls(
             data_native=data.native,
             noise_map_native=noise_map.native,
+            weight_map=weight_map.native,
             inverse_variances_native=inverse_variances_native,
             y_shape=y_shape,
             x_shape=x_shape,

@@ -6,7 +6,7 @@ import numpy as np
 
 
 @numba_util.jit()
-def operated_data_imaging_from(
+def weighted_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
@@ -19,10 +19,10 @@ def operated_data_imaging_from(
     individual source pixel. This provides a significant speed up for inversions of imaging datasets.
 
     When w_tilde is used to perform an inversion, the mapping matrices are not computed, meaning that they cannot be
-    used to compute the data vector. This method creates the vector `operated_data` which allows for the data
+    used to compute the data vector. This method creates the vector `weighted_data` which allows for the data
     vector to be computed efficiently without the mapping matrix.
 
-    The matrix operated_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
+    The matrix weighted_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
     where the weights are the image-pixel values divided by the noise-map values squared:
 
     weight = image / noise**2.0
@@ -30,11 +30,11 @@ def operated_data_imaging_from(
     Parameters
     ----------
     image_native
-        The two dimensional masked image of values which `operated_data` is computed from.
+        The two dimensional masked image of values which `weighted_data` is computed from.
     noise_map_native
-        The two dimensional masked noise-map of values which `operated_data` is computed from.
+        The two dimensional masked noise-map of values which `weighted_data` is computed from.
     kernel_native
-        The two dimensional PSF kernel that `operated_data` encodes the convolution of.
+        The two dimensional PSF kernel that `weighted_data` encodes the convolution of.
     native_index_for_slim_index
         An array of shape [total_x_pixels*sub_size] that maps pixels from the slimmed array to the native array.
 
@@ -50,7 +50,7 @@ def operated_data_imaging_from(
 
     image_pixels = len(native_index_for_slim_index)
 
-    operated_data = np.zeros((image_pixels,))
+    weighted_data = np.zeros((image_pixels,))
 
     weight_map_native = image_native / noise_map_native**2.0
 
@@ -68,9 +68,9 @@ def operated_data_imaging_from(
                 if not np.isnan(weight_value):
                     value += kernel_native[k0_y, k0_x] * weight_value
 
-        operated_data[ip0] = value
+        weighted_data[ip0] = value
 
-    return operated_data
+    return weighted_data
 
 
 @numba_util.jit()
@@ -374,15 +374,15 @@ def data_vector_via_blurred_mapping_matrix_from(
 
 
 @numba_util.jit()
-def data_vector_via_operated_data_imaging_from(
-    operated_data: np.ndarray,
+def data_vector_via_weighted_data_imaging_from(
+    weighted_data: np.ndarray,
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
     pix_pixels: int,
 ) -> np.ndarray:
     """
-    Returns the data vector `D` from the `operated_data` matrix (see `operated_data_imaging_from`), which encodes the
+    Returns the data vector `D` from the `weighted_data` matrix (see `weighted_data_imaging_from`), which encodes the
     the 1D image `d` and 1D noise-map values `\sigma` (see Warren & Dye 2003).
 
     This uses the array `data_to_pix_unique`, which describes the unique mappings of every set of image sub-pixels to
@@ -391,7 +391,7 @@ def data_vector_via_operated_data_imaging_from(
 
     Parameters
     ----------
-    operated_data
+    weighted_data
         A matrix that encodes the PSF convolution values between the imaging divided by the noise map**2 that enables
         efficient calculation of the data vector.
     data_to_pix_unique
@@ -407,7 +407,7 @@ def data_vector_via_operated_data_imaging_from(
         The total number of pixels in the pixelization that reconstructs the data.
     """
 
-    data_pixels = operated_data.shape[0]
+    data_pixels = weighted_data.shape[0]
 
     data_vector = np.zeros(pix_pixels)
 
@@ -416,7 +416,7 @@ def data_vector_via_operated_data_imaging_from(
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
-            data_vector[pix_0] += data_0_weight * operated_data[data_0]
+            data_vector[pix_0] += data_0_weight * weighted_data[data_0]
 
     return data_vector
 

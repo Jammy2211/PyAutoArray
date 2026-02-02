@@ -66,7 +66,7 @@ class InversionInterferometerSparseLingAlg(AbstractInversionInterferometer):
         If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
         for simultaneously.
 
-        The calculation is described in more detail in `inversion_util.operated_data_interferometer_from`.
+        The calculation is described in more detail in `inversion_util.weighted_data_interferometer_from`.
         """
         return self._xp.dot(
             self.mapping_matrix.T, self.dataset.sparse_linalg.dirty_image

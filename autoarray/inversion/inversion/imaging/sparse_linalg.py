@@ -48,10 +48,9 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         )
 
     @cached_property
-    def operated_data(self):
-        return inversion_imaging_util.operated_data_imaging_from(
-            image_native=self.dataset.sparse_linalg.data_native.array,
-            noise_map_native=self.dataset.sparse_linalg.noise_map_native.array,
+    def weighted_data(self):
+        return inversion_imaging_util.weighted_data_imaging_from(
+            weight_map_native=self.dataset.sparse_linalg.weight_map.array,
             kernel_native=self.psf.stored_native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
             xp=self._xp,
@@ -81,7 +80,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_sparse_linalg_from(
-                    operated_data=self.operated_data,
+                    weighted_data=self.weighted_data,
                     rows=rows,
                     cols=cols,
                     vals=vals,
@@ -112,7 +111,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         If there are multiple linear objects a `data_vector` is computed for ech one, which are concatenated
         ensuring their values are solved for simultaneously.
 
-        The calculation is described in more detail in `inversion_util.operated_data_imaging_from`.
+        The calculation is described in more detail in `inversion_util.weighted_data_imaging_from`.
         """
         if self.has(cls=AbstractLinearObjFuncList):
             return self._data_vector_func_list_and_mapper
@@ -134,7 +133,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         rows, cols, vals = linear_obj.pixel_triplets_data
 
         return inversion_imaging_util.data_vector_via_sparse_linalg_from(
-            operated_data=self.operated_data,
+            weighted_data=self.weighted_data,
             rows=rows,
             cols=cols,
             vals=vals,
@@ -159,7 +158,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_sparse_linalg_from(
-                    operated_data=self.operated_data,
+                    weighted_data=self.weighted_data,
                     rows=rows,
                     cols=cols,
                     vals=vals,

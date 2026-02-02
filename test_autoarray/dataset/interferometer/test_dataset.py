@@ -169,7 +169,7 @@ def test__curvature_preload_metadata_from(
 
     file = f"{test_data_path}/curvature_preload_metadata"
 
-    dataset.w_tilde.save_curvature_preload(
+    dataset.sparse_linalg.save_curvature_preload(
         file=file,
         overwrite=True,
     )
