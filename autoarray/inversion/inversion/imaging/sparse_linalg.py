@@ -79,12 +79,14 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
             rows, cols, vals = mapper.pixel_triplets_data
 
-            data_vector_mapper = inversion_imaging_util.data_vector_via_sparse_linalg_from(
-                w_tilde_data=self.w_tilde_data,
-                rows=rows,
-                cols=cols,
-                vals=vals,
-                S=mapper.params,
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_sparse_linalg_from(
+                    w_tilde_data=self.w_tilde_data,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.params,
+                )
             )
             param_range = mapper_param_range[mapper_index]
 
@@ -155,12 +157,14 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
             rows, cols, vals = mapper.pixel_triplets_data
 
-            data_vector_mapper = inversion_imaging_util.data_vector_via_sparse_linalg_from(
-                w_tilde_data=self.w_tilde_data,
-                rows=rows,
-                cols=cols,
-                vals=vals,
-                S=mapper.params,
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_sparse_linalg_from(
+                    w_tilde_data=self.w_tilde_data,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.params,
+                )
             )
 
             data_vector_list.append(data_vector_mapper)
@@ -414,13 +418,15 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
                 rows, cols, vals = mapper.pixel_triplets_curvature
 
-                off_diag = self.dataset.sparse_linalg.curvature_matrix_off_diag_func_list_from(
-                    curvature_weights=curvature_weights,
-                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
-                    rows=rows,
-                    cols=cols,
-                    vals=vals,
-                    S=mapper.params,
+                off_diag = (
+                    self.dataset.sparse_linalg.curvature_matrix_off_diag_func_list_from(
+                        curvature_weights=curvature_weights,
+                        fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                        rows=rows,
+                        cols=cols,
+                        vals=vals,
+                        S=mapper.params,
+                    )
                 )
 
                 if self._xp is np:
@@ -513,15 +519,13 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
                 rows, cols, vals = linear_obj.pixel_triplets_curvature
 
-                mapped_reconstructed_image = (
-                    inversion_imaging_util.mapped_reconstucted_image_via_sparse_linalg_from(
-                        reconstruction=reconstruction,
-                        rows=rows,
-                        cols=cols,
-                        vals=vals,
-                        fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
-                        data_shape=self.mask.shape_native,
-                    )
+                mapped_reconstructed_image = inversion_imaging_util.mapped_reconstucted_image_via_sparse_linalg_from(
+                    reconstruction=reconstruction,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                    data_shape=self.mask.shape_native,
                 )
 
                 mapped_reconstructed_image = Array2D(

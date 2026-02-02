@@ -3,10 +3,13 @@ import numpy as np
 from typing import Optional
 
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
+from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
-from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
+from autoarray.inversion.inversion.interferometer.inversion_interferometer_util import (
+    InterferometerSparseLinAlg,
+)
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.mask.mask_2d import Mask2D
@@ -29,7 +32,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        w_tilde: Optional[WTildeInterferometer] = None,
+        sparse_linalg: Optional[InterferometerSparseLinAlg] = None,
         raise_error_dft_visibilities_limit: bool = True,
     ):
         """
@@ -93,7 +96,7 @@ class Interferometer(AbstractDataset):
             real_space_mask=real_space_mask,
         )
 
-        use_sparse_linalg = True if w_tilde is not None else False
+        use_sparse_linalg = True if sparse_linalg is not None else False
 
         self.grids = GridsDataset(
             mask=self.real_space_mask,
@@ -102,7 +105,7 @@ class Interferometer(AbstractDataset):
             use_sparse_linalg=use_sparse_linalg,
         )
 
-        self.w_tilde = w_tilde
+        self.sparse_linalg = sparse_linalg
 
         if raise_error_dft_visibilities_limit:
             if (
@@ -168,7 +171,7 @@ class Interferometer(AbstractDataset):
         use_jax: bool = False,
     ):
         """
-        The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
+        The sparse linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).
 
         The `WTilde` object stores these precomputed values in the interferometer dataset ensuring they are only
@@ -215,10 +218,9 @@ class Interferometer(AbstractDataset):
             use_adjoint_scaling=True,
         )
 
-        w_tilde = WTildeInterferometer(
+        sparse_linalg = inversion_interferometer_util.InterferometerSparseLinAlg.from_curvature_preload(
             curvature_preload=curvature_preload,
             dirty_image=dirty_image.array,
-            fft_mask=self.real_space_mask,
             batch_size=batch_size,
         )
 
@@ -228,7 +230,7 @@ class Interferometer(AbstractDataset):
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
             transformer_class=lambda uv_wavelengths, real_space_mask: self.transformer,
-            w_tilde=w_tilde,
+            sparse_linalg=sparse_linalg,
         )
 
     @property

@@ -27,7 +27,9 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
 
     # Overwrites use_sparse_linalg to false.
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    masked_imaging_7x7_no_blur_w_tilde = (
+        masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur_w_tilde,
@@ -78,7 +80,9 @@ def test__inversion_imaging__via_mapper(
     # )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    masked_imaging_7x7_no_blur_w_tilde = (
+        masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur_w_tilde,
@@ -126,7 +130,9 @@ def test__inversion_imaging__via_regularizations(
     mapper = copy.copy(delaunay_mapper_9_3x3)
     mapper.regularization = regularization_constant
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    masked_imaging_7x7_no_blur_w_tilde = (
+        masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur_w_tilde,
@@ -208,7 +214,9 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3][0] < 1.0e-4
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    masked_imaging_7x7_no_blur_w_tilde = (
+        masked_imaging_7x7_no_blur.apply_sparse_linear_algebra()
+    )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur_w_tilde,

@@ -174,7 +174,7 @@ def test__curvature_preload_metadata_from(
         overwrite=True,
     )
 
-    curvature_preload = aa.load_curvature_preload_if_compatible(
+    curvature_preload = aa.load_curvature_preload(
         file=file, real_space_mask=dataset.real_space_mask
     )
 
@@ -198,6 +198,6 @@ def test__curvature_preload_metadata_from(
 
     with pytest.raises(ValueError):
 
-        curvature_preload = aa.load_curvature_preload_if_compatible(
+        curvature_preload = aa.load_curvature_preload(
             file=file, real_space_mask=real_space_mask_changed
         )

@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 import logging
 import numpy as np
-from tqdm import tqdm
-import os
+import json
+import hashlib
 import time
+from pathlib import Path
+from typing import Any, Dict, Optional, Tuple, Union
 
 logger = logging.getLogger(__name__)
 
@@ -528,8 +530,38 @@ def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
     return w_tilde_via_preload
 
 
+def load_curvature_preload(
+    file: Union[str, Path],
+) -> Optional[np.ndarray]:
+    """
+    Load a saved curvature_preload if (and only if) it is compatible with the current mask geometry.
+
+    Parameters
+    ----------
+    file
+        Path to a previously saved NPZ.
+    require_mask_hash
+        If True, require the full mask content hash to match (safest).
+        If False, only bbox + shape + pixel scales are checked.
+
+    Returns
+    -------
+    np.ndarray
+        The loaded curvature_preload if compatible, otherwise raises ValueError.
+    """
+    file = Path(file)
+    if file.suffix.lower() != ".npz":
+        file = file.with_suffix(".npz")
+
+    if not file.exists():
+        raise FileNotFoundError(str(file))
+
+    with np.load(file, allow_pickle=False) as npz:
+        return np.asarray(npz["curvature_preload"])
+
+
 @dataclass(frozen=True)
-class WTildeFFTState:
+class InterferometerSparseLinAlg:
     """
     Fully static FFT / geometry state for W~ curvature.
 
@@ -540,6 +572,7 @@ class WTildeFFTState:
       - batch_size is fixed
     """
 
+    dirty_image: np.ndarray
     y_shape: int
     x_shape: int
     M: int
@@ -547,139 +580,184 @@ class WTildeFFTState:
     w_dtype: "jax.numpy.dtype"
     Khat: "jax.Array"  # (2y, 2x), complex
 
+    @classmethod
+    def from_curvature_preload(
+        self,
+        curvature_preload: np.ndarray,
+        dirty_image: np.ndarray,
+        *,
+        batch_size: int = 128,
+    ):
+        import jax.numpy as jnp
 
-def w_tilde_fft_state_from(
-    curvature_preload: np.ndarray,
-    *,
-    batch_size: int = 128,
-) -> WTildeFFTState:
-    import jax.numpy as jnp
+        H2, W2 = curvature_preload.shape
+        if (H2 % 2) != 0 or (W2 % 2) != 0:
+            raise ValueError(
+                f"curvature_preload must have even shape (2y,2x). Got {curvature_preload.shape}."
+            )
 
-    H2, W2 = curvature_preload.shape
-    if (H2 % 2) != 0 or (W2 % 2) != 0:
-        raise ValueError(
-            f"curvature_preload must have even shape (2y,2x). Got {curvature_preload.shape}."
+        y_shape = H2 // 2
+        x_shape = W2 // 2
+        M = y_shape * x_shape
+
+        Khat = jnp.fft.fft2(curvature_preload)
+
+        return InterferometerSparseLinAlg(
+            dirty_image=dirty_image,
+            y_shape=y_shape,
+            x_shape=x_shape,
+            M=M,
+            batch_size=int(batch_size),
+            w_dtype=curvature_preload.dtype,
+            Khat=Khat,
         )
 
-    y_shape = H2 // 2
-    x_shape = W2 // 2
-    M = y_shape * x_shape
+    def curvature_matrix_via_w_tilde_interferometer_from(
+        self,
+        pix_indexes_for_sub_slim_index: np.ndarray,
+        pix_weights_for_sub_slim_index: np.ndarray,
+        pix_pixels: int,
+        fft_index_for_masked_pixel: np.ndarray,
+    ):
+        """
+        Compute curvature matrix for an interferometer inversion using a precomputed FFT state.
 
-    Khat = jnp.fft.fft2(curvature_preload)
+        IMPORTANT
+        ---------
+        - COO construction is unchanged from the known-working implementation
+        - Only FFT- and geometry-related quantities are taken from `fft_state`
+        """
 
-    return WTildeFFTState(
-        y_shape=y_shape,
-        x_shape=x_shape,
-        M=M,
-        batch_size=int(batch_size),
-        w_dtype=curvature_preload.dtype,
-        Khat=Khat,
-    )
+        import jax.numpy as jnp
+        from jax.ops import segment_sum
 
+        # -------------------------
+        # Pull static quantities from state
+        # -------------------------
+        y_shape = self.y_shape
+        x_shape = self.x_shape
+        M = self.M
+        batch_size = self.batch_size
+        Khat = self.Khat
+        w_dtype = self.w_dtype
 
-def curvature_matrix_via_w_tilde_interferometer_from(
-    *,
-    fft_state: WTildeFFTState,
-    pix_indexes_for_sub_slim_index: np.ndarray,
-    pix_weights_for_sub_slim_index: np.ndarray,
-    pix_pixels: int,
-    fft_index_for_masked_pixel: np.ndarray,
-):
-    """
-    Compute curvature matrix for an interferometer inversion using a precomputed FFT state.
+        # -------------------------
+        # Basic shape checks (NumPy side, safe)
+        # -------------------------
+        M_masked, Pmax = pix_indexes_for_sub_slim_index.shape
+        S = int(pix_pixels)
 
-    IMPORTANT
-    ---------
-    - COO construction is unchanged from the known-working implementation
-    - Only FFT- and geometry-related quantities are taken from `fft_state`
-    """
+        # -------------------------
+        # JAX core (unchanged COO logic)
+        # -------------------------
+        def _curvature_rect_jax(
+            pix_idx: jnp.ndarray,  # (M_masked, Pmax)
+            pix_wts: jnp.ndarray,  # (M_masked, Pmax)
+            rect_map: jnp.ndarray,  # (M_masked,)
+        ) -> jnp.ndarray:
+            rect_map = jnp.asarray(rect_map)
 
-    import jax.numpy as jnp
-    from jax.ops import segment_sum
+            nnz_full = M_masked * Pmax
 
-    # -------------------------
-    # Pull static quantities from state
-    # -------------------------
-    y_shape = fft_state.y_shape
-    x_shape = fft_state.x_shape
-    M = fft_state.M
-    batch_size = fft_state.batch_size
-    Khat = fft_state.Khat
-    w_dtype = fft_state.w_dtype
+            # Flatten mapping arrays into a fixed-length COO stream
+            rows_mask = jnp.repeat(
+                jnp.arange(M_masked, dtype=jnp.int32), Pmax
+            )  # (nnz_full,)
+            cols = pix_idx.reshape((nnz_full,)).astype(jnp.int32)
+            vals = pix_wts.reshape((nnz_full,)).astype(w_dtype)
 
-    # -------------------------
-    # Basic shape checks (NumPy side, safe)
-    # -------------------------
-    M_masked, Pmax = pix_indexes_for_sub_slim_index.shape
-    S = int(pix_pixels)
+            # Validity mask
+            valid = (cols >= 0) & (cols < S)
 
-    # -------------------------
-    # JAX core (unchanged COO logic)
-    # -------------------------
-    def _curvature_rect_jax(
-        pix_idx: jnp.ndarray,  # (M_masked, Pmax)
-        pix_wts: jnp.ndarray,  # (M_masked, Pmax)
-        rect_map: jnp.ndarray,  # (M_masked,)
-    ) -> jnp.ndarray:
+            # Embed masked rows into rectangular rows
+            rows_rect = rect_map[rows_mask].astype(jnp.int32)
 
-        rect_map = jnp.asarray(rect_map)
+            # Make cols / vals safe
+            cols_safe = jnp.where(valid, cols, 0)
+            vals_safe = jnp.where(valid, vals, 0.0)
 
-        nnz_full = M_masked * Pmax
+            def apply_W_fft_batch(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
+                B = Fbatch_flat.shape[1]
+                F_img = Fbatch_flat.T.reshape((B, y_shape, x_shape))
+                F_pad = jnp.pad(
+                    F_img, ((0, 0), (0, y_shape), (0, x_shape))
+                )  # (B,2y,2x)
+                Fhat = jnp.fft.fft2(F_pad)
+                Ghat = Fhat * Khat[None, :, :]
+                G_pad = jnp.fft.ifft2(Ghat)
+                G = jnp.real(G_pad[:, :y_shape, :x_shape])
+                return G.reshape((B, M)).T  # (M,B)
 
-        # Flatten mapping arrays into a fixed-length COO stream
-        rows_mask = jnp.repeat(
-            jnp.arange(M_masked, dtype=jnp.int32), Pmax
-        )  # (nnz_full,)
-        cols = pix_idx.reshape((nnz_full,)).astype(jnp.int32)
-        vals = pix_wts.reshape((nnz_full,)).astype(w_dtype)
+            def compute_block(start_col: int) -> jnp.ndarray:
+                in_block = (cols_safe >= start_col) & (
+                    cols_safe < start_col + batch_size
+                )
+                in_use = valid & in_block
 
-        # Validity mask
-        valid = (cols >= 0) & (cols < S)
+                bc = jnp.where(in_use, cols_safe - start_col, 0).astype(jnp.int32)
+                v = jnp.where(in_use, vals_safe, 0.0)
 
-        # Embed masked rows into rectangular rows
-        rows_rect = rect_map[rows_mask].astype(jnp.int32)
+                Fbatch = jnp.zeros((M, batch_size), dtype=w_dtype)
+                Fbatch = Fbatch.at[rows_rect, bc].add(v)
 
-        # Make cols / vals safe
-        cols_safe = jnp.where(valid, cols, 0)
-        vals_safe = jnp.where(valid, vals, 0.0)
+                Gbatch = apply_W_fft_batch(Fbatch)
+                G_at_rows = Gbatch[rows_rect, :]
 
-        def apply_W_fft_batch(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
-            B = Fbatch_flat.shape[1]
-            F_img = Fbatch_flat.T.reshape((B, y_shape, x_shape))
-            F_pad = jnp.pad(F_img, ((0, 0), (0, y_shape), (0, x_shape)))  # (B,2y,2x)
-            Fhat = jnp.fft.fft2(F_pad)
-            Ghat = Fhat * Khat[None, :, :]
-            G_pad = jnp.fft.ifft2(Ghat)
-            G = jnp.real(G_pad[:, :y_shape, :x_shape])
-            return G.reshape((B, M)).T  # (M,B)
+                contrib = vals_safe[:, None] * G_at_rows
+                return segment_sum(contrib, cols_safe, num_segments=S)
 
-        def compute_block(start_col: int) -> jnp.ndarray:
-            in_block = (cols_safe >= start_col) & (cols_safe < start_col + batch_size)
-            in_use = valid & in_block
+            # Assemble curvature
+            C = jnp.zeros((S, S), dtype=w_dtype)
+            for start in range(0, S, batch_size):
+                Cblock = compute_block(start)
+                width = min(batch_size, S - start)
+                C = C.at[:, start : start + width].set(Cblock[:, :width])
 
-            bc = jnp.where(in_use, cols_safe - start_col, 0).astype(jnp.int32)
-            v = jnp.where(in_use, vals_safe, 0.0)
+            return 0.5 * (C + C.T)
 
-            Fbatch = jnp.zeros((M, batch_size), dtype=w_dtype)
-            Fbatch = Fbatch.at[rows_rect, bc].add(v)
+        return _curvature_rect_jax(
+            pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index,
+            fft_index_for_masked_pixel,
+        )
 
-            Gbatch = apply_W_fft_batch(Fbatch)
-            G_at_rows = Gbatch[rows_rect, :]
+    def save_curvature_preload(
+        self,
+        file: Union[str, Path],
+        *,
+        overwrite: bool = False,
+    ) -> Path:
+        """
+        Save curvature_preload plus enough metadata to ensure it is only reused when safe.
 
-            contrib = vals_safe[:, None] * G_at_rows
-            return segment_sum(contrib, cols_safe, num_segments=S)
+        Uses NPZ so we can store:
+          - curvature_preload (array)
+          - meta_json (string)
 
-        # Assemble curvature
-        C = jnp.zeros((S, S), dtype=w_dtype)
-        for start in range(0, S, batch_size):
-            Cblock = compute_block(start)
-            width = min(batch_size, S - start)
-            C = C.at[:, start : start + width].set(Cblock[:, :width])
+        Parameters
+        ----------
+        file
+            Path to save to. Recommended suffix: ".npz".
+            If you pass ".npy", we will still save an ".npz" next to it.
+        overwrite
+            If False and the file exists, raise FileExistsError.
 
-        return 0.5 * (C + C.T)
+        Returns
+        -------
+        Path
+            The path actually written (will end with ".npz").
+        """
+        file = Path(file)
 
-    return _curvature_rect_jax(
-        pix_indexes_for_sub_slim_index,
-        pix_weights_for_sub_slim_index,
-        fft_index_for_masked_pixel,
-    )
+        # Force .npz (storing metadata safely)
+        if file.suffix.lower() != ".npz":
+            file = file.with_suffix(".npz")
+
+        if file.exists() and not overwrite:
+            raise FileExistsError(f"File already exists: {file}")
+
+        np.savez_compressed(
+            file,
+            curvature_preload=np.asarray(self.curvature_preload),
+        )
+        return file

@@ -299,18 +299,18 @@ def mapped_reconstucted_image_via_sparse_linalg_from(
 @dataclass(frozen=True)
 class ImagingSparseLinAlg:
 
-    data_native : np.ndarray
+    data_native: np.ndarray
     noise_map_native: np.ndarray
-    inverse_variances_native: "jax.Array"   # (y, x) float64
+    inverse_variances_native: "jax.Array"  # (y, x) float64
     y_shape: int
     x_shape: int
     Ky: int
     Kx: int
     fft_shape: Tuple[int, int]
     batch_size: int
-    col_offsets: "jax.Array"                      # (batch_size,) int32
-    Khat_r: "jax.Array"                           # (Fy, Fx//2+1) complex
-    Khat_flip_r: "jax.Array"                      # (Fy, Fx//2+1) complex
+    col_offsets: "jax.Array"  # (batch_size,) int32
+    Khat_r: "jax.Array"  # (Fy, Fx//2+1) complex
+    Khat_flip_r: "jax.Array"  # (Fy, Fx//2+1) complex
 
     @classmethod
     def from_noise_map_and_psf(
@@ -537,9 +537,7 @@ class ImagingSparseLinAlg:
 
         # 1) scatter slim -> rect(flat)
         grid_flat = jnp.zeros((M_rect, n_funcs), dtype=jnp.float64)
-        grid_flat = grid_flat.at[fft_index_for_masked_pixel, :].set(
-            curvature_weights
-        )
+        grid_flat = grid_flat.at[fft_index_for_masked_pixel, :].set(curvature_weights)
 
         # 2) apply H^T: conv with flipped PSF
         images = grid_flat.T.reshape((n_funcs, y_shape, x_shape))  # (B=n_funcs, Hy, Hx)

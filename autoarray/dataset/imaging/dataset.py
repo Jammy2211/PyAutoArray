@@ -5,7 +5,9 @@ from typing import Optional, Union
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
-from autoarray.inversion.inversion.imaging.inversion_imaging_util import ImagingSparseLinAlg
+from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
+    ImagingSparseLinAlg,
+)
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
@@ -502,11 +504,13 @@ class Imaging(AbstractDataset):
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
 
-        sparse_linalg = inversion_imaging_util.ImagingSparseLinAlg.from_noise_map_and_psf(
-            data=self.data,
-            noise_map=self.noise_map,
-            psf=self.psf.native,
-            batch_size=batch_size,
+        sparse_linalg = (
+            inversion_imaging_util.ImagingSparseLinAlg.from_noise_map_and_psf(
+                data=self.data,
+                noise_map=self.noise_map,
+                psf=self.psf.native,
+                batch_size=batch_size,
+            )
         )
 
         return Imaging(

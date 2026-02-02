@@ -7,13 +7,15 @@ from autoarray.inversion.inversion.imaging.mapping import InversionImagingMappin
 from autoarray.inversion.inversion.interferometer.mapping import (
     InversionInterferometerMapping,
 )
-from autoarray.inversion.inversion.interferometer.w_tilde import (
-    InversionInterferometerWTilde,
+from autoarray.inversion.inversion.interferometer.sparse_linalg import (
+    InversionInterferometerSparseLingAlg,
 )
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
-from autoarray.inversion.inversion.imaging.sparse_linalg import InversionImagingSparseLinAlg
+from autoarray.inversion.inversion.imaging.sparse_linalg import (
+    InversionImagingSparseLinAlg,
+)
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -181,11 +183,10 @@ def inversion_interferometer_from(
     ):
         use_sparse_linalg = False
 
-    if dataset.w_tilde is not None and use_sparse_linalg:
+    if dataset.sparse_linalg is not None and use_sparse_linalg:
 
-        return InversionInterferometerWTilde(
+        return InversionInterferometerSparseLingAlg(
             dataset=dataset,
-            w_tilde=dataset.w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
             xp=xp,

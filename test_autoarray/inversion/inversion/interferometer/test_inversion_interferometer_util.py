@@ -120,18 +120,18 @@ def test__curvature_matrix_via_curvature_preload_from():
 
     pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
 
-    w_tilde = aa.WTildeInterferometer(
+    sparse_linalg = aa.InterferometerSparseLinAlg.from_curvature_preload(
         curvature_preload=curvature_preload,
         dirty_image=None,
-        fft_mask=grid.mask,
     )
 
-    curvature_matrix_via_preload = aa.util.inversion_interferometer.curvature_matrix_via_w_tilde_interferometer_from(
-        fft_state=w_tilde.fft_state,
-        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-        pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
-        fft_index_for_masked_pixel=grid.mask.fft_index_for_masked_pixel,
-        pix_pixels=3,
+    curvature_matrix_via_preload = (
+        sparse_linalg.curvature_matrix_via_w_tilde_interferometer_from(
+            pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+            fft_index_for_masked_pixel=grid.mask.fft_index_for_masked_pixel,
+            pix_pixels=3,
+        )
     )
 
     assert curvature_matrix_via_w_tilde == pytest.approx(

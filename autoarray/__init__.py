@@ -9,7 +9,9 @@ from . import type
 from . import util
 from . import fixtures
 from . import mock as m
-from .dataset.interferometer.w_tilde import load_curvature_preload_if_compatible
+from .inversion.inversion.interferometer.inversion_interferometer_util import (
+    load_curvature_preload,
+)
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.grids import GridsInterface
@@ -17,7 +19,6 @@ from .dataset.imaging.dataset import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
-from .dataset.interferometer.w_tilde import WTildeInterferometer
 from .dataset.dataset_model import DatasetModel
 from .fit.fit_dataset import AbstractFit
 from .fit.fit_dataset import FitDataset
@@ -45,8 +46,13 @@ from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.sparse_linalg import InversionImagingSparseLinAlg
-from .inversion.inversion.interferometer.w_tilde import InversionInterferometerWTilde
+from .inversion.inversion.interferometer.sparse_linalg import (
+    InversionInterferometerSparseLingAlg,
+)
 from .inversion.inversion.interferometer.mapping import InversionInterferometerMapping
+from .inversion.inversion.interferometer.inversion_interferometer_util import (
+    InterferometerSparseLinAlg,
+)
 from .inversion.linear_obj.linear_obj import LinearObj
 from .inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from .mask.derive.indexes_2d import DeriveIndexes2D

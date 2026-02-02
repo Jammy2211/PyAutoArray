@@ -269,7 +269,10 @@ def relocated_grid_from(grid, border_grid, xp=np):
 
 class BorderRelocator:
     def __init__(
-        self, mask: Mask2D, sub_size: Union[int, Array2D], use_sparse_linalg: bool = False
+        self,
+        mask: Mask2D,
+        sub_size: Union[int, Array2D],
+        use_sparse_linalg: bool = False,
     ):
         """
         Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
