@@ -269,7 +269,7 @@ def relocated_grid_from(grid, border_grid, xp=np):
 
 class BorderRelocator:
     def __init__(
-        self, mask: Mask2D, sub_size: Union[int, Array2D], use_w_tilde: bool = False
+        self, mask: Mask2D, sub_size: Union[int, Array2D], use_sparse_linalg: bool = False
     ):
         """
         Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
@@ -327,7 +327,7 @@ class BorderRelocator:
 
         self.sub_border_grid = sub_grid[self.sub_border_slim]
 
-        self.use_w_tilde = use_w_tilde
+        self.use_sparse_linalg = use_sparse_linalg
 
     def relocated_grid_from(self, grid: Grid2D, xp=np) -> Grid2D:
         """
@@ -356,7 +356,7 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        if self.use_w_tilde is False or xp.__name__.startswith("jax"):
+        if self.use_sparse_linalg is False or xp.__name__.startswith("jax"):
 
             values = relocated_grid_from(
                 grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
@@ -408,7 +408,7 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return mesh_grid
 
-        if self.use_w_tilde is False or xp.__name__.startswith("jax"):
+        if self.use_sparse_linalg is False or xp.__name__.startswith("jax"):
 
             relocated_grid = relocated_grid_from(
                 grid=mesh_grid.array,

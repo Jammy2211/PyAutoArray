@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Union
 from autoconf import cached_property
 
 from autoarray.dataset.imaging.dataset import Imaging
-from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
@@ -13,15 +12,13 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray import exc
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
-class InversionImagingWTilde(AbstractInversionImaging):
+class InversionImagingSparseLinAlg(AbstractInversionImaging):
     def __init__(
         self,
         dataset: Union[Imaging, DatasetInterface],
-        w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         xp=np,
@@ -41,9 +38,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         ----------
         dataset
             The dataset containing the image data, noise-map and psf which is fitted by the inversion.
-        w_tilde
-            An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
-            the mapping matrix.
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
@@ -53,13 +47,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
             dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
         )
 
-        self.w_tilde = dataset.w_tilde
-
     @cached_property
     def w_tilde_data(self):
         return inversion_imaging_util.w_tilde_data_imaging_from(
-            image_native=self.w_tilde.data_native.array,
-            noise_map_native=self.w_tilde.noise_map_native.array,
+            image_native=self.dataset.sparse_linalg.data_native.array,
+            noise_map_native=self.dataset.sparse_linalg.noise_map_native.array,
             kernel_native=self.psf.stored_native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
             xp=self._xp,
@@ -87,7 +79,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             rows, cols, vals = mapper.pixel_triplets_data
 
-            data_vector_mapper = inversion_imaging_util.data_vector_via_w_tilde_from(
+            data_vector_mapper = inversion_imaging_util.data_vector_via_sparse_linalg_from(
                 w_tilde_data=self.w_tilde_data,
                 rows=rows,
                 cols=cols,
@@ -139,7 +131,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         rows, cols, vals = linear_obj.pixel_triplets_data
 
-        return inversion_imaging_util.data_vector_via_w_tilde_from(
+        return inversion_imaging_util.data_vector_via_sparse_linalg_from(
             w_tilde_data=self.w_tilde_data,
             rows=rows,
             cols=cols,
@@ -163,7 +155,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             rows, cols, vals = mapper.pixel_triplets_data
 
-            data_vector_mapper = inversion_imaging_util.data_vector_via_w_tilde_from(
+            data_vector_mapper = inversion_imaging_util.data_vector_via_sparse_linalg_from(
                 w_tilde_data=self.w_tilde_data,
                 rows=rows,
                 cols=cols,
@@ -289,15 +281,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             rows, cols, vals = mapper_i.pixel_triplets_curvature
 
-            diag = self.w_tilde.curvature_matrix_diag_func(
-                self.w_tilde.inverse_noise_variances_native.array,
-                rows,
-                cols,
-                vals,
-                y_shape=self.mask.shape_native[0],
-                x_shape=self.mask.shape_native[1],
+            diag = self.dataset.sparse_linalg.curvature_matrix_diag_from(
+                rows=rows,
+                cols=cols,
+                vals=vals,
                 S=mapper_i.params,
-                batch_size=self.w_tilde.batch_size,
             )
 
             start, end = mapper_param_range_i
@@ -331,18 +319,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
         S0 = mapper_0.params
         S1 = mapper_1.params
 
-        (y_shape, x_shape) = self.mask.shape_native
-
-        return self.w_tilde.curvature_matrix_off_diag_func(
-            inv_noise_var=self.w_tilde.inverse_noise_variances_native.array,
+        return self.dataset.sparse_linalg.curvature_matrix_off_diag_from(
             rows0=rows0,
             cols0=cols0,
             vals0=vals0,
             rows1=rows1,
             cols1=cols1,
             vals1=vals1,
-            y_shape=y_shape,
-            x_shape=x_shape,
             S0=S0,
             S1=S1,
         )
@@ -431,14 +414,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                 rows, cols, vals = mapper.pixel_triplets_curvature
 
-                off_diag = self.w_tilde.curvature_matrix_off_diag_light_profiles_func(
+                off_diag = self.dataset.sparse_linalg.curvature_matrix_off_diag_func_list_from(
                     curvature_weights=curvature_weights,
                     fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
                     rows=rows,
                     cols=cols,
                     vals=vals,
-                    y_shape=self.mask.shape_native[0],
-                    x_shape=self.mask.shape_native[1],
                     S=mapper.params,
                 )
 
@@ -533,7 +514,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 rows, cols, vals = linear_obj.pixel_triplets_curvature
 
                 mapped_reconstructed_image = (
-                    inversion_imaging_util.mapped_image_rect_from_triplets(
+                    inversion_imaging_util.mapped_reconstucted_image_via_sparse_linalg_from(
                         reconstruction=reconstruction,
                         rows=rows,
                         cols=cols,

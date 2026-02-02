@@ -12,11 +12,9 @@ from . import mock as m
 from .dataset.interferometer.w_tilde import load_curvature_preload_if_compatible
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
-from .dataset.abstract.w_tilde import AbstractWTilde
 from .dataset.grids import GridsInterface
 from .dataset.imaging.dataset import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
-from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
@@ -46,7 +44,7 @@ from .inversion.pixelization.mappers.rectangular_uniform import MapperRectangula
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
-from .inversion.inversion.imaging.w_tilde import InversionImagingWTilde
+from .inversion.inversion.imaging.sparse_linalg import InversionImagingSparseLinAlg
 from .inversion.inversion.interferometer.w_tilde import InversionInterferometerWTilde
 from .inversion.inversion.interferometer.mapping import InversionInterferometerMapping
 from .inversion.linear_obj.linear_obj import LinearObj

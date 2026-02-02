@@ -165,7 +165,7 @@ def test__curvature_preload_metadata_from(
         real_space_mask=mask_2d_7x7,
     )
 
-    dataset = dataset.apply_w_tilde(use_jax=False)
+    dataset = dataset.apply_sparse_linear_algebra(use_jax=False)
 
     file = f"{test_data_path}/curvature_preload_metadata"
 

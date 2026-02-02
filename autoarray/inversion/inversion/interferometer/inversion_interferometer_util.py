@@ -593,7 +593,7 @@ def curvature_matrix_via_w_tilde_interferometer_from(
     - COO construction is unchanged from the known-working implementation
     - Only FFT- and geometry-related quantities are taken from `fft_state`
     """
-    import jax
+
     import jax.numpy as jnp
     from jax.ops import segment_sum
 

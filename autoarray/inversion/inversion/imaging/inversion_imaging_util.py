@@ -1,6 +1,7 @@
-import numpy as np
+from dataclasses import dataclass
 from functools import partial
-from typing import Optional, List
+import numpy as np
+from typing import Optional, List, Tuple
 
 
 def w_tilde_data_imaging_from(
@@ -74,7 +75,7 @@ def w_tilde_data_imaging_from(
     return xp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
 
 
-def data_vector_via_w_tilde_from(
+def data_vector_via_sparse_linalg_from(
     w_tilde_data: np.ndarray,  # (M_pix,) float64
     rows: np.ndarray,  # (nnz,) int32  each triplet's data pixel (slim index)
     cols: np.ndarray,  # (nnz,) int32  source pixel index
@@ -270,351 +271,7 @@ def curvature_matrix_with_added_to_diag_from(
         return curvature_matrix.at[inds, inds].add(value)
 
 
-def precompute_Khat_rfft(kernel_2d: np.ndarray, fft_shape):
-    """
-    kernel_2d: (Ky, Kx) real
-    fft_shape: (Fy, Fx) where Fy = Hy+Ky-1, Fx = Hx+Kx-1
-    returns: rfft2(padded_kernel) with shape (Fy, Fx//2+1), complex128 if input float64
-    """
-
-    import jax.numpy as jnp
-
-    Ky, Kx = kernel_2d.shape
-    Fy, Fx = fft_shape
-    kernel_pad = jnp.pad(kernel_2d, ((0, Fy - Ky), (0, Fx - Kx)))
-    return jnp.fft.rfft2(kernel_pad, s=(Fy, Fx))
-
-
-def rfft_convolve2d_same(
-    images: np.ndarray, Khat_r: np.ndarray, Ky: int, Kx: int, fft_shape
-):
-    """
-    Batched real FFT convolution, returning 'same' output.
-
-    images: (B, Hy, Hx) real float64
-    Khat_r: (Fy, Fx//2+1) complex128  (rfft2 of padded kernel)
-    fft_shape: (Fy, Fx) must equal (Hy+Ky-1, Hx+Kx-1)
-    """
-
-    import jax.numpy as jnp
-
-    B, Hy, Hx = images.shape
-    Fy, Fx = fft_shape
-
-    images_pad = jnp.pad(images, ((0, 0), (0, Fy - Hy), (0, Fx - Hx)))
-    Fhat = jnp.fft.rfft2(images_pad, s=(Fy, Fx))  # (B, Fy, Fx//2+1)
-    out_pad = jnp.fft.irfft2(Fhat * Khat_r[None, :, :], s=(Fy, Fx))  # (B, Fy, Fx), real
-
-    cy, cx = Ky // 2, Kx // 2
-    return out_pad[:, cy : cy + Hy, cx : cx + Hx]
-
-
-def curvature_matrix_diag_via_w_tilde_from(
-    inv_noise_var,
-    rows,
-    cols,
-    vals,
-    y_shape: int,
-    x_shape: int,
-    S: int,
-    Khat_r,
-    Khat_flip_r,
-    Ky: int,
-    Kx: int,
-    batch_size: int = 32,
-):
-    from jax import lax
-    import jax.numpy as jnp
-    from jax.ops import segment_sum
-
-    inv_noise_var = jnp.asarray(inv_noise_var, dtype=jnp.float64)
-    rows = jnp.asarray(rows, dtype=jnp.int32)
-    cols = jnp.asarray(cols, dtype=jnp.int32)
-    vals = jnp.asarray(vals, dtype=jnp.float64)
-
-    M = y_shape * x_shape
-    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
-
-    def apply_W(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
-        B = Fbatch_flat.shape[1]
-        Fimg = Fbatch_flat.T.reshape((B, y_shape, x_shape))
-        blurred = rfft_convolve2d_same(Fimg, Khat_r, Ky, Kx, fft_shape)
-        weighted = blurred * inv_noise_var[None, :, :]
-        back = rfft_convolve2d_same(weighted, Khat_flip_r, Ky, Kx, fft_shape)
-        return back.reshape((B, M)).T  # (M, B)
-
-    n_blocks = (S + batch_size - 1) // batch_size
-    S_pad = n_blocks * batch_size  # <-- key
-
-    C0 = jnp.zeros((S, S_pad), dtype=jnp.float64)
-    col_offsets = jnp.arange(batch_size, dtype=jnp.int32)
-
-    def body(block_i, C):
-        start = block_i * batch_size
-
-        in_block = (cols >= start) & (cols < (start + batch_size))
-        bc = jnp.where(in_block, cols - start, 0).astype(jnp.int32)
-        v = jnp.where(in_block, vals, 0.0)
-
-        F = jnp.zeros((M, batch_size), dtype=jnp.float64)
-        F = F.at[rows, bc].add(v)
-
-        G = apply_W(F)  # (M, batch_size)
-
-        contrib = vals[:, None] * G[rows, :]  # (nnz, batch_size)
-        Cblock = segment_sum(contrib, cols, num_segments=S)  # (S, batch_size)
-
-        # Mask out unused columns in last block (optional but nice)
-        width = jnp.minimum(batch_size, jnp.maximum(0, S - start))
-        mask = (col_offsets < width).astype(jnp.float64)
-        Cblock = Cblock * mask[None, :]
-
-        # SAFE because C has width S_pad, and start+batch_size <= S_pad always
-        C = lax.dynamic_update_slice(C, Cblock, (0, start))
-        return C
-
-    C_pad = lax.fori_loop(0, n_blocks, body, C0)
-    C = C_pad[:, :S]  # <-- slice back to true width
-
-    return 0.5 * (C + C.T)
-
-
-def curvature_matrix_diag_via_w_tilde_from_func(
-    psf: np.ndarray, y_shape: int, x_shape: int
-):
-
-    import jax
-    import jax.numpy as jnp
-
-    """
-    Precompute Khat_r and Khat_flip_r once (float64), return a curvature function
-    that can be jitted and called repeatedly.
-    """
-    Ky, Kx = psf.shape
-    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
-
-    Khat_r = precompute_Khat_rfft(psf, fft_shape)
-    Khat_flip_r = precompute_Khat_rfft(jnp.flip(psf, axis=(0, 1)), fft_shape)
-
-    # Jit wrapper with static shapes
-    curvature_jit = jax.jit(
-        partial(
-            curvature_matrix_diag_via_w_tilde_from,
-            Khat_r=Khat_r,
-            Khat_flip_r=Khat_flip_r,
-            Ky=Ky,
-            Kx=Kx,
-        ),
-        static_argnames=("y_shape", "x_shape", "S", "batch_size"),
-    )
-    return curvature_jit
-
-
-def curvature_matrix_off_diag_via_w_tilde_from(
-    inv_noise_var,  # (Hy, Hx) float64
-    rows0,
-    cols0,
-    vals0,
-    rows1,
-    cols1,
-    vals1,
-    y_shape: int,
-    x_shape: int,
-    S0: int,
-    S1: int,
-    Khat_r,  # rfft2(psf padded)
-    Khat_flip_r,  # rfft2(flipped psf padded)
-    Ky: int,
-    Kx: int,
-    batch_size: int = 32,
-):
-    """
-    Off-diagonal curvature block:
-        F01 = A0^T W A1
-    Returns: (S0, S1)
-    """
-
-    import jax.numpy as jnp
-    from jax import lax
-    from jax.ops import segment_sum
-
-    inv_noise_var = jnp.asarray(inv_noise_var, dtype=jnp.float64)
-
-    rows0 = jnp.asarray(rows0, dtype=jnp.int32)
-    cols0 = jnp.asarray(cols0, dtype=jnp.int32)
-    vals0 = jnp.asarray(vals0, dtype=jnp.float64)
-
-    rows1 = jnp.asarray(rows1, dtype=jnp.int32)
-    cols1 = jnp.asarray(cols1, dtype=jnp.int32)
-    vals1 = jnp.asarray(vals1, dtype=jnp.float64)
-
-    M = y_shape * x_shape
-    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
-
-    def apply_W(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
-        B = Fbatch_flat.shape[1]
-        Fimg = Fbatch_flat.T.reshape((B, y_shape, x_shape))
-        blurred = rfft_convolve2d_same(Fimg, Khat_r, Ky, Kx, fft_shape)
-        weighted = blurred * inv_noise_var[None, :, :]
-        back = rfft_convolve2d_same(weighted, Khat_flip_r, Ky, Kx, fft_shape)
-        return back.reshape((B, M)).T  # (M, B)
-
-    # -----------------------------
-    # FIX: pad output width so dynamic_update_slice never clamps
-    # -----------------------------
-    n_blocks = (S1 + batch_size - 1) // batch_size
-    S1_pad = n_blocks * batch_size
-
-    F01_0 = jnp.zeros((S0, S1_pad), dtype=jnp.float64)
-
-    col_offsets = jnp.arange(batch_size, dtype=jnp.int32)
-
-    def body(block_i, F01):
-        start = block_i * batch_size
-
-        # Select mapper-1 entries in this column block
-        in_block = (cols1 >= start) & (cols1 < (start + batch_size))
-        bc = jnp.where(in_block, cols1 - start, 0).astype(jnp.int32)
-        v = jnp.where(in_block, vals1, 0.0)
-
-        # Assemble RHS block: (M, batch_size)
-        Fbatch = jnp.zeros((M, batch_size), dtype=jnp.float64)
-        Fbatch = Fbatch.at[rows1, bc].add(v)
-
-        # Apply W
-        Gbatch = apply_W(Fbatch)  # (M, batch_size)
-
-        # Project with A0^T -> (S0, batch_size)
-        contrib = vals0[:, None] * Gbatch[rows0, :]
-        block = segment_sum(contrib, cols0, num_segments=S0)  # (S0, batch_size)
-
-        # Mask out columns beyond S1 in the last block
-        width = jnp.minimum(batch_size, jnp.maximum(0, S1 - start))
-        mask = (col_offsets < width).astype(jnp.float64)
-        block = block * mask[None, :]
-
-        # Safe because start+batch_size <= S1_pad always
-        F01 = lax.dynamic_update_slice(F01, block, (0, start))
-        return F01
-
-    F01_pad = lax.fori_loop(0, n_blocks, body, F01_0)
-
-    # Slice back to true width
-    return F01_pad[:, :S1]
-
-
-def build_curvature_matrix_off_diag_via_w_tilde_from_func(
-    psf: np.ndarray, y_shape: int, x_shape: int
-):
-    """
-    Matches your diagonal curvature_matrix_diag_via_w_tilde_from_func:
-      - precomputes Khat_r and Khat_flip_r once
-      - returns a jitted function with the SAME static args pattern
-    """
-
-    import jax
-    import jax.numpy as jnp
-
-    psf = jnp.asarray(psf, dtype=jnp.float64)
-    Ky, Kx = psf.shape
-    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
-
-    Khat_r = precompute_Khat_rfft(psf, fft_shape)
-    Khat_flip_r = precompute_Khat_rfft(jnp.flip(psf, axis=(0, 1)), fft_shape)
-
-    offdiag_jit = jax.jit(
-        partial(
-            curvature_matrix_off_diag_via_w_tilde_from,
-            Khat_r=Khat_r,
-            Khat_flip_r=Khat_flip_r,
-            Ky=Ky,
-            Kx=Kx,
-        ),
-        static_argnames=("y_shape", "x_shape", "S0", "S1", "batch_size"),
-    )
-    return offdiag_jit
-
-
-def curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from(
-    curvature_weights,  # (M_pix, n_funcs) = (H B) / noise^2  on slim grid
-    fft_index_for_masked_pixel,  # (M_pix,) slim -> rect(flat) indices
-    rows,
-    cols,
-    vals,  # triplets for sparse mapper A
-    y_shape: int,
-    x_shape: int,
-    S: int,
-    Khat_flip_r,  # precomputed rfft2(flipped PSF padded)
-    Ky: int,
-    Kx: int,
-):
-    """
-    Computes: off_diag = A^T [ H^T(curvature_weights_native) ]
-    where curvature_weights = (H B) / noise^2 already.
-    """
-
-    import jax
-    import jax.numpy as jnp
-    from jax.ops import segment_sum
-
-    curvature_weights = jnp.asarray(curvature_weights, dtype=jnp.float64)
-    fft_index_for_masked_pixel = jnp.asarray(
-        fft_index_for_masked_pixel, dtype=jnp.int32
-    )
-
-    rows = jnp.asarray(rows, dtype=jnp.int32)
-    cols = jnp.asarray(cols, dtype=jnp.int32)
-    vals = jnp.asarray(vals, dtype=jnp.float64)
-
-    M_pix, n_funcs = curvature_weights.shape
-    M_rect = y_shape * x_shape
-    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
-
-    # 1) scatter slim weights onto rectangular grid (flat)
-    grid_flat = jnp.zeros((M_rect, n_funcs), dtype=jnp.float64)
-    grid_flat = grid_flat.at[fft_index_for_masked_pixel, :].set(curvature_weights)
-
-    # 2) apply H^T = convolution with flipped PSF (one convolution)
-    images = grid_flat.T.reshape((n_funcs, y_shape, x_shape))  # (B=n_funcs, Hy, Hx)
-    back_native = rfft_convolve2d_same(images, Khat_flip_r, Ky, Kx, fft_shape)
-
-    # 3) gather at mapper rows
-    back_flat = back_native.reshape((n_funcs, M_rect)).T  # (M_rect, n_funcs)
-    back_at_rows = back_flat[rows, :]  # (nnz, n_funcs)
-
-    # 4) accumulate into sparse pixels
-    contrib = vals[:, None] * back_at_rows
-    off_diag = segment_sum(contrib, cols, num_segments=S)  # (S, n_funcs)
-    return off_diag
-
-
-def build_curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from_func(
-    psf: np.ndarray, y_shape: int, x_shape: int
-):
-
-    import jax
-    import jax.numpy as jnp
-
-    psf = jnp.asarray(psf, dtype=jnp.float64)
-    Ky, Kx = psf.shape
-    fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
-
-    psf_flip = jnp.flip(psf, axis=(0, 1))
-    Khat_flip_r = precompute_Khat_rfft(psf_flip, fft_shape)
-
-    fn_jit = jax.jit(
-        partial(
-            curvature_matrix_off_diag_with_light_profiles_via_w_tilde_from,
-            Khat_flip_r=Khat_flip_r,
-            Ky=Ky,
-            Kx=Kx,
-        ),
-        static_argnames=("y_shape", "x_shape", "S"),
-    )
-    return fn_jit
-
-
-def mapped_image_rect_from_triplets(
+def mapped_reconstucted_image_via_sparse_linalg_from(
     reconstruction,  # (S,)
     rows,
     cols,
@@ -637,3 +294,270 @@ def mapped_image_rect_from_triplets(
 
     image_slim = image_rect[fft_index_for_masked_pixel]  # (M_pix,)
     return image_slim
+
+
+@dataclass(frozen=True)
+class ImagingSparseLinAlg:
+
+    data_native : np.ndarray
+    noise_map_native: np.ndarray
+    inverse_variances_native: "jax.Array"   # (y, x) float64
+    y_shape: int
+    x_shape: int
+    Ky: int
+    Kx: int
+    fft_shape: Tuple[int, int]
+    batch_size: int
+    col_offsets: "jax.Array"                      # (batch_size,) int32
+    Khat_r: "jax.Array"                           # (Fy, Fx//2+1) complex
+    Khat_flip_r: "jax.Array"                      # (Fy, Fx//2+1) complex
+
+    @classmethod
+    def from_noise_map_and_psf(
+        cls,
+        data,
+        noise_map,
+        psf,
+        *,
+        batch_size: int = 128,
+        dtype=None,
+    ) -> "ImagingSparseLinAlg":
+
+        import jax.numpy as jnp
+
+        from autoarray.structures.arrays.uniform_2d import Array2D
+
+        if dtype is None:
+            dtype = jnp.float64
+
+        # ----------------------------
+        # Shapes
+        # ----------------------------
+        y_shape = int(noise_map.shape_native[0])
+        x_shape = int(noise_map.shape_native[1])
+
+        # ----------------------------
+        # inverse_variances_native (native 2D)
+        # Make safe (0 where invalid)
+        # ----------------------------
+        # Try to get a plain native ndarray from your Array2D-like object:
+        inverse_variances_native = 1.0 / noise_map**2
+        inverse_variances_native = Array2D(
+            values=inverse_variances_native, mask=noise_map.mask
+        )
+        inverse_variances_native = inverse_variances_native.native
+
+        # If you *also* want to zero masked pixels explicitly:
+        # mask_native = noise_map.mask  (depends on your API; might be bool native)
+        # inverse_variances_native = inverse_variances_native.at[mask_native].set(0.0)
+
+        # ----------------------------
+        # PSF + FFT precompute
+        # ----------------------------
+        psf = jnp.asarray(psf, dtype=dtype)
+        Ky, Kx = map(int, psf.shape)
+
+        fft_shape = (y_shape + Ky - 1, x_shape + Kx - 1)
+        Fy, Fx = fft_shape
+
+        def precompute(psf2d):
+            psf_pad = jnp.pad(psf2d, ((0, Fy - Ky), (0, Fx - Kx)))
+            return jnp.fft.rfft2(psf_pad, s=(Fy, Fx))
+
+        Khat_r = precompute(psf)
+        Khat_flip_r = precompute(jnp.flip(psf, axis=(0, 1)))
+
+        return cls(
+            data_native=data.native,
+            noise_map_native=noise_map.native,
+            inverse_variances_native=inverse_variances_native,
+            y_shape=y_shape,
+            x_shape=x_shape,
+            Ky=Ky,
+            Kx=Kx,
+            fft_shape=(int(Fy), int(Fx)),
+            batch_size=int(batch_size),
+            col_offsets=jnp.arange(batch_size, dtype=jnp.int32),
+            Khat_r=Khat_r,
+            Khat_flip_r=Khat_flip_r,
+        )
+
+    def apply_W(self, Fbatch_flat):
+        import jax.numpy as jnp
+
+        y_shape, x_shape = self.y_shape, self.x_shape
+        Ky, Kx = self.Ky, self.Kx
+        Fy, Fx = self.fft_shape
+        M = y_shape * x_shape
+
+        B = Fbatch_flat.shape[1]
+        Fimg = Fbatch_flat.T.reshape((B, y_shape, x_shape))
+
+        # forward blur
+        Fpad = jnp.pad(Fimg, ((0, 0), (0, Fy - y_shape), (0, Fx - x_shape)))
+        Fhat = jnp.fft.rfft2(Fpad, s=(Fy, Fx))
+        blurred_pad = jnp.fft.irfft2(Fhat * self.Khat_r[None, :, :], s=(Fy, Fx))
+
+        cy, cx = Ky // 2, Kx // 2
+        blurred = blurred_pad[:, cy : cy + y_shape, cx : cx + x_shape]
+
+        weighted = blurred * self.inverse_variances_native[None, :, :]
+
+        # backprojection
+        Wpad = jnp.pad(weighted, ((0, 0), (0, Fy - y_shape), (0, Fx - x_shape)))
+        What = jnp.fft.rfft2(Wpad, s=(Fy, Fx))
+        back_pad = jnp.fft.irfft2(What * self.Khat_flip_r[None, :, :], s=(Fy, Fx))
+        back = back_pad[:, cy : cy + y_shape, cx : cx + x_shape]
+
+        return back.reshape((B, M)).T  # (M, B)
+
+    def curvature_matrix_diag_from(self, rows, cols, vals, *, S: int):
+        import jax.numpy as jnp
+        from jax import lax
+        from jax.ops import segment_sum
+
+        rows = jnp.asarray(rows, dtype=jnp.int32)
+        cols = jnp.asarray(cols, dtype=jnp.int32)
+        vals = jnp.asarray(vals, dtype=jnp.float64)
+
+        y_shape, x_shape = self.y_shape, self.x_shape
+        M = y_shape * x_shape
+        B = self.batch_size
+
+        n_blocks = (S + B - 1) // B
+        S_pad = n_blocks * B
+
+        C0 = jnp.zeros((S, S_pad), dtype=jnp.float64)
+
+        def body(block_i, C):
+            start = block_i * B
+
+            in_block = (cols >= start) & (cols < (start + B))
+            bc = jnp.where(in_block, cols - start, 0).astype(jnp.int32)
+            v = jnp.where(in_block, vals, 0.0)
+
+            F = jnp.zeros((M, B), dtype=jnp.float64)
+            F = F.at[rows, bc].add(v)
+
+            G = self.apply_W(F)  # (M, B)
+
+            contrib = vals[:, None] * G[rows, :]
+            Cblock = segment_sum(contrib, cols, num_segments=S)  # (S, B)
+
+            width = jnp.minimum(B, jnp.maximum(0, S - start))
+            Cblock = Cblock * (self.col_offsets < width)[None, :]
+
+            return lax.dynamic_update_slice(C, Cblock, (0, start))
+
+        C_pad = lax.fori_loop(0, n_blocks, body, C0)
+        C = C_pad[:, :S]
+        return 0.5 * (C + C.T)
+
+    def curvature_matrix_off_diag_from(
+        self, rows0, cols0, vals0, rows1, cols1, vals1, *, S0: int, S1: int
+    ):
+        import jax.numpy as jnp
+        from jax import lax
+        from jax.ops import segment_sum
+
+        rows0 = jnp.asarray(rows0, dtype=jnp.int32)
+        cols0 = jnp.asarray(cols0, dtype=jnp.int32)
+        vals0 = jnp.asarray(vals0, dtype=jnp.float64)
+
+        rows1 = jnp.asarray(rows1, dtype=jnp.int32)
+        cols1 = jnp.asarray(cols1, dtype=jnp.int32)
+        vals1 = jnp.asarray(vals1, dtype=jnp.float64)
+
+        y_shape, x_shape = self.y_shape, self.x_shape
+        M = y_shape * x_shape
+        B = self.batch_size
+
+        n_blocks = (S1 + B - 1) // B
+        S1_pad = n_blocks * B
+
+        F01_0 = jnp.zeros((S0, S1_pad), dtype=jnp.float64)
+
+        def body(block_i, F01):
+            start = block_i * B
+
+            in_block = (cols1 >= start) & (cols1 < (start + B))
+            bc = jnp.where(in_block, cols1 - start, 0).astype(jnp.int32)
+            v = jnp.where(in_block, vals1, 0.0)
+
+            F = jnp.zeros((M, B), dtype=jnp.float64)
+            F = F.at[rows1, bc].add(v)
+
+            G = self.apply_W(F)  # (M, B)
+
+            contrib = vals0[:, None] * G[rows0, :]
+            block = segment_sum(contrib, cols0, num_segments=S0)
+
+            width = jnp.minimum(B, jnp.maximum(0, S1 - start))
+            block = block * (self.col_offsets < width)[None, :]
+
+            return lax.dynamic_update_slice(F01, block, (0, start))
+
+        F01_pad = lax.fori_loop(0, n_blocks, body, F01_0)
+        return F01_pad[:, :S1]
+
+    def curvature_matrix_off_diag_func_list_from(
+        self,
+        curvature_weights,  # (M_pix, n_funcs)
+        fft_index_for_masked_pixel,  # (M_pix,)  slim -> rect(flat)
+        rows,
+        cols,
+        vals,  # triplets where rows are RECT indices
+        *,
+        S: int,
+    ):
+        """
+        Computes off_diag = A^T [ H^T(curvature_weights_native) ]
+        where curvature_weights = (H B) / noise^2 already (on slim grid).
+
+        Returns: (S, n_funcs)
+        """
+        import jax.numpy as jnp
+        from jax.ops import segment_sum
+
+        curvature_weights = jnp.asarray(curvature_weights, dtype=jnp.float64)
+        fft_index_for_masked_pixel = jnp.asarray(
+            fft_index_for_masked_pixel, dtype=jnp.int32
+        )
+
+        rows = jnp.asarray(rows, dtype=jnp.int32)
+        cols = jnp.asarray(cols, dtype=jnp.int32)
+        vals = jnp.asarray(vals, dtype=jnp.float64)
+
+        y_shape, x_shape = self.y_shape, self.x_shape
+        Ky, Kx = self.Ky, self.Kx
+        Fy, Fx = self.fft_shape
+        M_rect = y_shape * x_shape
+
+        M_pix, n_funcs = curvature_weights.shape
+
+        # 1) scatter slim -> rect(flat)
+        grid_flat = jnp.zeros((M_rect, n_funcs), dtype=jnp.float64)
+        grid_flat = grid_flat.at[fft_index_for_masked_pixel, :].set(
+            curvature_weights
+        )
+
+        # 2) apply H^T: conv with flipped PSF
+        images = grid_flat.T.reshape((n_funcs, y_shape, x_shape))  # (B=n_funcs, Hy, Hx)
+
+        # --- rfft conv (same as your helper) ---
+        images_pad = jnp.pad(images, ((0, 0), (0, Fy - y_shape), (0, Fx - x_shape)))
+        Fhat = jnp.fft.rfft2(images_pad, s=(Fy, Fx))
+        out_pad = jnp.fft.irfft2(Fhat * self.Khat_flip_r[None, :, :], s=(Fy, Fx))
+
+        cy, cx = Ky // 2, Kx // 2
+        back_native = out_pad[
+            :, cy : cy + y_shape, cx : cx + x_shape
+        ]  # (n_funcs, Hy, Hx)
+
+        # 3) gather at mapper rows (rect coords)
+        back_flat = back_native.reshape((n_funcs, M_rect)).T  # (M_rect, n_funcs)
+        back_at_rows = back_flat[rows, :]  # (nnz, n_funcs)
+
+        # 4) accumulate to source pixels
+        contrib = vals[:, None] * back_at_rows
+        return segment_sum(contrib, cols, num_segments=S)  # (S, n_funcs)

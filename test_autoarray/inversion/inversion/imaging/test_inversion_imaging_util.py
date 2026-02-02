@@ -236,7 +236,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
         )
 
         data_vector_via_w_tilde = (
-            aa.util.inversion_imaging.data_vector_via_w_tilde_from(
+            aa.util.inversion_imaging.data_vector_via_sparse_linalg_from(
                 w_tilde_data=w_tilde_data,
                 rows=rows,
                 cols=cols,
@@ -286,13 +286,10 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         return_rows_slim=False,
     )
 
-    curvature_matrix_via_w_tilde = w_tilde.curvature_matrix_diag_func(
-        w_tilde.inv_noise_var,
+    curvature_matrix_via_w_tilde = w_tilde.fft_state.curvature_matrix_diag_from(
         rows,
         cols,
         vals,
-        y_shape=mask.shape_native[0],
-        x_shape=mask.shape_native[1],
         S=mesh.shape[0] * mesh.shape[1],
         batch_size=w_tilde.batch_size,
     )

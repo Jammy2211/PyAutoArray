@@ -190,7 +190,7 @@ def test__identical_inversion_values_for_two_methods():
         transformer_class=aa.TransformerDFT,
     )
 
-    dataset_w_tilde = dataset.apply_w_tilde()
+    dataset_w_tilde = dataset.apply_sparse_linear_algebra()
 
     inversion_w_tilde = aa.Inversion(
         dataset=dataset_w_tilde,
@@ -291,7 +291,7 @@ def test__identical_inversion_source_and_image_loops():
         transformer_class=aa.TransformerDFT,
     )
 
-    dataset_w_tilde = dataset.apply_w_tilde()
+    dataset_w_tilde = dataset.apply_sparse_linear_algebra()
 
     inversion_image_loop = aa.Inversion(
         dataset=dataset_w_tilde,

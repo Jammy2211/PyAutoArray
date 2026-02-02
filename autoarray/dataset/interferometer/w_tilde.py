@@ -4,7 +4,6 @@ import numpy as np
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 
-from autoarray.dataset.abstract.w_tilde import AbstractWTilde
 from autoarray.mask.mask_2d import Mask2D
 
 
@@ -202,7 +201,7 @@ def load_curvature_preload_if_compatible(
         return np.asarray(npz["curvature_preload"])
 
 
-class WTildeInterferometer(AbstractWTilde):
+class WTildeInterferometer:
     def __init__(
         self,
         curvature_preload: np.ndarray,
@@ -236,7 +235,8 @@ class WTildeInterferometer(AbstractWTilde):
             The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
             which can be reduced to produce lower memory usage at the cost of speed.
         """
-        super().__init__(curvature_preload=curvature_preload, fft_mask=fft_mask)
+        self.curvature_preload = curvature_preload
+        self.fft_mask = fft_mask
 
         self.dirty_image = dirty_image
 

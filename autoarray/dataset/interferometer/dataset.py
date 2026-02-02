@@ -93,13 +93,13 @@ class Interferometer(AbstractDataset):
             real_space_mask=real_space_mask,
         )
 
-        use_w_tilde = True if w_tilde is not None else False
+        use_sparse_linalg = True if w_tilde is not None else False
 
         self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            use_w_tilde=use_w_tilde,
+            use_sparse_linalg=use_sparse_linalg,
         )
 
         self.w_tilde = w_tilde
@@ -158,7 +158,7 @@ class Interferometer(AbstractDataset):
             transformer_class=transformer_class,
         )
 
-    def apply_w_tilde(
+    def apply_sparse_linear_algebra(
         self,
         curvature_preload=None,
         batch_size: int = 128,

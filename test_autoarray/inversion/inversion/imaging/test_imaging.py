@@ -1,6 +1,7 @@
 import autoarray as aa
-from autoarray.dataset.imaging.w_tilde import WTildeImaging
-from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
+
+from autoarray.inversion.inversion.imaging.inversion_imaging_util import ImagingSparseLinAlg
+from autoarray.inversion.inversion.imaging.sparse_linalg import InversionImagingSparseLinAlg
 
 from autoarray import exc
 

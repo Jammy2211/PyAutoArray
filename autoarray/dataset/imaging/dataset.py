@@ -3,11 +3,9 @@ import numpy as np
 from pathlib import Path
 from typing import Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
-from autoarray.dataset.imaging.w_tilde import WTildeImaging
+from autoarray.inversion.inversion.imaging.inversion_imaging_util import ImagingSparseLinAlg
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
@@ -15,7 +13,8 @@ from autoarray import type as ty
 
 from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
-from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class Imaging(AbstractDataset):
         disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
-        w_tilde: Optional[WTildeImaging] = None,
+        sparse_linalg: Optional[ImagingSparseLinAlg] = None,
     ):
         """
         An imaging dataset, containing the image data, noise-map, PSF and associated quantities
@@ -86,8 +85,8 @@ class Imaging(AbstractDataset):
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
-        w_tilde
-            The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
+        sparse_linalg
+            The sparse linear algebra formalism of the linear algebra equations precomputes the convolution of every pair of masked
             noise-map values given the PSF (see `inversion.inversion_util`). Pass the `WTildeImaging` object here to
             enable this linear algebra formalism for pixelized reconstructions.
         """
@@ -191,17 +190,17 @@ class Imaging(AbstractDataset):
             if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
                 raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
-        use_w_tilde = True if w_tilde is not None else False
+        use_sparse_linalg = True if sparse_linalg is not None else False
 
         self.grids = GridsDataset(
             mask=self.data.mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
-            use_w_tilde=use_w_tilde,
+            use_sparse_linalg=use_sparse_linalg,
         )
 
-        self.w_tilde = w_tilde
+        self.sparse_linalg = sparse_linalg
 
     @classmethod
     def from_fits(
@@ -474,14 +473,13 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_w_tilde(
+    def apply_sparse_linear_algebra(
         self,
         batch_size: int = 128,
         disable_fft_pad: bool = False,
-        use_jax: bool = False,
     ):
         """
-        The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
+        The sparse linear algebra formalism precomputes the convolution of every pair of masked
         noise-map values given the PSF (see `inversion.inversion_util`).
 
         The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
@@ -504,11 +502,10 @@ class Imaging(AbstractDataset):
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
 
-        w_tilde = WTildeImaging(
+        sparse_linalg = inversion_imaging_util.ImagingSparseLinAlg.from_noise_map_and_psf(
             data=self.data,
             noise_map=self.noise_map,
-            psf=self.psf,
-            fft_mask=self.mask,
+            psf=self.psf.native,
             batch_size=batch_size,
         )
 
@@ -521,7 +518,7 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
-            w_tilde=w_tilde,
+            sparse_linalg=sparse_linalg,
         )
 
     def output_to_fits(
