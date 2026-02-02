@@ -294,7 +294,7 @@ class ImagingSparseLinAlg:
 
     data_native: np.ndarray
     noise_map_native: np.ndarray
-    weight_map : np.ndarray
+    weight_map: np.ndarray
     inverse_variances_native: "jax.Array"  # (y, x) float64
     y_shape: int
     x_shape: int
@@ -341,10 +341,8 @@ class ImagingSparseLinAlg:
         )
         inverse_variances_native = inverse_variances_native.native
 
-        weight_map = data.array / (noise_map.array ** 2)
-        weight_map = Array2D(
-            values=weight_map, mask=noise_map.mask
-        )
+        weight_map = data.array / (noise_map.array**2)
+        weight_map = Array2D(values=weight_map, mask=noise_map.mask)
 
         # If you *also* want to zero masked pixels explicitly:
         # mask_native = noise_map.mask  (depends on your API; might be bool native)

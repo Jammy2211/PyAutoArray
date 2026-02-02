@@ -201,14 +201,10 @@ class Interferometer(AbstractDataset):
                 "INTERFEROMETER - Computing W-Tilde; runtime scales with visibility count and mask resolution, CPU run times may exceed hours."
             )
 
-            curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-                noise_map_real=self.noise_map.array.real,
-                uv_wavelengths=self.uv_wavelengths,
-                shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
-                grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+            curvature_preload = self.curvature_preload_from(
                 chunk_k=chunk_k,
-                show_memory=show_memory,
                 show_progress=show_progress,
+                show_memory=show_memory,
                 use_jax=use_jax,
             )
 
@@ -231,6 +227,24 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=self.uv_wavelengths,
             transformer_class=lambda uv_wavelengths, real_space_mask: self.transformer,
             sparse_linalg=sparse_linalg,
+        )
+
+    def curvature_preload_from(
+        self,
+        chunk_k: int = 2048,
+        show_progress: bool = False,
+        show_memory: bool = False,
+        use_jax: bool = False,
+    ):
+        return inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
+            noise_map_real=self.noise_map.array.real,
+            uv_wavelengths=self.uv_wavelengths,
+            shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
+            grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+            chunk_k=chunk_k,
+            show_memory=show_memory,
+            show_progress=show_progress,
+            use_jax=use_jax,
         )
 
     @property

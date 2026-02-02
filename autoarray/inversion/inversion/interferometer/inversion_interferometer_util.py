@@ -528,36 +528,6 @@ def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
     return w_tilde_via_preload
 
 
-def load_curvature_preload(
-    file: Union[str, Path],
-) -> Optional[np.ndarray]:
-    """
-    Load a saved curvature_preload if (and only if) it is compatible with the current mask geometry.
-
-    Parameters
-    ----------
-    file
-        Path to a previously saved NPZ.
-    require_mask_hash
-        If True, require the full mask content hash to match (safest).
-        If False, only bbox + shape + pixel scales are checked.
-
-    Returns
-    -------
-    np.ndarray
-        The loaded curvature_preload if compatible, otherwise raises ValueError.
-    """
-    file = Path(file)
-    if file.suffix.lower() != ".npz":
-        file = file.with_suffix(".npz")
-
-    if not file.exists():
-        raise FileNotFoundError(str(file))
-
-    with np.load(file, allow_pickle=False) as npz:
-        return np.asarray(npz["curvature_preload"])
-
-
 @dataclass(frozen=True)
 class InterferometerSparseLinAlg:
     """
@@ -718,44 +688,3 @@ class InterferometerSparseLinAlg:
             pix_weights_for_sub_slim_index,
             fft_index_for_masked_pixel,
         )
-
-    def save_curvature_preload(
-        self,
-        file: Union[str, Path],
-        *,
-        overwrite: bool = False,
-    ) -> Path:
-        """
-        Save curvature_preload plus enough metadata to ensure it is only reused when safe.
-
-        Uses NPZ so we can store:
-          - curvature_preload (array)
-          - meta_json (string)
-
-        Parameters
-        ----------
-        file
-            Path to save to. Recommended suffix: ".npz".
-            If you pass ".npy", we will still save an ".npz" next to it.
-        overwrite
-            If False and the file exists, raise FileExistsError.
-
-        Returns
-        -------
-        Path
-            The path actually written (will end with ".npz").
-        """
-        file = Path(file)
-
-        # Force .npz (storing metadata safely)
-        if file.suffix.lower() != ".npz":
-            file = file.with_suffix(".npz")
-
-        if file.exists() and not overwrite:
-            raise FileExistsError(f"File already exists: {file}")
-
-        np.savez_compressed(
-            file,
-            curvature_preload=np.asarray(self.curvature_preload),
-        )
-        return file

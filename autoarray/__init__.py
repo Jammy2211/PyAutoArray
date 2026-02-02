@@ -9,9 +9,7 @@ from . import type
 from . import util
 from . import fixtures
 from . import mock as m
-from .inversion.inversion.interferometer.inversion_interferometer_util import (
-    load_curvature_preload,
-)
+
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.grids import GridsInterface

@@ -37,35 +37,46 @@ def test__w_tilde_imaging_from():
 
 
 def test__weighted_data_imaging_from():
-    data = np.array(
-        [
+
+    mask = aa.Mask2D(
+        mask=[
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ],
+        pixel_scales=(1.0, 1.0),
+    )
+
+    data = aa.Array2D(
+        values=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 2.0, 1.0, 0.0],
             [0.0, 1.0, 2.0, 0.0],
             [0.0, 0.0, 0.0, 0.0],
-        ]
+        ],
+        mask=mask,
     )
 
-    noise_map = np.array(
-        [
+    noise_map = aa.Array2D(
+        values=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 1.0, 0.0],
             [0.0, 1.0, 2.0, 0.0],
             [0.0, 0.0, 0.0, 0.0],
-        ]
+        ],
+        mask=mask,
     )
 
     kernel = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [1.0, 2.0, 0.0]])
 
     native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-    weight_map = data.array / (noise_map.array ** 2)
-    weight_map = aa.Array2D(
-        values=weight_map, mask=noise_map.mask
-    )
+    weight_map = data / (noise_map**2)
+    weight_map = aa.Array2D(values=weight_map, mask=mask)
 
     weighted_data = aa.util.inversion_imaging.weighted_data_imaging_from(
-        weight_map_native=weight_map.native,
+        weight_map_native=weight_map.native.array,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
     )
@@ -230,9 +241,11 @@ def test__data_vector_via_weighted_data_two_methods_agree():
             sub_fraction_slim=mapper.over_sampler.sub_fraction.array,
         )
 
+        weight_map = image.array / (noise_map.array**2)
+        weight_map = aa.Array2D(values=weight_map, mask=noise_map.mask)
+
         weighted_data = aa.util.inversion_imaging.weighted_data_imaging_from(
-            image_native=image.native.array,
-            noise_map_native=noise_map.native.array,
+            weight_map_native=weight_map.native.array,
             kernel_native=kernel.native.array,
             native_index_for_slim_index=mask.derive_indexes.native_for_slim.astype(
                 "int"
