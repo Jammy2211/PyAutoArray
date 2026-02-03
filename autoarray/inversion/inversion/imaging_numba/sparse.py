@@ -465,6 +465,10 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
                     linear_func_param_range_1[0] : linear_func_param_range_1[1],
                 ] = diag
 
+
+        print(curvature_matrix[0, 2])
+        ffff
+
         return curvature_matrix
 
     @property
