@@ -434,8 +434,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     psf_kernel=self.psf.native.array,
                 )
 
-                print(off_diag[0:5, 0:5])
-
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],
                     linear_func_param_range[0] : linear_func_param_range[1],
@@ -466,8 +464,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     linear_func_param_range_0[0] : linear_func_param_range_0[1],
                     linear_func_param_range_1[0] : linear_func_param_range_1[1],
                 ] = diag
-
-        print(curvature_matrix[0,2])
 
         return curvature_matrix
 
