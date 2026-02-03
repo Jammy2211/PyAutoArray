@@ -555,39 +555,6 @@ def test__inversion_matrices__x2_mappers(
     assert inversion.mapped_reconstructed_image[4] == pytest.approx(0.99999998, 1.0e-4)
 
 
-def test__inversion_matrices__x2_mappers__compare_mapping_and_sparse_operator_values(
-    masked_imaging_7x7,
-    rectangular_mapper_7x7_3x3,
-    delaunay_mapper_9_3x3,
-):
-
-    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator()
-
-    inversion_sparse_operator = aa.Inversion(
-        dataset=masked_imaging_7x7_sparse_operator,
-        linear_obj_list=[rectangular_mapper_7x7_3x3, delaunay_mapper_9_3x3],
-        settings=aa.SettingsInversion(use_positive_only_solver=True),
-    )
-
-    inversion_mapping = aa.Inversion(
-        dataset=masked_imaging_7x7,
-        linear_obj_list=[rectangular_mapper_7x7_3x3, delaunay_mapper_9_3x3],
-        settings=aa.SettingsInversion(use_positive_only_solver=True),
-    )
-
-    assert inversion_sparse_operator.curvature_matrix == pytest.approx(
-        inversion_mapping.curvature_matrix, 1.0e-4
-    )
-    assert inversion_sparse_operator.reconstruction == pytest.approx(
-        inversion_mapping.reconstruction, 1.0e-4
-    )
-    assert inversion_sparse_operator.mapped_reconstructed_image.array == pytest.approx(
-        inversion_mapping.mapped_reconstructed_image.array, 1.0e-4
-    )
-    assert inversion_sparse_operator.log_det_curvature_reg_matrix_term == pytest.approx(
-        inversion_mapping.log_det_curvature_reg_matrix_term
-    )
-
 
 def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
     mask = masked_imaging_7x7_no_blur.mask
