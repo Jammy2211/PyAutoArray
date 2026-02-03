@@ -537,7 +537,7 @@ def nufft_weighted_noise_via_sparse_operator_from(
 
 
 @dataclass(frozen=True)
-class InterferometerSparseLinAlg:
+class InterferometerSparseOperator:
     """
     Fully static FFT / geometry state for W~ curvature.
 
@@ -610,14 +610,14 @@ class InterferometerSparseLinAlg:
     
     @classmethod
     def from_nufft_precision_operator(
-        self,
+        cls,
         nufft_precision_operator: np.ndarray,
         dirty_image: np.ndarray,
         *,
         batch_size: int = 128,
     ):
         """
-        Construct an `InterferometerSparseLinAlg` from a curvature-preload array.
+        Construct an `InterferometerSparseOperator` from a curvature-preload array.
 
         This is the standard factory used in interferometer inversions.
 
@@ -643,7 +643,7 @@ class InterferometerSparseLinAlg:
 
         Returns
         -------
-        InterferometerSparseLinAlg
+        InterferometerSparseOperator
             Immutable cached state object containing shapes and FFT kernel `Khat`.
 
         Raises
@@ -665,7 +665,7 @@ class InterferometerSparseLinAlg:
 
         Khat = jnp.fft.fft2(nufft_precision_operator)
 
-        return InterferometerSparseLinAlg(
+        return InterferometerSparseOperator(
             dirty_image=dirty_image,
             y_shape=y_shape,
             x_shape=x_shape,

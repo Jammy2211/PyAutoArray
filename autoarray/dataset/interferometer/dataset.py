@@ -8,7 +8,7 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
 from autoarray.inversion.inversion.interferometer.inversion_interferometer_util import (
-    InterferometerSparseLinAlg,
+    InterferometerSparseOperator,
 )
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
@@ -32,7 +32,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        sparse_operator: Optional[InterferometerSparseLinAlg] = None,
+        sparse_operator: Optional[InterferometerSparseOperator] = None,
         raise_error_dft_visibilities_limit: bool = True,
     ):
         """
@@ -214,7 +214,7 @@ class Interferometer(AbstractDataset):
             use_adjoint_scaling=True,
         )
 
-        sparse_operator = inversion_interferometer_util.InterferometerSparseLinAlg.from_nufft_precision_operator(
+        sparse_operator = inversion_interferometer_util.InterferometerSparseOperator.from_nufft_precision_operator(
             nufft_precision_operator=nufft_precision_operator,
             dirty_image=dirty_image.array,
             batch_size=batch_size,

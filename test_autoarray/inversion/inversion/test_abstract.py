@@ -131,7 +131,7 @@ def test__curvature_matrix__via_sparse_operator__identical_to_mapping():
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
-    masked_dataset_sparse_operator = masked_dataset.apply_sparse_operator()
+    masked_dataset_sparse_operator = masked_dataset.apply_sparse_operator_cpu()
 
     inversion_sparse_operator = aa.Inversion(
         dataset=masked_dataset_sparse_operator,
@@ -206,7 +206,7 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
-    masked_dataset_sparse_operator = masked_dataset.apply_sparse_operator()
+    masked_dataset_sparse_operator = masked_dataset.apply_sparse_operator_cpu()
 
     inversion_sparse_operator = aa.Inversion(
         dataset=masked_dataset_sparse_operator,

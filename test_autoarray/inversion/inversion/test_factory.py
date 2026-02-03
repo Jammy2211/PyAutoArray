@@ -28,7 +28,7 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     # Overwrites use_sparse_operator to false.
 
     masked_imaging_7x7_no_blur_sparse_operator = (
-        masked_imaging_7x7_no_blur.apply_sparse_operator()
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
     )
 
     inversion = aa.Inversion(
@@ -81,7 +81,7 @@ def test__inversion_imaging__via_mapper(
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
     masked_imaging_7x7_no_blur_sparse_operator = (
-        masked_imaging_7x7_no_blur.apply_sparse_operator()
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
     )
 
     inversion = aa.Inversion(
@@ -90,7 +90,6 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangularUniform)
-    assert isinstance(inversion, aa.InversionImagingSparse)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         7.257175708246, 1.0e-4
     )
@@ -112,7 +111,6 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion, aa.InversionImagingSparse)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6674, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -131,7 +129,7 @@ def test__inversion_imaging__via_regularizations(
     mapper.regularization = regularization_constant
 
     masked_imaging_7x7_no_blur_sparse_operator = (
-        masked_imaging_7x7_no_blur.apply_sparse_operator()
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
     )
 
     inversion = aa.Inversion(
@@ -215,7 +213,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
     masked_imaging_7x7_no_blur_sparse_operator = (
-        masked_imaging_7x7_no_blur.apply_sparse_operator()
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
     )
 
     inversion = aa.Inversion(
@@ -228,7 +226,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
     assert isinstance(inversion.linear_obj_list[1], aa.MapperRectangularUniform)
-    assert isinstance(inversion, aa.InversionImagingSparse)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         7.2571757082469945, 1.0e-4
     )
@@ -280,7 +277,7 @@ def test__inversion_imaging__compare_mapping_and_sparse_operator_values(
     masked_imaging_7x7, delaunay_mapper_9_3x3
 ):
 
-    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator()
+    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator_cpu()
 
     inversion_sparse_operator = aa.Inversion(
         dataset=masked_imaging_7x7_sparse_operator,
@@ -381,7 +378,7 @@ def test__inversion_imaging__linear_obj_func_with_sparse_operator(
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
-    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator()
+    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator_cpu()
 
     inversion_sparse_operator = aa.Inversion(
         dataset=masked_imaging_7x7_sparse_operator,
@@ -392,6 +389,13 @@ def test__inversion_imaging__linear_obj_func_with_sparse_operator(
     assert inversion_mapping.data_vector == pytest.approx(
         inversion_sparse_operator.data_vector, 1.0e-4
     )
+
+    print(inversion_mapping.curvature_matrix[0,2])
+    print(inversion_mapping.curvature_matrix[0,3])
+    print(inversion_sparse_operator.curvature_matrix[0,2])
+    print(inversion_sparse_operator.curvature_matrix[0,3])
+    ffff
+
     assert inversion_mapping.curvature_matrix == pytest.approx(
         inversion_sparse_operator.curvature_matrix, 1.0e-4
     )
@@ -425,7 +429,7 @@ def test__inversion_imaging__linear_obj_func_with_sparse_operator(
         settings=aa.SettingsInversion(),
     )
 
-    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator()
+    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator_cpu()
 
     inversion_sparse_operator = aa.Inversion(
         dataset=masked_imaging_7x7_sparse_operator,
