@@ -8,20 +8,20 @@ from autoarray import exc
 from autoarray.util.fnnls import fnnls_cholesky
 
 
-def curvature_matrix_via_w_tilde_from(
-    w_tilde: np.ndarray, mapping_matrix: np.ndarray, xp=np
+def curvature_matrix_diag_via_psf_weighted_noise_from(
+    psf_weighted_noise: np.ndarray, mapping_matrix: np.ndarray, xp=np
 ) -> np.ndarray:
     """
-    Returns the curvature matrix `F` (see Warren & Dye 2003) from `w_tilde`.
+    Returns the curvature matrix `F` (see Warren & Dye 2003) from the `psf_weighted_noise`.
 
-    The dimensions of `w_tilde` are [image_pixels, image_pixels], meaning that for datasets with many image pixels
-    this matrix can take up 10's of GB of memory. The calculation of the `curvature_matrix` via this function will
-    therefore be very slow, and the method `curvature_matrix_via_w_tilde_curvature_preload_imaging_from` should be used
+    The dimensions of `psf_weighted_noise` are [image_pixels, image_pixels], meaning that for datasets with many image
+    pixels this matrix can take up 10's of GB of memory. The calculation of the `curvature_matrix` via this function
+    will therefore be very slow, and the method `curvature_matrix_diag_via_sparse_operator_from` should be used
     instead.
 
     Parameters
     ----------
-    w_tilde
+    psf_weighted_noise
         A matrix of dimensions [image_pixels, image_pixels] that encodes the convolution or NUFFT of every image pixel
         pair on the noise map.
     mapping_matrix
@@ -32,7 +32,7 @@ def curvature_matrix_via_w_tilde_from(
     ndarray
         The curvature matrix `F` (see Warren & Dye 2003).
     """
-    return xp.dot(mapping_matrix.T, xp.dot(w_tilde, mapping_matrix))
+    return xp.dot(mapping_matrix.T, xp.dot(psf_weighted_noise, mapping_matrix))
 
 
 def curvature_matrix_with_added_to_diag_from(
@@ -126,12 +126,14 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
     return xp.dot(mapping_matrix, reconstruction)
 
 
-def mapped_reconstructed_data_via_w_tilde_from(
-    w_tilde: np.ndarray, mapping_matrix: np.ndarray, reconstruction: np.ndarray
+def mapped_reconstructed_data_via_psf_weighted_noise_from(
+    psf_weighted_noise: np.ndarray,
+    mapping_matrix: np.ndarray,
+    reconstruction: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the reconstructed data vector from the unblurred mapping matrix `M`,
-    the reconstruction vector `s`, and the PSF convolution operator `w_tilde`.
+    the reconstruction vector `s`, and the PSF convolution operator `psf_weighted_noise`.
 
     Equivalent to:
         reconstructed = (W @ M) @ s
@@ -139,7 +141,7 @@ def mapped_reconstructed_data_via_w_tilde_from(
 
     Parameters
     ----------
-    w_tilde
+    psf_weighted_noise
         Array of shape [image_pixels, image_pixels], the PSF convolution operator.
     mapping_matrix
         Array of shape [image_pixels, source_pixels], unblurred mapping matrix.
@@ -151,7 +153,7 @@ def mapped_reconstructed_data_via_w_tilde_from(
     ndarray
         The reconstructed data vector of shape [image_pixels].
     """
-    return w_tilde @ (mapping_matrix @ reconstruction)
+    return psf_weighted_noise @ (mapping_matrix @ reconstruction)
 
 
 def reconstruction_positive_negative_from(

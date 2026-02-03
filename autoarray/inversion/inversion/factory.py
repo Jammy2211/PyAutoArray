@@ -4,16 +4,25 @@ from typing import List, Union
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
+
 from autoarray.inversion.inversion.interferometer.mapping import (
     InversionInterferometerMapping,
 )
-from autoarray.inversion.inversion.interferometer.w_tilde import (
-    InversionInterferometerWTilde,
+from autoarray.inversion.inversion.interferometer.sparse import (
+    InversionInterferometerSparse,
 )
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
-from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
+from autoarray.inversion.inversion.imaging_numba.inversion_imaging_numba_util import (
+    SparseLinAlgImagingNumba,
+)
+from autoarray.inversion.inversion.imaging_numba.sparse import (
+    InversionImagingSparseNumba,
+)
+from autoarray.inversion.inversion.imaging.sparse import (
+    InversionImagingSparse,
+)
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -78,7 +87,7 @@ def inversion_imaging_from(
     """
     Factory which given an input `Imaging` dataset and list of linear objects, creates an `InversionImaging`.
 
-    Unlike the `inversion_from` factory this function takes the `data`, `noise_map` and `w_tilde` objects as separate
+    Unlike the `inversion_from` factory this function takes the `data` and `noise_map` objects as separate
     inputs, which facilitates certain computations where the `dataset` object is unpacked before the `Inversion` is
     performed (for example if the noise-map is scaled before the inversion to downweight certain regions of the
     data).
@@ -108,21 +117,31 @@ def inversion_imaging_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
 
-    use_w_tilde = True
+    use_sparse_operator = True
 
     if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
-        use_w_tilde = False
+        use_sparse_operator = False
 
-    if dataset.w_tilde is not None and use_w_tilde:
+    if dataset.sparse_operator is not None and use_sparse_operator:
 
-        return InversionImagingWTilde(
+        if isinstance(dataset.sparse_operator, SparseLinAlgImagingNumba):
+
+            return InversionImagingSparseNumba(
+                dataset=dataset,
+                linear_obj_list=linear_obj_list,
+                settings=settings,
+                preloads=preloads,
+                xp=xp,
+            )
+
+        return InversionImagingSparse(
             dataset=dataset,
-            w_tilde=dataset.w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
             xp=xp,
         )
 
@@ -145,7 +164,7 @@ def inversion_interferometer_from(
     Factory which given an input `Interferometer` dataset and list of linear objects, creates
     an `InversionInterferometer`.
 
-    Unlike the `inversion_from` factory this function takes the `data`, `noise_map` and `w_tilde` objects as separate
+    Unlike the `inversion_from` factory this function takes the `data` and `noise_map` objects as separate
     inputs, which facilitates certain computations where the `dataset` object is unpacked before the `Inversion` is
     performed (for example if the noise-map is scaled before the inversion to downweight certain regions of the
     data).
@@ -164,8 +183,6 @@ def inversion_interferometer_from(
     ----------
     dataset
         The dataset (e.g. `Interferometer`) whose data is reconstructed via the `Inversion`.
-    w_tilde
-        Object which uses the `Imaging` dataset's PSF to perform the `Inversion` using the w-tilde formalism.
     linear_obj_list
         The list of linear objects (e.g. analytic functions, a mapper with a pixelized grid) which reconstruct the
         input dataset's data and whose values are solved for via the inversion.
@@ -176,19 +193,18 @@ def inversion_interferometer_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
-    use_w_tilde = True
+    use_sparse_operator = True
 
     if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
-        use_w_tilde = False
+        use_sparse_operator = False
 
-    if dataset.w_tilde is not None and use_w_tilde:
+    if dataset.sparse_operator is not None and use_sparse_operator:
 
-        return InversionInterferometerWTilde(
+        return InversionInterferometerSparse(
             dataset=dataset,
-            w_tilde=dataset.w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
             xp=xp,

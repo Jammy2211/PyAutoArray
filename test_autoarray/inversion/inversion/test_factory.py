@@ -25,12 +25,14 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
     assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
 
-    # Overwrites use_w_tilde to false.
+    # Overwrites use_sparse_operator to false.
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_w_tilde()
+    masked_imaging_7x7_no_blur_sparse_operator = (
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
+    )
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
+        dataset=masked_imaging_7x7_no_blur_sparse_operator,
         linear_obj_list=[linear_obj],
     )
 
@@ -78,15 +80,16 @@ def test__inversion_imaging__via_mapper(
     # )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_w_tilde()
+    masked_imaging_7x7_no_blur_sparse_operator = (
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
+    )
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
+        dataset=masked_imaging_7x7_no_blur_sparse_operator,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangularUniform)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         7.257175708246, 1.0e-4
     )
@@ -103,12 +106,11 @@ def test__inversion_imaging__via_mapper(
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
+        dataset=masked_imaging_7x7_no_blur_sparse_operator,
         linear_obj_list=[delaunay_mapper_9_3x3],
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6674, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -126,10 +128,12 @@ def test__inversion_imaging__via_regularizations(
     mapper = copy.copy(delaunay_mapper_9_3x3)
     mapper.regularization = regularization_constant
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_w_tilde()
+    masked_imaging_7x7_no_blur_sparse_operator = (
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
+    )
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
+        dataset=masked_imaging_7x7_no_blur_sparse_operator,
         linear_obj_list=[mapper],
     )
 
@@ -143,7 +147,7 @@ def test__inversion_imaging__via_regularizations(
     mapper.regularization = regularization_adaptive_brightness
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
+        dataset=masked_imaging_7x7_no_blur_sparse_operator,
         linear_obj_list=[mapper],
     )
 
@@ -208,10 +212,12 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     assert inversion.reconstruction_dict[rectangular_mapper_7x7_3x3][0] < 1.0e-4
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    masked_imaging_7x7_no_blur_w_tilde = masked_imaging_7x7_no_blur.apply_w_tilde()
+    masked_imaging_7x7_no_blur_sparse_operator = (
+        masked_imaging_7x7_no_blur.apply_sparse_operator_cpu()
+    )
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur_w_tilde,
+        dataset=masked_imaging_7x7_no_blur_sparse_operator,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(
             no_regularization_add_to_curvature_diag_value=False,
@@ -220,7 +226,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
     assert isinstance(inversion.linear_obj_list[1], aa.MapperRectangularUniform)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         7.2571757082469945, 1.0e-4
     )
@@ -268,14 +273,14 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     assert isinstance(inversion, aa.InversionImagingMapping)
 
 
-def test__inversion_imaging__compare_mapping_and_w_tilde_values(
+def test__inversion_imaging__compare_mapping_and_sparse_operator_values(
     masked_imaging_7x7, delaunay_mapper_9_3x3
 ):
 
-    masked_imaging_7x7_w_tilde = masked_imaging_7x7.apply_w_tilde()
+    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator_cpu()
 
-    inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging_7x7_w_tilde,
+    inversion_sparse_operator = aa.Inversion(
+        dataset=masked_imaging_7x7_sparse_operator,
         linear_obj_list=[delaunay_mapper_9_3x3],
     )
 
@@ -285,16 +290,16 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
         settings=aa.SettingsInversion(),
     )
 
-    assert inversion_w_tilde._curvature_matrix_mapper_diag == pytest.approx(
+    assert inversion_sparse_operator._curvature_matrix_mapper_diag == pytest.approx(
         inversion_mapping._curvature_matrix_mapper_diag, 1.0e-4
     )
-    assert inversion_w_tilde.reconstruction == pytest.approx(
+    assert inversion_sparse_operator.reconstruction == pytest.approx(
         inversion_mapping.reconstruction, 1.0e-4
     )
-    assert inversion_w_tilde.mapped_reconstructed_image.array == pytest.approx(
+    assert inversion_sparse_operator.mapped_reconstructed_image.array == pytest.approx(
         inversion_mapping.mapped_reconstructed_image.array, 1.0e-4
     )
-    assert inversion_w_tilde.log_det_curvature_reg_matrix_term == pytest.approx(
+    assert inversion_sparse_operator.log_det_curvature_reg_matrix_term == pytest.approx(
         inversion_mapping.log_det_curvature_reg_matrix_term
     )
 
@@ -349,7 +354,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     )
 
 
-def test__inversion_imaging__linear_obj_func_with_w_tilde(
+def test__inversion_imaging__linear_obj_func_with_sparse_operator(
     masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
@@ -373,33 +378,37 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
-    masked_imaging_7x7_w_tilde = masked_imaging_7x7.apply_w_tilde()
+    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator_cpu()
 
-    inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging_7x7_w_tilde,
+    inversion_sparse_operator = aa.Inversion(
+        dataset=masked_imaging_7x7_sparse_operator,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     assert inversion_mapping.data_vector == pytest.approx(
-        inversion_w_tilde.data_vector, 1.0e-4
+        inversion_sparse_operator.data_vector, 1.0e-4
     )
+<<<<<<< HEAD
     print(inversion_mapping.curvature_matrix[0,2])
     print(inversion_mapping.curvature_matrix[0,3])
     print(inversion_w_tilde.curvature_matrix[0,2])
     print(inversion_w_tilde.curvature_matrix[0,3])
     ffff
+=======
+
+>>>>>>> a655bb9e4603df17c8ff7f8d20459bb36fa03c5a
     assert inversion_mapping.curvature_matrix == pytest.approx(
-        inversion_w_tilde.curvature_matrix, 1.0e-4
+        inversion_sparse_operator.curvature_matrix, 1.0e-4
     )
     assert inversion_mapping.curvature_reg_matrix == pytest.approx(
-        inversion_w_tilde.curvature_reg_matrix, 1.0e-4
+        inversion_sparse_operator.curvature_reg_matrix, 1.0e-4
     )
     assert inversion_mapping.reconstruction == pytest.approx(
-        inversion_w_tilde.reconstruction, 1.0e-4
+        inversion_sparse_operator.reconstruction, 1.0e-4
     )
     assert inversion_mapping.mapped_reconstructed_image.array == pytest.approx(
-        inversion_w_tilde.mapped_reconstructed_image.array, 1.0e-4
+        inversion_sparse_operator.mapped_reconstructed_image.array, 1.0e-4
     )
 
     linear_obj_1 = aa.m.MockLinearObjFuncList(
@@ -422,10 +431,10 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
         settings=aa.SettingsInversion(),
     )
 
-    masked_imaging_7x7_w_tilde = masked_imaging_7x7.apply_w_tilde()
+    masked_imaging_7x7_sparse_operator = masked_imaging_7x7.apply_sparse_operator_cpu()
 
-    inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging_7x7_w_tilde,
+    inversion_sparse_operator = aa.Inversion(
+        dataset=masked_imaging_7x7_sparse_operator,
         linear_obj_list=[
             rectangular_mapper_7x7_3x3,
             linear_obj,
@@ -436,10 +445,10 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     )
 
     assert inversion_mapping.data_vector == pytest.approx(
-        inversion_w_tilde.data_vector, 1.0e-4
+        inversion_sparse_operator.data_vector, 1.0e-4
     )
     assert inversion_mapping.curvature_matrix == pytest.approx(
-        inversion_w_tilde.curvature_matrix, 1.0e-4
+        inversion_sparse_operator.curvature_matrix, 1.0e-4
     )
 
 

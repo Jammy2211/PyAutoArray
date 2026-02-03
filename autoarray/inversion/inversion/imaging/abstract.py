@@ -41,7 +41,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         The linear algebra required to perform an `Inversion` depends on the type of dataset being fitted (e.g.
         `Imaging`, `Interferometer) and the formalism chosen (e.g. a using a `mapping_matrix` or the
-        w_tilde formalism). The children of this class overwrite certain methods in order to be appropriate for
+        sparse linear algebra formalism). The children of this class overwrite certain methods in order to be appropriate for
         certain datasets or use a specific formalism.
 
         Inversions use the formalism's outlined in the following Astronomy papers:
@@ -123,7 +123,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         This property returns a dictionary mapping every linear func object to its corresponded operated mapping
         matrix, which is used for constructing the matrices that perform the linear inversion in an efficent way
-        for the w_tilde calculation.
+        for the psf precision operator calculation.
 
         Returns
         -------
@@ -209,7 +209,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         This property returns a dictionary mapping every mapper object to its corresponded operated mapping
         matrix, which is used for constructing the matrices that perform the linear inversion in an efficent way
-        for the w_tilde calculation.
+        for the psf precision operator calculation.
 
         Returns
         -------

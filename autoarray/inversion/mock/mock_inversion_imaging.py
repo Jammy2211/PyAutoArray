@@ -3,7 +3,6 @@ from typing import Dict
 
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
-from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 
@@ -70,43 +69,3 @@ class MockInversionImaging(InversionImagingMapping):
             return super().data_linear_func_matrix_dict
 
         return self._data_linear_func_matrix_dict
-
-
-class MockWTildeImaging:
-    pass
-
-
-class MockInversionImagingWTilde(InversionImagingWTilde):
-    def __init__(
-        self,
-        data=None,
-        noise_map=None,
-        psf=None,
-        w_tilde=None,
-        linear_obj_list=None,
-        curvature_matrix_mapper_diag=None,
-        settings: SettingsInversion = None,
-    ):
-        dataset = DatasetInterface(
-            data=data,
-            noise_map=noise_map,
-            psf=psf,
-        )
-
-        settings = settings or SettingsInversion()
-
-        super().__init__(
-            dataset=dataset,
-            w_tilde=w_tilde or MockWTildeImaging(),
-            linear_obj_list=linear_obj_list,
-            settings=settings,
-        )
-
-        self.__curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
-
-    @property
-    def curvature_matrix_mapper_diag(self):
-        if self.__curvature_matrix_mapper_diag is None:
-            return super()._curvature_matrix_mapper_diag
-
-        return self.__curvature_matrix_mapper_diag

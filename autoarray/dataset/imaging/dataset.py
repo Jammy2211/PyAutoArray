@@ -3,11 +3,11 @@ import numpy as np
 from pathlib import Path
 from typing import Optional, Union
 
-from autoconf import cached_property
-
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
-from autoarray.dataset.imaging.w_tilde import WTildeImaging
+from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
+    ImagingSparseOperator,
+)
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
@@ -15,7 +15,8 @@ from autoarray import type as ty
 
 from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
-from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class Imaging(AbstractDataset):
         disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
-        w_tilde: Optional[WTildeImaging] = None,
+        sparse_operator: Optional[ImagingSparseOperator] = None,
     ):
         """
         An imaging dataset, containing the image data, noise-map, PSF and associated quantities
@@ -86,9 +87,9 @@ class Imaging(AbstractDataset):
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
-        w_tilde
-            The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
-            noise-map values given the PSF (see `inversion.inversion_util`). Pass the `WTildeImaging` object here to
+        sparse_operator
+            The sparse linear algebra formalism of the linear algebra equations precomputes the convolution of every pair of masked
+            noise-map values given the PSF (see `inversion.inversion_util`). Pass the `ImagingSparseOperator` object here to
             enable this linear algebra formalism for pixelized reconstructions.
         """
 
@@ -191,17 +192,17 @@ class Imaging(AbstractDataset):
             if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
                 raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
-        use_w_tilde = True if w_tilde is not None else False
+        use_sparse_operator = True if sparse_operator is not None else False
 
         self.grids = GridsDataset(
             mask=self.data.mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
-            use_w_tilde=use_w_tilde,
+            use_sparse_operator=use_sparse_operator,
         )
 
-        self.w_tilde = w_tilde
+        self.sparse_operator = sparse_operator
 
     @classmethod
     def from_fits(
@@ -474,9 +475,13 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_w_tilde(self, disable_fft_pad: bool = False):
+    def apply_sparse_operator(
+        self,
+        batch_size: int = 128,
+        disable_fft_pad: bool = False,
+    ):
         """
-        The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
+        The sparse linear algebra formalism precomputes the convolution of every pair of masked
         noise-map values given the PSF (see `inversion.inversion_util`).
 
         The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
@@ -487,12 +492,66 @@ class Imaging(AbstractDataset):
 
         Returns
         -------
-        WTildeImaging
-            Precomputed values used for the w tilde formalism of linear algebra calculations.
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed
+        disable_fft_pad
+            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
+            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
+            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
+            padded.
+        use_jax
+            Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
 
-        logger.info("IMAGING - Computing W-Tilde... May take a moment.")
+        sparse_operator = (
+            inversion_imaging_util.ImagingSparseOperator.from_noise_map_and_psf(
+                data=self.data,
+                noise_map=self.noise_map,
+                psf=self.psf.native,
+                batch_size=batch_size,
+            )
+        )
 
+        return Imaging(
+            data=self.data,
+            noise_map=self.noise_map,
+            psf=self.psf,
+            noise_covariance_matrix=self.noise_covariance_matrix,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
+            disable_fft_pad=disable_fft_pad,
+            check_noise_map=False,
+            sparse_operator=sparse_operator,
+        )
+
+    def apply_sparse_operator_cpu(
+        self,
+        disable_fft_pad: bool = False,
+    ):
+        """
+        The sparse linear algebra formalism precomputes the convolution of every pair of masked
+        noise-map values given the PSF (see `inversion.inversion_util`).
+
+        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
+        per analysis.
+
+        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
+        ensuring efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed
+        disable_fft_pad
+            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
+            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
+            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
+            padded.
+        use_jax
+            Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
+        """
         try:
             import numba
         except ModuleNotFoundError:
@@ -504,11 +563,15 @@ class Imaging(AbstractDataset):
                 "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
             )
 
+        from autoarray.inversion.inversion.imaging_numba import (
+            inversion_imaging_numba_util,
+        )
+
         (
-            curvature_preload,
+            psf_precision_operator_sparse,
             indexes,
             lengths,
-        ) = inversion_imaging_numba_util.w_tilde_curvature_preload_imaging_from(
+        ) = inversion_imaging_numba_util.psf_precision_operator_sparse_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
             kernel_native=np.array(self.psf.native.array).astype("float64"),
             native_index_for_slim_index=np.array(
@@ -516,8 +579,8 @@ class Imaging(AbstractDataset):
             ).astype("int"),
         )
 
-        w_tilde = WTildeImaging(
-            curvature_preload=curvature_preload,
+        sparse_operator = inversion_imaging_numba_util.SparseLinAlgImagingNumba(
+            psf_precision_operator_sparse=psf_precision_operator_sparse,
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
             noise_map=self.noise_map,
@@ -534,7 +597,7 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
-            w_tilde=w_tilde,
+            sparse_operator=sparse_operator,
         )
 
     def output_to_fits(

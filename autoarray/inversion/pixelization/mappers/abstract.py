@@ -268,6 +268,120 @@ class AbstractMapper(LinearObj):
             xp=self._xp,
         )
 
+    @cached_property
+    def sparse_triplets_data(self):
+        """
+        Sparse triplet representation of the (unblurred) mapping operator on the *slim data grid*.
+
+        This property returns the mapping between image-plane subpixels and source pixels in
+        sparse COO triplet form:
+
+            (rows, cols, vals)
+
+        where each triplet encodes one non-zero entry of the mapping matrix:
+
+            A[row, col] += val
+
+        The returned indices correspond to:
+
+        - `rows`: slim masked image pixel indices (one per subpixel contribution)
+        - `cols`: source pixel indices in the pixelization
+        - `vals`: interpolation weights, including oversampling normalization
+
+        This representation is used for efficient computation of quantities such as the
+        data vector:
+
+            D = Aᵀ d
+
+        without ever forming the dense mapping matrix explicitly.
+
+        Notes
+        -----
+        - This version keeps `rows` in *slim masked pixel coordinates*, which is the natural
+          indexing convention for data-vector calculations using `psf_operated_data`.
+        - The triplets contain only non-zero contributions, making them significantly faster
+          than dense matrix operations.
+
+        Returns
+        -------
+        rows : ndarray of shape (nnz,)
+            Slim masked image pixel index for each non-zero mapping entry.
+
+        cols : ndarray of shape (nnz,)
+            Source pixel index for each mapping entry.
+
+        vals : ndarray of shape (nnz,)
+            Mapping weight for each entry, including subpixel normalization.
+        """
+
+        rows, cols, vals = mapper_util.sparse_triplets_from(
+            pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
+            slim_index_for_sub=self.slim_index_for_sub_slim_index,
+            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            sub_fraction_slim=self.over_sampler.sub_fraction.array,
+            xp=self._xp,
+        )
+
+        return rows, cols, vals
+
+    @cached_property
+    def sparse_triplets_curvature(self):
+        """
+        Sparse triplet representation of the mapping operator on the *rectangular FFT grid*.
+
+        This property returns the same sparse mapping triplets as `sparse_triplets_data`,
+        but with the row indices converted from slim masked pixel coordinates into the
+        rectangular FFT indexing system used in the w-tilde curvature formalism.
+
+        This is required because curvature matrix calculations involve applying the
+        PSF precision operator:
+
+            W = Hᵀ N⁻¹ H
+
+        via FFT-based convolution on a rectangular grid. Therefore the mapping operator
+        must be expressed in terms of rectangular pixel indices.
+
+        Specifically:
+
+        - `rows` are converted from slim masked pixel indices into FFT-grid indices via:
+
+              rows_rect = fft_index_for_masked_pixel[rows_slim]
+
+        The resulting triplets are used in curvature matrix assembly:
+
+            F = Aᵀ W A
+
+        Notes
+        -----
+        - Use `sparse_triplets_data` for data-vector calculations.
+        - Use `sparse_triplets_curvature` for curvature matrix calculations with FFT-based
+          PSF operators.
+
+        Returns
+        -------
+        rows : ndarray of shape (nnz,)
+            Rectangular FFT-grid pixel index for each mapping entry.
+
+        cols : ndarray of shape (nnz,)
+            Source pixel index for each mapping entry.
+
+        vals : ndarray of shape (nnz,)
+            Mapping weight for each entry.
+        """
+
+        rows, cols, vals = mapper_util.sparse_triplets_from(
+            pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
+            slim_index_for_sub=self.slim_index_for_sub_slim_index,
+            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            sub_fraction_slim=self.over_sampler.sub_fraction.array,
+            xp=self._xp,
+            return_rows_slim=False,
+        )
+
+        return rows, cols, vals
+
     def pixel_signals_from(self, signal_scale: float, xp=np) -> np.ndarray:
         """
         Returns the signal in each pixelization pixel, where this signal is an estimate of the expected signal
