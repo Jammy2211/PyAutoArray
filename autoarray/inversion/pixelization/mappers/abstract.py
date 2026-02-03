@@ -377,7 +377,7 @@ class AbstractMapper(LinearObj):
             fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
             sub_fraction_slim=self.over_sampler.sub_fraction.array,
             xp=self._xp,
-            return_rows_slim=False
+            return_rows_slim=False,
         )
 
         return rows, cols, vals
