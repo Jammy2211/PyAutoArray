@@ -651,57 +651,85 @@ def curvature_matrix_off_diags_via_sparse_operator_from(
 
 
 @numba_util.jit()
-def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
-    data_linear_func_matrix: np.ndarray,
+def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
     pix_pixels: int,
-):
+    curvature_weights: np.ndarray,  # shape (n_unmasked, n_funcs)
+    mask: np.ndarray,  # shape (ny, nx), bool
+    psf_kernel: np.ndarray,  # shape (ky, kx)
+) -> np.ndarray:
     """
-    Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
-    and a linear func object, using the preloaded `data_linear_func_matrix` of the values of the linear functions.
+    Returns the off-diagonal terms in the curvature matrix `F` (see Warren & Dye 2003)
+    between a mapper object and a linear func object, using the unique mappings between
+    data pixels and pixelization pixels.
 
+    This version applies the PSF directly as a 2D convolution kernel. The curvature
+    weights of the linear function object (values of the linear function divided by the
+    noise-map squared) are expanded into the native 2D image grid, convolved with the PSF
+    kernel, and then remapped back to the 1D slim representation.
 
-    If a linear function in an inversion is fixed, its values can be evaluated and preloaded beforehand. For every
-    data pixel, the PSF convolution with this preloaded linear function can also be preloaded, in a matrix of
-    shape [data_pixels, 1].
-
-    When mapper objects and linear functions are used simultaneously in an inversion, this preloaded matrix
-    significantly speed up the computation of their off-diagonal terms in the curvature matrix.
-
-    This function performs this efficient calcluation via the preloaded `data_linear_func_matrix`.
+    For each unique mapping between a data pixel and a pixelization pixel, the convolved
+    curvature weights at that data pixel are multiplied by the mapping weights and
+    accumulated into the off-diagonal block of the curvature matrix. This accounts for
+    sub-pixel mappings between data pixels and pixelization pixels.
 
     Parameters
     ----------
-    data_linear_func_matrix
-        A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum of
-        the values of a linear object function convolved with the PSF kernel at the data pixel.
     data_to_pix_unique
-        The indexes of all pixels that each data pixel maps to (see the `Mapper` object).
+        An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D)
+        to its unique set of pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
     data_weights
-        The weights of all pixels that each data pixel maps to (see the `Mapper` object).
+        For every unique mapping between a set of data sub-pixels and a pixelization pixel,
+        the weight of this mapping based on the number of sub-pixels that map to the pixelization pixel.
     pix_lengths
-        The number of pixelization pixels that each data pixel maps to (see the `Mapper` object).
+        A 1D array describing how many unique pixels each data pixel maps to. Used to iterate over
+        `data_to_pix_unique` and `data_weights`.
     pix_pixels
-        The number of pixelization pixels in the pixelization (see the `Mapper` object).
+        The total number of pixels in the pixelization that reconstructs the data.
+    curvature_weights
+        The operated values of the linear function divided by the noise-map squared, with shape
+        [n_unmasked_data_pixels, n_linear_func_pixels].
+    mask
+        A 2D boolean mask of shape (ny, nx) indicating which pixels are in the data region.
+    psf_kernel
+        The PSF kernel in its native 2D form, centered (odd dimensions recommended).
+
+    Returns
+    -------
+    ndarray
+        The off-diagonal block of the curvature matrix `F` (see Warren & Dye 2003),
+        with shape [pix_pixels, n_linear_func_pixels].
     """
-
-    linear_func_pixels = data_linear_func_matrix.shape[1]
-
-    off_diag = np.zeros((pix_pixels, linear_func_pixels))
-
     data_pixels = data_weights.shape[0]
+    n_funcs = curvature_weights.shape[1]
+    ny, nx = mask.shape
 
+    # Expand curvature weights into native grid
+    curvature_native = np.zeros((ny, nx, n_funcs))
+    unmasked_coords = np.argwhere(~mask)
+    for i, (y, x) in enumerate(unmasked_coords):
+        for f in range(n_funcs):
+            curvature_native[y, x, f] = curvature_weights[i, f]
+
+    # Convolve in native space
+    blurred_native = convolve_with_kernel_native(curvature_native, psf_kernel)
+
+    # Map back to slim representation
+    blurred_slim = np.zeros((data_pixels, n_funcs))
+    for i, (y, x) in enumerate(unmasked_coords):
+        for f in range(n_funcs):
+            blurred_slim[i, f] = blurred_native[y, x, f]
+
+    # Accumulate into off_diag
+    off_diag = np.zeros((pix_pixels, n_funcs))
     for data_0 in range(data_pixels):
         for pix_0_index in range(pix_lengths[data_0]):
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
-
-            for linear_index in range(linear_func_pixels):
-                off_diag[pix_0, linear_index] += (
-                    data_linear_func_matrix[data_0, linear_index] * data_0_weight
-                )
+            for f in range(n_funcs):
+                off_diag[pix_0, f] += data_0_weight * blurred_slim[data_0, f]
 
     return off_diag
 

@@ -90,11 +90,13 @@ def test__curvature_matrix_via_psf_precision_operator_from():
         ]
     )
 
-    nufft_precision_operator = aa.util.inversion_interferometer.nufft_precision_operator_from(
-        noise_map_real=noise_map,
-        uv_wavelengths=uv_wavelengths,
-        shape_masked_pixels_2d=(3, 3),
-        grid_radians_2d=np.array(grid.native),
+    nufft_precision_operator = (
+        aa.util.inversion_interferometer.nufft_precision_operator_from(
+            noise_map_real=noise_map,
+            uv_wavelengths=uv_wavelengths,
+            shape_masked_pixels_2d=(3, 3),
+            grid_radians_2d=np.array(grid.native),
+        )
     )
 
     native_index_for_slim_index = np.array(

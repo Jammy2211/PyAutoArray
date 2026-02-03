@@ -276,18 +276,16 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            diag = (
-                inversion_imaging_numba_util.curvature_matrix_via_sparse_operator_from(
-                    psf_precision_operator=self.sparse_operator.psf_precision_operator_sparse,
-                    psf_precision_indexes=self.sparse_operator.indexes,
-                    psf_precision_lengths=self.sparse_operator.lengths,
-                    data_to_pix_unique=np.array(
-                        mapper_i.unique_mappings.data_to_pix_unique
-                    ),
-                    data_weights=np.array(mapper_i.unique_mappings.data_weights),
-                    pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
-                    pix_pixels=mapper_i.params,
-                )
+            diag = inversion_imaging_numba_util.curvature_matrix_via_sparse_operator_from(
+                psf_precision_operator=self.sparse_operator.psf_precision_operator_sparse,
+                psf_precision_indexes=self.sparse_operator.indexes,
+                psf_precision_lengths=self.sparse_operator.lengths,
+                data_to_pix_unique=np.array(
+                    mapper_i.unique_mappings.data_to_pix_unique
+                ),
+                data_weights=np.array(mapper_i.unique_mappings.data_weights),
+                pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
+                pix_pixels=mapper_i.params,
             )
 
             curvature_matrix[
@@ -425,18 +423,15 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
                     / self.noise_map[:, None] ** 2
                 )
 
-                print(data_linear_func_matrix)
-
-                off_diag = inversion_imaging_numba_util.curvature_matrix_off_diags_via_data_linear_func_matrix_from(
-                    data_linear_func_matrix=data_linear_func_matrix,
+                off_diag = inversion_imaging_numba_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
                     data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
                     data_weights=mapper.unique_mappings.data_weights,
                     pix_lengths=mapper.unique_mappings.pix_lengths,
                     pix_pixels=mapper.params,
+                    curvature_weights=np.array(data_linear_func_matrix),
+                    mask=self.mask.array,
+                    psf_kernel=self.psf.native.array,
                 )
-
-
-                print(off_diag[0:5, 0:5])
 
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],
@@ -469,10 +464,6 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
                     linear_func_param_range_0[0] : linear_func_param_range_0[1],
                     linear_func_param_range_1[0] : linear_func_param_range_1[1],
                 ] = diag
-
-
-        print(curvature_matrix[0, 2])
-        ffff
 
         return curvature_matrix
 

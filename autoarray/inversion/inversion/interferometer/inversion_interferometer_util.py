@@ -607,7 +607,7 @@ class InterferometerSparseOperator:
         FFT of the curvature preload, shape (2y_shape, 2x_shape), complex.
         This is the frequency-domain representation of the W~ operator kernel.
     """
-    
+
     @classmethod
     def from_nufft_precision_operator(
         cls,
