@@ -412,9 +412,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             cls=AbstractLinearObjFuncList
         )
 
-        print(curvature_matrix[0,2])
-
-
         for i in range(len(mapper_list)):
             mapper = mapper_list[i]
             mapper_param_range = mapper_param_range_list[i]
@@ -437,13 +434,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     psf_kernel=self.psf.native.array,
                 )
 
+                print(off_diag[0:5, 0:5])
+
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],
                     linear_func_param_range[0] : linear_func_param_range[1],
                 ] = off_diag
-
-                print(curvature_matrix[0, 2])
-                ffff
 
         for index_0, linear_func_0 in enumerate(linear_func_list):
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
@@ -470,6 +466,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     linear_func_param_range_0[0] : linear_func_param_range_0[1],
                     linear_func_param_range_1[0] : linear_func_param_range_1[1],
                 ] = diag
+
+        print(curvature_matrix[0,2])
 
         return curvature_matrix
 
