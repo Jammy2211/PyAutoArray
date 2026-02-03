@@ -4,26 +4,25 @@ from typing import Dict, List, Optional, Union
 from autoconf import cached_property
 
 from autoarray.dataset.imaging.dataset import Imaging
-from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray import exc
-from autoarray.inversion.inversion.imaging import inversion_imaging_numba_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
-class InversionImagingWTilde(AbstractInversionImaging):
+class InversionImagingSparse(AbstractInversionImaging):
     def __init__(
         self,
         dataset: Union[Imaging, DatasetInterface],
-        w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = None,
         xp=np,
     ):
         """
@@ -41,38 +40,26 @@ class InversionImagingWTilde(AbstractInversionImaging):
         ----------
         dataset
             The dataset containing the image data, noise-map and psf which is fitted by the inversion.
-        w_tilde
-            An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
-            the mapping matrix.
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         """
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion w-tilde functionality (pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
-
         super().__init__(
-            dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, xp=xp
+            dataset=dataset,
+            linear_obj_list=linear_obj_list,
+            settings=settings,
+            preloads=preloads,
+            xp=xp,
         )
 
-        self.w_tilde = dataset.w_tilde
-
     @cached_property
-    def w_tilde_data(self):
-        return inversion_imaging_numba_util.w_tilde_data_imaging_from(
-            image_native=np.array(self.data.native.array),
-            noise_map_native=self.noise_map.native.array,
-            kernel_native=self.psf.native.array,
+    def psf_weighted_data(self):
+        return inversion_imaging_util.psf_weighted_data_from(
+            weight_map_native=self.dataset.sparse_operator.weight_map.array,
+            kernel_native=self.psf.stored_native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
+            xp=self._xp,
         )
 
     @property
@@ -88,26 +75,33 @@ class InversionImagingWTilde(AbstractInversionImaging):
         if not self.has(cls=AbstractMapper):
             return None
 
-        data_vector = np.zeros(self.total_params)
+        data_vector = self._xp.zeros(self.total_params)
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)
         mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
 
         for mapper_index, mapper in enumerate(mapper_list):
+
+            rows, cols, vals = mapper.sparse_triplets_data
+
             data_vector_mapper = (
-                inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=self.w_tilde_data,
-                    data_to_pix_unique=np.array(
-                        mapper.unique_mappings.data_to_pix_unique
-                    ),
-                    data_weights=np.array(mapper.unique_mappings.data_weights),
-                    pix_lengths=np.array(mapper.unique_mappings.pix_lengths),
-                    pix_pixels=mapper.params,
+                inversion_imaging_util.data_vector_via_psf_weighted_data_from(
+                    psf_weighted_data=self.psf_weighted_data,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.params,
                 )
             )
             param_range = mapper_param_range[mapper_index]
 
-            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
+            start = param_range[0]
+            end = param_range[1]
+
+            if self._xp is np:
+                data_vector[start:end] = data_vector_mapper
+            else:
+                data_vector = data_vector.at[start:end].set(data_vector_mapper)
 
         return data_vector
 
@@ -120,10 +114,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
         data vector is given by equation (4) and the letter D.
 
-        If there are multiple linear objects a `data_vector` is computed for ech one, which are concatenated
+        If there are multiple linear objects a `data_vector` is computed for each one, which are concatenated
         ensuring their values are solved for simultaneously.
 
-        The calculation is described in more detail in `inversion_util.w_tilde_data_imaging_from`.
+        The calculation is described in more detail in `inversion_util.psf_weighted_data_from`.
         """
         if self.has(cls=AbstractLinearObjFuncList):
             return self._data_vector_func_list_and_mapper
@@ -142,12 +136,14 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
         linear_obj = self.linear_obj_list[0]
 
-        return inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
-            w_tilde_data=self.w_tilde_data,
-            data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-            data_weights=linear_obj.unique_mappings.data_weights,
-            pix_lengths=linear_obj.unique_mappings.pix_lengths,
-            pix_pixels=linear_obj.params,
+        rows, cols, vals = linear_obj.sparse_triplets_data
+
+        return inversion_imaging_util.data_vector_via_psf_weighted_data_from(
+            psf_weighted_data=self.psf_weighted_data,
+            rows=rows,
+            cols=cols,
+            vals=vals,
+            S=linear_obj.params,
         )
 
     @property
@@ -160,18 +156,25 @@ class InversionImagingWTilde(AbstractInversionImaging):
         which computes the `data_vector` of each object and concatenates them.
         """
 
-        return np.concatenate(
-            [
-                inversion_imaging_numba_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=self.w_tilde_data,
-                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-                    data_weights=linear_obj.unique_mappings.data_weights,
-                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    pix_pixels=linear_obj.params,
+        data_vector_list = []
+
+        for mapper in self.cls_list_from(cls=AbstractMapper):
+
+            rows, cols, vals = mapper.sparse_triplets_data
+
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_psf_weighted_data_from(
+                    psf_weighted_data=self.psf_weighted_data,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.params,
                 )
-                for linear_obj in self.linear_obj_list
-            ]
-        )
+            )
+
+            data_vector_list.append(data_vector_mapper)
+
+        return self._xp.concatenate(data_vector_list)
 
     @property
     def _data_vector_func_list_and_mapper(self) -> np.ndarray:
@@ -186,7 +189,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         separation of functions enables the `data_vector` to be preloaded in certain circumstances.
         """
 
-        data_vector = np.array(self._data_vector_mapper)
+        data_vector = self._xp.array(self._data_vector_mapper)
 
         linear_func_param_range = self.param_range_list_from(
             cls=AbstractLinearObjFuncList
@@ -199,15 +202,21 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 linear_func
             ]
 
-            diag = inversion_imaging_numba_util.data_vector_via_blurred_mapping_matrix_from(
-                blurred_mapping_matrix=np.array(operated_mapping_matrix),
+            diag = inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
+                blurred_mapping_matrix=operated_mapping_matrix,
                 image=self.data.array,
                 noise_map=self.noise_map.array,
             )
 
             param_range = linear_func_param_range[linear_func_index]
 
-            data_vector[param_range[0] : param_range[1],] = diag
+            start = param_range[0]
+            end = param_range[1]
+
+            if self._xp is np:
+                data_vector[start:end] = diag
+            else:
+                data_vector = data_vector.at[start:end].set(diag)
 
         return data_vector
 
@@ -220,8 +229,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
-        of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+        This function computes F using the sparse linear algebra formalism, which is faster as it precomputes the PSF convolution
+        of different noise-map pixels (see `curvature_matrix_diag_via_sparse_operator_from`).
 
         If there are multiple linear objects the curvature_matrices are combined to ensure their values are solved
         for simultaneously. In the w-tilde formalism this requires us to consider the mappings between data and every
@@ -239,16 +248,18 @@ class InversionImagingWTilde(AbstractInversionImaging):
         else:
             curvature_matrix = self._curvature_matrix_multi_mapper
 
-        curvature_matrix = inversion_imaging_numba_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
+        curvature_matrix = inversion_imaging_util.curvature_matrix_mirrored_from(
+            curvature_matrix=curvature_matrix,
+            xp=self._xp,
         )
 
         if len(self.no_regularization_index_list) > 0:
             curvature_matrix = (
-                inversion_imaging_numba_util.curvature_matrix_with_added_to_diag_from(
+                inversion_imaging_util.curvature_matrix_with_added_to_diag_from(
                     curvature_matrix=curvature_matrix,
                     value=self.settings.no_regularization_add_to_curvature_diag_value,
                     no_regularization_index_list=self.no_regularization_index_list,
+                    xp=self._xp,
                 )
             )
 
@@ -268,7 +279,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         if not self.has(cls=AbstractMapper):
             return None
 
-        curvature_matrix = np.zeros((self.total_params, self.total_params))
+        curvature_matrix = self._xp.zeros((self.total_params, self.total_params))
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
@@ -277,22 +288,21 @@ class InversionImagingWTilde(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            diag = inversion_imaging_numba_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-                curvature_preload=self.w_tilde.curvature_preload,
-                curvature_indexes=self.w_tilde.indexes,
-                curvature_lengths=self.w_tilde.lengths,
-                data_to_pix_unique=np.array(
-                    mapper_i.unique_mappings.data_to_pix_unique
-                ),
-                data_weights=np.array(mapper_i.unique_mappings.data_weights),
-                pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
-                pix_pixels=mapper_i.params,
+            rows, cols, vals = mapper_i.sparse_triplets_curvature
+
+            diag = self.dataset.sparse_operator.curvature_matrix_diag_from(
+                rows=rows,
+                cols=cols,
+                vals=vals,
+                S=mapper_i.params,
             )
 
-            curvature_matrix[
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-            ] = diag
+            start, end = mapper_param_range_i
+
+            if self._xp is np:
+                curvature_matrix[start:end, start:end] = diag
+            else:
+                curvature_matrix = curvature_matrix.at[start:end, start:end].set(diag)
 
             if self.total(cls=AbstractMapper) == 1:
                 return curvature_matrix
@@ -309,38 +319,25 @@ class InversionImagingWTilde(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes the off-diagonal terms of F using the w_tilde formalism.
+        This function computes the off-diagonal terms of F using the sparse linear algebra formalism.
         """
 
-        curvature_matrix_off_diag_0 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
-            curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
-            curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
-            data_weights_0=mapper_0.unique_mappings.data_weights,
-            pix_lengths_0=mapper_0.unique_mappings.pix_lengths,
-            pix_pixels_0=mapper_0.params,
-            data_to_pix_unique_1=mapper_1.unique_mappings.data_to_pix_unique,
-            data_weights_1=mapper_1.unique_mappings.data_weights,
-            pix_lengths_1=mapper_1.unique_mappings.pix_lengths,
-            pix_pixels_1=mapper_1.params,
-        )
+        rows0, cols0, vals0 = mapper_0.sparse_triplets_curvature
+        rows1, cols1, vals1 = mapper_1.sparse_triplets_curvature
 
-        curvature_matrix_off_diag_1 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
-            curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
-            curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
-            data_weights_0=mapper_1.unique_mappings.data_weights,
-            pix_lengths_0=mapper_1.unique_mappings.pix_lengths,
-            pix_pixels_0=mapper_1.params,
-            data_to_pix_unique_1=mapper_0.unique_mappings.data_to_pix_unique,
-            data_weights_1=mapper_0.unique_mappings.data_weights,
-            pix_lengths_1=mapper_0.unique_mappings.pix_lengths,
-            pix_pixels_1=mapper_0.params,
-        )
+        S0 = mapper_0.params
+        S1 = mapper_1.params
 
-        return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
+        return self.dataset.sparse_operator.curvature_matrix_off_diag_from(
+            rows0=rows0,
+            cols0=cols0,
+            vals0=vals0,
+            rows1=rows1,
+            cols1=cols1,
+            vals1=vals1,
+            S0=S0,
+            S1=S1,
+        )
 
     @property
     def _curvature_matrix_x1_mapper(self) -> np.ndarray:
@@ -399,7 +396,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes the diagonal terms of F using the w_tilde formalism.
+        This function computes the diagonal terms of F using the sparse linear algebra formalism.
         """
 
         curvature_matrix = self._curvature_matrix_multi_mapper
@@ -424,22 +421,32 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     / self.noise_map[:, None] ** 2
                 )
 
-                off_diag = inversion_imaging_numba_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
-                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.unique_mappings.data_weights,
-                    pix_lengths=mapper.unique_mappings.pix_lengths,
-                    pix_pixels=mapper.params,
-                    curvature_weights=np.array(curvature_weights),
-                    mask=self.mask.array,
-                    psf_kernel=self.psf.native.array,
+                rows, cols, vals = mapper.sparse_triplets_curvature
+
+                off_diag = self.dataset.sparse_operator.curvature_matrix_off_diag_func_list_from(
+                    curvature_weights=curvature_weights,
+                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.params,
                 )
 
-                curvature_matrix[
-                    mapper_param_range[0] : mapper_param_range[1],
-                    linear_func_param_range[0] : linear_func_param_range[1],
-                ] = off_diag
+                if self._xp is np:
+
+                    curvature_matrix[
+                        mapper_param_range[0] : mapper_param_range[1],
+                        linear_func_param_range[0] : linear_func_param_range[1],
+                    ] = off_diag
+                else:
+
+                    curvature_matrix = curvature_matrix.at[
+                        mapper_param_range[0] : mapper_param_range[1],
+                        linear_func_param_range[0] : linear_func_param_range[1],
+                    ].set(off_diag)
 
         for index_0, linear_func_0 in enumerate(linear_func_list):
+
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
 
             weighted_vector_0 = (
@@ -455,15 +462,24 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     / self.noise_map[:, None]
                 )
 
-                diag = np.dot(
+                diag = self._xp.dot(
                     weighted_vector_0.T,
                     weighted_vector_1,
                 )
 
-                curvature_matrix[
-                    linear_func_param_range_0[0] : linear_func_param_range_0[1],
-                    linear_func_param_range_1[0] : linear_func_param_range_1[1],
-                ] = diag
+                if self._xp is np:
+
+                    curvature_matrix[
+                        linear_func_param_range_0[0] : linear_func_param_range_0[1],
+                        linear_func_param_range_1[0] : linear_func_param_range_1[1],
+                    ] = diag
+
+                else:
+
+                    curvature_matrix = curvature_matrix.at[
+                        linear_func_param_range_0[0] : linear_func_param_range_0[1],
+                        linear_func_param_range_1[0] : linear_func_param_range_1[1],
+                    ].set(diag)
 
         return curvature_matrix
 
@@ -503,11 +519,16 @@ class InversionImagingWTilde(AbstractInversionImaging):
             reconstruction = reconstruction_dict[linear_obj]
 
             if isinstance(linear_obj, AbstractMapper):
-                mapped_reconstructed_image = inversion_imaging_numba_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
-                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-                    data_weights=linear_obj.unique_mappings.data_weights,
-                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    reconstruction=np.array(reconstruction),
+
+                rows, cols, vals = linear_obj.sparse_triplets_curvature
+
+                mapped_reconstructed_image = inversion_imaging_util.mapped_reconstructed_image_via_sparse_operator_from(
+                    reconstruction=reconstruction,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                    data_shape=self.mask.shape_native,
                 )
 
                 mapped_reconstructed_image = Array2D(
@@ -528,7 +549,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     linear_obj
                 ]
 
-                mapped_reconstructed_image = np.sum(
+                mapped_reconstructed_image = self._xp.sum(
                     reconstruction * operated_mapping_matrix, axis=1
                 )
 

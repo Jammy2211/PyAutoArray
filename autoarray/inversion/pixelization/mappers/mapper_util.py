@@ -442,6 +442,104 @@ def adaptive_pixel_signals_from(
     return pixel_signals**signal_scale
 
 
+def sparse_triplets_from(
+    pix_indexes_for_sub,  # (M_sub, P)
+    pix_weights_for_sub,  # (M_sub, P)
+    slim_index_for_sub,  # (M_sub,)
+    fft_index_for_masked_pixel,  # (N_unmasked,)
+    sub_fraction_slim,  # (N_unmasked,)
+    *,
+    return_rows_slim: bool = True,
+    xp=np,
+):
+    """
+    Build sparse source→image mapping triplets (rows, cols, vals)
+    for a fixed-size interpolation stencil.
+
+    This supports both:
+      - NumPy (xp=np)
+      - JAX  (xp=jax.numpy)
+
+    Parameters
+    ----------
+    pix_indexes_for_sub
+        Source pixel indices for each subpixel (M_sub, P)
+    pix_weights_for_sub
+        Interpolation weights for each subpixel (M_sub, P)
+    slim_index_for_sub
+        Mapping subpixel -> slim image pixel index (M_sub,)
+    fft_index_for_masked_pixel
+        Mapping slim pixel -> rectangular FFT-grid pixel index (N_unmasked,)
+    sub_fraction_slim
+        Oversampling normalization per slim pixel (N_unmasked,)
+    xp
+        Backend module (np or jnp)
+
+    Returns
+    -------
+    rows : (nnz,) int32
+        Rectangular FFT grid row index per mapping entry
+    cols : (nnz,) int32
+        Source pixel index per mapping entry
+    vals : (nnz,) float64
+        Mapping weight per entry including sub_fraction normalization
+    """
+    # ----------------------------
+    # NumPy path (HOST)
+    # ----------------------------
+    if xp is np:
+        pix_indexes_for_sub = np.asarray(pix_indexes_for_sub, dtype=np.int32)
+        pix_weights_for_sub = np.asarray(pix_weights_for_sub, dtype=np.float64)
+        slim_index_for_sub = np.asarray(slim_index_for_sub, dtype=np.int32)
+        fft_index_for_masked_pixel = np.asarray(
+            fft_index_for_masked_pixel, dtype=np.int32
+        )
+        sub_fraction_slim = np.asarray(sub_fraction_slim, dtype=np.float64)
+
+        M_sub, P = pix_indexes_for_sub.shape
+
+        sub_ids = np.repeat(np.arange(M_sub, dtype=np.int32), P)  # (M_sub*P,)
+
+        cols = pix_indexes_for_sub.reshape(-1)  # int32
+        vals = pix_weights_for_sub.reshape(-1)  # float64
+
+        slim_rows = slim_index_for_sub[sub_ids]  # int32
+        vals = vals * sub_fraction_slim[slim_rows]  # float64
+
+        if return_rows_slim:
+            return slim_rows, cols, vals
+
+        rows = fft_index_for_masked_pixel[slim_rows]
+        return rows, cols, vals
+
+    # ----------------------------
+    # JAX path (DEVICE)
+    # ----------------------------
+    # We intentionally avoid np.asarray anywhere here.
+    # Assume xp is jax.numpy (or a compatible array module).
+    pix_indexes_for_sub = xp.asarray(pix_indexes_for_sub, dtype=xp.int32)
+    pix_weights_for_sub = xp.asarray(pix_weights_for_sub, dtype=xp.float64)
+    slim_index_for_sub = xp.asarray(slim_index_for_sub, dtype=xp.int32)
+    fft_index_for_masked_pixel = xp.asarray(fft_index_for_masked_pixel, dtype=xp.int32)
+    sub_fraction_slim = xp.asarray(sub_fraction_slim, dtype=xp.float64)
+
+    M_sub, P = pix_indexes_for_sub.shape
+
+    sub_ids = xp.repeat(xp.arange(M_sub, dtype=xp.int32), P)
+
+    cols = pix_indexes_for_sub.reshape(-1)
+    vals = pix_weights_for_sub.reshape(-1)
+
+    slim_rows = slim_index_for_sub[sub_ids]
+    vals = vals * sub_fraction_slim[slim_rows]
+
+    if return_rows_slim:
+        return slim_rows, cols, vals
+
+    rows = fft_index_for_masked_pixel[slim_rows]
+    return rows, cols, vals
+
+
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,

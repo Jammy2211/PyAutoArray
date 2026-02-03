@@ -6,7 +6,6 @@ from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
-from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
@@ -15,14 +14,10 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 
 
-from autoarray import exc
-
-
-class InversionInterferometerWTilde(AbstractInversionInterferometer):
+class InversionInterferometerSparse(AbstractInversionInterferometer):
     def __init__(
         self,
         dataset: Union[Interferometer, DatasetInterface],
-        w_tilde: WTildeInterferometer,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         xp=np,
@@ -46,15 +41,10 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         transformer
             The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
             with the interferometer data's transformer.
-        w_tilde
-            An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
-            the mapping matrix.
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         """
-        self.w_tilde = w_tilde
-
         super().__init__(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
@@ -76,9 +66,11 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
         for simultaneously.
 
-        The calculation is described in more detail in `inversion_util.w_tilde_data_interferometer_from`.
+        The calculation is described in more detail in `inversion_util.weighted_data_interferometer_from`.
         """
-        return self._xp.dot(self.mapping_matrix.T, self.w_tilde.dirty_image)
+        return self._xp.dot(
+            self.mapping_matrix.T, self.dataset.sparse_operator.dirty_image
+        )
 
     @property
     def curvature_matrix(self) -> np.ndarray:
@@ -104,17 +96,16 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes the diagonal terms of F using the w_tilde formalism.
+        This function computes the diagonal terms of F using the sparse linear algebra formalism.
         """
 
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
-        return inversion_interferometer_util.curvature_matrix_via_w_tilde_interferometer_from(
-            fft_state=self.w_tilde.fft_state,
+        return self.dataset.sparse_operator.curvature_matrix_via_sparse_operator_from(
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
             pix_pixels=self.linear_obj_list[0].params,
-            rect_index_for_mask_index=self.w_tilde.rect_index_for_mask_index,
+            fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
         )
 
     @property

@@ -14,8 +14,6 @@ class SettingsInversion:
         positive_only_uses_p_initial: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,
         no_regularization_add_to_curvature_diag_value: float = None,
-        use_w_tilde_numpy: bool = False,
-        use_source_loop: bool = False,
         tolerance: float = 1e-8,
         maxiter: int = 250,
     ):
@@ -36,11 +34,6 @@ class SettingsInversion:
         no_regularization_add_to_curvature_diag_value
             If a linear func object does not have a corresponding regularization, this value is added to its
             diagonal entries of the curvature regularization matrix to ensure the matrix is positive-definite.
-        use_w_tilde_numpy
-            If True, the curvature_matrix is computed via numpy matrix multiplication (as opposed to numba functions
-            which exploit sparsity to do the calculation normally in a more efficient way).
-        use_source_loop
-            Shhhh its a secret.
         tolerance
             For an interferometer inversion using the linear operators method, sets the tolerance of the solver
             (this input does nothing for dataset data and other interferometer methods).
@@ -57,8 +50,6 @@ class SettingsInversion:
 
         self.tolerance = tolerance
         self.maxiter = maxiter
-        self.use_w_tilde_numpy = use_w_tilde_numpy
-        self.use_source_loop = use_source_loop
 
     @property
     def use_positive_only_solver(self):

@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 import logging
 import numpy as np
-from tqdm import tqdm
-import os
 import time
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +77,7 @@ def _report_memory(arr):
         pass
 
 
-def w_tilde_curvature_preload_interferometer_from(
+def nufft_precision_operator_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d,
@@ -133,18 +132,19 @@ def w_tilde_curvature_preload_interferometer_from(
      -------------------------------------------------------------------------------
      Full Description (Original Documentation)
      -------------------------------------------------------------------------------
-     The matrix w_tilde is a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels] that encodes the
-     NUFFT of every pair of image pixels given the noise map. This can be used to efficiently compute the curvature
-     matrix via the mapping matrix, in a way that omits having to perform the NUFFT on every individual source pixel.
-     This provides a significant speed up for inversions of interferometer datasets with large number of visibilities.
+     The matrix `translation_invariant_nufft` a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels]
+     that encodes the NUFFT of every pair of image pixels given the noise map. This can be used to efficiently compute
+     the curvature matrix via the mapping matrix, in a way that omits having to perform the NUFFT on every individual
+     source pixel. This provides a significant speed up for inversions of interferometer datasets with large number of
+     visibilities.
 
      The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
      making it impossible to store in memory and its use in linear algebra calculations extremely. This methods creates
-     a preload matrix that can compute the matrix w_tilde via an efficient preloading scheme which exploits the
+     a preload matrix that can compute the matrix via an efficient preloading scheme which exploits the
      symmetries in the NUFFT.
 
-     To compute w_tilde, one first defines a real space mask where every False entry is an unmasked pixel which is
-     used in the calculation, for example:
+     To compute `translation_invariant_nufft`, one first defines a real space mask where every False entry is an
+     unmasked pixel which is used in the calculation, for example:
 
          IxIxIxIxIxIxIxIxIxIxI
          IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
@@ -171,7 +171,7 @@ def w_tilde_curvature_preload_interferometer_from(
          IxIxIxIxIxIxIxIxIxIxI
          IxIxIxIxIxIxIxIxIxIxI
 
-     In the standard calculation of `w_tilde` it is a matrix of
+     In the standard calculation of `translation_invariant_nufft` it is a matrix of
      dimensions [unmasked_image_pixels, unmasked_pixel_images], therefore for the example mask above it would be
      dimensions [9, 9]. One performs a double for loop over `unmasked_image_pixels`, using the (y,x) spatial offset
      between every possible pair of unmasked image pixels to precompute values that depend on the properties of the NUFFT.
@@ -185,27 +185,27 @@ def w_tilde_curvature_preload_interferometer_from(
      - The values of pixels paired with themselves are also computed repeatedly for the standard calculation (e.g. 9
        times using the mask above).
 
-     The `curvature_preload` method instead only computes each value once. To do this, it stores the preload values in a
+     The `nufft_precision_operator` method instead only computes each value once. To do this, it stores the preload values in a
      matrix of dimensions [shape_masked_pixels_y, shape_masked_pixels_x, 2], where `shape_masked_pixels` is the (y,x)
      size of the vertical and horizontal extent of unmasked pixels, e.g. the spatial extent over which the real space
      grid extends.
 
-     Each entry in the matrix `curvature_preload[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
+     Each entry in the matrix `nufft_precision_operator[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
      to a pixel offset by that much in the y and x directions, for example:
 
-     - curvature_preload[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+     - nufft_precision_operator[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
        in the x direction by 0 - the values of pixels paired with themselves.
-     - curvature_preload[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
+     - nufft_precision_operator[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
        in the x direction by 0 - the values of pixel pairs [0,3], [1,4], [2,5], [3,6], [4,7] and [5,8]
-     - curvature_preload[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+     - nufft_precision_operator[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
        in the x direction by 1 - the values of pixel pairs [0,1], [1,2], [3,4], [4,5], [6,7] and [7,9].
 
      Flipped pairs:
 
      The above preloaded values pair all image pixel NUFFT values when a pixel is to the right and / or down of the
      first image pixel. However, one must also precompute pairs where the paired pixel is to the left of the host
-     pixels. These pairings are stored in `curvature_preload[:,:,1]`, and the ordering of these pairings is flipped in the
-     x direction to make it straight forward to use this matrix when computing w_tilde.
+     pixels. These pairings are stored in `nufft_precision_operator[:,:,1]`, and the ordering of these pairings is flipped in the
+     x direction to make it straight forward to use this matrix when computing the nufft weighted noise.
 
     Notes
     -----
@@ -227,7 +227,7 @@ def w_tilde_curvature_preload_interferometer_from(
         Fourier transformed is computed.
     """
     if use_jax:
-        return w_tilde_curvature_preload_interferometer_via_jax_from(
+        return nufft_precision_operator_via_jax_from(
             noise_map_real=noise_map_real,
             uv_wavelengths=uv_wavelengths,
             shape_masked_pixels_2d=shape_masked_pixels_2d,
@@ -235,7 +235,7 @@ def w_tilde_curvature_preload_interferometer_from(
             chunk_k=chunk_k,
         )
 
-    return w_tilde_curvature_preload_interferometer_via_np_from(
+    return nufft_precision_operator_via_np_from(
         noise_map_real=noise_map_real,
         uv_wavelengths=uv_wavelengths,
         shape_masked_pixels_2d=shape_masked_pixels_2d,
@@ -246,7 +246,7 @@ def w_tilde_curvature_preload_interferometer_from(
     )
 
 
-def w_tilde_curvature_preload_interferometer_via_np_from(
+def nufft_precision_operator_via_np_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d,
@@ -259,7 +259,7 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     """
     NumPy/CPU implementation of the interferometer W-tilde curvature preload.
 
-    See `w_tilde_curvature_preload_interferometer_from` for full description.
+    See `nufft_precision_operator_from` for full description.
     """
     if chunk_k <= 0:
         raise ValueError("chunk_k must be a positive integer")
@@ -280,7 +280,9 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     ku = 2.0 * np.pi * uv_wavelengths[:, 0]
     kv = 2.0 * np.pi * uv_wavelengths[:, 1]
 
-    out = np.zeros((2 * y_shape, 2 * x_shape), dtype=np.float64)
+    translation_invariant_kernel = np.zeros(
+        (2 * y_shape, 2 * x_shape), dtype=np.float64
+    )
 
     # Corner coordinates
     y00, x00 = gy[0, 0], gx[0, 0]
@@ -332,36 +334,38 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     # -----------------------------
     # Main quadrant (+,+)
     # -----------------------------
-    out[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx)
+    translation_invariant_kernel[:y_shape, :x_shape] = accum_from_corner_np(
+        y00, x00, gy, gx
+    )
 
     # -----------------------------
     # Flip in x (+,-)
     # -----------------------------
     if x_shape > 1:
         block = accum_from_corner_np(y0m, x0m, gy[:, ::-1], gx[:, ::-1])
-        out[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
+        translation_invariant_kernel[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
 
     # -----------------------------
     # Flip in y (-,+)
     # -----------------------------
     if y_shape > 1:
         block = accum_from_corner_np(ym0, xm0, gy[::-1, :], gx[::-1, :])
-        out[-1:-(y_shape):-1, :x_shape] = block[1:, :]
+        translation_invariant_kernel[-1:-(y_shape):-1, :x_shape] = block[1:, :]
 
     # -----------------------------
     # Flip in x and y (-,-)
     # -----------------------------
     if (y_shape > 1) and (x_shape > 1):
         block = accum_from_corner_np(ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1])
-        out[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
+        translation_invariant_kernel[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
 
     if pbar is not None:
         pbar.close()
 
-    return out
+    return translation_invariant_kernel
 
 
-def w_tilde_curvature_preload_interferometer_via_jax_from(
+def nufft_precision_operator_via_jax_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d,
@@ -377,7 +381,7 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
       - uses a compiled for-loop (lax.fori_loop) over fixed-size visibility chunks
       - does not support progress bars or memory reporting (those require Python loops)
 
-    See `w_tilde_curvature_preload_interferometer_from` for full description.
+    See `nufft_precision_operator_from` for full description.
     """
     import jax
     import jax.numpy as jnp
@@ -477,24 +481,27 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
     )
 
     t0 = time.time()
-    out = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
-    out.block_until_ready()  # ensure timing includes actual device execution
+    translation_invariant_kernel = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
+    translation_invariant_kernel.block_until_ready()  # ensure timing includes actual device execution
     t1 = time.time()
 
     logger.info("INTERFEROMETER - Finished W-Tilde (JAX) in %.3f seconds", (t1 - t0))
 
-    return np.asarray(out)
+    return np.asarray(translation_invariant_kernel)
 
 
-def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
+def nufft_weighted_noise_via_sparse_operator_from(
+    translation_invariant_kernel, native_index_for_slim_index
+):
     """
-    Use the preloaded w_tilde matrix (see `curvature_preload_interferometer_from`) to compute
-    w_tilde (see `w_tilde_interferometer_from`) efficiently.
+    Use the `translation_invariant_kernel` (see `nufft_precision_operator_from`) to compute
+    the `nufft_weighted_noise` efficiently.
 
     Parameters
     ----------
-    curvature_preload
-        The preloaded values of the NUFFT that enable efficient computation of w_tilde.
+    translation_invariant_kernel
+        The preloaded translation invariant values of the NUFFT that enable efficient computation of the
+        NUFFT weighted noise matrix.
     native_index_for_slim_index
         An array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its corresponding
         native 2D pixel using its (y,x) pixel indexes.
@@ -508,7 +515,7 @@ def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
 
     slim_size = len(native_index_for_slim_index)
 
-    w_tilde_via_preload = np.zeros((slim_size, slim_size))
+    nufft_weighted_noise = np.zeros((slim_size, slim_size))
 
     for i in range(slim_size):
         i_y, i_x = native_index_for_slim_index[i]
@@ -519,167 +526,314 @@ def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
             y_diff = j_y - i_y
             x_diff = j_x - i_x
 
-            w_tilde_via_preload[i, j] = curvature_preload[y_diff, x_diff]
+            nufft_weighted_noise[i, j] = translation_invariant_kernel[y_diff, x_diff]
 
     for i in range(slim_size):
         for j in range(i, slim_size):
-            w_tilde_via_preload[j, i] = w_tilde_via_preload[i, j]
+            nufft_weighted_noise[j, i] = nufft_weighted_noise[i, j]
 
-    return w_tilde_via_preload
+    return nufft_weighted_noise
 
 
 @dataclass(frozen=True)
-class WTildeFFTState:
+class InterferometerSparseOperator:
     """
     Fully static FFT / geometry state for W~ curvature.
 
     Safe to cache as long as:
-      - curvature_preload is fixed
+      - nufft_precision_operator is fixed
       - mask / rectangle definition is fixed
       - dtype is fixed
       - batch_size is fixed
     """
 
+    dirty_image: np.ndarray
     y_shape: int
     x_shape: int
     M: int
     batch_size: int
     w_dtype: "jax.numpy.dtype"
     Khat: "jax.Array"  # (2y, 2x), complex
+    """
+    Cached FFT operator state for fast interferometer curvature-matrix assembly.
 
+    This class packages *static* quantities needed to apply the interferometer
+    W~ operator efficiently using FFTs, so that repeated likelihood evaluations
+    do not redo expensive precomputation.
 
-def w_tilde_fft_state_from(
-    curvature_preload: np.ndarray,
-    *,
-    batch_size: int = 128,
-) -> WTildeFFTState:
-    import jax.numpy as jnp
+    Conceptually, the interferometer W~ operator is a translationally-invariant
+    linear operator on a rectangular real-space grid, constructed from the
+    `nufft_precision_operator` (a 2D array of correlation values on pixel offsets).
+    By taking an FFT of this preload, the operator can be applied to batches of
+    images via elementwise multiplication in Fourier space:
 
-    H2, W2 = curvature_preload.shape
-    if (H2 % 2) != 0 or (W2 % 2) != 0:
-        raise ValueError(
-            f"curvature_preload must have even shape (2y,2x). Got {curvature_preload.shape}."
+        apply_W(F) = IFFT( FFT(F_pad) * Khat )
+
+    where `F_pad` is a (2y, 2x) padded version of `F` and `Khat = FFT(nufft_precision_operator)`.
+
+    The curvature matrix for a pixelization (mapper) is then assembled from sparse
+    mapping triplets without forming dense mapping matrices:
+
+        C = A^T W A
+
+    where A is the sparse mapping from source pixels to image pixels.
+
+    Caching / validity
+    ------------------
+    Instances are safe to cache and reuse as long as all of the following remain fixed:
+
+    - `nufft_precision_operator` (hence `Khat`)
+    - the definition of the rectangular FFT grid (y_shape, x_shape)
+    - dtype / precision (float32 vs float64)
+    - `batch_size`
+
+    Parameters stored
+    -----------------
+    dirty_image
+        Convenience field for associated dirty image data (not used directly in
+        curvature assembly in this method). Stored as a NumPy array to match
+        upstream interfaces.
+    y_shape, x_shape
+        Shape of the *rectangular* real-space grid (not the masked slim grid).
+    M
+        Number of rectangular pixels, M = y_shape * x_shape.
+    batch_size
+        Number of source-pixel columns assembled and operated on per block.
+        Larger batch sizes improve throughput on GPU but increase memory usage.
+    w_dtype
+        Floating-point dtype for weights and accumulations (e.g. float64).
+    Khat
+        FFT of the curvature preload, shape (2y_shape, 2x_shape), complex.
+        This is the frequency-domain representation of the W~ operator kernel.
+    """
+
+    @classmethod
+    def from_nufft_precision_operator(
+        cls,
+        nufft_precision_operator: np.ndarray,
+        dirty_image: np.ndarray,
+        *,
+        batch_size: int = 128,
+    ):
+        """
+        Construct an `InterferometerSparseOperator` from a curvature-preload array.
+
+        This is the standard factory used in interferometer inversions.
+
+        The curvature preload is assumed to be defined on a (2y, 2x) rectangular
+        grid of pixel offsets, where y and x correspond to the *unmasked extent*
+        of the real-space grid. The preload is FFT'd once to obtain `Khat`, which
+        is then reused for every subsequent curvature matrix build.
+
+        Parameters
+        ----------
+        nufft_precision_operator
+            Real-valued array of shape (2y, 2x) encoding the W~ operator in real
+            space as a function of pixel offsets. The shape must be even in both
+            axes so that y_shape = H2//2 and x_shape = W2//2 are integers.
+        dirty_image
+            The dirty image associated with the dataset (or any convenient
+            reference image). Not required for curvature computation itself,
+            but commonly stored alongside the state for debugging / plotting.
+        batch_size
+            Number of source-pixel columns processed per block when assembling
+            the curvature matrix. Higher values typically improve GPU efficiency
+            but increase intermediate memory usage.
+
+        Returns
+        -------
+        InterferometerSparseOperator
+            Immutable cached state object containing shapes and FFT kernel `Khat`.
+
+        Raises
+        ------
+        ValueError
+            If `nufft_precision_operator` does not have even shape in both dimensions.
+        """
+        import jax.numpy as jnp
+
+        H2, W2 = nufft_precision_operator.shape
+        if (H2 % 2) != 0 or (W2 % 2) != 0:
+            raise ValueError(
+                f"nufft_precision_operator must have even shape (2y,2x). Got {nufft_precision_operator.shape}."
+            )
+
+        y_shape = H2 // 2
+        x_shape = W2 // 2
+        M = y_shape * x_shape
+
+        Khat = jnp.fft.fft2(nufft_precision_operator)
+
+        return InterferometerSparseOperator(
+            dirty_image=dirty_image,
+            y_shape=y_shape,
+            x_shape=x_shape,
+            M=M,
+            batch_size=int(batch_size),
+            w_dtype=nufft_precision_operator.dtype,
+            Khat=Khat,
         )
 
-    y_shape = H2 // 2
-    x_shape = W2 // 2
-    M = y_shape * x_shape
+    def curvature_matrix_via_sparse_operator_from(
+        self,
+        pix_indexes_for_sub_slim_index: np.ndarray,
+        pix_weights_for_sub_slim_index: np.ndarray,
+        pix_pixels: int,
+        fft_index_for_masked_pixel: np.ndarray,
+    ):
+        """
+        Assemble the curvature matrix C = Aᵀ W A using sparse triplets and the FFT W~ operator.
 
-    Khat = jnp.fft.fft2(curvature_preload)
+        This method computes the mapper (pixelization) curvature matrix without
+        forming a dense mapping matrix. Instead, it uses fixed-length mapping
+        arrays (pixel indexes + weights per masked pixel) which define a sparse
+        mapping operator A in COO-like form.
 
-    return WTildeFFTState(
-        y_shape=y_shape,
-        x_shape=x_shape,
-        M=M,
-        batch_size=int(batch_size),
-        w_dtype=curvature_preload.dtype,
-        Khat=Khat,
-    )
+        Algorithm outline
+        -----------------
+        Let S be the number of source pixels and M be the number of rectangular
+        real-space pixels.
 
+        1) Build a fixed-length COO stream from the mapping arrays:
+              rows_rect[k] : rectangular pixel index (0..M-1)
+              cols[k]      : source pixel index (0..S-1)
+              vals[k]      : mapping weight
+           Invalid mappings (cols < 0 or cols >= S) are masked out.
 
-def curvature_matrix_via_w_tilde_interferometer_from(
-    *,
-    fft_state: WTildeFFTState,
-    pix_indexes_for_sub_slim_index: np.ndarray,
-    pix_weights_for_sub_slim_index: np.ndarray,
-    pix_pixels: int,
-    rect_index_for_mask_index: np.ndarray,
-):
-    """
-    Compute curvature matrix for an interferometer inversion using a precomputed FFT state.
+        2) Process source-pixel columns in blocks of width `batch_size`:
+           - Scatter the block’s source columns into a dense (M, batch_size) array F.
+           - Apply the W~ operator by FFT:
+                 G = apply_W(F)
+           - Project back with Aᵀ via segmented reductions:
+                 C[:, start:start+B] = Aᵀ G
 
-    IMPORTANT
-    ---------
-    - COO construction is unchanged from the known-working implementation
-    - Only FFT- and geometry-related quantities are taken from `fft_state`
-    """
-    import jax
-    import jax.numpy as jnp
-    from jax.ops import segment_sum
+        3) Symmetrize the result:
+              C <- 0.5 * (C + Cᵀ)
 
-    # -------------------------
-    # Pull static quantities from state
-    # -------------------------
-    y_shape = fft_state.y_shape
-    x_shape = fft_state.x_shape
-    M = fft_state.M
-    batch_size = fft_state.batch_size
-    Khat = fft_state.Khat
-    w_dtype = fft_state.w_dtype
+        Parameters
+        ----------
+        pix_indexes_for_sub_slim_index
+            Integer array of shape (M_masked, Pmax).
+            For each masked (slim) image pixel, stores the source-pixel indices
+            involved in the interpolation / mapping stencil. Invalid entries
+            should be set to -1.
+        pix_weights_for_sub_slim_index
+            Floating array of shape (M_masked, Pmax).
+            Weights corresponding to `pix_indexes_for_sub_slim_index`.
+            These should already include any oversampling normalisation (e.g.
+            sub-pixel fractions) required by the mapper.
+        pix_pixels
+            Number of source pixels, S.
+        fft_index_for_masked_pixel
+            Integer array of shape (M_masked,).
+            Maps each masked (slim) image pixel index to its corresponding
+            rectangular-grid flat index (0..M-1). This embeds the masked pixel
+            ordering into the FFT-friendly rectangular grid.
 
-    # -------------------------
-    # Basic shape checks (NumPy side, safe)
-    # -------------------------
-    M_masked, Pmax = pix_indexes_for_sub_slim_index.shape
-    S = int(pix_pixels)
+        Returns
+        -------
+        jax.Array
+            Curvature matrix of shape (S, S), symmetric.
 
-    # -------------------------
-    # JAX core (unchanged COO logic)
-    # -------------------------
-    def _curvature_rect_jax(
-        pix_idx: jnp.ndarray,  # (M_masked, Pmax)
-        pix_wts: jnp.ndarray,  # (M_masked, Pmax)
-        rect_map: jnp.ndarray,  # (M_masked,)
-    ) -> jnp.ndarray:
+        Notes
+        -----
+        - The inner computation is written in JAX and is intended to be jitted.
+          For best performance, keep `batch_size` fixed (static) across calls.
+        - Choosing `batch_size` as a divisor of S avoids a smaller tail block,
+          but correctness does not require that if the implementation masks the tail.
+        - This method uses FFTs on padded (2y, 2x) arrays; memory use scales with
+          batch_size and grid size.
+        """
 
-        rect_map = jnp.asarray(rect_map)
+        import jax.numpy as jnp
+        from jax.ops import segment_sum
 
-        nnz_full = M_masked * Pmax
+        # -------------------------
+        # Pull static quantities from state
+        # -------------------------
+        y_shape = self.y_shape
+        x_shape = self.x_shape
+        M = self.M
+        batch_size = self.batch_size
+        Khat = self.Khat
+        w_dtype = self.w_dtype
 
-        # Flatten mapping arrays into a fixed-length COO stream
-        rows_mask = jnp.repeat(
-            jnp.arange(M_masked, dtype=jnp.int32), Pmax
-        )  # (nnz_full,)
-        cols = pix_idx.reshape((nnz_full,)).astype(jnp.int32)
-        vals = pix_wts.reshape((nnz_full,)).astype(w_dtype)
+        # -------------------------
+        # Basic shape checks (NumPy side, safe)
+        # -------------------------
+        M_masked, Pmax = pix_indexes_for_sub_slim_index.shape
+        S = int(pix_pixels)
 
-        # Validity mask
-        valid = (cols >= 0) & (cols < S)
+        # -------------------------
+        # JAX core (unchanged COO logic)
+        # -------------------------
+        def _curvature_rect_jax(
+            pix_idx: jnp.ndarray,  # (M_masked, Pmax)
+            pix_wts: jnp.ndarray,  # (M_masked, Pmax)
+            rect_map: jnp.ndarray,  # (M_masked,)
+        ) -> jnp.ndarray:
+            rect_map = jnp.asarray(rect_map)
 
-        # Embed masked rows into rectangular rows
-        rows_rect = rect_map[rows_mask].astype(jnp.int32)
+            nnz_full = M_masked * Pmax
 
-        # Make cols / vals safe
-        cols_safe = jnp.where(valid, cols, 0)
-        vals_safe = jnp.where(valid, vals, 0.0)
+            # Flatten mapping arrays into a fixed-length COO stream
+            rows_mask = jnp.repeat(
+                jnp.arange(M_masked, dtype=jnp.int32), Pmax
+            )  # (nnz_full,)
+            cols = pix_idx.reshape((nnz_full,)).astype(jnp.int32)
+            vals = pix_wts.reshape((nnz_full,)).astype(w_dtype)
 
-        def apply_W_fft_batch(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
-            B = Fbatch_flat.shape[1]
-            F_img = Fbatch_flat.T.reshape((B, y_shape, x_shape))
-            F_pad = jnp.pad(F_img, ((0, 0), (0, y_shape), (0, x_shape)))  # (B,2y,2x)
-            Fhat = jnp.fft.fft2(F_pad)
-            Ghat = Fhat * Khat[None, :, :]
-            G_pad = jnp.fft.ifft2(Ghat)
-            G = jnp.real(G_pad[:, :y_shape, :x_shape])
-            return G.reshape((B, M)).T  # (M,B)
+            # Validity mask
+            valid = (cols >= 0) & (cols < S)
 
-        def compute_block(start_col: int) -> jnp.ndarray:
-            in_block = (cols_safe >= start_col) & (cols_safe < start_col + batch_size)
-            in_use = valid & in_block
+            # Embed masked rows into rectangular rows
+            rows_rect = rect_map[rows_mask].astype(jnp.int32)
 
-            bc = jnp.where(in_use, cols_safe - start_col, 0).astype(jnp.int32)
-            v = jnp.where(in_use, vals_safe, 0.0)
+            # Make cols / vals safe
+            cols_safe = jnp.where(valid, cols, 0)
+            vals_safe = jnp.where(valid, vals, 0.0)
 
-            Fbatch = jnp.zeros((M, batch_size), dtype=w_dtype)
-            Fbatch = Fbatch.at[rows_rect, bc].add(v)
+            def apply_operator_fft_batch(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
+                B = Fbatch_flat.shape[1]
+                F_img = Fbatch_flat.T.reshape((B, y_shape, x_shape))
+                F_pad = jnp.pad(
+                    F_img, ((0, 0), (0, y_shape), (0, x_shape))
+                )  # (B,2y,2x)
+                Fhat = jnp.fft.fft2(F_pad)
+                Ghat = Fhat * Khat[None, :, :]
+                G_pad = jnp.fft.ifft2(Ghat)
+                G = jnp.real(G_pad[:, :y_shape, :x_shape])
+                return G.reshape((B, M)).T  # (M,B)
 
-            Gbatch = apply_W_fft_batch(Fbatch)
-            G_at_rows = Gbatch[rows_rect, :]
+            def compute_block(start_col: int) -> jnp.ndarray:
+                in_block = (cols_safe >= start_col) & (
+                    cols_safe < start_col + batch_size
+                )
+                in_use = valid & in_block
 
-            contrib = vals_safe[:, None] * G_at_rows
-            return segment_sum(contrib, cols_safe, num_segments=S)
+                bc = jnp.where(in_use, cols_safe - start_col, 0).astype(jnp.int32)
+                v = jnp.where(in_use, vals_safe, 0.0)
 
-        # Assemble curvature
-        C = jnp.zeros((S, S), dtype=w_dtype)
-        for start in range(0, S, batch_size):
-            Cblock = compute_block(start)
-            width = min(batch_size, S - start)
-            C = C.at[:, start : start + width].set(Cblock[:, :width])
+                Fbatch = jnp.zeros((M, batch_size), dtype=w_dtype)
+                Fbatch = Fbatch.at[rows_rect, bc].add(v)
 
-        return 0.5 * (C + C.T)
+                Gbatch = apply_operator_fft_batch(Fbatch)
+                G_at_rows = Gbatch[rows_rect, :]
 
-    return _curvature_rect_jax(
-        pix_indexes_for_sub_slim_index,
-        pix_weights_for_sub_slim_index,
-        rect_index_for_mask_index,
-    )
+                contrib = vals_safe[:, None] * G_at_rows
+                return segment_sum(contrib, cols_safe, num_segments=S)
+
+            # Assemble curvature
+            C = jnp.zeros((S, S), dtype=w_dtype)
+            for start in range(0, S, batch_size):
+                Cblock = compute_block(start)
+                width = min(batch_size, S - start)
+                C = C.at[:, start : start + width].set(Cblock[:, :width])
+
+            return 0.5 * (C + C.T)
+
+        return _curvature_rect_jax(
+            pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index,
+            fft_index_for_masked_pixel,
+        )

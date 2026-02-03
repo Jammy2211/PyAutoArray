@@ -46,7 +46,7 @@ class AbstractInversion:
 
         The linear algebra required to perform an `Inversion` depends on the type of dataset being fitted (e.g.
         `Imaging`, `Interferometer) and the formalism chosen (e.g. a using a `mapping_matrix` or the
-        w_tilde formalism). The children of this class overwrite certain methods in order to be appropriate for
+        sparse linear algebra formalism). The children of this class overwrite certain methods in order to be appropriate for
         certain datasets or use a specific formalism.
 
         Inversions use the formalism's outlined in the following Astronomy papers:

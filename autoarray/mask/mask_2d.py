@@ -5,6 +5,8 @@ import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
+from autoconf import cached_property
+
 from autoarray.structures.abstract_structure import Structure
 
 if TYPE_CHECKING:
@@ -618,6 +620,48 @@ class Mask2D(Mask):
     @property
     def shape_native(self) -> Tuple[int, ...]:
         return self.shape
+
+    @cached_property
+    def fft_index_for_masked_pixel(self) -> np.ndarray:
+        """
+        Return a mapping from masked-pixel (slim) indices to flat indices
+        on the rectangular FFT grid.
+
+        This array is used to translate between:
+
+            - "masked pixel space" (a compact 1D indexing over unmasked pixels)
+            - the 2D rectangular grid on which FFT-based convolutions are performed
+
+        The FFT grid is assumed to be rectangular and already suitable for FFTs
+        (e.g. padded and centered appropriately). Masked pixels are present on
+        this grid but are ignored in computations via zero-weighting.
+
+        Returns
+        -------
+        np.ndarray
+            A 1D array of shape (N_unmasked,), where element `i` gives the flat
+            (row-major) index into the FFT grid corresponding to the `i`-th
+            unmasked pixel in slim ordering.
+
+        Notes
+        -----
+        - The slim ordering is defined as the order returned by `np.where(~mask)`.
+        - The flat FFT index is computed assuming row-major (C-style) ordering:
+              flat_index = y * width + x
+        - This method is intentionally backend-agnostic and can be used by both
+          imaging and interferometer curvature pipelines.
+        """
+        # Boolean mask defined on the rectangular FFT grid
+        mask_fft = self
+
+        # Coordinates of unmasked pixels in the FFT grid
+        ys, xs = np.where(~mask_fft)
+
+        # Width of the FFT grid (number of columns)
+        width = mask_fft.shape[1]
+
+        # Convert (y, x) coordinates to flat row-major indices
+        return (ys * width + xs).astype(np.int32)
 
     def trimmed_array_from(self, padded_array, image_shape) -> Array2D:
         """

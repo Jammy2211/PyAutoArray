@@ -68,7 +68,7 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
 
-def test__curvature_matrix_via_curvature_preload_from():
+def test__curvature_matrix_via_psf_precision_operator_from():
     noise_map = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
     uv_wavelengths = np.array(
         [[0.0001, 2.0, 3000.0, 50000.0, 200000.0], [3000.0, 2.0, 0.0001, 10.0, 5000.0]]
@@ -90,8 +90,8 @@ def test__curvature_matrix_via_curvature_preload_from():
         ]
     )
 
-    curvature_preload = (
-        aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
+    nufft_precision_operator = (
+        aa.util.inversion_interferometer.nufft_precision_operator_from(
             noise_map_real=noise_map,
             uv_wavelengths=uv_wavelengths,
             shape_masked_pixels_2d=(3, 3),
@@ -103,13 +103,17 @@ def test__curvature_matrix_via_curvature_preload_from():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    w_tilde = aa.util.inversion_interferometer.w_tilde_via_preload_from(
-        curvature_preload=curvature_preload,
-        native_index_for_slim_index=native_index_for_slim_index,
+    psf_weighted_noise = (
+        aa.util.inversion_interferometer.nufft_weighted_noise_via_sparse_operator_from(
+            translation_invariant_kernel=nufft_precision_operator,
+            native_index_for_slim_index=native_index_for_slim_index,
+        )
     )
 
-    curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
-        w_tilde=w_tilde, mapping_matrix=mapping_matrix
+    curvature_matrix_via_nufft_weighted_noise = (
+        aa.util.inversion.curvature_matrix_diag_via_psf_weighted_noise_from(
+            psf_weighted_noise=psf_weighted_noise, mapping_matrix=mapping_matrix
+        )
     )
 
     pix_indexes_for_sub_slim_index = np.array(
@@ -118,222 +122,20 @@ def test__curvature_matrix_via_curvature_preload_from():
 
     pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
 
-    w_tilde = aa.WTildeInterferometer(
-        curvature_preload=curvature_preload,
+    sparse_operator = aa.InterferometerSparseOperator.from_nufft_precision_operator(
+        nufft_precision_operator=nufft_precision_operator,
         dirty_image=None,
-        real_space_mask=grid.mask,
     )
 
-    curvature_matrix_via_preload = aa.util.inversion_interferometer.curvature_matrix_via_w_tilde_interferometer_from(
-        fft_state=w_tilde.fft_state,
-        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-        pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
-        rect_index_for_mask_index=w_tilde.rect_index_for_mask_index,
-        pix_pixels=3,
+    curvature_matrix_via_preload = (
+        sparse_operator.curvature_matrix_via_sparse_operator_from(
+            pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+            fft_index_for_masked_pixel=grid.mask.fft_index_for_masked_pixel,
+            pix_pixels=3,
+        )
     )
 
-    assert curvature_matrix_via_w_tilde == pytest.approx(
+    assert curvature_matrix_via_nufft_weighted_noise == pytest.approx(
         curvature_matrix_via_preload, 1.0e-4
-    )
-
-
-def test__identical_inversion_values_for_two_methods():
-    real_space_mask = aa.Mask2D.all_false(
-        shape_native=(7, 7),
-        pixel_scales=0.1,
-    )
-
-    grid = aa.Grid2D.from_mask(mask=real_space_mask, over_sample_size=1)
-
-    mesh = aa.mesh.Delaunay()
-
-    mesh_grid = aa.Grid2D.no_mask(
-        values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
-        shape_native=(3, 2),
-        pixel_scales=1.0,
-    )
-
-    mesh_grid = aa.Grid2DIrregular(values=mesh_grid)
-
-    mapper_grids = mesh.mapper_grids_from(
-        mask=real_space_mask,
-        border_relocator=None,
-        source_plane_data_grid=grid,
-        source_plane_mesh_grid=mesh_grid,
-    )
-
-    reg = aa.reg.Constant(coefficient=1.0)
-
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=reg)
-
-    visibilities = aa.Visibilities(
-        visibilities=[
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-        ]
-    )
-    noise_map = aa.VisibilitiesNoiseMap.ones(shape_slim=(7,))
-    uv_wavelengths = np.ones(shape=(7, 2))
-
-    dataset = aa.Interferometer(
-        data=visibilities,
-        noise_map=noise_map,
-        uv_wavelengths=uv_wavelengths,
-        real_space_mask=real_space_mask,
-        transformer_class=aa.TransformerDFT,
-    )
-
-    dataset_w_tilde = dataset.apply_w_tilde()
-
-    inversion_w_tilde = aa.Inversion(
-        dataset=dataset_w_tilde,
-        linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_positive_only_solver=True),
-    )
-
-    inversion_mapping_matrices = aa.Inversion(
-        dataset=dataset,
-        linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(use_positive_only_solver=True),
-    )
-
-    assert (inversion_w_tilde.data == inversion_mapping_matrices.data).all()
-    assert (inversion_w_tilde.noise_map == inversion_mapping_matrices.noise_map).all()
-    assert (
-        inversion_w_tilde.linear_obj_list[0]
-        == inversion_mapping_matrices.linear_obj_list[0]
-    )
-    assert (
-        inversion_w_tilde.regularization_list[0]
-        == inversion_mapping_matrices.regularization_list[0]
-    )
-    assert (
-        inversion_w_tilde.regularization_matrix
-        == inversion_mapping_matrices.regularization_matrix
-    ).all()
-
-    assert inversion_w_tilde.data_vector == pytest.approx(
-        inversion_mapping_matrices.data_vector, abs=1.0e-2
-    )
-    assert inversion_w_tilde.curvature_matrix == pytest.approx(
-        inversion_mapping_matrices.curvature_matrix, abs=1.0e-2
-    )
-    assert inversion_w_tilde.curvature_reg_matrix == pytest.approx(
-        inversion_mapping_matrices.curvature_reg_matrix, abs=1.0e-2
-    )
-
-    assert inversion_w_tilde.reconstruction == pytest.approx(
-        inversion_mapping_matrices.reconstruction, abs=1.0e-1
-    )
-    assert inversion_w_tilde.mapped_reconstructed_image.array == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_image.array, abs=1.0e-1
-    )
-    assert inversion_w_tilde.mapped_reconstructed_data.array == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_data.array, abs=1.0e-1
-    )
-
-
-def test__identical_inversion_source_and_image_loops():
-    real_space_mask = aa.Mask2D.all_false(
-        shape_native=(7, 7),
-        pixel_scales=0.1,
-    )
-
-    grid = aa.Grid2D.from_mask(mask=real_space_mask, over_sample_size=1)
-
-    mesh = aa.mesh.Delaunay()
-
-    mesh_grid = aa.Grid2D.no_mask(
-        values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
-        shape_native=(3, 2),
-        pixel_scales=1.0,
-    )
-
-    mesh_grid = aa.Grid2DIrregular(values=mesh_grid)
-
-    mapper_grids = mesh.mapper_grids_from(
-        mask=real_space_mask,
-        border_relocator=None,
-        source_plane_data_grid=grid,
-        source_plane_mesh_grid=mesh_grid,
-    )
-
-    reg = aa.reg.Constant(coefficient=0.0)
-
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=reg)
-
-    visibilities = aa.Visibilities(
-        visibilities=[
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-            1.0 + 0.0j,
-        ]
-    )
-    noise_map = aa.VisibilitiesNoiseMap.ones(shape_slim=(7,))
-    uv_wavelengths = np.ones(shape=(7, 2))
-
-    dataset = aa.Interferometer(
-        data=visibilities,
-        noise_map=noise_map,
-        uv_wavelengths=uv_wavelengths,
-        real_space_mask=real_space_mask,
-        transformer_class=aa.TransformerDFT,
-    )
-
-    dataset_w_tilde = dataset.apply_w_tilde()
-
-    inversion_image_loop = aa.Inversion(
-        dataset=dataset_w_tilde,
-        linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(
-            use_source_loop=False, use_positive_only_solver=True
-        ),
-    )
-
-    inversion_source_loop = aa.Inversion(
-        dataset=dataset_w_tilde,
-        linear_obj_list=[mapper],
-        settings=aa.SettingsInversion(
-            use_source_loop=True, use_positive_only_solver=True
-        ),
-    )
-
-    assert (inversion_image_loop.data == inversion_source_loop.data).all()
-    assert (inversion_image_loop.noise_map == inversion_source_loop.noise_map).all()
-    assert (
-        inversion_image_loop.linear_obj_list[0]
-        == inversion_source_loop.linear_obj_list[0]
-    )
-    assert (
-        inversion_image_loop.regularization_list[0]
-        == inversion_source_loop.regularization_list[0]
-    )
-    assert (
-        inversion_image_loop.regularization_matrix
-        == inversion_source_loop.regularization_matrix
-    ).all()
-
-    assert inversion_image_loop.curvature_matrix == pytest.approx(
-        inversion_source_loop.curvature_matrix, 1.0e-8
-    )
-    assert inversion_image_loop.curvature_reg_matrix == pytest.approx(
-        inversion_source_loop.curvature_reg_matrix, 1.0e-8
-    )
-    assert inversion_image_loop.reconstruction == pytest.approx(
-        inversion_source_loop.reconstruction, 1.0e-2
-    )
-    assert inversion_image_loop.mapped_reconstructed_image.array == pytest.approx(
-        inversion_source_loop.mapped_reconstructed_image.array, 1.0e-2
-    )
-    assert inversion_image_loop.mapped_reconstructed_data.array == pytest.approx(
-        inversion_source_loop.mapped_reconstructed_data.array, 1.0e-2
     )

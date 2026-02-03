@@ -3,10 +3,13 @@ import numpy as np
 from typing import Optional
 
 from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
+from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
-from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.grids import GridsDataset
+from autoarray.inversion.inversion.interferometer.inversion_interferometer_util import (
+    InterferometerSparseOperator,
+)
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.mask.mask_2d import Mask2D
@@ -29,7 +32,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        w_tilde: Optional[WTildeInterferometer] = None,
+        sparse_operator: Optional[InterferometerSparseOperator] = None,
         raise_error_dft_visibilities_limit: bool = True,
     ):
         """
@@ -93,16 +96,16 @@ class Interferometer(AbstractDataset):
             real_space_mask=real_space_mask,
         )
 
-        use_w_tilde = True if w_tilde is not None else False
+        use_sparse_operator = True if sparse_operator is not None else False
 
         self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            use_w_tilde=use_w_tilde,
+            use_sparse_operator=use_sparse_operator,
         )
 
-        self.w_tilde = w_tilde
+        self.sparse_operator = sparse_operator
 
         if raise_error_dft_visibilities_limit:
             if (
@@ -158,9 +161,9 @@ class Interferometer(AbstractDataset):
             transformer_class=transformer_class,
         )
 
-    def apply_w_tilde(
+    def apply_sparse_operator(
         self,
-        curvature_preload=None,
+        nufft_precision_operator=None,
         batch_size: int = 128,
         chunk_k: int = 2048,
         show_progress: bool = False,
@@ -168,7 +171,7 @@ class Interferometer(AbstractDataset):
         use_jax: bool = False,
     ):
         """
-        The w_tilde formalism of the linear algebra equations precomputes the Fourier Transform of all the visibilities
+        The sparse linear algebra equations precomputes the Fourier Transform of all the visibilities
         given the `uv_wavelengths` (see `inversion.inversion_util`).
 
         The `WTilde` object stores these precomputed values in the interferometer dataset ensuring they are only
@@ -179,7 +182,7 @@ class Interferometer(AbstractDataset):
 
         Parameters
         ----------
-        curvature_preload
+        nufft_precision_operator
             An already computed curvature preload matrix for this dataset (e.g. loaded from hard-disk), to prevent
             long recalculations of this matrix for large datasets.
         batch_size
@@ -192,20 +195,16 @@ class Interferometer(AbstractDataset):
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        if curvature_preload is None:
+        if nufft_precision_operator is None:
 
             logger.info(
-                "INTERFEROMETER - Computing W-Tilde; runtime scales with visibility count and mask resolution, extreme inputs may exceed hours."
+                "INTERFEROMETER - Computing W-Tilde; runtime scales with visibility count and mask resolution, CPU run times may exceed hours."
             )
 
-            curvature_preload = inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
-                noise_map_real=self.noise_map.array.real,
-                uv_wavelengths=self.uv_wavelengths,
-                shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
-                grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+            nufft_precision_operator = self.psf_precision_operator_from(
                 chunk_k=chunk_k,
-                show_memory=show_memory,
                 show_progress=show_progress,
+                show_memory=show_memory,
                 use_jax=use_jax,
             )
 
@@ -215,10 +214,9 @@ class Interferometer(AbstractDataset):
             use_adjoint_scaling=True,
         )
 
-        w_tilde = WTildeInterferometer(
-            curvature_preload=curvature_preload,
+        sparse_operator = inversion_interferometer_util.InterferometerSparseOperator.from_nufft_precision_operator(
+            nufft_precision_operator=nufft_precision_operator,
             dirty_image=dirty_image.array,
-            real_space_mask=self.real_space_mask,
             batch_size=batch_size,
         )
 
@@ -228,7 +226,25 @@ class Interferometer(AbstractDataset):
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
             transformer_class=lambda uv_wavelengths, real_space_mask: self.transformer,
-            w_tilde=w_tilde,
+            sparse_operator=sparse_operator,
+        )
+
+    def psf_precision_operator_from(
+        self,
+        chunk_k: int = 2048,
+        show_progress: bool = False,
+        show_memory: bool = False,
+        use_jax: bool = False,
+    ):
+        return inversion_interferometer_util.nufft_precision_operator_from(
+            noise_map_real=self.noise_map.array.real,
+            uv_wavelengths=self.uv_wavelengths,
+            shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
+            grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false.in_radians.native.array,
+            chunk_k=chunk_k,
+            show_memory=show_memory,
+            show_progress=show_progress,
+            use_jax=use_jax,
         )
 
     @property
