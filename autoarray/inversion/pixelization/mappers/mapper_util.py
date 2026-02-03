@@ -441,11 +441,7 @@ def adaptive_pixel_signals_from(
     # 8) Exponentiate
     return pixel_signals**signal_scale
 
-
-import numpy as np
-
-
-def pixel_triplets_from_subpixel_arrays_from(
+def sparse_triplets_from(
     pix_indexes_for_sub,  # (M_sub, P)
     pix_weights_for_sub,  # (M_sub, P)
     slim_index_for_sub,  # (M_sub,)

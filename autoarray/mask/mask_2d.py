@@ -5,6 +5,8 @@ import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
+from autoconf import cached_property
+
 from autoarray.structures.abstract_structure import Structure
 
 if TYPE_CHECKING:
@@ -619,7 +621,7 @@ class Mask2D(Mask):
     def shape_native(self) -> Tuple[int, ...]:
         return self.shape
 
-    @property
+    @cached_property
     def fft_index_for_masked_pixel(self) -> np.ndarray:
         """
         Return a mapping from masked-pixel (slim) indices to flat indices

@@ -155,7 +155,7 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
 
-            rows, cols, vals = mapper.pixel_triplets_data
+            rows, cols, vals = mapper.sparse_triplets_data
 
             data_vector_mapper = (
                 inversion_imaging_numba_util.data_vector_via_psf_weighted_data_from(

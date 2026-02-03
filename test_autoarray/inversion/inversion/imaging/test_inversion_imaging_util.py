@@ -233,7 +233,7 @@ def test__data_vector_via_weighted_data_two_methods_agree():
             )
         )
 
-        rows, cols, vals = aa.util.mapper.pixel_triplets_from_subpixel_arrays_from(
+        rows, cols, vals = aa.util.mapper.sparse_triplets_from(
             pix_indexes_for_sub=mapper.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub=mapper.pix_weights_for_sub_slim_index,
             slim_index_for_sub=mapper.slim_index_for_sub_slim_index,
@@ -296,7 +296,7 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
 
     mapping_matrix = mapper.mapping_matrix
 
-    rows, cols, vals = aa.util.mapper.pixel_triplets_from_subpixel_arrays_from(
+    rows, cols, vals = aa.util.mapper.sparse_triplets_from(
         pix_indexes_for_sub=mapper.pix_indexes_for_sub_slim_index,
         pix_weights_for_sub=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub=mapper.slim_index_for_sub_slim_index,

@@ -269,9 +269,16 @@ class AbstractMapper(LinearObj):
         )
 
     @cached_property
-    def pixel_triplets_data(self):
+    def sparse_triplets_data(self):
+        """
+        Returns the sparse triplet representation of the mapping matrix, which is used for efficient computation of
+        the data vector and curvature matrix via sparse linear algebra.
 
-        rows, cols, vals = mapper_util.pixel_triplets_from_subpixel_arrays_from(
+        These triplets are applied to the data vector calculation in order to only compute the values which are non-zero,
+        speeding up the computation significantly.
+        """
+
+        rows, cols, vals = mapper_util.sparse_triplets_from(
             pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
             slim_index_for_sub=self.slim_index_for_sub_slim_index,
@@ -283,17 +290,17 @@ class AbstractMapper(LinearObj):
         return rows, cols, vals
 
     @cached_property
-    def pixel_triplets_curvature(self):
+    def sparse_triplets_curvature(self):
+        """
+        Returns the sparse triplet representation of the mapping matrix, where the row indexes have been converted
+        to the masked data pixel indexes (not subgridded).
 
-        rows, cols, vals = mapper_util.pixel_triplets_from_subpixel_arrays_from(
-            pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
-            pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
-            slim_index_for_sub=self.slim_index_for_sub_slim_index,
-            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
-            sub_fraction_slim=self.over_sampler.sub_fraction.array,
-            xp=self._xp,
-            return_rows_slim=False,
-        )
+        :return:
+        """
+
+        rows, cols, vals = self.sparse_triplets_data
+
+        rows = self.mapper_grids.mask.fft_index_for_masked_pixel[rows]
 
         return rows, cols, vals
 

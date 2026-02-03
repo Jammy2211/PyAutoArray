@@ -78,7 +78,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
         for mapper_index, mapper in enumerate(mapper_list):
 
-            rows, cols, vals = mapper.pixel_triplets_data
+            rows, cols, vals = mapper.sparse_triplets_data
 
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_psf_weighted_data_from(
@@ -132,7 +132,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         """
         linear_obj = self.linear_obj_list[0]
 
-        rows, cols, vals = linear_obj.pixel_triplets_data
+        rows, cols, vals = linear_obj.sparse_triplets_data
 
         return inversion_imaging_util.data_vector_via_psf_weighted_data_from(
             psf_weighted_data=self.psf_weighted_data,
@@ -156,7 +156,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
 
-            rows, cols, vals = mapper.pixel_triplets_data
+            rows, cols, vals = mapper.sparse_triplets_data
 
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_psf_weighted_data_from(
@@ -284,7 +284,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            rows, cols, vals = mapper_i.pixel_triplets_curvature
+            rows, cols, vals = mapper_i.sparse_triplets_curvature
 
             diag = self.dataset.sparse_linalg.curvature_matrix_diag_from(
                 rows=rows,
@@ -318,8 +318,8 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         This function computes the off-diagonal terms of F using the sparse linear algebra formalism.
         """
 
-        rows0, cols0, vals0 = mapper_0.pixel_triplets_curvature
-        rows1, cols1, vals1 = mapper_1.pixel_triplets_curvature
+        rows0, cols0, vals0 = mapper_0.sparse_triplets_curvature
+        rows1, cols1, vals1 = mapper_1.sparse_triplets_curvature
 
         S0 = mapper_0.params
         S1 = mapper_1.params
@@ -417,7 +417,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
                     / self.noise_map[:, None] ** 2
                 )
 
-                rows, cols, vals = mapper.pixel_triplets_curvature
+                rows, cols, vals = mapper.sparse_triplets_curvature
 
                 off_diag = (
                     self.dataset.sparse_linalg.curvature_matrix_off_diag_func_list_from(
@@ -518,7 +518,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
             if isinstance(linear_obj, AbstractMapper):
 
-                rows, cols, vals = linear_obj.pixel_triplets_curvature
+                rows, cols, vals = linear_obj.sparse_triplets_curvature
 
                 mapped_reconstructed_image = inversion_imaging_util.mapped_reconstucted_image_via_sparse_linalg_from(
                     reconstruction=reconstruction,
