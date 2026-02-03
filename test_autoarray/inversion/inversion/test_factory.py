@@ -566,12 +566,13 @@ def test__inversion_matrices__x2_mappers__compare_mapping_and_sparse_operator_va
     inversion_sparse_operator = aa.Inversion(
         dataset=masked_imaging_7x7_sparse_operator,
         linear_obj_list=[rectangular_mapper_7x7_3x3, delaunay_mapper_9_3x3],
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[rectangular_mapper_7x7_3x3, delaunay_mapper_9_3x3],
-        settings=aa.SettingsInversion(),
+        settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
     assert inversion_sparse_operator.curvature_matrix == pytest.approx(
