@@ -201,7 +201,7 @@ class Interferometer(AbstractDataset):
                 "INTERFEROMETER - Computing W-Tilde; runtime scales with visibility count and mask resolution, CPU run times may exceed hours."
             )
 
-            curvature_preload = self.curvature_preload_from(
+            curvature_preload = self.psf_precision_operator_from(
                 chunk_k=chunk_k,
                 show_progress=show_progress,
                 show_memory=show_memory,
@@ -229,14 +229,14 @@ class Interferometer(AbstractDataset):
             sparse_linalg=sparse_linalg,
         )
 
-    def curvature_preload_from(
+    def psf_precision_operator_from(
         self,
         chunk_k: int = 2048,
         show_progress: bool = False,
         show_memory: bool = False,
         use_jax: bool = False,
     ):
-        return inversion_interferometer_util.w_tilde_curvature_preload_interferometer_from(
+        return inversion_interferometer_util.nufft_precision_operator_from(
             noise_map_real=self.noise_map.array.real,
             uv_wavelengths=self.uv_wavelengths,
             shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,

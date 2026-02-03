@@ -3,8 +3,8 @@ import numpy as np
 import pytest
 
 
-def test__curvature_matrix_from_w_tilde():
-    w_tilde = np.array(
+def test__curvature_matrix_diag_via_psf_weighted_noise_from():
+    psf_weighted_noise = np.array(
         [
             [1.0, 2.0, 3.0, 4.0],
             [2.0, 1.0, 2.0, 3.0],
@@ -17,8 +17,8 @@ def test__curvature_matrix_from_w_tilde():
         [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
     )
 
-    curvature_matrix = aa.util.inversion.curvature_matrix_diag_via_w_tilde_from(
-        w_tilde=w_tilde, mapping_matrix=mapping_matrix
+    curvature_matrix = aa.util.inversion.curvature_matrix_diag_via_psf_weighted_noise_from(
+        psf_weighted_noise=psf_weighted_noise, mapping_matrix=mapping_matrix
     )
 
     assert (

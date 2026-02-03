@@ -4,35 +4,34 @@ import numpy as np
 from typing import Optional, List, Tuple
 
 
-def weighted_data_imaging_from(
+def psf_weighted_data_from(
     weight_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
     xp=np,
 ) -> np.ndarray:
     """
-    The matrix w_tilde is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF convolution of
+    The sparse linear algebra uses a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF convolution of
     every pair of image pixels given the noise map. This can be used to efficiently compute the curvature matrix via
     the mappings between image and source pixels, in a way that omits having to perform the PSF convolution on every
     individual source pixel. This provides a significant speed up for inversions of imaging datasets.
 
-    When w_tilde is used to perform an inversion, the mapping matrices are not computed, meaning that they cannot be
-    used to compute the data vector. This method creates the vector `weighted_data` which allows for the data
+    When it is used to perform an inversion, the mapping matrices are not computed, meaning that they cannot be
+    used to compute the data vector. This method creates the vector `psf_weighted_data` which allows for the data
     vector to be computed efficiently without the mapping matrix.
 
-    The matrix weighted_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
+    The matrix psf_weighted_data is dimensions [image_pixels] and encodes the PSF convolution with the `weight_map`,
     where the weights are the image-pixel values divided by the noise-map values squared:
 
     weight = image / noise**2.0
 
     Parameters
     ----------
-    image_native
-        The two dimensional masked image of values which `weighted_data` is computed from.
-    noise_map_native
-        The two dimensional masked noise-map of values which `weighted_data` is computed from.
+    weight_map_native
+        The two dimensional masked weight-map of values the PSF convolution is computed from, which is the data
+        divided by the noise-map squared.
     kernel_native
-        The two dimensional PSF kernel that `weighted_data` encodes the convolution of.
+        The two dimensional PSF kernel that `psf_weighted_data` encodes the convolution of.
     native_index_for_slim_index
         An array of shape [total_x_pixels*sub_size] that maps pixels from the slimmed array to the native array.
 
@@ -68,25 +67,39 @@ def weighted_data_imaging_from(
     return xp.sum(patches * kernel_native[None, :, :], axis=(1, 2))  # (N,)
 
 
-def data_vector_via_sparse_linalg_from(
-    weighted_data: np.ndarray,  # (M_pix,) float64
+def data_vector_via_psf_weighted_data_from(
+    psf_weighted_data: np.ndarray,  # (M_pix,) float64
     rows: np.ndarray,  # (nnz,) int32  each triplet's data pixel (slim index)
     cols: np.ndarray,  # (nnz,) int32  source pixel index
     vals: np.ndarray,  # (nnz,) float64 mapping weights incl sub_fraction
     S: int,  # number of source pixels
 ) -> np.ndarray:
     """
-    Replacement for numba data_vector_via_weighted_data_imaging_from using triplets.
+    Returns the data vector `D` from the `psf_weighted_data` matrix (see `psf_weighted_data_from`), which encodes the
+    the 1D image `d` and 1D noise-map values `\sigma` (see Warren & Dye 2003).
+
+    This uses the sparse matrix triplet representation of the mapping matrix to efficiently compute the data vector
+    without having to compute the full mapping matrix.
 
     Computes:
         D[p] = sum_{triplets t with col_t=p} vals[t] * weighted_data_slim[slim_rows[t]]
 
-    Returns:
-        (S,) float64
+    Parameters
+    ----------
+    psf_weighted_data
+        The matrix representing the PSF convolution of the imaging data divided by the noise-map squared.
+    rows
+        The row indices of the sparse mapping matrix triplet representation, which map to data pixels.
+    cols
+        The column indices of the sparse mapping matrix triplet representation, which map to source pixels.
+    vals
+        The values of the sparse mapping matrix triplet representation, which map the image pixels to source pixels.
+    S
+        The number of source pixels.
     """
     from jax.ops import segment_sum
 
-    w = weighted_data[rows]  # (nnz,)
+    w = psf_weighted_data[rows]  # (nnz,)
     contrib = vals * w  # (nnz,)
     return segment_sum(contrib, cols, num_segments=S)  # (S,)
 

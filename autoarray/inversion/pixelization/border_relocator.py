@@ -373,7 +373,7 @@ class BorderRelocator:
 
         else:
 
-            from autoarray.inversion.inversion.imaging import (
+            from autoarray.inversion.inversion.imaging_numba import (
                 inversion_imaging_numba_util,
             )
 

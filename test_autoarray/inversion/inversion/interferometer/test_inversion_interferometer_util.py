@@ -68,7 +68,7 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
 
-def test__curvature_matrix_via_curvature_preload_from():
+def test__curvature_matrix_via_psf_precision_operator_from():
     noise_map = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
     uv_wavelengths = np.array(
         [[0.0001, 2.0, 3000.0, 50000.0, 200000.0], [3000.0, 2.0, 0.0001, 10.0, 5000.0]]
@@ -91,7 +91,7 @@ def test__curvature_matrix_via_curvature_preload_from():
     )
 
     curvature_preload = (
-        aa.util.inversion_interferometer.w_tilde_curvature_preload_interferometer_from(
+        aa.util.inversion_interferometer.nufft_precision_operator_from(
             noise_map_real=noise_map,
             uv_wavelengths=uv_wavelengths,
             shape_masked_pixels_2d=(3, 3),
@@ -103,14 +103,14 @@ def test__curvature_matrix_via_curvature_preload_from():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    w_tilde = aa.util.inversion_interferometer.w_tilde_via_preload_from(
-        curvature_preload=curvature_preload,
+    psf_weighted_noise = aa.util.inversion_interferometer.nufft_weighted_noise_via_sparse_linalg_from(
+        translation_invariant_kernel=curvature_preload,
         native_index_for_slim_index=native_index_for_slim_index,
     )
 
-    curvature_matrix_via_w_tilde = (
-        aa.util.inversion.curvature_matrix_diag_via_w_tilde_from(
-            w_tilde=w_tilde, mapping_matrix=mapping_matrix
+    curvature_matrix_via_nufft_weighted_noise = (
+        aa.util.inversion.curvature_matrix_diag_via_psf_weighted_noise_from(
+            psf_weighted_noise=psf_weighted_noise, mapping_matrix=mapping_matrix
         )
     )
 
@@ -126,7 +126,7 @@ def test__curvature_matrix_via_curvature_preload_from():
     )
 
     curvature_matrix_via_preload = (
-        sparse_linalg.curvature_matrix_via_w_tilde_interferometer_from(
+        sparse_linalg.curvature_matrix_via_sparse_linalg_from(
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             fft_index_for_masked_pixel=grid.mask.fft_index_for_masked_pixel,
@@ -134,7 +134,7 @@ def test__curvature_matrix_via_curvature_preload_from():
         )
     )
 
-    assert curvature_matrix_via_w_tilde == pytest.approx(
+    assert curvature_matrix_via_nufft_weighted_noise == pytest.approx(
         curvature_matrix_via_preload, 1.0e-4
     )
 
@@ -190,10 +190,10 @@ def test__identical_inversion_values_for_two_methods():
         transformer_class=aa.TransformerDFT,
     )
 
-    dataset_w_tilde = dataset.apply_sparse_linear_algebra()
+    dataset_nufft_weighted_noise = dataset.apply_sparse_linear_algebra()
 
-    inversion_w_tilde = aa.Inversion(
-        dataset=dataset_w_tilde,
+    inversion_nufft_weighted_noise = aa.Inversion(
+        dataset=dataset_nufft_weighted_noise,
         linear_obj_list=[mapper],
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
@@ -204,38 +204,38 @@ def test__identical_inversion_values_for_two_methods():
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
-    assert (inversion_w_tilde.data == inversion_mapping_matrices.data).all()
-    assert (inversion_w_tilde.noise_map == inversion_mapping_matrices.noise_map).all()
+    assert (inversion_nufft_weighted_noise.data == inversion_mapping_matrices.data).all()
+    assert (inversion_nufft_weighted_noise.noise_map == inversion_mapping_matrices.noise_map).all()
     assert (
-        inversion_w_tilde.linear_obj_list[0]
+        inversion_nufft_weighted_noise.linear_obj_list[0]
         == inversion_mapping_matrices.linear_obj_list[0]
     )
     assert (
-        inversion_w_tilde.regularization_list[0]
+        inversion_nufft_weighted_noise.regularization_list[0]
         == inversion_mapping_matrices.regularization_list[0]
     )
     assert (
-        inversion_w_tilde.regularization_matrix
+        inversion_nufft_weighted_noise.regularization_matrix
         == inversion_mapping_matrices.regularization_matrix
     ).all()
 
-    assert inversion_w_tilde.data_vector == pytest.approx(
+    assert inversion_nufft_weighted_noise.data_vector == pytest.approx(
         inversion_mapping_matrices.data_vector, abs=1.0e-2
     )
-    assert inversion_w_tilde.curvature_matrix == pytest.approx(
+    assert inversion_nufft_weighted_noise.curvature_matrix == pytest.approx(
         inversion_mapping_matrices.curvature_matrix, abs=1.0e-2
     )
-    assert inversion_w_tilde.curvature_reg_matrix == pytest.approx(
+    assert inversion_nufft_weighted_noise.curvature_reg_matrix == pytest.approx(
         inversion_mapping_matrices.curvature_reg_matrix, abs=1.0e-2
     )
 
-    assert inversion_w_tilde.reconstruction == pytest.approx(
+    assert inversion_nufft_weighted_noise.reconstruction == pytest.approx(
         inversion_mapping_matrices.reconstruction, abs=1.0e-1
     )
-    assert inversion_w_tilde.mapped_reconstructed_image.array == pytest.approx(
+    assert inversion_nufft_weighted_noise.mapped_reconstructed_image.array == pytest.approx(
         inversion_mapping_matrices.mapped_reconstructed_image.array, abs=1.0e-1
     )
-    assert inversion_w_tilde.mapped_reconstructed_data.array == pytest.approx(
+    assert inversion_nufft_weighted_noise.mapped_reconstructed_data.array == pytest.approx(
         inversion_mapping_matrices.mapped_reconstructed_data.array, abs=1.0e-1
     )
 
@@ -291,10 +291,10 @@ def test__identical_inversion_source_and_image_loops():
         transformer_class=aa.TransformerDFT,
     )
 
-    dataset_w_tilde = dataset.apply_sparse_linear_algebra()
+    dataset_nufft_weighted_noise = dataset.apply_sparse_linear_algebra()
 
     inversion_image_loop = aa.Inversion(
-        dataset=dataset_w_tilde,
+        dataset=dataset_nufft_weighted_noise,
         linear_obj_list=[mapper],
         settings=aa.SettingsInversion(
             use_source_loop=False, use_positive_only_solver=True
@@ -302,7 +302,7 @@ def test__identical_inversion_source_and_image_loops():
     )
 
     inversion_source_loop = aa.Inversion(
-        dataset=dataset_w_tilde,
+        dataset=dataset_nufft_weighted_noise,
         linear_obj_list=[mapper],
         settings=aa.SettingsInversion(
             use_source_loop=True, use_positive_only_solver=True

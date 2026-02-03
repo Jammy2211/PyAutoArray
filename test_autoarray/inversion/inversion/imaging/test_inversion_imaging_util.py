@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 
-def test__w_tilde_imaging_from():
+def test__psf_weighted_noise_imaging_from():
     noise_map = np.array(
         [
             [0.0, 0.0, 0.0, 0.0],
@@ -17,13 +17,13 @@ def test__w_tilde_imaging_from():
 
     native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-    w_tilde = aa.util.inversion_imaging_numba.w_tilde_curvature_imaging_from(
+    psf_weighted_noise = aa.util.inversion_imaging_numba.psf_precision_operator_from(
         noise_map_native=noise_map,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
     )
 
-    assert w_tilde == pytest.approx(
+    assert psf_weighted_noise == pytest.approx(
         np.array(
             [
                 [2.5, 1.625, 0.5, 0.375],
@@ -36,7 +36,7 @@ def test__w_tilde_imaging_from():
     )
 
 
-def test__weighted_data_imaging_from():
+def test__psf_weighted_data_from():
 
     mask = aa.Mask2D(
         mask=[
@@ -75,16 +75,16 @@ def test__weighted_data_imaging_from():
     weight_map = data / (noise_map**2)
     weight_map = aa.Array2D(values=weight_map, mask=mask)
 
-    weighted_data = aa.util.inversion_imaging.weighted_data_imaging_from(
+    psf_weighted_data = aa.util.inversion_imaging.psf_weighted_data_from(
         weight_map_native=weight_map.native.array,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
     )
 
-    assert (weighted_data == np.array([5.0, 5.0, 1.5, 1.5])).all()
+    assert (psf_weighted_data == np.array([5.0, 5.0, 1.5, 1.5])).all()
 
 
-def test__w_tilde_curvature_preload_imaging_from():
+def test__psf_precision_operator_sparse_from():
     noise_map = np.array(
         [
             [0.0, 0.0, 0.0, 0.0],
@@ -99,26 +99,26 @@ def test__w_tilde_curvature_preload_imaging_from():
     native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
     (
-        w_tilde_preload,
-        w_tilde_indexes,
-        w_tilde_lengths,
-    ) = aa.util.inversion_imaging_numba.w_tilde_curvature_preload_imaging_from(
+        psf_weighted_noise_preload,
+        psf_weighted_noise_indexes,
+        psf_weighted_noise_lengths,
+    ) = aa.util.inversion_imaging_numba.psf_precision_operator_sparse_from(
         noise_map_native=noise_map,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
     )
 
-    assert w_tilde_preload == pytest.approx(
+    assert psf_weighted_noise_preload == pytest.approx(
         np.array(
             [1.25, 1.625, 0.5, 0.375, 0.65625, 0.125, 0.0625, 0.25, 0.375, 0.15625]
         ),
         1.0e-4,
     )
-    assert w_tilde_indexes == pytest.approx(
+    assert psf_weighted_noise_indexes == pytest.approx(
         np.array([0, 1, 2, 3, 1, 2, 3, 2, 3, 3]), 1.0e-4
     )
 
-    assert w_tilde_lengths == pytest.approx(np.array([4, 3, 2, 1]), 1.0e-4)
+    assert psf_weighted_noise_lengths == pytest.approx(np.array([4, 3, 2, 1]), 1.0e-4)
 
 
 def test__data_vector_via_blurred_mapping_matrix_from():
@@ -244,7 +244,7 @@ def test__data_vector_via_weighted_data_two_methods_agree():
         weight_map = image.array / (noise_map.array**2)
         weight_map = aa.Array2D(values=weight_map, mask=noise_map.mask)
 
-        weighted_data = aa.util.inversion_imaging.weighted_data_imaging_from(
+        psf_weighted_data = aa.util.inversion_imaging.psf_weighted_data_from(
             weight_map_native=weight_map.native.array,
             kernel_native=kernel.native.array,
             native_index_for_slim_index=mask.derive_indexes.native_for_slim.astype(
@@ -252,9 +252,9 @@ def test__data_vector_via_weighted_data_two_methods_agree():
             ),
         )
 
-        data_vector_via_w_tilde = (
-            aa.util.inversion_imaging.data_vector_via_sparse_linalg_from(
-                weighted_data=weighted_data,
+        data_vector_via_psf_weighted_noise = (
+            aa.util.inversion_imaging.data_vector_via_psf_weighted_data_from(
+                psf_weighted_data=psf_weighted_data,
                 rows=rows,
                 cols=cols,
                 vals=vals,
@@ -262,10 +262,10 @@ def test__data_vector_via_weighted_data_two_methods_agree():
             )
         )
 
-        assert data_vector_via_w_tilde == pytest.approx(data_vector, 1.0e-4)
+        assert data_vector_via_psf_weighted_noise == pytest.approx(data_vector, 1.0e-4)
 
 
-def test__curvature_matrix_via_w_tilde_two_methods_agree():
+def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
 
     mask = aa.Mask2D.circular(shape_native=(51, 51), pixel_scales=0.1, radius=2.0)
 

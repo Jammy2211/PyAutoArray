@@ -4,6 +4,7 @@ from typing import List, Union
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
+
 from autoarray.inversion.inversion.interferometer.mapping import (
     InversionInterferometerMapping,
 )
@@ -13,12 +14,15 @@ from autoarray.inversion.inversion.interferometer.sparse_linalg import (
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
+from autoarray.inversion.inversion.imaging_numba.inversion_imaging_numba_util import SparseLinAlgImagingNumba
+from autoarray.inversion.inversion.imaging_numba.sparse_linalg import InversionImagingSparseLinAlgNumba
 from autoarray.inversion.inversion.imaging.sparse_linalg import (
     InversionImagingSparseLinAlg,
 )
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
+
 
 
 def inversion_from(
@@ -120,10 +124,21 @@ def inversion_imaging_from(
 
     if dataset.sparse_linalg is not None and use_sparse_linalg:
 
+        if isinstance(dataset.sparse_linalg, SparseLinAlgImagingNumba):
+
+            return InversionImagingSparseLinAlgNumba(
+                dataset=dataset,
+                linear_obj_list=linear_obj_list,
+                settings=settings,
+                preloads=preloads,
+                xp=xp,
+            )
+
         return InversionImagingSparseLinAlg(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
+            preloads=preloads,
             xp=xp,
         )
 

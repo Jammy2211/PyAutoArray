@@ -84,7 +84,7 @@ def test__mapping_matrix():
     assert inversion.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)
 
 
-def test__curvature_matrix__via_w_tilde__identical_to_mapping():
+def test__curvature_matrix__viasparse_linalg__identical_to_mapping():
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
@@ -131,10 +131,10 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
-    masked_dataset_w_tilde = masked_dataset.apply_sparse_linear_algebra()
+    masked_datasetsparse_linalg = masked_dataset.apply_sparse_linear_algebra()
 
-    inversion_w_tilde = aa.Inversion(
-        dataset=masked_dataset_w_tilde,
+    inversionsparse_linalg = aa.Inversion(
+        dataset=masked_datasetsparse_linalg,
         linear_obj_list=[mapper_0, mapper_1],
     )
 
@@ -143,12 +143,12 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
         linear_obj_list=[mapper_0, mapper_1],
     )
 
-    assert inversion_w_tilde.curvature_matrix == pytest.approx(
+    assert inversionsparse_linalg.curvature_matrix == pytest.approx(
         inversion_mapping.curvature_matrix, 1.0e-4
     )
 
 
-def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical_to_mapping():
+def test__curvature_matrix_viasparse_linalg__includes_source_interpolation__identical_to_mapping():
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
@@ -206,10 +206,10 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
-    masked_dataset_w_tilde = masked_dataset.apply_sparse_linear_algebra()
+    masked_datasetsparse_linalg = masked_dataset.apply_sparse_linear_algebra()
 
-    inversion_w_tilde = aa.Inversion(
-        dataset=masked_dataset_w_tilde,
+    inversionsparse_linalg = aa.Inversion(
+        dataset=masked_datasetsparse_linalg,
         linear_obj_list=[mapper_0, mapper_1],
     )
 
@@ -218,7 +218,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
         linear_obj_list=[mapper_0, mapper_1],
     )
 
-    assert inversion_w_tilde.curvature_matrix == pytest.approx(
+    assert inversionsparse_linalg.curvature_matrix == pytest.approx(
         inversion_mapping.curvature_matrix, 1.0e-4
     )
 

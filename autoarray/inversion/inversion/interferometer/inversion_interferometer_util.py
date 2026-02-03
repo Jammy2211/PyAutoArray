@@ -78,7 +78,7 @@ def _report_memory(arr):
         pass
 
 
-def w_tilde_curvature_preload_interferometer_from(
+def nufft_precision_operator_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d,
@@ -133,18 +133,19 @@ def w_tilde_curvature_preload_interferometer_from(
      -------------------------------------------------------------------------------
      Full Description (Original Documentation)
      -------------------------------------------------------------------------------
-     The matrix w_tilde is a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels] that encodes the
-     NUFFT of every pair of image pixels given the noise map. This can be used to efficiently compute the curvature
-     matrix via the mapping matrix, in a way that omits having to perform the NUFFT on every individual source pixel.
-     This provides a significant speed up for inversions of interferometer datasets with large number of visibilities.
+     The matrix `translation_invariant_nufft` a matrix of dimensions [unmasked_image_pixels, unmasked_image_pixels]
+     that encodes the NUFFT of every pair of image pixels given the noise map. This can be used to efficiently compute
+     the curvature matrix via the mapping matrix, in a way that omits having to perform the NUFFT on every individual
+     source pixel. This provides a significant speed up for inversions of interferometer datasets with large number of
+     visibilities.
 
      The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
      making it impossible to store in memory and its use in linear algebra calculations extremely. This methods creates
-     a preload matrix that can compute the matrix w_tilde via an efficient preloading scheme which exploits the
+     a preload matrix that can compute the matrix via an efficient preloading scheme which exploits the
      symmetries in the NUFFT.
 
-     To compute w_tilde, one first defines a real space mask where every False entry is an unmasked pixel which is
-     used in the calculation, for example:
+     To compute `translation_invariant_nufft`, one first defines a real space mask where every False entry is an
+     unmasked pixel which is used in the calculation, for example:
 
          IxIxIxIxIxIxIxIxIxIxI
          IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
@@ -171,7 +172,7 @@ def w_tilde_curvature_preload_interferometer_from(
          IxIxIxIxIxIxIxIxIxIxI
          IxIxIxIxIxIxIxIxIxIxI
 
-     In the standard calculation of `w_tilde` it is a matrix of
+     In the standard calculation of `translation_invariant_nufft` it is a matrix of
      dimensions [unmasked_image_pixels, unmasked_pixel_images], therefore for the example mask above it would be
      dimensions [9, 9]. One performs a double for loop over `unmasked_image_pixels`, using the (y,x) spatial offset
      between every possible pair of unmasked image pixels to precompute values that depend on the properties of the NUFFT.
@@ -205,7 +206,7 @@ def w_tilde_curvature_preload_interferometer_from(
      The above preloaded values pair all image pixel NUFFT values when a pixel is to the right and / or down of the
      first image pixel. However, one must also precompute pairs where the paired pixel is to the left of the host
      pixels. These pairings are stored in `curvature_preload[:,:,1]`, and the ordering of these pairings is flipped in the
-     x direction to make it straight forward to use this matrix when computing w_tilde.
+     x direction to make it straight forward to use this matrix when computing the nufft weighted noise.
 
     Notes
     -----
@@ -227,7 +228,7 @@ def w_tilde_curvature_preload_interferometer_from(
         Fourier transformed is computed.
     """
     if use_jax:
-        return w_tilde_curvature_preload_interferometer_via_jax_from(
+        return nufft_precision_operator_via_jax_from(
             noise_map_real=noise_map_real,
             uv_wavelengths=uv_wavelengths,
             shape_masked_pixels_2d=shape_masked_pixels_2d,
@@ -235,7 +236,7 @@ def w_tilde_curvature_preload_interferometer_from(
             chunk_k=chunk_k,
         )
 
-    return w_tilde_curvature_preload_interferometer_via_np_from(
+    return nufft_precision_operator_via_np_from(
         noise_map_real=noise_map_real,
         uv_wavelengths=uv_wavelengths,
         shape_masked_pixels_2d=shape_masked_pixels_2d,
@@ -246,7 +247,7 @@ def w_tilde_curvature_preload_interferometer_from(
     )
 
 
-def w_tilde_curvature_preload_interferometer_via_np_from(
+def nufft_precision_operator_via_np_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d,
@@ -259,7 +260,7 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     """
     NumPy/CPU implementation of the interferometer W-tilde curvature preload.
 
-    See `w_tilde_curvature_preload_interferometer_from` for full description.
+    See `nufft_precision_operator_from` for full description.
     """
     if chunk_k <= 0:
         raise ValueError("chunk_k must be a positive integer")
@@ -280,7 +281,7 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     ku = 2.0 * np.pi * uv_wavelengths[:, 0]
     kv = 2.0 * np.pi * uv_wavelengths[:, 1]
 
-    out = np.zeros((2 * y_shape, 2 * x_shape), dtype=np.float64)
+    translation_invariant_kernel = np.zeros((2 * y_shape, 2 * x_shape), dtype=np.float64)
 
     # Corner coordinates
     y00, x00 = gy[0, 0], gx[0, 0]
@@ -332,36 +333,36 @@ def w_tilde_curvature_preload_interferometer_via_np_from(
     # -----------------------------
     # Main quadrant (+,+)
     # -----------------------------
-    out[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx)
+    translation_invariant_kernel[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx)
 
     # -----------------------------
     # Flip in x (+,-)
     # -----------------------------
     if x_shape > 1:
         block = accum_from_corner_np(y0m, x0m, gy[:, ::-1], gx[:, ::-1])
-        out[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
+        translation_invariant_kernel[:y_shape, -1:-(x_shape):-1] = block[:, 1:]
 
     # -----------------------------
     # Flip in y (-,+)
     # -----------------------------
     if y_shape > 1:
         block = accum_from_corner_np(ym0, xm0, gy[::-1, :], gx[::-1, :])
-        out[-1:-(y_shape):-1, :x_shape] = block[1:, :]
+        translation_invariant_kernel[-1:-(y_shape):-1, :x_shape] = block[1:, :]
 
     # -----------------------------
     # Flip in x and y (-,-)
     # -----------------------------
     if (y_shape > 1) and (x_shape > 1):
         block = accum_from_corner_np(ymm, xmm, gy[::-1, ::-1], gx[::-1, ::-1])
-        out[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
+        translation_invariant_kernel[-1:-(y_shape):-1, -1:-(x_shape):-1] = block[1:, 1:]
 
     if pbar is not None:
         pbar.close()
 
-    return out
+    return translation_invariant_kernel
 
 
-def w_tilde_curvature_preload_interferometer_via_jax_from(
+def nufft_precision_operator_via_jax_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
     shape_masked_pixels_2d,
@@ -377,7 +378,7 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
       - uses a compiled for-loop (lax.fori_loop) over fixed-size visibility chunks
       - does not support progress bars or memory reporting (those require Python loops)
 
-    See `w_tilde_curvature_preload_interferometer_from` for full description.
+    See `nufft_precision_operator_from` for full description.
     """
     import jax
     import jax.numpy as jnp
@@ -477,24 +478,25 @@ def w_tilde_curvature_preload_interferometer_via_jax_from(
     )
 
     t0 = time.time()
-    out = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
-    out.block_until_ready()  # ensure timing includes actual device execution
+    translation_invariant_kernel = _compute_all_quadrants_jit(gy, gx, chunk_k=chunk_k)
+    translation_invariant_kernel.block_until_ready()  # ensure timing includes actual device execution
     t1 = time.time()
 
     logger.info("INTERFEROMETER - Finished W-Tilde (JAX) in %.3f seconds", (t1 - t0))
 
-    return np.asarray(out)
+    return np.asarray(translation_invariant_kernel)
 
 
-def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
+def nufft_weighted_noise_via_sparse_linalg_from(translation_invariant_kernel, native_index_for_slim_index):
     """
-    Use the preloaded w_tilde matrix (see `curvature_preload_interferometer_from`) to compute
-    w_tilde (see `w_tilde_interferometer_from`) efficiently.
+    Use the `translation_invariant_kernel` (see `nufft_precision_operator_from`) to compute
+    the `nufft_weighted_noise` efficiently.
 
     Parameters
     ----------
-    curvature_preload
-        The preloaded values of the NUFFT that enable efficient computation of w_tilde.
+    translation_invariant_kernel
+        The preloaded translation invariant values of the NUFFT that enable efficient computation of the
+        NUFFT weighted noise matrix.
     native_index_for_slim_index
         An array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its corresponding
         native 2D pixel using its (y,x) pixel indexes.
@@ -508,7 +510,7 @@ def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
 
     slim_size = len(native_index_for_slim_index)
 
-    w_tilde_via_preload = np.zeros((slim_size, slim_size))
+    nufft_weighted_noise = np.zeros((slim_size, slim_size))
 
     for i in range(slim_size):
         i_y, i_x = native_index_for_slim_index[i]
@@ -519,13 +521,13 @@ def w_tilde_via_preload_from(curvature_preload, native_index_for_slim_index):
             y_diff = j_y - i_y
             x_diff = j_x - i_x
 
-            w_tilde_via_preload[i, j] = curvature_preload[y_diff, x_diff]
+            nufft_weighted_noise[i, j] = translation_invariant_kernel[y_diff, x_diff]
 
     for i in range(slim_size):
         for j in range(i, slim_size):
-            w_tilde_via_preload[j, i] = w_tilde_via_preload[i, j]
+            nufft_weighted_noise[j, i] = nufft_weighted_noise[i, j]
 
-    return w_tilde_via_preload
+    return nufft_weighted_noise
 
 
 @dataclass(frozen=True)
@@ -580,7 +582,7 @@ class InterferometerSparseLinAlg:
             Khat=Khat,
         )
 
-    def curvature_matrix_via_w_tilde_interferometer_from(
+    def curvature_matrix_via_sparse_linalg_from(
         self,
         pix_indexes_for_sub_slim_index: np.ndarray,
         pix_weights_for_sub_slim_index: np.ndarray,

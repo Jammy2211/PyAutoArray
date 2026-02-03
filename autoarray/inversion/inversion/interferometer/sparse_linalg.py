@@ -102,7 +102,7 @@ class InversionInterferometerSparseLingAlg(AbstractInversionInterferometer):
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
         return (
-            self.dataset.sparse_linalg.curvature_matrix_via_w_tilde_interferometer_from(
+            self.dataset.sparse_linalg.curvature_matrix_via_sparse_linalg_from(
                 pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
                 pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 pix_pixels=self.linear_obj_list[0].params,

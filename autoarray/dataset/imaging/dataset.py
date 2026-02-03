@@ -525,6 +525,79 @@ class Imaging(AbstractDataset):
             sparse_linalg=sparse_linalg,
         )
 
+    def apply_sparse_linear_algebra_cpu(
+        self,
+        disable_fft_pad: bool = False,
+    ):
+        """
+        The sparse linear algebra formalism precomputes the convolution of every pair of masked
+        noise-map values given the PSF (see `inversion.inversion_util`).
+
+        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
+        per analysis.
+
+        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
+        ensuring efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        batch_size
+            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
+            which can be reduced to produce lower memory usage at the cost of speed
+        disable_fft_pad
+            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
+            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
+            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
+            padded.
+        use_jax
+            Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
+        """
+        try:
+            import numba
+        except ModuleNotFoundError:
+            raise exc.InversionException(
+                "Inversion w-tilde functionality (pixelized reconstructions) is "
+                "disabled if numba is not installed.\n\n"
+                "This is because the run-times without numba are too slow.\n\n"
+                "Please install numba, which is described at the following web page:\n\n"
+                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+            )
+
+        from autoarray.inversion.inversion.imaging_numba import inversion_imaging_numba_util
+
+        (
+            curvature_preload,
+            indexes,
+            lengths,
+        ) = inversion_imaging_numba_util.psf_precision_operator_sparse_from(
+            noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
+            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            native_index_for_slim_index=np.array(
+                self.mask.derive_indexes.native_for_slim
+            ).astype("int"),
+        )
+
+        sparse_linalg = inversion_imaging_numba_util.SparseLinAlgImagingNumba(
+            curvature_preload=curvature_preload,
+            indexes=indexes.astype("int"),
+            lengths=lengths.astype("int"),
+            noise_map=self.noise_map,
+            psf=self.psf,
+            mask=self.mask,
+        )
+
+        return Imaging(
+            data=self.data,
+            noise_map=self.noise_map,
+            psf=self.psf,
+            noise_covariance_matrix=self.noise_covariance_matrix,
+            over_sample_size_lp=self.over_sample_size_lp,
+            over_sample_size_pixelization=self.over_sample_size_pixelization,
+            disable_fft_pad=disable_fft_pad,
+            check_noise_map=False,
+            sparse_linalg=sparse_linalg,
+        )
+
     def output_to_fits(
         self,
         data_path: Union[Path, str],
