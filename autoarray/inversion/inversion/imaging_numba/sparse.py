@@ -287,9 +287,9 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
 
             diag = (
                 inversion_imaging_numba_util.curvature_matrix_via_sparse_operator_from(
-                    curvature_preload=self.sparse_operator.curvature_preload,
-                    curvature_indexes=self.sparse_operator.indexes,
-                    curvature_lengths=self.sparse_operator.lengths,
+                    psf_precision_operator=self.sparse_operator.psf_precision_operator_sparse,
+                    psf_precision_indexes=self.sparse_operator.indexes,
+                    psf_precision_lengths=self.sparse_operator.lengths,
                     data_to_pix_unique=np.array(
                         mapper_i.unique_mappings.data_to_pix_unique
                     ),
@@ -325,9 +325,9 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
         """
 
         curvature_matrix_off_diag_0 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_sparse_operator_from(
-            curvature_preload=self.sparse_operator.curvature_preload,
-            curvature_indexes=self.sparse_operator.indexes,
-            curvature_lengths=self.sparse_operator.lengths,
+            psf_precision_operator=self.sparse_operator.psf_precision_operator_sparse,
+            psf_precision_indexes=self.sparse_operator.indexes,
+            psf_precision_lengths=self.sparse_operator.lengths,
             data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_0.unique_mappings.data_weights,
             pix_lengths_0=mapper_0.unique_mappings.pix_lengths,
@@ -339,9 +339,9 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
         )
 
         curvature_matrix_off_diag_1 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_sparse_operator_from(
-            curvature_preload=self.sparse_operator.curvature_preload,
-            curvature_indexes=self.sparse_operator.indexes,
-            curvature_lengths=self.sparse_operator.lengths,
+            psf_precision_operator=self.sparse_operator.psf_precision_operator_sparse,
+            psf_precision_indexes=self.sparse_operator.indexes,
+            psf_precision_lengths=self.sparse_operator.lengths,
             data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_1.unique_mappings.data_weights,
             pix_lengths_0=mapper_1.unique_mappings.pix_lengths,

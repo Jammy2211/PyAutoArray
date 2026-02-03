@@ -568,7 +568,7 @@ class Imaging(AbstractDataset):
         )
 
         (
-            curvature_preload,
+            psf_precision_operator_sparse,
             indexes,
             lengths,
         ) = inversion_imaging_numba_util.psf_precision_operator_sparse_from(
@@ -580,7 +580,7 @@ class Imaging(AbstractDataset):
         )
 
         sparse_operator = inversion_imaging_numba_util.SparseLinAlgImagingNumba(
-            curvature_preload=curvature_preload,
+            psf_precision_operator_sparse=psf_precision_operator_sparse,
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
             noise_map=self.noise_map,

@@ -846,7 +846,7 @@ def relocated_grid_via_jit_from(grid, border_grid):
 class SparseLinAlgImagingNumba:
     def __init__(
         self,
-        psf_precision_operator: np.ndarray,
+        psf_precision_operator_sparse: np.ndarray,
         indexes: np.ndim,
         lengths: np.ndarray,
         noise_map: np.ndarray,
@@ -874,7 +874,7 @@ class SparseLinAlgImagingNumba:
             matrix efficienctly.
         """
 
-        self.psf_precision_operator = psf_precision_operator
+        self.psf_precision_operator_sparse = psf_precision_operator_sparse
         self.indexes = indexes
         self.lengths = lengths
         self.noise_map = noise_map

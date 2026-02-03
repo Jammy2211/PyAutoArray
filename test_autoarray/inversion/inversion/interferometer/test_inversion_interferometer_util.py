@@ -90,7 +90,7 @@ def test__curvature_matrix_via_psf_precision_operator_from():
         ]
     )
 
-    curvature_preload = aa.util.inversion_interferometer.nufft_precision_operator_from(
+    nufft_precision_operator = aa.util.inversion_interferometer.nufft_precision_operator_from(
         noise_map_real=noise_map,
         uv_wavelengths=uv_wavelengths,
         shape_masked_pixels_2d=(3, 3),
@@ -103,7 +103,7 @@ def test__curvature_matrix_via_psf_precision_operator_from():
 
     psf_weighted_noise = (
         aa.util.inversion_interferometer.nufft_weighted_noise_via_sparse_operator_from(
-            translation_invariant_kernel=curvature_preload,
+            translation_invariant_kernel=nufft_precision_operator,
             native_index_for_slim_index=native_index_for_slim_index,
         )
     )
@@ -120,8 +120,8 @@ def test__curvature_matrix_via_psf_precision_operator_from():
 
     pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
 
-    sparse_operator = aa.InterferometerSparseLinAlg.from_curvature_preload(
-        curvature_preload=curvature_preload,
+    sparse_operator = aa.InterferometerSparseLinAlg.from_nufft_precision_operator(
+        nufft_precision_operator=nufft_precision_operator,
         dirty_image=None,
     )
 

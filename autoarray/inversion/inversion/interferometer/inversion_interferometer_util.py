@@ -186,26 +186,26 @@ def nufft_precision_operator_from(
      - The values of pixels paired with themselves are also computed repeatedly for the standard calculation (e.g. 9
        times using the mask above).
 
-     The `curvature_preload` method instead only computes each value once. To do this, it stores the preload values in a
+     The `nufft_precision_operator` method instead only computes each value once. To do this, it stores the preload values in a
      matrix of dimensions [shape_masked_pixels_y, shape_masked_pixels_x, 2], where `shape_masked_pixels` is the (y,x)
      size of the vertical and horizontal extent of unmasked pixels, e.g. the spatial extent over which the real space
      grid extends.
 
-     Each entry in the matrix `curvature_preload[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
+     Each entry in the matrix `nufft_precision_operator[:,:,0]` provides the the precomputed NUFFT value mapping an image pixel
      to a pixel offset by that much in the y and x directions, for example:
 
-     - curvature_preload[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+     - nufft_precision_operator[0,0,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
        in the x direction by 0 - the values of pixels paired with themselves.
-     - curvature_preload[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
+     - nufft_precision_operator[1,0,0] gives the precomputed values of image pixels that are offset in the y direction by 1 and
        in the x direction by 0 - the values of pixel pairs [0,3], [1,4], [2,5], [3,6], [4,7] and [5,8]
-     - curvature_preload[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
+     - nufft_precision_operator[0,1,0] gives the precomputed values of image pixels that are offset in the y direction by 0 and
        in the x direction by 1 - the values of pixel pairs [0,1], [1,2], [3,4], [4,5], [6,7] and [7,9].
 
      Flipped pairs:
 
      The above preloaded values pair all image pixel NUFFT values when a pixel is to the right and / or down of the
      first image pixel. However, one must also precompute pairs where the paired pixel is to the left of the host
-     pixels. These pairings are stored in `curvature_preload[:,:,1]`, and the ordering of these pairings is flipped in the
+     pixels. These pairings are stored in `nufft_precision_operator[:,:,1]`, and the ordering of these pairings is flipped in the
      x direction to make it straight forward to use this matrix when computing the nufft weighted noise.
 
     Notes
@@ -542,7 +542,7 @@ class InterferometerSparseLinAlg:
     Fully static FFT / geometry state for W~ curvature.
 
     Safe to cache as long as:
-      - curvature_preload is fixed
+      - nufft_precision_operator is fixed
       - mask / rectangle definition is fixed
       - dtype is fixed
       - batch_size is fixed
@@ -557,26 +557,26 @@ class InterferometerSparseLinAlg:
     Khat: "jax.Array"  # (2y, 2x), complex
 
     @classmethod
-    def from_curvature_preload(
+    def from_nufft_precision_operator(
         self,
-        curvature_preload: np.ndarray,
+        nufft_precision_operator: np.ndarray,
         dirty_image: np.ndarray,
         *,
         batch_size: int = 128,
     ):
         import jax.numpy as jnp
 
-        H2, W2 = curvature_preload.shape
+        H2, W2 = nufft_precision_operator.shape
         if (H2 % 2) != 0 or (W2 % 2) != 0:
             raise ValueError(
-                f"curvature_preload must have even shape (2y,2x). Got {curvature_preload.shape}."
+                f"nufft_precision_operator must have even shape (2y,2x). Got {nufft_precision_operator.shape}."
             )
 
         y_shape = H2 // 2
         x_shape = W2 // 2
         M = y_shape * x_shape
 
-        Khat = jnp.fft.fft2(curvature_preload)
+        Khat = jnp.fft.fft2(nufft_precision_operator)
 
         return InterferometerSparseLinAlg(
             dirty_image=dirty_image,
@@ -584,7 +584,7 @@ class InterferometerSparseLinAlg:
             x_shape=x_shape,
             M=M,
             batch_size=int(batch_size),
-            w_dtype=curvature_preload.dtype,
+            w_dtype=nufft_precision_operator.dtype,
             Khat=Khat,
         )
 

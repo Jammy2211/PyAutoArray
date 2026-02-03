@@ -163,7 +163,7 @@ class Interferometer(AbstractDataset):
 
     def apply_sparse_operator(
         self,
-        curvature_preload=None,
+        nufft_precision_operator=None,
         batch_size: int = 128,
         chunk_k: int = 2048,
         show_progress: bool = False,
@@ -182,7 +182,7 @@ class Interferometer(AbstractDataset):
 
         Parameters
         ----------
-        curvature_preload
+        nufft_precision_operator
             An already computed curvature preload matrix for this dataset (e.g. loaded from hard-disk), to prevent
             long recalculations of this matrix for large datasets.
         batch_size
@@ -195,13 +195,13 @@ class Interferometer(AbstractDataset):
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        if curvature_preload is None:
+        if nufft_precision_operator is None:
 
             logger.info(
                 "INTERFEROMETER - Computing W-Tilde; runtime scales with visibility count and mask resolution, CPU run times may exceed hours."
             )
 
-            curvature_preload = self.psf_precision_operator_from(
+            nufft_precision_operator = self.psf_precision_operator_from(
                 chunk_k=chunk_k,
                 show_progress=show_progress,
                 show_memory=show_memory,
@@ -214,8 +214,8 @@ class Interferometer(AbstractDataset):
             use_adjoint_scaling=True,
         )
 
-        sparse_operator = inversion_interferometer_util.InterferometerSparseLinAlg.from_curvature_preload(
-            curvature_preload=curvature_preload,
+        sparse_operator = inversion_interferometer_util.InterferometerSparseLinAlg.from_nufft_precision_operator(
+            nufft_precision_operator=nufft_precision_operator,
             dirty_image=dirty_image.array,
             batch_size=batch_size,
         )
