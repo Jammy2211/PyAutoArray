@@ -204,8 +204,6 @@ def test__data_vector_via_weighted_data_two_methods_agree():
 
     for sub_size in range(1, 3):
 
-        print(sub_size)
-
         grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=sub_size)
 
         mapper_grids = pixelization.mapper_grids_from(

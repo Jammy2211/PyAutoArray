@@ -370,9 +370,15 @@ class AbstractMapper(LinearObj):
             Mapping weight for each entry.
         """
 
-        rows, cols, vals = self.sparse_triplets_data
-
-        rows = self.mapper_grids.mask.fft_index_for_masked_pixel[rows]
+        rows, cols, vals = mapper_util.sparse_triplets_from(
+            pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
+            slim_index_for_sub=self.slim_index_for_sub_slim_index,
+            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            sub_fraction_slim=self.over_sampler.sub_fraction.array,
+            xp=self._xp,
+            return_rows_slim=False
+        )
 
         return rows, cols, vals
 
