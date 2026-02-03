@@ -32,7 +32,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask: Mask2D,
         transformer_class=TransformerNUFFT,
-        sparse_linalg: Optional[InterferometerSparseLinAlg] = None,
+        sparse_operator: Optional[InterferometerSparseLinAlg] = None,
         raise_error_dft_visibilities_limit: bool = True,
     ):
         """
@@ -96,16 +96,16 @@ class Interferometer(AbstractDataset):
             real_space_mask=real_space_mask,
         )
 
-        use_sparse_linalg = True if sparse_linalg is not None else False
+        use_sparse_operator = True if sparse_operator is not None else False
 
         self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            use_sparse_linalg=use_sparse_linalg,
+            use_sparse_operator=use_sparse_operator,
         )
 
-        self.sparse_linalg = sparse_linalg
+        self.sparse_operator = sparse_operator
 
         if raise_error_dft_visibilities_limit:
             if (
@@ -161,7 +161,7 @@ class Interferometer(AbstractDataset):
             transformer_class=transformer_class,
         )
 
-    def apply_sparse_linear_algebra(
+    def apply_sparse_operator(
         self,
         curvature_preload=None,
         batch_size: int = 128,
@@ -214,7 +214,7 @@ class Interferometer(AbstractDataset):
             use_adjoint_scaling=True,
         )
 
-        sparse_linalg = inversion_interferometer_util.InterferometerSparseLinAlg.from_curvature_preload(
+        sparse_operator = inversion_interferometer_util.InterferometerSparseLinAlg.from_curvature_preload(
             curvature_preload=curvature_preload,
             dirty_image=dirty_image.array,
             batch_size=batch_size,
@@ -226,7 +226,7 @@ class Interferometer(AbstractDataset):
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
             transformer_class=lambda uv_wavelengths, real_space_mask: self.transformer,
-            sparse_linalg=sparse_linalg,
+            sparse_operator=sparse_operator,
         )
 
     def psf_precision_operator_from(

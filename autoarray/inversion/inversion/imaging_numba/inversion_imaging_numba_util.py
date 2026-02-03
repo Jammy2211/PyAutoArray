@@ -469,7 +469,7 @@ def curvature_matrix_mirrored_from(
 
 
 @numba_util.jit()
-def curvature_matrix_via_sparse_linalg_from(
+def curvature_matrix_via_sparse_operator_from(
     psf_precision_operator: np.ndarray,
     psf_precision_indexes: np.ndarray,
     psf_precision_lengths: np.ndarray,
@@ -561,7 +561,7 @@ def curvature_matrix_via_sparse_linalg_from(
 
 
 @numba_util.jit()
-def curvature_matrix_off_diags_via_sparse_linalg_from(
+def curvature_matrix_off_diags_via_sparse_operator_from(
     psf_precision_operator: np.ndarray,
     psf_precision_indexes: np.ndarray,
     psf_precision_lengths: np.ndarray,
@@ -592,7 +592,7 @@ def curvature_matrix_off_diags_via_sparse_linalg_from(
 
     This function evaluates these off-diagonal terms, by using the w-tilde curvature preloads and the unique
     data-to-pixelization mappings of each mapper. It behaves analogous to the
-    function `curvature_matrix_via_sparse_linalg_from`.
+    function `curvature_matrix_via_sparse_operator_from`.
 
     Parameters
     ----------
@@ -743,7 +743,6 @@ def convolve_with_kernel_native(curvature_native, psf_kernel):
     return blurred_native
 
 
-
 @numba_util.jit()
 def mapped_reconstructed_data_via_image_to_pix_unique_from(
     data_to_pix_unique: np.ndarray,
@@ -846,13 +845,13 @@ def relocated_grid_via_jit_from(grid, border_grid):
 
 class SparseLinAlgImagingNumba:
     def __init__(
-            self,
-            psf_precision_operator: np.ndarray,
-            indexes: np.ndim,
-            lengths: np.ndarray,
-            noise_map: np.ndarray,
-            psf: np.ndarray,
-            mask: np.ndarray,
+        self,
+        psf_precision_operator: np.ndarray,
+        indexes: np.ndim,
+        lengths: np.ndarray,
+        noise_map: np.ndarray,
+        psf: np.ndarray,
+        mask: np.ndarray,
     ):
         """
         Packages together all derived data quantities necessary to fit `Imaging` data using an ` Inversion` via the

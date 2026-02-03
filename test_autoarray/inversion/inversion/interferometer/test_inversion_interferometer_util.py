@@ -90,22 +90,22 @@ def test__curvature_matrix_via_psf_precision_operator_from():
         ]
     )
 
-    curvature_preload = (
-        aa.util.inversion_interferometer.nufft_precision_operator_from(
-            noise_map_real=noise_map,
-            uv_wavelengths=uv_wavelengths,
-            shape_masked_pixels_2d=(3, 3),
-            grid_radians_2d=np.array(grid.native),
-        )
+    curvature_preload = aa.util.inversion_interferometer.nufft_precision_operator_from(
+        noise_map_real=noise_map,
+        uv_wavelengths=uv_wavelengths,
+        shape_masked_pixels_2d=(3, 3),
+        grid_radians_2d=np.array(grid.native),
     )
 
     native_index_for_slim_index = np.array(
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    psf_weighted_noise = aa.util.inversion_interferometer.nufft_weighted_noise_via_sparse_linalg_from(
-        translation_invariant_kernel=curvature_preload,
-        native_index_for_slim_index=native_index_for_slim_index,
+    psf_weighted_noise = (
+        aa.util.inversion_interferometer.nufft_weighted_noise_via_sparse_operator_from(
+            translation_invariant_kernel=curvature_preload,
+            native_index_for_slim_index=native_index_for_slim_index,
+        )
     )
 
     curvature_matrix_via_nufft_weighted_noise = (
@@ -120,13 +120,13 @@ def test__curvature_matrix_via_psf_precision_operator_from():
 
     pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
 
-    sparse_linalg = aa.InterferometerSparseLinAlg.from_curvature_preload(
+    sparse_operator = aa.InterferometerSparseLinAlg.from_curvature_preload(
         curvature_preload=curvature_preload,
         dirty_image=None,
     )
 
     curvature_matrix_via_preload = (
-        sparse_linalg.curvature_matrix_via_sparse_linalg_from(
+        sparse_operator.curvature_matrix_via_sparse_operator_from(
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             fft_index_for_masked_pixel=grid.mask.fft_index_for_masked_pixel,
@@ -190,7 +190,7 @@ def test__identical_inversion_values_for_two_methods():
         transformer_class=aa.TransformerDFT,
     )
 
-    dataset_nufft_weighted_noise = dataset.apply_sparse_linear_algebra()
+    dataset_nufft_weighted_noise = dataset.apply_sparse_operator()
 
     inversion_nufft_weighted_noise = aa.Inversion(
         dataset=dataset_nufft_weighted_noise,
@@ -204,8 +204,12 @@ def test__identical_inversion_values_for_two_methods():
         settings=aa.SettingsInversion(use_positive_only_solver=True),
     )
 
-    assert (inversion_nufft_weighted_noise.data == inversion_mapping_matrices.data).all()
-    assert (inversion_nufft_weighted_noise.noise_map == inversion_mapping_matrices.noise_map).all()
+    assert (
+        inversion_nufft_weighted_noise.data == inversion_mapping_matrices.data
+    ).all()
+    assert (
+        inversion_nufft_weighted_noise.noise_map == inversion_mapping_matrices.noise_map
+    ).all()
     assert (
         inversion_nufft_weighted_noise.linear_obj_list[0]
         == inversion_mapping_matrices.linear_obj_list[0]
@@ -232,9 +236,15 @@ def test__identical_inversion_values_for_two_methods():
     assert inversion_nufft_weighted_noise.reconstruction == pytest.approx(
         inversion_mapping_matrices.reconstruction, abs=1.0e-1
     )
-    assert inversion_nufft_weighted_noise.mapped_reconstructed_image.array == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_image.array, abs=1.0e-1
+    assert (
+        inversion_nufft_weighted_noise.mapped_reconstructed_image.array
+        == pytest.approx(
+            inversion_mapping_matrices.mapped_reconstructed_image.array, abs=1.0e-1
+        )
     )
-    assert inversion_nufft_weighted_noise.mapped_reconstructed_data.array == pytest.approx(
-        inversion_mapping_matrices.mapped_reconstructed_data.array, abs=1.0e-1
+    assert (
+        inversion_nufft_weighted_noise.mapped_reconstructed_data.array
+        == pytest.approx(
+            inversion_mapping_matrices.mapped_reconstructed_data.array, abs=1.0e-1
+        )
     )

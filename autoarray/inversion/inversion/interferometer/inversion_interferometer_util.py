@@ -281,7 +281,9 @@ def nufft_precision_operator_via_np_from(
     ku = 2.0 * np.pi * uv_wavelengths[:, 0]
     kv = 2.0 * np.pi * uv_wavelengths[:, 1]
 
-    translation_invariant_kernel = np.zeros((2 * y_shape, 2 * x_shape), dtype=np.float64)
+    translation_invariant_kernel = np.zeros(
+        (2 * y_shape, 2 * x_shape), dtype=np.float64
+    )
 
     # Corner coordinates
     y00, x00 = gy[0, 0], gx[0, 0]
@@ -333,7 +335,9 @@ def nufft_precision_operator_via_np_from(
     # -----------------------------
     # Main quadrant (+,+)
     # -----------------------------
-    translation_invariant_kernel[:y_shape, :x_shape] = accum_from_corner_np(y00, x00, gy, gx)
+    translation_invariant_kernel[:y_shape, :x_shape] = accum_from_corner_np(
+        y00, x00, gy, gx
+    )
 
     # -----------------------------
     # Flip in x (+,-)
@@ -487,7 +491,9 @@ def nufft_precision_operator_via_jax_from(
     return np.asarray(translation_invariant_kernel)
 
 
-def nufft_weighted_noise_via_sparse_linalg_from(translation_invariant_kernel, native_index_for_slim_index):
+def nufft_weighted_noise_via_sparse_operator_from(
+    translation_invariant_kernel, native_index_for_slim_index
+):
     """
     Use the `translation_invariant_kernel` (see `nufft_precision_operator_from`) to compute
     the `nufft_weighted_noise` efficiently.
@@ -582,7 +588,7 @@ class InterferometerSparseLinAlg:
             Khat=Khat,
         )
 
-    def curvature_matrix_via_sparse_linalg_from(
+    def curvature_matrix_via_sparse_operator_from(
         self,
         pix_indexes_for_sub_slim_index: np.ndarray,
         pix_weights_for_sub_slim_index: np.ndarray,
@@ -646,7 +652,7 @@ class InterferometerSparseLinAlg:
             cols_safe = jnp.where(valid, cols, 0)
             vals_safe = jnp.where(valid, vals, 0.0)
 
-            def apply_W_fft_batch(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
+            def apply_operator_fft_batch(Fbatch_flat: jnp.ndarray) -> jnp.ndarray:
                 B = Fbatch_flat.shape[1]
                 F_img = Fbatch_flat.T.reshape((B, y_shape, x_shape))
                 F_pad = jnp.pad(
@@ -670,7 +676,7 @@ class InterferometerSparseLinAlg:
                 Fbatch = jnp.zeros((M, batch_size), dtype=w_dtype)
                 Fbatch = Fbatch.at[rows_rect, bc].add(v)
 
-                Gbatch = apply_W_fft_batch(Fbatch)
+                Gbatch = apply_operator_fft_batch(Fbatch)
                 G_at_rows = Gbatch[rows_rect, :]
 
                 contrib = vals_safe[:, None] * G_at_rows

@@ -6,7 +6,7 @@ from typing import Optional, Union
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.grids import GridsDataset
 from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
-    ImagingSparseLinAlg,
+    ImagingSparseOperator,
 )
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
@@ -33,7 +33,7 @@ class Imaging(AbstractDataset):
         disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
-        sparse_linalg: Optional[ImagingSparseLinAlg] = None,
+        sparse_operator: Optional[ImagingSparseOperator] = None,
     ):
         """
         An imaging dataset, containing the image data, noise-map, PSF and associated quantities
@@ -87,9 +87,9 @@ class Imaging(AbstractDataset):
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
-        sparse_linalg
+        sparse_operator
             The sparse linear algebra formalism of the linear algebra equations precomputes the convolution of every pair of masked
-            noise-map values given the PSF (see `inversion.inversion_util`). Pass the `WTildeImaging` object here to
+            noise-map values given the PSF (see `inversion.inversion_util`). Pass the `ImagingSparseOperator` object here to
             enable this linear algebra formalism for pixelized reconstructions.
         """
 
@@ -192,17 +192,17 @@ class Imaging(AbstractDataset):
             if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
                 raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
-        use_sparse_linalg = True if sparse_linalg is not None else False
+        use_sparse_operator = True if sparse_operator is not None else False
 
         self.grids = GridsDataset(
             mask=self.data.mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             psf=self.psf,
-            use_sparse_linalg=use_sparse_linalg,
+            use_sparse_operator=use_sparse_operator,
         )
 
-        self.sparse_linalg = sparse_linalg
+        self.sparse_operator = sparse_operator
 
     @classmethod
     def from_fits(
@@ -475,7 +475,7 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def apply_sparse_linear_algebra(
+    def apply_sparse_operator(
         self,
         batch_size: int = 128,
         disable_fft_pad: bool = False,
@@ -504,8 +504,8 @@ class Imaging(AbstractDataset):
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
 
-        sparse_linalg = (
-            inversion_imaging_util.ImagingSparseLinAlg.from_noise_map_and_psf(
+        sparse_operator = (
+            inversion_imaging_util.ImagingSparseOperator.from_noise_map_and_psf(
                 data=self.data,
                 noise_map=self.noise_map,
                 psf=self.psf.native,
@@ -522,10 +522,10 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
-            sparse_linalg=sparse_linalg,
+            sparse_operator=sparse_operator,
         )
 
-    def apply_sparse_linear_algebra_cpu(
+    def apply_sparse_operator_cpu(
         self,
         disable_fft_pad: bool = False,
     ):
@@ -563,7 +563,9 @@ class Imaging(AbstractDataset):
                 "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
             )
 
-        from autoarray.inversion.inversion.imaging_numba import inversion_imaging_numba_util
+        from autoarray.inversion.inversion.imaging_numba import (
+            inversion_imaging_numba_util,
+        )
 
         (
             curvature_preload,
@@ -577,7 +579,7 @@ class Imaging(AbstractDataset):
             ).astype("int"),
         )
 
-        sparse_linalg = inversion_imaging_numba_util.SparseLinAlgImagingNumba(
+        sparse_operator = inversion_imaging_numba_util.SparseLinAlgImagingNumba(
             curvature_preload=curvature_preload,
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
@@ -595,7 +597,7 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=self.over_sample_size_pixelization,
             disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
-            sparse_linalg=sparse_linalg,
+            sparse_operator=sparse_operator,
         )
 
     def output_to_fits(

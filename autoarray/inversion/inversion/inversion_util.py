@@ -14,9 +14,9 @@ def curvature_matrix_diag_via_psf_weighted_noise_from(
     """
     Returns the curvature matrix `F` (see Warren & Dye 2003) from the `psf_weighted_noise`.
 
-    The dimensions of `psf_weighted_noise` are [image_pixels, image_pixels], meaning that for datasets with many image 
-    pixels this matrix can take up 10's of GB of memory. The calculation of the `curvature_matrix` via this function 
-    will therefore be very slow, and the method `curvature_matrix_diag_via_sparse_linalg_from` should be used
+    The dimensions of `psf_weighted_noise` are [image_pixels, image_pixels], meaning that for datasets with many image
+    pixels this matrix can take up 10's of GB of memory. The calculation of the `curvature_matrix` via this function
+    will therefore be very slow, and the method `curvature_matrix_diag_via_sparse_operator_from` should be used
     instead.
 
     Parameters
@@ -127,7 +127,9 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
 
 
 def mapped_reconstructed_data_via_psf_weighted_noise_from(
-    psf_weighted_noise: np.ndarray, mapping_matrix: np.ndarray, reconstruction: np.ndarray
+    psf_weighted_noise: np.ndarray,
+    mapping_matrix: np.ndarray,
+    reconstruction: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the reconstructed data vector from the unblurred mapping matrix `M`,

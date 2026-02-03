@@ -16,7 +16,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
-class InversionImagingSparseLinAlg(AbstractInversionImaging):
+class InversionImagingSparse(AbstractInversionImaging):
     def __init__(
         self,
         dataset: Union[Imaging, DatasetInterface],
@@ -46,13 +46,17 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         """
 
         super().__init__(
-            dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, preloads=preloads, xp=xp
+            dataset=dataset,
+            linear_obj_list=linear_obj_list,
+            settings=settings,
+            preloads=preloads,
+            xp=xp,
         )
 
     @cached_property
     def psf_weighted_data(self):
         return inversion_imaging_util.psf_weighted_data_from(
-            weight_map_native=self.dataset.sparse_linalg.weight_map.array,
+            weight_map_native=self.dataset.sparse_operator.weight_map.array,
             kernel_native=self.psf.stored_native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
             xp=self._xp,
@@ -226,7 +230,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         curvature matrix given by equation (4) and the letter F.
 
         This function computes F using the sparse linear algebra formalism, which is faster as it precomputes the PSF convolution
-        of different noise-map pixels (see `curvature_matrix_diag_via_sparse_linalg_from`).
+        of different noise-map pixels (see `curvature_matrix_diag_via_sparse_operator_from`).
 
         If there are multiple linear objects the curvature_matrices are combined to ensure their values are solved
         for simultaneously. In the w-tilde formalism this requires us to consider the mappings between data and every
@@ -286,7 +290,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
             rows, cols, vals = mapper_i.sparse_triplets_curvature
 
-            diag = self.dataset.sparse_linalg.curvature_matrix_diag_from(
+            diag = self.dataset.sparse_operator.curvature_matrix_diag_from(
                 rows=rows,
                 cols=cols,
                 vals=vals,
@@ -324,7 +328,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
         S0 = mapper_0.params
         S1 = mapper_1.params
 
-        return self.dataset.sparse_linalg.curvature_matrix_off_diag_from(
+        return self.dataset.sparse_operator.curvature_matrix_off_diag_from(
             rows0=rows0,
             cols0=cols0,
             vals0=vals0,
@@ -419,15 +423,13 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
                 rows, cols, vals = mapper.sparse_triplets_curvature
 
-                off_diag = (
-                    self.dataset.sparse_linalg.curvature_matrix_off_diag_func_list_from(
-                        curvature_weights=curvature_weights,
-                        fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
-                        rows=rows,
-                        cols=cols,
-                        vals=vals,
-                        S=mapper.params,
-                    )
+                off_diag = self.dataset.sparse_operator.curvature_matrix_off_diag_func_list_from(
+                    curvature_weights=curvature_weights,
+                    fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
+                    rows=rows,
+                    cols=cols,
+                    vals=vals,
+                    S=mapper.params,
                 )
 
                 if self._xp is np:
@@ -520,7 +522,7 @@ class InversionImagingSparseLinAlg(AbstractInversionImaging):
 
                 rows, cols, vals = linear_obj.sparse_triplets_curvature
 
-                mapped_reconstructed_image = inversion_imaging_util.mapped_reconstucted_image_via_sparse_linalg_from(
+                mapped_reconstructed_image = inversion_imaging_util.mapped_reconstructed_image_via_sparse_operator_from(
                     reconstruction=reconstruction,
                     rows=rows,
                     cols=cols,

@@ -17,7 +17,7 @@ class GridsDataset:
         over_sample_size_lp: Union[int, Array2D],
         over_sample_size_pixelization: Union[int, Array2D],
         psf: Optional[Kernel2D] = None,
-        use_sparse_linalg: bool = False,
+        use_sparse_operator: bool = False,
     ):
         """
         Contains grids of (y,x) Cartesian coordinates at the centre of every pixel in the dataset's image and
@@ -66,7 +66,7 @@ class GridsDataset:
         self._blurring = None
         self._border_relocator = None
 
-        self.use_sparse_linalg = use_sparse_linalg
+        self.use_sparse_operator = use_sparse_operator
 
     @property
     def lp(self):
@@ -120,7 +120,7 @@ class GridsDataset:
         self._border_relocator = BorderRelocator(
             mask=self.mask,
             sub_size=self.over_sample_size_pixelization,
-            use_sparse_linalg=self.use_sparse_linalg,
+            use_sparse_operator=self.use_sparse_operator,
         )
 
         return self._border_relocator

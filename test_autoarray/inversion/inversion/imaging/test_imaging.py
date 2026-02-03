@@ -1,10 +1,10 @@
 import autoarray as aa
 
 from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
-    ImagingSparseLinAlg,
+    ImagingSparseOperator,
 )
-from autoarray.inversion.inversion.imaging.sparse_linalg import (
-    InversionImagingSparseLinAlg,
+from autoarray.inversion.inversion.imaging.sparse import (
+    InversionImagingSparse,
 )
 
 from autoarray import exc

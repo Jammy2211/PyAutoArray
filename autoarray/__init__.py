@@ -43,10 +43,10 @@ from .inversion.pixelization.mappers.rectangular_uniform import MapperRectangula
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
-from .inversion.inversion.imaging.sparse_linalg import InversionImagingSparseLinAlg
-from .inversion.inversion.imaging.inversion_imaging_util import ImagingSparseLinAlg
-from .inversion.inversion.interferometer.sparse_linalg import (
-    InversionInterferometerSparseLingAlg,
+from .inversion.inversion.imaging.sparse import InversionImagingSparse
+from .inversion.inversion.imaging.inversion_imaging_util import ImagingSparseOperator
+from .inversion.inversion.interferometer.sparse import (
+    InversionInterferometerSparse,
 )
 from .inversion.inversion.interferometer.mapping import InversionInterferometerMapping
 from .inversion.inversion.interferometer.inversion_interferometer_util import (

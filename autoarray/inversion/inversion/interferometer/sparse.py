@@ -14,7 +14,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 
 
-class InversionInterferometerSparseLingAlg(AbstractInversionInterferometer):
+class InversionInterferometerSparse(AbstractInversionInterferometer):
     def __init__(
         self,
         dataset: Union[Interferometer, DatasetInterface],
@@ -69,7 +69,7 @@ class InversionInterferometerSparseLingAlg(AbstractInversionInterferometer):
         The calculation is described in more detail in `inversion_util.weighted_data_interferometer_from`.
         """
         return self._xp.dot(
-            self.mapping_matrix.T, self.dataset.sparse_linalg.dirty_image
+            self.mapping_matrix.T, self.dataset.sparse_operator.dirty_image
         )
 
     @property
@@ -101,13 +101,11 @@ class InversionInterferometerSparseLingAlg(AbstractInversionInterferometer):
 
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
-        return (
-            self.dataset.sparse_linalg.curvature_matrix_via_sparse_linalg_from(
-                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
-                pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
-                pix_pixels=self.linear_obj_list[0].params,
-                fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
-            )
+        return self.dataset.sparse_operator.curvature_matrix_via_sparse_operator_from(
+            pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_pixels=self.linear_obj_list[0].params,
+            fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
         )
 
     @property

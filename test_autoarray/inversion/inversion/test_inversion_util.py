@@ -17,8 +17,10 @@ def test__curvature_matrix_diag_via_psf_weighted_noise_from():
         [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
     )
 
-    curvature_matrix = aa.util.inversion.curvature_matrix_diag_via_psf_weighted_noise_from(
-        psf_weighted_noise=psf_weighted_noise, mapping_matrix=mapping_matrix
+    curvature_matrix = (
+        aa.util.inversion.curvature_matrix_diag_via_psf_weighted_noise_from(
+            psf_weighted_noise=psf_weighted_noise, mapping_matrix=mapping_matrix
+        )
     )
 
     assert (

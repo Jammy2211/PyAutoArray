@@ -278,7 +278,7 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
 
     psf = kernel
 
-    sparse_linalg = aa.ImagingSparseLinAlg.from_noise_map_and_psf(
+    sparse_operator = aa.ImagingSparseOperator.from_noise_map_and_psf(
         data=noise_map,
         noise_map=noise_map,
         psf=psf.native,
@@ -305,16 +305,16 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
         return_rows_slim=False,
     )
 
-    curvature_matrix_via_sparse_linalg = sparse_linalg.curvature_matrix_diag_from(
+    curvature_matrix_via_sparse_operator = sparse_operator.curvature_matrix_diag_from(
         rows,
         cols,
         vals,
         S=mesh.shape[0] * mesh.shape[1],
     )
 
-    curvature_matrix_via_sparse_linalg = (
+    curvature_matrix_via_sparse_operator = (
         aa.util.inversion_imaging.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix_via_sparse_linalg,
+            curvature_matrix=curvature_matrix_via_sparse_operator,
         )
     )
 
@@ -327,6 +327,6 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
         noise_map=noise_map,
     )
 
-    assert curvature_matrix_via_sparse_linalg == pytest.approx(
+    assert curvature_matrix_via_sparse_operator == pytest.approx(
         curvature_matrix, abs=1.0e-4
     )

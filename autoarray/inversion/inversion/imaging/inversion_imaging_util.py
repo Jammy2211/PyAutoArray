@@ -277,7 +277,7 @@ def curvature_matrix_with_added_to_diag_from(
         return curvature_matrix.at[inds, inds].add(value)
 
 
-def mapped_reconstucted_image_via_sparse_linalg_from(
+def mapped_reconstructed_image_via_sparse_operator_from(
     reconstruction,  # (S,)
     rows,
     cols,
@@ -303,7 +303,7 @@ def mapped_reconstucted_image_via_sparse_linalg_from(
 
 
 @dataclass(frozen=True)
-class ImagingSparseLinAlg:
+class ImagingSparseOperator:
 
     data_native: np.ndarray
     noise_map_native: np.ndarray
@@ -328,8 +328,49 @@ class ImagingSparseLinAlg:
         *,
         batch_size: int = 128,
         dtype=None,
-    ) -> "ImagingSparseLinAlg":
+    ) -> "ImagingSparseOperator":
+        """
+        Construct an `ImagingSparseOperator` from imaging arrays and a PSF.
 
+        This factory method builds all static FFT state required to apply
+
+            W = Hᵀ N⁻¹ H
+
+        repeatedly during curvature matrix construction:
+
+        - `inverse_variances_native` is computed from `noise_map` as 1/noise^2 (masked-safe).
+        - `weight_map` is computed from `data` as data/noise^2 (masked-safe).
+        - `Khat_r` and `Khat_flip_r` are precomputed as rFFT transforms of the padded PSF
+          and its flipped version on the required FFT shape.
+
+        Parameters
+        ----------
+        data
+            Imaging data object (e.g. `Array2D`) providing `.array` (slim) and `.native`.
+        noise_map
+            Imaging noise-map object (e.g. `Array2D`) providing `.array` (slim),
+            `.native`, `.mask`, and `.shape_native`.
+        psf
+            PSF kernel in native 2D form. Can be NumPy or JAX convertible.
+        batch_size
+            Number of curvature columns processed per FFT batch. Larger values can improve
+            GPU utilization but increase VRAM usage.
+        dtype
+            JAX dtype for PSF / FFT precompute. Defaults to `jax.numpy.float64`.
+
+        Returns
+        -------
+        ImagingSparseOperator
+            Fully initialized operator containing all precomputed FFT state.
+
+        Notes
+        -----
+        - This method assumes the FFT shape is `(Hy+Ky-1, Hx+Kx-1)` which is sufficient
+          for linear convolution followed by cropping to “same”.
+        - Mask handling: the `Array2D(..., mask=...)` wrapper ensures masked pixels are
+          correctly represented in native arrays; you may still explicitly zero masked
+          pixels if your downstream code expects it.
+        """
         import jax.numpy as jnp
 
         from autoarray.structures.arrays.uniform_2d import Array2D
@@ -393,7 +434,45 @@ class ImagingSparseLinAlg:
             Khat_flip_r=Khat_flip_r,
         )
 
-    def apply_W(self, Fbatch_flat):
+    def apply_operator(self, Fbatch_flat):
+        """
+        Apply the imaging precision operator W = Hᵀ N⁻¹ H to a batch of vectors.
+
+        This is the fundamental linear operator application used throughout curvature
+        assembly. Given an input matrix `Fbatch_flat` with shape:
+
+            (M_rect, B)
+
+        where:
+        - `M_rect = y_shape * x_shape` is the number of pixels on the rectangular FFT grid,
+        - `B` is the number of right-hand-side vectors (typically `batch_size`),
+
+        this method computes:
+
+            G = W Fbatch_flat
+
+        using two FFT-based convolutions:
+        1) Forward blur:   H (correlation with PSF)
+        2) Weighting:      multiply by inverse variances (N⁻¹)
+        3) Backproject:    Hᵀ (correlation with flipped PSF)
+
+        Parameters
+        ----------
+        Fbatch_flat
+            Array of shape (M_rect, B) representing B vectors on the rectangular grid.
+
+        Returns
+        -------
+        ndarray
+            Array of shape (M_rect, B) equal to W applied to the batch.
+
+        Notes
+        -----
+        - The PSF is applied via rFFT on a padded grid of shape `fft_shape`.
+        - The output is cropped back to the native `(y_shape, x_shape)` “same” region.
+        - This method expects rectangular-grid indexing (flat). If you have slim masked
+          indexing you must scatter/gather appropriately outside this function.
+        """
         import jax.numpy as jnp
 
         y_shape, x_shape = self.y_shape, self.x_shape
@@ -423,6 +502,48 @@ class ImagingSparseLinAlg:
         return back.reshape((B, M)).T  # (M, B)
 
     def curvature_matrix_diag_from(self, rows, cols, vals, *, S: int):
+        """
+        Compute the diagonal (mapper–mapper) curvature matrix block F = Aᵀ W A.
+
+        This method computes the curvature matrix for a single mapper/operator `A`
+        represented in COO triplets (rows, cols, vals), using the FFT-backed W operator.
+
+        Conceptually, if A is the (M_rect × S) mapping matrix, then:
+
+            F = Aᵀ W A
+
+        where:
+        - `S` is the number of source pixels / parameters for this mapper.
+        - `M_rect = y_shape * x_shape` is the number of rectangular grid pixels.
+
+        The computation proceeds in column blocks of width `batch_size`:
+        1) Assemble Fbatch = A[:, start:start+B] on the rectangular grid via scatter-add.
+        2) Apply W to the block: Gbatch = W(Fbatch).
+        3) Project back with Aᵀ via a segment_sum over `cols`.
+
+        Parameters
+        ----------
+        rows, cols, vals
+            COO triplets encoding the sparse mapping operator A.
+            Expected conventions:
+            - `rows`: rectangular-grid pixel indices (flat), shape (nnz,)
+            - `cols`: source pixel indices in [0, S), shape (nnz,)
+            - `vals`: mapping weights (incl sub-fraction / interpolation), shape (nnz,)
+        S
+            Number of source pixels / parameters for this mapper.
+
+        Returns
+        -------
+        ndarray
+            Curvature matrix of shape (S, S), symmetric.
+
+        Notes
+        -----
+        - The output is symmetrized as 0.5*(F + Fᵀ) to mitigate numerical asymmetry
+          introduced by floating-point reductions.
+        - Padding to `S_pad = ceil(S/B)*B` ensures `dynamic_update_slice` is always legal
+          even when S is not a multiple of batch_size.
+        """
         import jax.numpy as jnp
         from jax import lax
         from jax.ops import segment_sum
@@ -450,7 +571,7 @@ class ImagingSparseLinAlg:
             F = jnp.zeros((M, B), dtype=jnp.float64)
             F = F.at[rows, bc].add(v)
 
-            G = self.apply_W(F)  # (M, B)
+            G = self.apply_operator(F)  # (M, B)
 
             contrib = vals[:, None] * G[rows, :]
             Cblock = segment_sum(contrib, cols, num_segments=S)  # (S, B)
@@ -467,6 +588,46 @@ class ImagingSparseLinAlg:
     def curvature_matrix_off_diag_from(
         self, rows0, cols0, vals0, rows1, cols1, vals1, *, S0: int, S1: int
     ):
+        """
+        Compute the off-diagonal curvature block F01 = A0ᵀ W A1.
+
+        Given two sparse mapping operators:
+        - A0 : (M_rect × S0)
+        - A1 : (M_rect × S1)
+
+        this method computes:
+
+            F01 = A0ᵀ W A1
+
+        using the same FFT-backed W operator as in the diagonal computation.
+
+        The computation proceeds in column blocks over A1:
+        1) Assemble Fbatch = A1[:, start:start+B] on the rectangular grid.
+        2) Apply W: Gbatch = W(Fbatch).
+        3) Project with A0ᵀ via segment_sum over cols0.
+
+        Parameters
+        ----------
+        rows0, cols0, vals0
+            COO triplets for A0. `rows0` are rectangular-grid indices.
+        rows1, cols1, vals1
+            COO triplets for A1. `rows1` are rectangular-grid indices.
+        S0
+            Number of source parameters for mapper/operator 0.
+        S1
+            Number of source parameters for mapper/operator 1.
+
+        Returns
+        -------
+        ndarray
+            Off-diagonal curvature block of shape (S0, S1).
+
+        Notes
+        -----
+        - The result is *not* symmetrized here because it is not square in general.
+          If you need the symmetric counterpart, use F10 = F01ᵀ when A0/A1 share W.
+        - Padding to `S1_pad = ceil(S1/B)*B` ensures `dynamic_update_slice` is always legal.
+        """
         import jax.numpy as jnp
         from jax import lax
         from jax.ops import segment_sum
@@ -498,7 +659,7 @@ class ImagingSparseLinAlg:
             F = jnp.zeros((M, B), dtype=jnp.float64)
             F = F.at[rows1, bc].add(v)
 
-            G = self.apply_W(F)  # (M, B)
+            G = self.apply_operator(F)  # (M, B)
 
             contrib = vals0[:, None] * G[rows0, :]
             block = segment_sum(contrib, cols0, num_segments=S0)
@@ -522,10 +683,53 @@ class ImagingSparseLinAlg:
         S: int,
     ):
         """
-        Computes off_diag = A^T [ H^T(curvature_weights_native) ]
-        where curvature_weights = (H B) / noise^2 already (on slim grid).
+        Compute the mapper–linear-function off-diagonal block: Aᵀ Hᵀ (curvature_weights).
 
-        Returns: (S, n_funcs)
+        This method computes the off-diagonal block between a sparse mapper/operator A
+        and a set of fixed linear functions (e.g. linear light profiles) whose operated
+        images have already been PSF-convolved and noise-weighted.
+
+        The input `curvature_weights` is assumed to already contain:
+
+            curvature_weights = (H B) / noise^2
+
+        evaluated on the *slim masked* grid, for each linear function column.
+
+        The returned matrix is:
+
+            off_diag = Aᵀ [ Hᵀ (curvature_weights_native) ]
+
+        which has shape (S, n_funcs).
+
+        Parameters
+        ----------
+        curvature_weights
+            Array of shape (M_pix, n_funcs) on the *slim masked* grid.
+            Each column corresponds to one linear function already convolved by H and
+            weighted by inverse variance.
+        fft_index_for_masked_pixel
+            Array of shape (M_pix,) mapping slim masked pixel indices to rectangular
+            FFT-grid flat indices. Used to scatter values onto the rectangular grid.
+        rows, cols, vals
+            COO triplets for the mapper A, where:
+            - `rows` are rectangular-grid indices (flat), shape (nnz,)
+            - `cols` are source pixel indices, shape (nnz,)
+            - `vals` are mapping weights, shape (nnz,)
+        S
+            Number of source pixels / parameters in the mapper.
+
+        Returns
+        -------
+        ndarray
+            Off-diagonal block of shape (S, n_funcs).
+
+        Notes
+        -----
+        - This method performs only one convolution per function column (batched),
+          using the flipped PSF (Hᵀ), because `curvature_weights` is assumed to already
+          include the forward blur H.
+        - No batch_size parameter is required here because we are convolving `n_funcs`
+          columns (often small) rather than sweeping over source pixels S.
         """
         import jax.numpy as jnp
         from jax.ops import segment_sum

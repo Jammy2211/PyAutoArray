@@ -8,21 +8,24 @@ from autoarray.inversion.inversion.imaging.mapping import InversionImagingMappin
 from autoarray.inversion.inversion.interferometer.mapping import (
     InversionInterferometerMapping,
 )
-from autoarray.inversion.inversion.interferometer.sparse_linalg import (
-    InversionInterferometerSparseLingAlg,
+from autoarray.inversion.inversion.interferometer.sparse import (
+    InversionInterferometerSparse,
 )
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
-from autoarray.inversion.inversion.imaging_numba.inversion_imaging_numba_util import SparseLinAlgImagingNumba
-from autoarray.inversion.inversion.imaging_numba.sparse_linalg import InversionImagingSparseLinAlgNumba
-from autoarray.inversion.inversion.imaging.sparse_linalg import (
-    InversionImagingSparseLinAlg,
+from autoarray.inversion.inversion.imaging_numba.inversion_imaging_numba_util import (
+    SparseLinAlgImagingNumba,
+)
+from autoarray.inversion.inversion.imaging_numba.sparse import (
+    InversionImagingSparseNumba,
+)
+from autoarray.inversion.inversion.imaging.sparse import (
+    InversionImagingSparse,
 )
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
-
 
 
 def inversion_from(
@@ -114,19 +117,19 @@ def inversion_imaging_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
 
-    use_sparse_linalg = True
+    use_sparse_operator = True
 
     if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
-        use_sparse_linalg = False
+        use_sparse_operator = False
 
-    if dataset.sparse_linalg is not None and use_sparse_linalg:
+    if dataset.sparse_operator is not None and use_sparse_operator:
 
-        if isinstance(dataset.sparse_linalg, SparseLinAlgImagingNumba):
+        if isinstance(dataset.sparse_operator, SparseLinAlgImagingNumba):
 
-            return InversionImagingSparseLinAlgNumba(
+            return InversionImagingSparseNumba(
                 dataset=dataset,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
@@ -134,7 +137,7 @@ def inversion_imaging_from(
                 xp=xp,
             )
 
-        return InversionImagingSparseLinAlg(
+        return InversionImagingSparse(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
@@ -190,17 +193,17 @@ def inversion_interferometer_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
-    use_sparse_linalg = True
+    use_sparse_operator = True
 
     if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
-        use_sparse_linalg = False
+        use_sparse_operator = False
 
-    if dataset.sparse_linalg is not None and use_sparse_linalg:
+    if dataset.sparse_operator is not None and use_sparse_operator:
 
-        return InversionInterferometerSparseLingAlg(
+        return InversionInterferometerSparse(
             dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,

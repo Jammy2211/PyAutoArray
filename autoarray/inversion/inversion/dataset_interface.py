@@ -6,7 +6,7 @@ class DatasetInterface:
         grids=None,
         psf=None,
         transformer=None,
-        sparse_linalg=None,
+        sparse_operator=None,
         noise_covariance_matrix=None,
     ):
         """
@@ -49,8 +49,8 @@ class DatasetInterface:
         transformer
             Performs a Fourier transform of the image-data from real-space to visibilities when computing the
             operated mapping matrix.
-        sparse_linalg
-            The sparse_linalg matrix used by the w-tilde formalism to construct the data vector and
+        sparse_operator
+            The sparse_operator matrix used by the w-tilde formalism to construct the data vector and
             curvature matrix during an inversion efficiently..
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
@@ -61,7 +61,7 @@ class DatasetInterface:
         self.grids = grids
         self.psf = psf
         self.transformer = transformer
-        self.sparse_linalg = sparse_linalg
+        self.sparse_operator = sparse_operator
         self.noise_covariance_matrix = noise_covariance_matrix
 
     @property

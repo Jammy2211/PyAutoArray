@@ -16,7 +16,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.imaging_numba import inversion_imaging_numba_util
 
 
-class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
+class InversionImagingSparseNumba(AbstractInversionImaging):
     def __init__(
         self,
         dataset: Union[Imaging, DatasetInterface],
@@ -46,12 +46,16 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
         """
 
         super().__init__(
-            dataset=dataset, linear_obj_list=linear_obj_list, settings=settings, preloads=preloads, xp=xp
+            dataset=dataset,
+            linear_obj_list=linear_obj_list,
+            settings=settings,
+            preloads=preloads,
+            xp=xp,
         )
 
     @property
-    def sparse_linalg(self):
-        return self.dataset.sparse_linalg
+    def sparse_operator(self):
+        return self.dataset.sparse_operator
 
     @cached_property
     def psf_weighted_data(self):
@@ -224,8 +228,8 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes F using the sparse_linalg formalism, which is faster as it precomputes the PSF convolution
-        of different noise-map pixels (see `curvature_matrix_via_sparse_linalg_from`).
+        This function computes F using the sparse_operator formalism, which is faster as it precomputes the PSF convolution
+        of different noise-map pixels (see `curvature_matrix_via_sparse_operator_from`).
 
         If there are multiple linear objects the curvature_matrices are combined to ensure their values are solved
         for simultaneously. In the w-tilde formalism this requires us to consider the mappings between data and every
@@ -281,16 +285,18 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
-            diag = inversion_imaging_numba_util.curvature_matrix_via_sparse_linalg_from(
-                curvature_preload=self.sparse_linalg.curvature_preload,
-                curvature_indexes=self.sparse_linalg.indexes,
-                curvature_lengths=self.sparse_linalg.lengths,
-                data_to_pix_unique=np.array(
-                    mapper_i.unique_mappings.data_to_pix_unique
-                ),
-                data_weights=np.array(mapper_i.unique_mappings.data_weights),
-                pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
-                pix_pixels=mapper_i.params,
+            diag = (
+                inversion_imaging_numba_util.curvature_matrix_via_sparse_operator_from(
+                    curvature_preload=self.sparse_operator.curvature_preload,
+                    curvature_indexes=self.sparse_operator.indexes,
+                    curvature_lengths=self.sparse_operator.lengths,
+                    data_to_pix_unique=np.array(
+                        mapper_i.unique_mappings.data_to_pix_unique
+                    ),
+                    data_weights=np.array(mapper_i.unique_mappings.data_weights),
+                    pix_lengths=np.array(mapper_i.unique_mappings.pix_lengths),
+                    pix_pixels=mapper_i.params,
+                )
             )
 
             start, end = mapper_param_range_i
@@ -315,13 +321,13 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes the off-diagonal terms of F using the sparse_linalg formalism.
+        This function computes the off-diagonal terms of F using the sparse_operator formalism.
         """
 
-        curvature_matrix_off_diag_0 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_sparse_linalg_from(
-            curvature_preload=self.sparse_linalg.curvature_preload,
-            curvature_indexes=self.sparse_linalg.indexes,
-            curvature_lengths=self.sparse_linalg.lengths,
+        curvature_matrix_off_diag_0 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_sparse_operator_from(
+            curvature_preload=self.sparse_operator.curvature_preload,
+            curvature_indexes=self.sparse_operator.indexes,
+            curvature_lengths=self.sparse_operator.lengths,
             data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_0.unique_mappings.data_weights,
             pix_lengths_0=mapper_0.unique_mappings.pix_lengths,
@@ -332,10 +338,10 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
             pix_pixels_1=mapper_1.params,
         )
 
-        curvature_matrix_off_diag_1 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_sparse_linalg_from(
-            curvature_preload=self.sparse_linalg.curvature_preload,
-            curvature_indexes=self.sparse_linalg.indexes,
-            curvature_lengths=self.sparse_linalg.lengths,
+        curvature_matrix_off_diag_1 = inversion_imaging_numba_util.curvature_matrix_off_diags_via_sparse_operator_from(
+            curvature_preload=self.sparse_operator.curvature_preload,
+            curvature_indexes=self.sparse_operator.indexes,
+            curvature_lengths=self.sparse_operator.lengths,
             data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_1.unique_mappings.data_weights,
             pix_lengths_0=mapper_1.unique_mappings.pix_lengths,
@@ -405,7 +411,7 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
         curvature matrix given by equation (4) and the letter F.
 
-        This function computes the diagonal terms of F using the sparse_linalg formalism.
+        This function computes the diagonal terms of F using the sparse_operator formalism.
         """
 
         curvature_matrix = self._curvature_matrix_multi_mapper
@@ -540,7 +546,8 @@ class InversionImagingSparseLinAlgNumba(AbstractInversionImaging):
                 )
 
                 mapped_reconstructed_image = self.psf.convolved_image_from(
-                    image=mapped_reconstructed_image, blurring_image=None,
+                    image=mapped_reconstructed_image,
+                    blurring_image=None,
                 ).array
 
                 mapped_reconstructed_image = Array2D(
