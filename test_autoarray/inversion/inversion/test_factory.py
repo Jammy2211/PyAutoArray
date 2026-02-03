@@ -384,6 +384,11 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     assert inversion_mapping.data_vector == pytest.approx(
         inversion_w_tilde.data_vector, 1.0e-4
     )
+    print(inversion_mapping.curvature_matrix[0,2])
+    print(inversion_mapping.curvature_matrix[0,3])
+    print(inversion_w_tilde.curvature_matrix[0,2])
+    print(inversion_w_tilde.curvature_matrix[0,3])
+    ffff
     assert inversion_mapping.curvature_matrix == pytest.approx(
         inversion_w_tilde.curvature_matrix, 1.0e-4
     )
