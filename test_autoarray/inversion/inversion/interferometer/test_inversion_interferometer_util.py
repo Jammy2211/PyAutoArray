@@ -120,7 +120,7 @@ def test__curvature_matrix_via_psf_precision_operator_from():
 
     pix_weights_for_sub_slim_index = np.ones(shape=(9, 1))
 
-    sparse_operator = aa.InterferometerSparseLinAlg.from_nufft_precision_operator(
+    sparse_operator = aa.InterferometerSparseOperator.from_nufft_precision_operator(
         nufft_precision_operator=nufft_precision_operator,
         dirty_image=None,
     )

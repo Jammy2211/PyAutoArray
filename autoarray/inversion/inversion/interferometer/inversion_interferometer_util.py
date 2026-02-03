@@ -555,7 +555,59 @@ class InterferometerSparseLinAlg:
     batch_size: int
     w_dtype: "jax.numpy.dtype"
     Khat: "jax.Array"  # (2y, 2x), complex
+    """
+    Cached FFT operator state for fast interferometer curvature-matrix assembly.
 
+    This class packages *static* quantities needed to apply the interferometer
+    W~ operator efficiently using FFTs, so that repeated likelihood evaluations
+    do not redo expensive precomputation.
+
+    Conceptually, the interferometer W~ operator is a translationally-invariant
+    linear operator on a rectangular real-space grid, constructed from the
+    `nufft_precision_operator` (a 2D array of correlation values on pixel offsets).
+    By taking an FFT of this preload, the operator can be applied to batches of
+    images via elementwise multiplication in Fourier space:
+
+        apply_W(F) = IFFT( FFT(F_pad) * Khat )
+
+    where `F_pad` is a (2y, 2x) padded version of `F` and `Khat = FFT(nufft_precision_operator)`.
+
+    The curvature matrix for a pixelization (mapper) is then assembled from sparse
+    mapping triplets without forming dense mapping matrices:
+
+        C = A^T W A
+
+    where A is the sparse mapping from source pixels to image pixels.
+
+    Caching / validity
+    ------------------
+    Instances are safe to cache and reuse as long as all of the following remain fixed:
+
+    - `nufft_precision_operator` (hence `Khat`)
+    - the definition of the rectangular FFT grid (y_shape, x_shape)
+    - dtype / precision (float32 vs float64)
+    - `batch_size`
+
+    Parameters stored
+    -----------------
+    dirty_image
+        Convenience field for associated dirty image data (not used directly in
+        curvature assembly in this method). Stored as a NumPy array to match
+        upstream interfaces.
+    y_shape, x_shape
+        Shape of the *rectangular* real-space grid (not the masked slim grid).
+    M
+        Number of rectangular pixels, M = y_shape * x_shape.
+    batch_size
+        Number of source-pixel columns assembled and operated on per block.
+        Larger batch sizes improve throughput on GPU but increase memory usage.
+    w_dtype
+        Floating-point dtype for weights and accumulations (e.g. float64).
+    Khat
+        FFT of the curvature preload, shape (2y_shape, 2x_shape), complex.
+        This is the frequency-domain representation of the W~ operator kernel.
+    """
+    
     @classmethod
     def from_nufft_precision_operator(
         self,
@@ -564,6 +616,41 @@ class InterferometerSparseLinAlg:
         *,
         batch_size: int = 128,
     ):
+        """
+        Construct an `InterferometerSparseLinAlg` from a curvature-preload array.
+
+        This is the standard factory used in interferometer inversions.
+
+        The curvature preload is assumed to be defined on a (2y, 2x) rectangular
+        grid of pixel offsets, where y and x correspond to the *unmasked extent*
+        of the real-space grid. The preload is FFT'd once to obtain `Khat`, which
+        is then reused for every subsequent curvature matrix build.
+
+        Parameters
+        ----------
+        nufft_precision_operator
+            Real-valued array of shape (2y, 2x) encoding the W~ operator in real
+            space as a function of pixel offsets. The shape must be even in both
+            axes so that y_shape = H2//2 and x_shape = W2//2 are integers.
+        dirty_image
+            The dirty image associated with the dataset (or any convenient
+            reference image). Not required for curvature computation itself,
+            but commonly stored alongside the state for debugging / plotting.
+        batch_size
+            Number of source-pixel columns processed per block when assembling
+            the curvature matrix. Higher values typically improve GPU efficiency
+            but increase intermediate memory usage.
+
+        Returns
+        -------
+        InterferometerSparseLinAlg
+            Immutable cached state object containing shapes and FFT kernel `Khat`.
+
+        Raises
+        ------
+        ValueError
+            If `nufft_precision_operator` does not have even shape in both dimensions.
+        """
         import jax.numpy as jnp
 
         H2, W2 = nufft_precision_operator.shape
@@ -596,12 +683,67 @@ class InterferometerSparseLinAlg:
         fft_index_for_masked_pixel: np.ndarray,
     ):
         """
-        Compute curvature matrix for an interferometer inversion using a precomputed FFT state.
+        Assemble the curvature matrix C = Aᵀ W A using sparse triplets and the FFT W~ operator.
 
-        IMPORTANT
-        ---------
-        - COO construction is unchanged from the known-working implementation
-        - Only FFT- and geometry-related quantities are taken from `fft_state`
+        This method computes the mapper (pixelization) curvature matrix without
+        forming a dense mapping matrix. Instead, it uses fixed-length mapping
+        arrays (pixel indexes + weights per masked pixel) which define a sparse
+        mapping operator A in COO-like form.
+
+        Algorithm outline
+        -----------------
+        Let S be the number of source pixels and M be the number of rectangular
+        real-space pixels.
+
+        1) Build a fixed-length COO stream from the mapping arrays:
+              rows_rect[k] : rectangular pixel index (0..M-1)
+              cols[k]      : source pixel index (0..S-1)
+              vals[k]      : mapping weight
+           Invalid mappings (cols < 0 or cols >= S) are masked out.
+
+        2) Process source-pixel columns in blocks of width `batch_size`:
+           - Scatter the block’s source columns into a dense (M, batch_size) array F.
+           - Apply the W~ operator by FFT:
+                 G = apply_W(F)
+           - Project back with Aᵀ via segmented reductions:
+                 C[:, start:start+B] = Aᵀ G
+
+        3) Symmetrize the result:
+              C <- 0.5 * (C + Cᵀ)
+
+        Parameters
+        ----------
+        pix_indexes_for_sub_slim_index
+            Integer array of shape (M_masked, Pmax).
+            For each masked (slim) image pixel, stores the source-pixel indices
+            involved in the interpolation / mapping stencil. Invalid entries
+            should be set to -1.
+        pix_weights_for_sub_slim_index
+            Floating array of shape (M_masked, Pmax).
+            Weights corresponding to `pix_indexes_for_sub_slim_index`.
+            These should already include any oversampling normalisation (e.g.
+            sub-pixel fractions) required by the mapper.
+        pix_pixels
+            Number of source pixels, S.
+        fft_index_for_masked_pixel
+            Integer array of shape (M_masked,).
+            Maps each masked (slim) image pixel index to its corresponding
+            rectangular-grid flat index (0..M-1). This embeds the masked pixel
+            ordering into the FFT-friendly rectangular grid.
+
+        Returns
+        -------
+        jax.Array
+            Curvature matrix of shape (S, S), symmetric.
+
+        Notes
+        -----
+        - The inner computation is written in JAX and is intended to be jitted.
+          For best performance, keep `batch_size` fixed (static) across calls.
+        - Choosing `batch_size` as a divisor of S avoids a smaller tail block,
+          but correctness does not require that if the implementation masks the tail.
+        - This method uses FFTs on padded (2y, 2x) arrays; memory use scales with
+          batch_size and grid size.
         """
 
         import jax.numpy as jnp
