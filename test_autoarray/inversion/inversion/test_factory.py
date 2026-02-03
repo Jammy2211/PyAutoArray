@@ -389,15 +389,6 @@ def test__inversion_imaging__linear_obj_func_with_sparse_operator(
     assert inversion_mapping.data_vector == pytest.approx(
         inversion_sparse_operator.data_vector, 1.0e-4
     )
-<<<<<<< HEAD
-    print(inversion_mapping.curvature_matrix[0,2])
-    print(inversion_mapping.curvature_matrix[0,3])
-    print(inversion_w_tilde.curvature_matrix[0,2])
-    print(inversion_w_tilde.curvature_matrix[0,3])
-    ffff
-=======
-
->>>>>>> a655bb9e4603df17c8ff7f8d20459bb36fa03c5a
     assert inversion_mapping.curvature_matrix == pytest.approx(
         inversion_sparse_operator.curvature_matrix, 1.0e-4
     )

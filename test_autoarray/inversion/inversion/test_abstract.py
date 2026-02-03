@@ -235,8 +235,6 @@ def test__curvature_reg_matrix_reduced():
         linear_obj_list=linear_obj_list, curvature_reg_matrix=curvature_reg_matrix
     )
 
-    print(inversion.curvature_reg_matrix_reduced)
-
     assert (
         inversion.curvature_reg_matrix_reduced == np.array([[1.0, 2.0], [4.0, 5.0]])
     ).all()
