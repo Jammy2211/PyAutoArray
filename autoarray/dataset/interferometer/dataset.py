@@ -198,7 +198,7 @@ class Interferometer(AbstractDataset):
         if nufft_precision_operator is None:
 
             logger.info(
-                "INTERFEROMETER - Computing W-Tilde; runtime scales with visibility count and mask resolution, CPU run times may exceed hours."
+                "INTERFEROMETER - Computing NUFFT Precision Operator; runtime scales with visibility count and mask resolution, CPU run times may exceed hours."
             )
 
             nufft_precision_operator = self.psf_precision_operator_from(
