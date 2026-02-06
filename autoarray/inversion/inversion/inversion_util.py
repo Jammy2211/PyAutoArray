@@ -84,6 +84,10 @@ def curvature_matrix_via_mapping_matrix_from(
     no_regularization_index_list: Optional[List] = None,
     settings: SettingsInversion = SettingsInversion(),
     xp=np,
+    *,
+    mp_gemm: bool = True,  # mixed precision matmul
+    gemm_dtype=None,  # e.g. xp.float32
+    out_dtype=None,  # e.g. xp.float64
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
@@ -97,8 +101,13 @@ def curvature_matrix_via_mapping_matrix_from(
     noise_map
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
-    array = mapping_matrix / noise_map[:, None]
-    curvature_matrix = xp.dot(array.T, array)
+    if gemm_dtype is None:
+        gemm_dtype = xp.float32 if (mp_gemm and xp is not np) else mapping_matrix.dtype
+
+    # form A in chosen dtype (usually float32 on device)
+    A = (mapping_matrix / noise_map[:, None]).astype(gemm_dtype)
+
+    curvature_matrix = xp.dot(A.T, A)  # float32 GEMM if A is float32
 
     if add_to_curvature_diag and len(no_regularization_index_list) > 0:
         curvature_matrix = curvature_matrix_with_added_to_diag_from(

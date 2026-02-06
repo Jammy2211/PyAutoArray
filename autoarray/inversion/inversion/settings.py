@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class SettingsInversion:
     def __init__(
         self,
+        use_mixed_precision : bool = False,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,
@@ -24,6 +25,12 @@ class SettingsInversion:
 
         Parameters
         ----------
+        use_mixed_precision
+            If `True`, the linear algebra calculations of the inversion are performed using single precision on a
+            targeted subset of functions which provide significant speed up when using a GPU (x4), reduces VRAM
+            use and are expected to have minimal impact on the accuracy of the results. If `False`, all linear algebra
+            calculations are performed using double precision, which is the default and is more accurate but
+            slower on a GPU.
         use_positive_only_solver
             Whether to use a positive-only linear system solver, which requires that every reconstructed value is
             positive but is computationally much slower than the default solver (which allows for positive and
