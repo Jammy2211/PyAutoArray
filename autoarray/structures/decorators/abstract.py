@@ -61,7 +61,6 @@ class AbstractMaker:
     def _xp(self):
         if self.use_jax:
             import jax.numpy as jnp
-
             return jnp
         return np
 
