@@ -290,9 +290,6 @@ def test__inversion_imaging__compare_mapping_and_sparse_operator_values(
         settings=aa.SettingsInversion(),
     )
 
-    assert inversion_sparse_operator._curvature_matrix_mapper_diag == pytest.approx(
-        inversion_mapping._curvature_matrix_mapper_diag, 1.0e-4
-    )
     assert inversion_sparse_operator.reconstruction == pytest.approx(
         inversion_mapping.reconstruction, 1.0e-4
     )

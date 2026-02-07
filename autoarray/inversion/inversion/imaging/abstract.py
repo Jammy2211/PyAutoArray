@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, List, Union, Type
 
-from autoconf import cached_property
-
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
@@ -97,6 +95,7 @@ class AbstractInversionImaging(AbstractInversion):
                 self.psf.convolved_mapping_matrix_from(
                     mapping_matrix=linear_obj.mapping_matrix,
                     mask=self.mask,
+                    use_mixed_precision=self.settings.use_mixed_precision,
                     xp=self._xp,
                 )
                 if linear_obj.operated_mapping_matrix_override is None
@@ -138,7 +137,6 @@ class AbstractInversionImaging(AbstractInversion):
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
-                vvv
                 operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
                     mapping_matrix=linear_func.mapping_matrix,
                     mask=self.mask,
@@ -203,7 +201,7 @@ class AbstractInversionImaging(AbstractInversion):
 
         return data_linear_func_matrix_dict
 
-    @cached_property
+    @property
     def mapper_operated_mapping_matrix_dict(self) -> Dict:
         """
         The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values
