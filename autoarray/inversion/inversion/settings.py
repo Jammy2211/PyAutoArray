@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class SettingsInversion:
     def __init__(
         self,
-        use_mixed_precision : bool = False,
+        use_mixed_precision: bool = False,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,

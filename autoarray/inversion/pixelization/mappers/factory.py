@@ -4,6 +4,7 @@ from typing import Optional
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
@@ -13,6 +14,7 @@ def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
     border_relocator: Optional[BorderRelocator] = None,
+    settings=SettingsInversion(),
     preloads=None,
     xp=np,
 ):
@@ -53,6 +55,8 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            settings=settings,
+            preloads=preloads,
             xp=xp,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
@@ -60,6 +64,8 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            settings=settings,
+            preloads=preloads,
             xp=xp,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):

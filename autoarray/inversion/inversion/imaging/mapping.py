@@ -98,6 +98,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             settings=self.settings,
             add_to_curvature_diag=True,
             no_regularization_index_list=self.no_regularization_index_list,
+            use_mixed_precision=self.settings.use_mixed_precision,
             xp=self._xp,
         )
 

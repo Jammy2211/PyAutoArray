@@ -548,6 +548,7 @@ def mapping_matrix_from(
     total_mask_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
     sub_fraction: np.ndarray,
+    use_mixed_precision: bool = False,
     xp=np,
 ) -> np.ndarray:
     """
@@ -621,39 +622,56 @@ def mapping_matrix_from(
     sub_fraction
         The fractional area each sub-pixel takes up in an pixel.
     """
+
     M_sub, B = pix_indexes_for_sub_slim_index.shape
-    M = total_mask_pixels
-    S = pixels
+    M = int(total_mask_pixels)
+    S = int(pixels)
+
+    # Indices always int32
+    pix_idx = xp.asarray(pix_indexes_for_sub_slim_index, dtype=xp.int32)
+    pix_size = xp.asarray(pix_size_for_sub_slim_index, dtype=xp.int32)
+    slim_parent = xp.asarray(slim_index_for_sub_slim_index, dtype=xp.int32)
+
+    # Everything else computed in float64
+    w64 = xp.asarray(pix_weights_for_sub_slim_index, dtype=xp.float64)
+    frac64 = xp.asarray(sub_fraction, dtype=xp.float64)
+
+    # Output dtype only (big allocation)
+    out_dtype = xp.float32 if use_mixed_precision else xp.float64
 
     # 1) Flatten
-    flat_pixidx = pix_indexes_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
-    flat_w = pix_weights_for_sub_slim_index.reshape(-1)  # (M_sub*B,)
-    flat_parent = xp.repeat(slim_index_for_sub_slim_index, B)  # (M_sub*B,)
-    flat_count = xp.repeat(pix_size_for_sub_slim_index, B)  # (M_sub*B,)
+    flat_pixidx = pix_idx.reshape(-1)  # (M_sub*B,)
+    flat_w = w64.reshape(-1)  # float64
+    flat_parent = xp.repeat(slim_parent, B)  # int32
+    flat_count = xp.repeat(pix_size, B)  # int32
 
-    # 2) Build valid mask: k < pix_size[i]
-    k = xp.tile(xp.arange(B), M_sub)  # (M_sub*B,)
-    valid = k < flat_count  # (M_sub*B,)
+    # 2) valid mask: k < pix_size[i]
+    k = xp.tile(xp.arange(B, dtype=xp.int32), M_sub)
+    valid = k < flat_count
 
-    # 3) Zero out invalid weights
-    flat_w = flat_w * valid.astype(flat_w.dtype)
+    # 3) Zero out invalid weights (float64)
+    flat_w = flat_w * valid.astype(xp.float64)
 
     # 4) Redirect -1 indices to extra bin S
     OUT = S
     flat_pixidx = xp.where(flat_pixidx < 0, OUT, flat_pixidx)
 
-    # 5) Multiply by sub_fraction of the slim row
-    flat_frac = xp.take(sub_fraction, flat_parent, axis=0)  # (M_sub*B,)
-    flat_contrib = flat_w * flat_frac  # (M_sub*B,)
+    # 5) Multiply by sub_fraction of the slim row (float64)
+    flat_frac = xp.take(frac64, flat_parent, axis=0)
+    flat_contrib64 = flat_w * flat_frac
 
-    # 6) Scatter into (M × (S+1)), summing duplicates
-    mat = xp.zeros((M, S + 1), dtype=flat_contrib.dtype)
+    # 6) Scatter into (M × (S+1)) (destination float32 or float64)
+    mat = xp.zeros((M, S + 1), dtype=out_dtype)
+
+    # Cast only at the write (keeps upstream math float64)
+    flat_contrib_out = flat_contrib64.astype(out_dtype)
+
     if xp.__name__.startswith("jax"):
-        mat = mat.at[flat_parent, flat_pixidx].add(flat_contrib)
+        mat = mat.at[flat_parent, flat_pixidx].add(flat_contrib_out)
     else:
-        xp.add.at(mat, (flat_parent, flat_pixidx), flat_contrib)
+        xp.add.at(mat, (flat_parent, flat_pixidx), flat_contrib_out)
 
-    # 7) Drop the extra column and return
+    # 7) Drop extra column
     return mat[:, :S]
 
 
