@@ -668,7 +668,6 @@ class Kernel2D(AbstractArray2D):
 
         import jax
         import jax.numpy as jnp
-        import warnings
         from autoarray.structures.arrays.uniform_2d import Array2D
 
         # FFT path dtypes (JAX only)
