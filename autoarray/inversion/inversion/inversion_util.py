@@ -83,7 +83,6 @@ def curvature_matrix_via_mapping_matrix_from(
     add_to_curvature_diag: bool = False,
     no_regularization_index_list: Optional[List] = None,
     settings: "SettingsInversion" = SettingsInversion(),
-    use_mixed_precision: bool = False,
     xp=np,
 ) -> np.ndarray:
     """
@@ -105,7 +104,7 @@ def curvature_matrix_via_mapping_matrix_from(
     else:
         # Choose compute dtype
 
-        compute_dtype = xp.float32 if use_mixed_precision else xp.float64
+        compute_dtype = xp.float32 if settings.use_mixed_precision else xp.float64
         out_dtype = xp.float64  # always return float64 for downstream stability
 
         A = mapping_matrix
