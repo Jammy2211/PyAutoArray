@@ -18,6 +18,8 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
     )
     image_mesh = image_mesh.image_plane_mesh_grid_from(mask=mask, adapt_data=None)
 
+    image_mesh = aa.Grid2DIrregular(image_mesh)
+
     grid[8, 0] = 100.0
 
     border_relocator = aa.BorderRelocator(mask=mask, sub_size=1)

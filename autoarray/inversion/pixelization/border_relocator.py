@@ -235,17 +235,17 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     dx = border_grid[:, 1] - origin[1]
 
     # Build data matrix in (x, y) order for PCA
-    X = xp.stack([dx, dy], axis=1)              # (M,2)
+    X = xp.stack([dx, dy], axis=1)  # (M,2)
 
     # Covariance matrix
     denom = xp.maximum(X.shape[0] - 1, 1)
-    C = (X.T @ X) / denom                       # (2,2)
+    C = (X.T @ X) / denom  # (2,2)
 
     # Eigen-decomposition (ascending eigenvalues)
     evals, evecs = xp.linalg.eigh(C)
 
     # Major axis = eigenvector with largest eigenvalue
-    v_major = evecs[:, -1]                      # (2,) in (x,y)
+    v_major = evecs[:, -1]  # (2,) in (x,y)
 
     phi = xp.arctan2(v_major[1], v_major[0])
 
@@ -253,7 +253,7 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     c = xp.cos(phi)
     s = xp.sin(phi)
 
-    xprime =  c * dx + s * dy
+    xprime = c * dx + s * dy
     yprime = -s * dx + c * dy
 
     # Semi-axes from maximal extent
@@ -292,7 +292,7 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     s = xp.sin(phi)
 
     # rotate into ellipse-aligned frame
-    xprime =  c * dx + s * dy
+    xprime = c * dx + s * dy
     yprime = -s * dx + c * dy
 
     # ellipse radius in normalized coords
@@ -306,13 +306,10 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     yprime2 = yprime * scale
 
     # rotate back to original frame
-    dx2 =  c * xprime2 - s * yprime2
-    dy2 =  s * xprime2 + c * yprime2
+    dx2 = c * xprime2 - s * yprime2
+    dy2 = s * xprime2 + c * yprime2
 
-    moved = xp.stack(
-        [origin[0] + dy2, origin[1] + dx2],
-        axis=1
-    )
+    moved = xp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
 
     return xp.where(outside[:, None], moved, grid)
 
@@ -416,11 +413,17 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        origin, a, b, phi = ellipse_params_via_border_pca_from(grid.array[self.border_slim], xp=xp)
+        origin, a, b, phi = ellipse_params_via_border_pca_from(
+            grid.array[self.border_slim], xp=xp
+        )
 
-        values = relocated_grid_via_ellipse_border_from(grid=grid.array, origin=origin, a=a, b=b, phi=phi, xp=xp)
+        values = relocated_grid_via_ellipse_border_from(
+            grid=grid.array, origin=origin, a=a, b=b, phi=phi, xp=xp
+        )
 
-        over_sampled = relocated_grid_via_ellipse_border_from(grid=grid.over_sampled.array, origin=origin, a=a, b=b, phi=phi, xp=xp)
+        over_sampled = relocated_grid_via_ellipse_border_from(
+            grid=grid.over_sampled.array, origin=origin, a=a, b=b, phi=phi, xp=xp
+        )
 
         return Grid2D(
             values=values,
@@ -447,9 +450,13 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return mesh_grid
 
-        origin, a, b, phi = ellipse_params_via_border_pca_from(grid.array[self.border_slim], xp=xp)
+        origin, a, b, phi = ellipse_params_via_border_pca_from(
+            grid.array[self.border_slim], xp=xp
+        )
 
-        relocated_grid = relocated_grid_via_ellipse_border_from(grid=mesh_grid.array, origin=origin, a=a, b=b, phi=phi, xp=xp)
+        relocated_grid = relocated_grid_via_ellipse_border_from(
+            grid=mesh_grid.array, origin=origin, a=a, b=b, phi=phi, xp=xp
+        )
 
         return Grid2DIrregular(
             values=relocated_grid,
