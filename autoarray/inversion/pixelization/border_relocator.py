@@ -332,7 +332,6 @@ class BorderRelocator:
         self,
         mask: Mask2D,
         sub_size: Union[int, Array2D],
-        use_sparse_operator: bool = False,
     ):
         """
         Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
@@ -389,8 +388,6 @@ class BorderRelocator:
         )
 
         self.sub_border_grid = sub_grid[self.sub_border_slim]
-
-        self.use_sparse_operator = use_sparse_operator
 
     @property
     def relocated_grid_from(self, grid: Grid2D, xp=np) -> Grid2D:
