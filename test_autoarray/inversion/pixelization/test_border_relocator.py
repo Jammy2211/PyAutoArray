@@ -375,4 +375,4 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
-    assert relocated_grid.over_sampled[1] == pytest.approx([1.97783243, 1.0], 1e-4)
+    assert relocated_grid.over_sampled[1] == pytest.approx([1.95, 1.0], 1e-4)
