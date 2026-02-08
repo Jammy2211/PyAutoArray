@@ -862,7 +862,8 @@ class Kernel2D(AbstractArray2D):
 
         # -------------------------------------------------------------------------
         # Build native cube in the FFT dtype (THIS IS THE KEY)
-        # Requires mapping_matrix_native_from to accept dtype_native kwarg.
+        # This relies on mapping_matrix_native_from honoring the use_mixed_precision
+        # kwarg when constructing the native mapping matrix.
         # -------------------------------------------------------------------------
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
