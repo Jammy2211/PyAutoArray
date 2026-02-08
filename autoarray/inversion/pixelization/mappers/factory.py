@@ -73,6 +73,7 @@ def mapper_from(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
+            settings=settings,
             preloads=preloads,
             xp=xp,
         )
