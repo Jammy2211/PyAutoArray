@@ -126,20 +126,17 @@ class Delaunay(AbstractMesh):
 
         relocated_mesh_grid = self.relocated_mesh_grid_from(
             border_relocator=border_relocator,
-            source_plane_data_grid=relocated_grid.over_sampled,
+            source_plane_data_grid=Grid2DIrregular(relocated_grid.over_sampled),
             source_plane_mesh_grid=source_plane_mesh_grid,
             xp=xp,
         )
 
-        try:
-            source_plane_mesh_grid = self.mesh_grid_from(
-                source_plane_data_grid=relocated_grid.over_sampled,
-                source_plane_mesh_grid=relocated_mesh_grid,
-                preloads=preloads,
-                xp=xp,
-            )
-        except ValueError as e:
-            raise e
+        source_plane_mesh_grid = self.mesh_grid_from(
+            source_plane_data_grid=relocated_grid.over_sampled,
+            source_plane_mesh_grid=relocated_mesh_grid,
+            preloads=preloads,
+            xp=xp,
+        )
 
         return MapperGrids(
             mask=mask,

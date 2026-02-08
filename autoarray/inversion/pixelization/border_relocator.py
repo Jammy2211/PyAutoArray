@@ -203,68 +203,115 @@ def sub_border_slim_from(mask, sub_size):
     ).astype("int")
 
 
-def relocated_grid_from(grid, border_grid, xp=np):
+def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     """
-    Relocate the coordinates of a grid to its border if they are outside the border, where the border is
-    defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
-
-    This is performed as follows:
-
-    1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
-    2: Compute the radial distance of every grid coordinate from the origin.
-    3: For every coordinate, find its nearest pixel in the border.
-    4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
-    border pixel's radial distance.
-    5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
-    border (if its inside the border, do nothing).
-
-    The method can be used on uniform or irregular grids, however for irregular grids the border of the
-    'image-plane' mask is used to define border pixels.
+    Estimate origin, semi-axes (a,b), and rotation phi from border points using PCA.
+    Works well for circle/ellipse-like borders.
 
     Parameters
     ----------
-    grid
-        The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
-    border_grid : Grid2D
-        The grid of border (y,x) coordinates.
+    border_grid : (M,2)
+        Border coordinates in (y, x) order.
+    xp : module
+        numpy-like module (np, jnp, cupy, etc.).
+    eps : float
+        Numerical safety epsilon.
+
+    Returns
+    -------
+    origin : (2,)
+        Estimated center (y0, x0).
+    a : float
+        Semi-major axis.
+    b : float
+        Semi-minor axis.
+    phi : float
+        Rotation angle in radians.
     """
 
-    # Compute origin (center) of the border grid
-    border_origin = xp.mean(border_grid, axis=0)
+    origin = xp.mean(border_grid, axis=0)
 
-    # Radii from origin
-    grid_radii = xp.linalg.norm(grid - border_origin, axis=1)  # (N,)
-    border_radii = xp.linalg.norm(border_grid - border_origin, axis=1)  # (M,)
-    border_min_radius = xp.min(border_radii)
+    dy = border_grid[:, 0] - origin[0]
+    dx = border_grid[:, 1] - origin[1]
 
-    # Determine which points are outside
-    outside_mask = grid_radii > border_min_radius  # (N,)
+    # Build data matrix in (x, y) order for PCA
+    X = xp.stack([dx, dy], axis=1)  # (M,2)
 
-    # To compute nearest border point for each grid point, we must do it for all and then mask later
-    # Compute all distances: (N, M)
-    diffs = grid[:, None, :] - border_grid[None, :, :]  # (N, M, 2)
-    dists_squared = xp.sum(diffs**2, axis=2)  # (N, M)
-    closest_indices = xp.argmin(dists_squared, axis=1)  # (N,)
+    # Covariance matrix
+    denom = xp.maximum(X.shape[0] - 1, 1)
+    C = (X.T @ X) / denom  # (2,2)
 
-    # Get border radius for closest border point to each grid point
-    matched_border_radii = border_radii[closest_indices]  # (N,)
+    # Eigen-decomposition (ascending eigenvalues)
+    evals, evecs = xp.linalg.eigh(C)
 
-    # Ratio of border to grid radius
-    move_factors = matched_border_radii / grid_radii  # (N,)
+    # Major axis = eigenvector with largest eigenvalue
+    v_major = evecs[:, -1]  # (2,) in (x,y)
 
-    # Only move if:
-    #   - the point is outside the border
-    #   - the matched border point is closer to the origin (i.e. move_factor < 1)
-    apply_move = xp.logical_and(outside_mask, move_factors < 1.0)  # (N,)
+    phi = xp.arctan2(v_major[1], v_major[0])
 
-    # Compute moved positions (for all points, but will select with mask)
-    direction_vectors = grid - border_origin  # (N, 2)
-    moved_grid = move_factors[:, None] * direction_vectors + border_origin  # (N, 2)
+    # Rotate border points into ellipse-aligned frame
+    c = xp.cos(phi)
+    s = xp.sin(phi)
 
-    # Select which grid points to move
-    relocated_grid = xp.where(apply_move[:, None], moved_grid, grid)  # (N, 2)
+    xprime = c * dx + s * dy
+    yprime = -s * dx + c * dy
 
-    return relocated_grid
+    # Semi-axes from maximal extent
+    a = xp.max(xp.abs(xprime)) + eps
+    b = xp.max(xp.abs(yprime)) + eps
+
+    return origin, a, b, phi
+
+
+def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
+    """
+    Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
+    rotated by phi radians (counterclockwise).
+
+    Parameters
+    ----------
+    grid : (N,2)
+        Coordinates in (y, x) order.
+    origin : (2,)
+        Ellipse center (y0, x0).
+    a, b : float
+        Semi-major and semi-minor axes.
+    phi : float
+        Rotation angle in radians.
+    xp : module
+        numpy-like module (np, jnp, cupy, etc.).
+    eps : float
+        Numerical safety epsilon.
+    """
+
+    # shift to origin
+    dy = grid[:, 0] - origin[0]
+    dx = grid[:, 1] - origin[1]
+
+    c = xp.cos(phi)
+    s = xp.sin(phi)
+
+    # rotate into ellipse-aligned frame
+    xprime = c * dx + s * dy
+    yprime = -s * dx + c * dy
+
+    # ellipse radius in normalized coords
+    q = (xprime / a) ** 2 + (yprime / b) ** 2
+
+    outside = q > 1.0
+    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
+
+    # scale back to boundary
+    xprime2 = xprime * scale
+    yprime2 = yprime * scale
+
+    # rotate back to original frame
+    dx2 = c * xprime2 - s * yprime2
+    dy2 = s * xprime2 + c * yprime2
+
+    moved = xp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
+
+    return xp.where(outside[:, None], moved, grid)
 
 
 class BorderRelocator:
@@ -272,7 +319,6 @@ class BorderRelocator:
         self,
         mask: Mask2D,
         sub_size: Union[int, Array2D],
-        use_sparse_operator: bool = False,
     ):
         """
         Relocates source plane coordinates that trace outside the mask’s border in the source-plane back onto the
@@ -330,8 +376,6 @@ class BorderRelocator:
 
         self.sub_border_grid = sub_grid[self.sub_border_slim]
 
-        self.use_sparse_operator = use_sparse_operator
-
     def relocated_grid_from(self, grid: Grid2D, xp=np) -> Grid2D:
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
@@ -359,32 +403,17 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        if self.use_sparse_operator is False or xp.__name__.startswith("jax"):
+        origin, a, b, phi = ellipse_params_via_border_pca_from(
+            grid.array[self.border_slim], xp=xp
+        )
 
-            values = relocated_grid_from(
-                grid=grid.array, border_grid=grid.array[self.border_slim], xp=xp
-            )
+        values = relocated_grid_via_ellipse_border_from(
+            grid=grid.array, origin=origin, a=a, b=b, phi=phi, xp=xp
+        )
 
-            over_sampled = relocated_grid_from(
-                grid=grid.over_sampled.array,
-                border_grid=grid.over_sampled.array[self.sub_border_slim],
-                xp=xp,
-            )
-
-        else:
-
-            from autoarray.inversion.inversion.imaging_numba import (
-                inversion_imaging_numba_util,
-            )
-
-            values = inversion_imaging_numba_util.relocated_grid_via_jit_from(
-                grid=grid.array, border_grid=grid[self.border_slim]
-            )
-
-            over_sampled = inversion_imaging_numba_util.relocated_grid_via_jit_from(
-                grid=grid.over_sampled.array,
-                border_grid=grid.over_sampled[self.sub_border_slim],
-            )
+        over_sampled = relocated_grid_via_ellipse_border_from(
+            grid=grid.over_sampled.array, origin=origin, a=a, b=b, phi=phi, xp=xp
+        )
 
         return Grid2D(
             values=values,
@@ -411,24 +440,13 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return mesh_grid
 
-        if self.use_sparse_operator is False or xp.__name__.startswith("jax"):
+        origin, a, b, phi = ellipse_params_via_border_pca_from(
+            grid.array[self.border_slim], xp=xp
+        )
 
-            relocated_grid = relocated_grid_from(
-                grid=mesh_grid.array,
-                border_grid=grid[self.sub_border_slim],
-                xp=xp,
-            )
-
-        else:
-
-            from autoarray.inversion.inversion.imaging import (
-                inversion_imaging_numba_util,
-            )
-
-            relocated_grid = inversion_imaging_numba_util.relocated_grid_via_jit_from(
-                grid=mesh_grid.array,
-                border_grid=grid[self.sub_border_slim],
-            )
+        relocated_grid = relocated_grid_via_ellipse_border_from(
+            grid=mesh_grid.array, origin=origin, a=a, b=b, phi=phi, xp=xp
+        )
 
         return Grid2DIrregular(
             values=relocated_grid,

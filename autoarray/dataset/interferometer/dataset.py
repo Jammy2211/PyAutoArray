@@ -96,13 +96,10 @@ class Interferometer(AbstractDataset):
             real_space_mask=real_space_mask,
         )
 
-        use_sparse_operator = True if sparse_operator is not None else False
-
         self.grids = GridsDataset(
             mask=self.real_space_mask,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            use_sparse_operator=use_sparse_operator,
         )
 
         self.sparse_operator = sparse_operator
