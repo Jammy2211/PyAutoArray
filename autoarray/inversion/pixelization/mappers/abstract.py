@@ -11,6 +11,7 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
@@ -25,6 +26,7 @@ class AbstractMapper(LinearObj):
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
+        settings: SettingsInversion = SettingsInversion(),
         preloads=None,
         xp=np,
     ):
@@ -90,6 +92,7 @@ class AbstractMapper(LinearObj):
         self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
         self.preloads = preloads
+        self.settings = settings
 
     @property
     def params(self) -> int:
@@ -265,6 +268,7 @@ class AbstractMapper(LinearObj):
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.over_sampler.sub_fraction.array,
+            use_mixed_precision=self.settings.use_mixed_precision,
             xp=self._xp,
         )
 

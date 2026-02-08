@@ -53,44 +53,6 @@ class InversionImagingMapping(AbstractInversionImaging):
             xp=xp,
         )
 
-    @property
-    def _data_vector_mapper(self) -> np.ndarray:
-        """
-        Returns the `data_vector` of all mappers, a 1D vector whose values are solved for by the simultaneous
-        linear equations constructed by this object. The object is described in full in the method `data_vector`.
-
-        This method is used to compute part of the `data_vector` if there are also linear function list objects
-        in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
-        """
-
-        if not self.has(cls=AbstractMapper):
-            return
-
-        data_vector = np.zeros(self.total_params)
-
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
-
-        for i in range(len(mapper_list)):
-            mapper = mapper_list[i]
-            param_range = mapper_param_range_list[i]
-
-            operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix, mask=self.mask, xp=self._xp
-            )
-
-            data_vector_mapper = (
-                inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
-                    blurred_mapping_matrix=operated_mapping_matrix,
-                    image=self.data,
-                    noise_map=self.noise_map,
-                )
-            )
-
-            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
-
-        return data_vector
-
     @cached_property
     def data_vector(self) -> np.ndarray:
         """
@@ -110,53 +72,6 @@ class InversionImagingMapping(AbstractInversionImaging):
             image=self.data.array,
             noise_map=self.noise_map.array,
         )
-
-    @property
-    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
-        """
-        Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
-        and the linear objects to construct the simultaneous linear equations. The object is described in full in
-        the method `curvature_matrix`.
-
-        This method computes the diagonal entries of all mapper objects in the `curvature_matrix`. It is separate from
-        other calculations to enable preloading of this calculation.
-        """
-
-        if not self.has(cls=AbstractMapper):
-            return None
-
-        curvature_matrix = np.zeros((self.total_params, self.total_params))
-
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
-
-        for i in range(len(mapper_list)):
-            mapper_i = mapper_list[i]
-            mapper_param_range_i = mapper_param_range_list[i]
-
-            operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
-                mapping_matrix=mapper_i.mapping_matrix, mask=self.mask, xp=self._xp
-            )
-
-            diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
-                mapping_matrix=operated_mapping_matrix,
-                noise_map=self.noise_map,
-                settings=self.settings,
-                add_to_curvature_diag=True,
-                no_regularization_index_list=self.no_regularization_index_list,
-                xp=self._xp,
-            )
-
-            curvature_matrix[
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-            ] = diag
-
-        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix, xp=self._xp
-        )
-
-        return curvature_matrix
 
     @cached_property
     def curvature_matrix(self):

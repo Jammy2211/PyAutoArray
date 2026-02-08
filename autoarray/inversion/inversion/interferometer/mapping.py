@@ -88,12 +88,14 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.real,
             noise_map=self.noise_map.real,
+            settings=self.settings,
             xp=self._xp,
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
+            settings=self.settings,
             xp=self._xp,
         )
 

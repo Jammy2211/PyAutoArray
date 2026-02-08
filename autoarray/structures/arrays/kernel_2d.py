@@ -533,6 +533,7 @@ class Kernel2D(AbstractArray2D):
         mask: "Mask2D",
         blurring_mapping_matrix: Optional[np.ndarray] = None,
         blurring_mask: Optional["Mask2D"] = None,
+        use_mixed_precision: bool = False,
         xp=np,
     ) -> np.ndarray:
         """
@@ -558,6 +559,10 @@ class Kernel2D(AbstractArray2D):
             Mask defining the blurring region pixels. Must be provided if
             `blurring_mapping_matrix` is given and `slim_to_native_blurring_tuple`
             is not already cached.
+        use_mixed_precision
+            If True, the mapping matrices are cast to single precision (float32) to
+            speed up GPU computations and reduce VRAM usage. If False, double precision
+            (float64) is used for maximum accuracy.
 
         Returns
         -------
@@ -566,37 +571,50 @@ class Kernel2D(AbstractArray2D):
             Contains contributions from both the main mapping matrix and, if provided,
             the blurring mapping matrix.
         """
+        dtype_native = xp.float32 if use_mixed_precision else xp.float64
+
         n_src = mapping_matrix.shape[1]
 
-        # Allocate full native grid (ny, nx, n_src)
-        mapping_matrix_native = xp.zeros(
-            mask.shape + (n_src,), dtype=mapping_matrix.dtype
+        mapping_matrix_native = xp.zeros(mask.shape + (n_src,), dtype=dtype_native)
+
+        # Cast inputs to the target dtype to avoid implicit up/downcasts inside scatter
+        mm = (
+            mapping_matrix
+            if mapping_matrix.dtype == dtype_native
+            else xp.asarray(mapping_matrix, dtype=dtype_native)
         )
 
-        # Scatter main mapping matrix into native cube
         if xp.__name__.startswith("jax"):
             mapping_matrix_native = mapping_matrix_native.at[
                 mask.slim_to_native_tuple
-            ].set(mapping_matrix)
+            ].set(mm)
         else:
-            mapping_matrix_native[mask.slim_to_native_tuple] = mapping_matrix
-
-        # Optionally scatter blurring mapping matrix
+            mapping_matrix_native[mask.slim_to_native_tuple] = np.asarray(mm)
 
         if blurring_mapping_matrix is not None:
+            bm = blurring_mapping_matrix
+            if getattr(bm, "dtype", None) != dtype_native:
+                bm = xp.asarray(bm, dtype=dtype_native)
 
             if xp.__name__.startswith("jax"):
                 mapping_matrix_native = mapping_matrix_native.at[
                     blurring_mask.slim_to_native_tuple
-                ].set(blurring_mapping_matrix)
+                ].set(bm)
             else:
-                mapping_matrix_native[blurring_mask.slim_to_native_tuple] = (
-                    blurring_mapping_matrix
+                mapping_matrix_native[blurring_mask.slim_to_native_tuple] = np.asarray(
+                    bm
                 )
 
         return mapping_matrix_native
 
-    def convolved_image_from(self, image, blurring_image, jax_method="direct", xp=np):
+    def convolved_image_from(
+        self,
+        image,
+        blurring_image,
+        jax_method="direct",
+        use_mixed_precision: bool = False,
+        xp=np,
+    ):
         """
         Convolve an input masked image with this PSF.
 
@@ -649,41 +667,53 @@ class Kernel2D(AbstractArray2D):
             )
 
         import jax
+        import jax.numpy as jnp
+        from autoarray.structures.arrays.uniform_2d import Array2D
+
+        # FFT path dtypes (JAX only)
+        fft_real_dtype = jnp.float32 if use_mixed_precision else jnp.float64
+        fft_complex_dtype = jnp.complex64 if use_mixed_precision else jnp.complex128
 
         if self.fft_shape is None:
-
+            # Shapes computed on the fly
             full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=image.mask)
-            fft_psf = xp.fft.rfft2(self.stored_native.array, s=fft_shape, axes=(0, 1))
+
+            # Compute PSF FFT on the fly in the chosen precision
+            psf_native = jnp.asarray(self.stored_native.array, dtype=fft_real_dtype)
+            fft_psf = xp.fft.rfft2(psf_native, s=fft_shape, axes=(0, 1)).astype(
+                fft_complex_dtype
+            )
 
             image_shape_original = image.shape_native
 
+            # Resize/pad the images as before
             image = image.resized_from(new_shape=fft_shape, mask_pad_value=1)
             if blurring_image is not None:
                 blurring_image = blurring_image.resized_from(
                     new_shape=fft_shape, mask_pad_value=1
                 )
-
         else:
-
+            # Cached shapes/state
             fft_shape = self.fft_shape
             full_shape = self.full_shape
             mask_shape = self.mask_shape
-            fft_psf = self.fft_psf
 
-        # start with native image padded with zeros
-        image_both_native = xp.zeros(image.mask.shape, dtype=image.dtype)
+            # Use cached PSF FFT but ensure it matches chosen precision.
+            # IMPORTANT: casting here may create an extra buffer if self.fft_psf is complex128.
+            # Best practice is to cache a complex64 version on the object when MP is enabled.
+            fft_psf = jnp.asarray(self.fft_psf, dtype=fft_complex_dtype)
+
+        # Build combined native image in the FFT dtype
+        image_both_native = xp.zeros(image.mask.shape, dtype=fft_real_dtype)
 
         image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(
-            image.array
+            jnp.asarray(image.array, dtype=fft_real_dtype)
         )
 
-        # add blurring contribution if provided
         if blurring_image is not None:
-
             image_both_native = image_both_native.at[
                 blurring_image.mask.slim_to_native_tuple
-            ].set(blurring_image.array)
-
+            ].set(jnp.asarray(blurring_image.array, dtype=fft_real_dtype))
         else:
             warnings.warn(
                 "No blurring_image provided. Only the direct image will be convolved. "
@@ -698,25 +728,21 @@ class Kernel2D(AbstractArray2D):
             fft_psf * fft_image_native, s=fft_shape, axes=(0, 1)
         )
 
-        out_shape_full = mask_shape
-
         # Crop back to mask_shape
         start_indices = tuple(
             (full_size - out_size) // 2
             for full_size, out_size in zip(full_shape, mask_shape)
         )
-
         blurred_image_native = jax.lax.dynamic_slice(
-            blurred_image_full, start_indices, out_shape_full
+            blurred_image_full, start_indices, mask_shape
         )
 
-        blurred_image = Array2D(
-            values=blurred_image_native[image.mask.slim_to_native_tuple],
-            mask=image.mask,
-        )
+        # Return slim form; optionally cast for downstream stability
+        blurred_slim = blurred_image_native[image.mask.slim_to_native_tuple]
+
+        blurred_image = Array2D(values=blurred_slim, mask=image.mask)
 
         if self.fft_shape is None:
-
             blurred_image = blurred_image.resized_from(
                 new_shape=image_shape_original, mask_pad_value=0
             )
@@ -730,6 +756,7 @@ class Kernel2D(AbstractArray2D):
         blurring_mapping_matrix=None,
         blurring_mask: Optional[Mask2D] = None,
         jax_method="direct",
+        use_mixed_precision: bool = False,
         xp=np,
     ):
         """
@@ -770,12 +797,19 @@ class Kernel2D(AbstractArray2D):
             Mapping matrix for the blurring region, outside the mask core.
         jax_method : str
             Backend passed to real-space convolution if ``use_fft=False``.
+        use_mixed_precision
+            If `True`, the FFT is performed using single precision, which provide significant speed up when using a
+            GPU (x4), reduces VRAM use and is expected to have minimal impact on the accuracy of the results. If `False`,
+            the FFT is performed using double precision, which is the default and is more accurate but slower on a GPU.
 
         Returns
         -------
         ndarray of shape (N_pix, N_src)
             Convolved mapping matrix in slim form.
         """
+        # -------------------------------------------------------------------------
+        # NumPy path unchanged
+        # -------------------------------------------------------------------------
         if xp is np:
             return self.convolved_mapping_matrix_via_real_space_np_from(
                 mapping_matrix=mapping_matrix,
@@ -785,6 +819,9 @@ class Kernel2D(AbstractArray2D):
                 xp=xp,
             )
 
+        # -------------------------------------------------------------------------
+        # Non-FFT JAX path unchanged
+        # -------------------------------------------------------------------------
         if not self.use_fft:
             return self.convolved_mapping_matrix_via_real_space_from(
                 mapping_matrix=mapping_matrix,
@@ -796,34 +833,50 @@ class Kernel2D(AbstractArray2D):
             )
 
         import jax
+        import jax.numpy as jnp
 
+        # -------------------------------------------------------------------------
+        # Validate cached FFT shapes / state
+        # -------------------------------------------------------------------------
         if self.fft_shape is None:
-
             full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=mask)
-
             raise ValueError(
                 f"FFT convolution requires precomputed padded shapes, but `self.fft_shape` is None.\n"
                 f"Expected mapping matrix padded to match FFT shape of PSF.\n"
                 f"PSF fft_shape: {fft_shape}, mask shape: {mask.shape}, "
                 f"mapping_matrix shape: {getattr(mapping_matrix, 'shape', 'unknown')}."
             )
-
         else:
-
             fft_shape = self.fft_shape
             full_shape = self.full_shape
             mask_shape = self.mask_shape
             fft_psf_mapping = self.fft_psf_mapping
 
+        # -------------------------------------------------------------------------
+        # Mixed precision dtypes (JAX only)
+        # -------------------------------------------------------------------------
+        fft_complex_dtype = jnp.complex64 if use_mixed_precision else jnp.complex128
+
+        # Ensure PSF FFT dtype matches the FFT path
+        fft_psf_mapping = jnp.asarray(fft_psf_mapping, dtype=fft_complex_dtype)
+
+        # -------------------------------------------------------------------------
+        # Build native cube in the FFT dtype (THIS IS THE KEY)
+        # This relies on mapping_matrix_native_from honoring the use_mixed_precision
+        # kwarg when constructing the native mapping matrix.
+        # -------------------------------------------------------------------------
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
             mask=mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
             blurring_mask=blurring_mask,
+            use_mixed_precision=use_mixed_precision,
             xp=xp,
         )
 
+        # -------------------------------------------------------------------------
         # FFT convolution
+        # -------------------------------------------------------------------------
         fft_mapping_matrix_native = xp.fft.rfft2(
             mapping_matrix_native, s=fft_shape, axes=(0, 1)
         )
@@ -833,7 +886,9 @@ class Kernel2D(AbstractArray2D):
             axes=(0, 1),
         )
 
-        # crop back
+        # -------------------------------------------------------------------------
+        # Crop back to mask-shape
+        # -------------------------------------------------------------------------
         start_indices = tuple(
             (full_size - out_size) // 2
             for full_size, out_size in zip(full_shape, mask_shape)
@@ -846,8 +901,10 @@ class Kernel2D(AbstractArray2D):
             out_shape_full,
         )
 
-        # return slim form
-        return blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        # Return slim form
+        blurred_slim = blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+
+        return blurred_slim
 
     def rescaled_with_odd_dimensions_from(
         self, rescale_factor: float, normalize: bool = False

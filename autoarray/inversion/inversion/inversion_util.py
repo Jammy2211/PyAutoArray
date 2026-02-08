@@ -78,11 +78,11 @@ def curvature_matrix_mirrored_from(curvature_matrix: np.ndarray, xp=np) -> np.nd
 
 
 def curvature_matrix_via_mapping_matrix_from(
-    mapping_matrix: np.ndarray,
-    noise_map: np.ndarray,
+    mapping_matrix: "np.ndarray",
+    noise_map: "np.ndarray",
     add_to_curvature_diag: bool = False,
     no_regularization_index_list: Optional[List] = None,
-    settings: SettingsInversion = SettingsInversion(),
+    settings: "SettingsInversion" = SettingsInversion(),
     xp=np,
 ) -> np.ndarray:
     """
@@ -97,10 +97,26 @@ def curvature_matrix_via_mapping_matrix_from(
     noise_map
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
-    array = mapping_matrix / noise_map[:, None]
-    curvature_matrix = xp.dot(array.T, array)
+    # NumPy path: keep it simple + stable
+    if xp is np:
+        A = mapping_matrix / noise_map[:, None]
+        curvature_matrix = xp.dot(A.T, A)
+    else:
+        # Choose compute dtype
 
-    if add_to_curvature_diag and len(no_regularization_index_list) > 0:
+        compute_dtype = xp.float32 if settings.use_mixed_precision else xp.float64
+        out_dtype = xp.float64  # always return float64 for downstream stability
+
+        A = mapping_matrix
+        w = (1.0 / noise_map).astype(compute_dtype)
+        A = A * w[:, None]
+        curvature_matrix = xp.dot(A.T, A).astype(out_dtype)
+
+    if (
+        add_to_curvature_diag
+        and no_regularization_index_list
+        and len(no_regularization_index_list) > 0
+    ):
         curvature_matrix = curvature_matrix_with_added_to_diag_from(
             curvature_matrix=curvature_matrix,
             value=settings.no_regularization_add_to_curvature_diag_value,

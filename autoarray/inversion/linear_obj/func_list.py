@@ -7,6 +7,7 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
 from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.type import Grid1D2DLike
 
 
@@ -15,6 +16,7 @@ class AbstractLinearObjFuncList(LinearObj):
         self,
         grid: Grid1D2DLike,
         regularization: Optional[AbstractRegularization],
+        settings=SettingsInversion(),
         xp=np,
     ):
         """
@@ -45,6 +47,7 @@ class AbstractLinearObjFuncList(LinearObj):
         super().__init__(regularization=regularization, xp=xp)
 
         self.grid = grid
+        self.settings = settings
 
     @cached_property
     def neighbors(self) -> Neighbors:

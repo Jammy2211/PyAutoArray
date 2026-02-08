@@ -95,6 +95,7 @@ class AbstractInversionImaging(AbstractInversion):
                 self.psf.convolved_mapping_matrix_from(
                     mapping_matrix=linear_obj.mapping_matrix,
                     mask=self.mask,
+                    use_mixed_precision=self.settings.use_mixed_precision,
                     xp=self._xp,
                 )
                 if linear_obj.operated_mapping_matrix_override is None

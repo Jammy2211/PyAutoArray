@@ -504,6 +504,10 @@ class Imaging(AbstractDataset):
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
 
+        logger.info(
+            "IMAGING - Setting Up Sparse Operator For low Memory Pixelizations."
+        )
+
         sparse_operator = (
             inversion_imaging_util.ImagingSparseOperator.from_noise_map_and_psf(
                 data=self.data,
