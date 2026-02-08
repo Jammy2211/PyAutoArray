@@ -314,16 +314,6 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     return xp.where(outside[:, None], moved, grid)
 
 
-class EllipseParams:
-
-    def __init__(self, origin, a, b, phi):
-
-        self.origin = origin
-        self.a = a
-        self.b = b
-        self.phi = phi
-
-
 class BorderRelocator:
     def __init__(
         self,
