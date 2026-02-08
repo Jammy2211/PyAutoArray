@@ -389,7 +389,6 @@ class BorderRelocator:
 
         self.sub_border_grid = sub_grid[self.sub_border_slim]
 
-    @property
     def relocated_grid_from(self, grid: Grid2D, xp=np) -> Grid2D:
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the

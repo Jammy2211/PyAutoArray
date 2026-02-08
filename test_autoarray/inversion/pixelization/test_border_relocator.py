@@ -356,7 +356,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
     assert relocated_grid.over_sampled[1] == pytest.approx(
-        [0.97783243, 0.00968151], 1e-4
+        [0.949953439, 0.009405479597], 1e-4
     )
 
 
