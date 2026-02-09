@@ -101,10 +101,9 @@ class InversionImagingMapping(AbstractInversionImaging):
             xp=self._xp,
         )
 
-
     def _mapped_reconstructed_data_dict_from(
-            self,
-            mapping_matrix_list,
+        self,
+        mapping_matrix_list,
     ) -> Dict["LinearObj", "Array2D"]:
         """
         Shared implementation for mapping a reconstruction to image-plane arrays
@@ -197,4 +196,3 @@ class InversionImagingMapping(AbstractInversionImaging):
         return self._mapped_reconstructed_data_dict_from(
             mapping_matrix_list=self.operated_mapping_matrix_list
         )
-

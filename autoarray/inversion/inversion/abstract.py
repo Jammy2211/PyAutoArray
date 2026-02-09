@@ -547,6 +547,22 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
+        return sum(self.mapped_reconstructed_data_dict.values())
+
+    @property
+    def mapped_reconstructed_operated_data(self) -> Union[Array2D, Visibilities]:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
         return sum(self.mapped_reconstructed_operated_data_dict.values())
 
     @property

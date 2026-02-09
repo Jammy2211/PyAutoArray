@@ -55,7 +55,7 @@ def test__fast_chi_squared(
 
     residual_map = aa.util.fit.residual_map_from(
         data=interferometer_7_no_fft.data,
-        model_data=inversion.mapped_reconstructed_data,
+        model_data=inversion.mapped_reconstructed_operated_data,
     )
 
     chi_squared_map = aa.util.fit.chi_squared_map_complex_from(

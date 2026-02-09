@@ -790,17 +790,17 @@ def mapped_reconstructed_data_via_image_to_pix_unique_from(
 
     data_pixels = data_to_pix_unique.shape[0]
 
-    mapped_reconstructed_data = np.zeros(data_pixels)
+    mapped_reconstructed_operated_data = np.zeros(data_pixels)
 
     for data_0 in range(data_pixels):
         for pix_0 in range(pix_lengths[data_0]):
             pix_for_data = data_to_pix_unique[data_0, pix_0]
 
-            mapped_reconstructed_data[data_0] += (
+            mapped_reconstructed_operated_data[data_0] += (
                 data_weights[data_0, pix_0] * reconstruction[pix_for_data]
             )
 
-    return mapped_reconstructed_data
+    return mapped_reconstructed_operated_data
 
 
 class SparseLinAlgImagingNumba:

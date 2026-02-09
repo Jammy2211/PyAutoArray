@@ -328,9 +328,9 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
 
-    masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_operated_data_dict[
-        linear_obj
-    ]
+    masked_imaging_7x7_no_blur.data -= (
+        inversion.mapped_reconstructed_operated_data_dict[linear_obj]
+    )
 
     inversion_no_linear_func = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
@@ -453,11 +453,11 @@ def test__inversion_interferometer__via_mapper(
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangularUniform)
     assert isinstance(inversion, aa.InversionInterferometerMapping)
-    assert inversion.mapped_reconstructed_data == pytest.approx(
+    assert inversion.mapped_reconstructed_operated_data == pytest.approx(
         1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
     )
-    assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
-    assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
+    assert (np.imag(inversion.mapped_reconstructed_operated_data) < 0.0001).all()
+    assert (np.imag(inversion.mapped_reconstructed_operated_data) > 0.0).all()
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.2116, 1.0e-4)
 
     inversion = aa.Inversion(
@@ -468,11 +468,11 @@ def test__inversion_interferometer__via_mapper(
 
     assert isinstance(inversion.linear_obj_list[0], aa.MapperDelaunay)
     assert isinstance(inversion, aa.InversionInterferometerMapping)
-    assert inversion.mapped_reconstructed_data == pytest.approx(
+    assert inversion.mapped_reconstructed_operated_data == pytest.approx(
         1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
     )
-    assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
-    assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
+    assert (np.imag(inversion.mapped_reconstructed_operated_data) < 0.0001).all()
+    assert (np.imag(inversion.mapped_reconstructed_operated_data) > 0.0).all()
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         14.49772, 1.0e-4
     )
@@ -540,9 +540,9 @@ def test__inversion_matrices__x2_mappers(
     )
     assert inversion.reconstruction[13] == pytest.approx(0.49999703908867, 1.0e-4)
 
-    assert inversion.mapped_reconstructed_operated_data_dict[rectangular_mapper_7x7_3x3][
-        4
-    ] == pytest.approx(0.5000029, 1.0e-4)
+    assert inversion.mapped_reconstructed_operated_data_dict[
+        rectangular_mapper_7x7_3x3
+    ][4] == pytest.approx(0.5000029, 1.0e-4)
     assert inversion.mapped_reconstructed_operated_data_dict[delaunay_mapper_9_3x3][
         3
     ] == pytest.approx(0.49999704, 1.0e-4)

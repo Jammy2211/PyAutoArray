@@ -483,7 +483,6 @@ class InversionImagingSparse(AbstractInversionImaging):
 
         return curvature_matrix
 
-
     def _mapped_reconstructed_data_dict_from(
         self,
         *,
@@ -530,11 +529,12 @@ class InversionImagingSparse(AbstractInversionImaging):
 
                     mapped = Array2D(values=mapped, mask=self.mask)
 
-
             else:
 
                 if use_operated_for_linear_func:
-                    mapping_matrix = self.linear_func_operated_mapping_matrix_dict[linear_obj]
+                    mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
+                        linear_obj
+                    ]
                 else:
                     mapping_matrix = self.linear_func_mapping_matrix_dict[linear_obj]
 

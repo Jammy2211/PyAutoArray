@@ -23,6 +23,7 @@ class MockInversion(AbstractInversion):
         reconstruction: np.ndarray = None,
         reconstruction_dict: List[np.ndarray] = None,
         mapped_reconstructed_operated_data_dict=None,
+        mapped_reconstructed_data_dict=None,
         mapped_reconstructed_image_dict=None,
         reconstruction_noise_map: np.ndarray = None,
         reconstruction_noise_map_dict: List[np.ndarray] = None,
@@ -56,7 +57,10 @@ class MockInversion(AbstractInversion):
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
 
-        self._mapped_reconstructed_operated_data_dict = mapped_reconstructed_operated_data_dict
+        self._mapped_reconstructed_operated_data_dict = (
+            mapped_reconstructed_operated_data_dict
+        )
+        self._mapped_reconstructed_data_dict = mapped_reconstructed_data_dict
         self._mapped_reconstructed_image_dict = mapped_reconstructed_image_dict
 
         self._reconstruction_noise_map = reconstruction_noise_map
@@ -130,6 +134,26 @@ class MockInversion(AbstractInversion):
         if self._reconstruction_dict is None:
             return super().reconstruction_dict
         return self._reconstruction_dict
+
+    @property
+    def mapped_reconstructed_data_dict(self):
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+
+        if self._mapped_reconstructed_data_dict is None:
+            return super().mapped_reconstructed_data_dict
+
+        return self._mapped_reconstructed_data_dict
 
     @property
     def mapped_reconstructed_operated_data_dict(self):
