@@ -27,7 +27,7 @@ inversion:                                 # Settings for plots of inversions (e
   sub_pixels_per_image_pixels: false       # Plot the number of sub pixels per masked data pixels?
   mesh_pixels_per_image_pixels: false      # Plot the number of image-plane mesh pixels per masked data pixels?
   image_pixels_per_mesh_pixels: false      # Plot the number of image pixels in each pixel of the mesh?
-  reconstructed_image: false               # Plot image of the reconstructed data (e.g. in the image-plane)?
+  reconstructed_operated_data: false               # Plot image of the reconstructed data (e.g. in the image-plane)?
   reconstruction: false                    # Plot the reconstructed inversion (e.g. the pixelization's mesh in the source-plane)?
   regularization_weights: false            # Plot the effective regularization weight of every inversion mesh pixel?
 fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometerPlotter).

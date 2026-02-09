@@ -137,7 +137,7 @@ class InversionInterferometerSparse(AbstractInversionInterferometer):
         """
         mapped_reconstructed_operated_data_dict = {}
 
-        image_dict = self.mapped_reconstructed_image_dict
+        image_dict = self.mapped_reconstructed_data_dict
 
         for linear_obj in self.linear_obj_list:
             visibilities = self.transformer.visibilities_from(

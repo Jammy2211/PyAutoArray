@@ -71,7 +71,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         ]
 
     @property
-    def mapped_reconstructed_image_dict(
+    def mapped_reconstructed_data_dict(
         self,
     ) -> Dict[LinearObj, Array2D]:
         """
@@ -97,7 +97,7 @@ class AbstractInversionInterferometer(AbstractInversion):
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
             individual mapper (in the image-plane).
         """
-        mapped_reconstructed_image_dict = {}
+        mapped_reconstructed_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=self.reconstruction
@@ -106,7 +106,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         for linear_obj in self.linear_obj_list:
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = (
+            mapped_reconstructed_data = (
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=linear_obj.mapping_matrix,
                     reconstruction=reconstruction,
@@ -114,13 +114,13 @@ class AbstractInversionInterferometer(AbstractInversion):
                 )
             )
 
-            mapped_reconstructed_image = Array2D(
-                values=mapped_reconstructed_image, mask=self.mask
+            mapped_reconstructed_data = Array2D(
+                values=mapped_reconstructed_data, mask=self.mask
             )
 
-            mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
+            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_data
 
-        return mapped_reconstructed_image_dict
+        return mapped_reconstructed_data_dict
 
     @property
     def fast_chi_squared(self):

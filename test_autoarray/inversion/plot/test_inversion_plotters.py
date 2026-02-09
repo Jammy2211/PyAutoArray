@@ -28,19 +28,19 @@ def test__individual_attributes_are_output_for_all_mappers(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.figures_2d(reconstructed_image=True)
+    inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
-    assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
+    assert path.join(plot_path, "reconstructed_operated_data.png") in plot_patch.paths
 
     inversion_plotter.figures_2d_of_pixelization(
         pixelization_index=0,
-        reconstructed_image=True,
+        reconstructed_operated_data=True,
         reconstruction=True,
         reconstruction_noise_map=True,
         regularization_weights=True,
     )
 
-    assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
+    assert path.join(plot_path, "reconstructed_operated_data.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths

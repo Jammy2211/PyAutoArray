@@ -277,7 +277,7 @@ def curvature_matrix_with_added_to_diag_from(
         return curvature_matrix.at[inds, inds].add(value)
 
 
-def mapped_reconstructed_image_via_sparse_operator_from(
+def mapped_reconstructed_operated_data_via_sparse_operator_from(
     reconstruction,  # (S,)
     rows,
     cols,

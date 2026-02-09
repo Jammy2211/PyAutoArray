@@ -76,6 +76,22 @@ class AbstractInversionImaging(AbstractInversion):
         return self.dataset.psf
 
     @property
+    def mapping_matrix_list(self) -> List[np.ndarray]:
+        """
+        The `mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        the linear objects model, before a operation like a convolution is applied.
+
+        This is used to construct the simultaneous linear equations which reconstruct the data.
+
+        This property returns the a list of each linear object's blurred mapping matrix, which is computed by
+        blurring each linear object's `mapping_matrix` property with the `psf` operator.
+
+        A linear object may have a `operated_mapping_matrix_override` property, which bypasses  the `mapping_matrix`
+        computation and convolution operator and is directly placed in the `operated_mapping_matrix_list`.
+        """
+        return [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
+
+    @property
     def operated_mapping_matrix_list(self) -> List[np.ndarray]:
         """
         The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and

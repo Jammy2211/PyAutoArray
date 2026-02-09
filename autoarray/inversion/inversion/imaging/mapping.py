@@ -118,7 +118,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         for index, linear_obj in enumerate(self.linear_obj_list):
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = (
+            mapped_reconstructed_operated_data = (
                 inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                     mapping_matrix=mapping_matrix_list[index],
                     reconstruction=reconstruction,
@@ -126,12 +126,12 @@ class InversionImagingMapping(AbstractInversionImaging):
                 )
             )
 
-            mapped_reconstructed_image = Array2D(
-                values=mapped_reconstructed_image,
+            mapped_reconstructed_operated_data = Array2D(
+                values=mapped_reconstructed_operated_data,
                 mask=self.mask,
             )
 
-            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
+            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_operated_data
 
         return mapped_reconstructed_data_dict
 

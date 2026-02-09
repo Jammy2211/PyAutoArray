@@ -518,22 +518,6 @@ class AbstractInversion:
         raise NotImplementedError
 
     @property
-    def mapped_reconstructed_image_dict(self) -> Dict[LinearObj, Array2D]:
-        """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
-        reconstruct the image data.
-
-        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
-        computed when using the w-tilde formalism.
-
-        Returns
-        -------
-        Array2D
-            The reconstructed image data which the inversion fits.
-        """
-        return self.mapped_reconstructed_operated_data_dict
-
-    @property
     def mapped_reconstructed_data(self) -> Union[Array2D, Visibilities]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -566,22 +550,6 @@ class AbstractInversion:
         return sum(self.mapped_reconstructed_operated_data_dict.values())
 
     @property
-    def mapped_reconstructed_image(self) -> Array2D:
-        """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
-        reconstruct the image data.
-
-        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
-        computed when using the w-tilde formalism.
-
-        Returns
-        -------
-        Array2D
-            The reconstructed image data which the inversion fits.
-        """
-        return sum(self.mapped_reconstructed_image_dict.values())
-
-    @property
     def data_subtracted_dict(self) -> Dict[LinearObj, Array2D]:
         """
         Returns a dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
@@ -605,7 +573,7 @@ class AbstractInversion:
                 if linear_obj != linear_obj_other:
                     data_subtracted_dict[
                         linear_obj
-                    ] -= self.mapped_reconstructed_image_dict[linear_obj_other]
+                    ] -= self.mapped_reconstructed_operated_data_dict[linear_obj_other]
 
         return data_subtracted_dict
 

@@ -382,40 +382,40 @@ def test__mapped_reconstructed_operated_data_dict():
     assert (inversion.mapped_reconstructed_operated_data == 3.0 * np.ones(2)).all()
 
 
-def test__mapped_reconstructed_image():
+def test__mapped_reconstructed_operated_data():
     linear_obj_0 = aa.m.MockLinearObj()
 
-    mapped_reconstructed_image_dict = {linear_obj_0: np.ones(3)}
+    mapped_reconstructed_operated_data_dict = {linear_obj_0: np.ones(3)}
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        mapped_reconstructed_image_dict=mapped_reconstructed_image_dict,
+        mapped_reconstructed_operated_data_dict=mapped_reconstructed_operated_data_dict,
         reconstruction=np.ones(3),
         reconstruction_dict=[None],
     )
 
-    assert (inversion.mapped_reconstructed_image_dict[linear_obj_0] == np.ones(3)).all()
-    assert (inversion.mapped_reconstructed_image == np.ones(3)).all()
+    assert (inversion.mapped_reconstructed_operated_data_dict[linear_obj_0] == np.ones(3)).all()
+    assert (inversion.mapped_reconstructed_operated_data == np.ones(3)).all()
 
     linear_obj_1 = aa.m.MockLinearObj()
 
-    mapped_reconstructed_image_dict = {
+    mapped_reconstructed_operated_data_dict = {
         linear_obj_0: np.ones(2),
         linear_obj_1: 2.0 * np.ones(2),
     }
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        mapped_reconstructed_image_dict=mapped_reconstructed_image_dict,
+        mapped_reconstructed_operated_data_dict=mapped_reconstructed_operated_data_dict,
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
         reconstruction_dict=[None, None],
     )
 
-    assert (inversion.mapped_reconstructed_image_dict[linear_obj_0] == np.ones(2)).all()
+    assert (inversion.mapped_reconstructed_operated_data_dict[linear_obj_0] == np.ones(2)).all()
     assert (
-        inversion.mapped_reconstructed_image_dict[linear_obj_1] == 2.0 * np.ones(2)
+        inversion.mapped_reconstructed_operated_data_dict[linear_obj_1] == 2.0 * np.ones(2)
     ).all()
-    assert (inversion.mapped_reconstructed_image == 3.0 * np.ones(2)).all()
+    assert (inversion.mapped_reconstructed_operated_data == 3.0 * np.ones(2)).all()
 
 
 def test__data_subtracted_dict():

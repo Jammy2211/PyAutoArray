@@ -508,7 +508,7 @@ class InversionImagingSparse(AbstractInversionImaging):
 
                 rows, cols, vals = linear_obj.sparse_triplets_curvature
 
-                mapped = inversion_imaging_util.mapped_reconstructed_image_via_sparse_operator_from(
+                mapped = inversion_imaging_util.mapped_reconstructed_operated_data_via_sparse_operator_from(
                     reconstruction=reconstruction,
                     rows=rows,
                     cols=cols,

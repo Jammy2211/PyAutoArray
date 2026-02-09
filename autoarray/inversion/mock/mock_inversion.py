@@ -22,9 +22,8 @@ class MockInversion(AbstractInversion):
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
         reconstruction_dict: List[np.ndarray] = None,
-        mapped_reconstructed_operated_data_dict=None,
         mapped_reconstructed_data_dict=None,
-        mapped_reconstructed_image_dict=None,
+        mapped_reconstructed_operated_data_dict=None,
         reconstruction_noise_map: np.ndarray = None,
         reconstruction_noise_map_dict: List[np.ndarray] = None,
         regularization_term=None,
@@ -57,11 +56,10 @@ class MockInversion(AbstractInversion):
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
 
+        self._mapped_reconstructed_data_dict = mapped_reconstructed_data_dict
         self._mapped_reconstructed_operated_data_dict = (
             mapped_reconstructed_operated_data_dict
         )
-        self._mapped_reconstructed_data_dict = mapped_reconstructed_data_dict
-        self._mapped_reconstructed_image_dict = mapped_reconstructed_image_dict
 
         self._reconstruction_noise_map = reconstruction_noise_map
         self._reconstruction_noise_map_dict = reconstruction_noise_map_dict
@@ -174,26 +172,6 @@ class MockInversion(AbstractInversion):
             return super().mapped_reconstructed_operated_data_dict
 
         return self._mapped_reconstructed_operated_data_dict
-
-    @property
-    def mapped_reconstructed_image_dict(self):
-        """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
-        reconstruct the image image.
-
-        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
-        computed when using the w-tilde formalism.
-
-        Returns
-        -------
-        Array2D
-            The reconstructed image image which the inversion fits.
-        """
-
-        if self._mapped_reconstructed_image_dict is None:
-            return super().mapped_reconstructed_image_dict
-
-        return self._mapped_reconstructed_image_dict
 
     @property
     def reconstruction_noise_map(self):

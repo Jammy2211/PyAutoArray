@@ -66,7 +66,7 @@ class InversionPlotter(AbstractPlotter):
             visuals_2d=self.visuals_2d,
         )
 
-    def figures_2d(self, reconstructed_image: bool = False):
+    def figures_2d(self, reconstructed_operated_data: bool = False):
         """
         Plots the individual attributes of the plotter's `Inversion` object in 2D.
 
@@ -75,15 +75,15 @@ class InversionPlotter(AbstractPlotter):
 
         Parameters
         ----------
-        reconstructed_image
+        reconstructed_operated_data
             Whether to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
-        if reconstructed_image:
+        if reconstructed_operated_data:
             self.mat_plot_2d.plot_array(
-                array=self.inversion.mapped_reconstructed_image,
+                array=self.inversion.mapped_reconstructed_operated_data,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
-                    title="Reconstructed Image", filename="reconstructed_image"
+                    title="Reconstructed Image", filename="reconstructed_operated_data"
                 ),
             )
 
@@ -91,7 +91,7 @@ class InversionPlotter(AbstractPlotter):
         self,
         pixelization_index: int = 0,
         data_subtracted: bool = False,
-        reconstructed_image: bool = False,
+        reconstructed_operated_data: bool = False,
         reconstruction: bool = False,
         reconstruction_noise_map: bool = False,
         signal_to_noise_map: bool = False,
@@ -112,7 +112,7 @@ class InversionPlotter(AbstractPlotter):
         ----------
         pixelization_index
             The index of the `Mapper` in the `Inversion`'s `linear_obj_list` that is plotted.
-        reconstructed_image
+        reconstructed_operated_data
             Whether to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
         reconstruction
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
@@ -160,8 +160,8 @@ class InversionPlotter(AbstractPlotter):
             except AttributeError:
                 pass
 
-        if reconstructed_image:
-            array = self.inversion.mapped_reconstructed_image_dict[
+        if reconstructed_operated_data:
+            array = self.inversion.mapped_reconstructed_operated_data_dict[
                 mapper_plotter.mapper
             ]
 
@@ -170,7 +170,7 @@ class InversionPlotter(AbstractPlotter):
                 visuals_2d=self.visuals_2d,
                 grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
                 auto_labels=AutoLabels(
-                    title="Reconstructed Image", filename="reconstructed_image"
+                    title="Reconstructed Image", filename="reconstructed_operated_data"
                 ),
             )
 
@@ -320,14 +320,14 @@ class InversionPlotter(AbstractPlotter):
         )
 
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstructed_image=True
+            pixelization_index=mapper_index, reconstructed_operated_data=True
         )
 
         self.mat_plot_2d.use_log10 = True
         self.mat_plot_2d.contour = False
 
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstructed_image=True
+            pixelization_index=mapper_index, reconstructed_operated_data=True
         )
 
         self.mat_plot_2d.use_log10 = False
@@ -340,7 +340,7 @@ class InversionPlotter(AbstractPlotter):
 
         self.set_title(label="Mesh Pixel Grid Overlaid")
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstructed_image=True
+            pixelization_index=mapper_index, reconstructed_operated_data=True
         )
         self.set_title(label=None)
 
@@ -424,7 +424,7 @@ class InversionPlotter(AbstractPlotter):
         self.visuals_2d.indexes = indexes
 
         self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, reconstructed_image=True
+            pixelization_index=pixelization_index, reconstructed_operated_data=True
         )
 
         self.figures_2d_of_pixelization(
