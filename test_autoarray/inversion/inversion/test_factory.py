@@ -328,7 +328,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
 
-    masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_data_dict[
+    masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_operated_data_dict[
         linear_obj
     ]
 
@@ -540,10 +540,10 @@ def test__inversion_matrices__x2_mappers(
     )
     assert inversion.reconstruction[13] == pytest.approx(0.49999703908867, 1.0e-4)
 
-    assert inversion.mapped_reconstructed_data_dict[rectangular_mapper_7x7_3x3][
+    assert inversion.mapped_reconstructed_operated_data_dict[rectangular_mapper_7x7_3x3][
         4
     ] == pytest.approx(0.5000029, 1.0e-4)
-    assert inversion.mapped_reconstructed_data_dict[delaunay_mapper_9_3x3][
+    assert inversion.mapped_reconstructed_operated_data_dict[delaunay_mapper_9_3x3][
         3
     ] == pytest.approx(0.49999704, 1.0e-4)
     assert inversion.mapped_reconstructed_image[4] == pytest.approx(0.99999998, 1.0e-4)

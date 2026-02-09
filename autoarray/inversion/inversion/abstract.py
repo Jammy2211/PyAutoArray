@@ -514,7 +514,7 @@ class AbstractInversion:
         return source_quantity_dict
 
     @property
-    def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_operated_data_dict(self) -> Dict[LinearObj, Array2D]:
         raise NotImplementedError
 
     @property
@@ -531,7 +531,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.mapped_reconstructed_data_dict
+        return self.mapped_reconstructed_operated_data_dict
 
     @property
     def mapped_reconstructed_data(self) -> Union[Array2D, Visibilities]:
@@ -547,7 +547,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return sum(self.mapped_reconstructed_data_dict.values())
+        return sum(self.mapped_reconstructed_operated_data_dict.values())
 
     @property
     def mapped_reconstructed_image(self) -> Array2D:

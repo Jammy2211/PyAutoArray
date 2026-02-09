@@ -112,7 +112,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         return curvature_matrix
 
     @property
-    def mapped_reconstructed_data_dict(
+    def mapped_reconstructed_operated_data_dict(
         self,
     ) -> Dict[LinearObj, Visibilities]:
         """
@@ -132,7 +132,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         the `reconstruction` maps to pixels in the data-frame after the 2D non-uniform fast Fourier transformer
         operation has been performed.
         """
-        mapped_reconstructed_data_dict = {}
+        mapped_reconstructed_operated_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=self.reconstruction
@@ -152,6 +152,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
             visibilities = Visibilities(visibilities=visibilities)
 
-            mapped_reconstructed_data_dict[linear_obj] = visibilities
+            mapped_reconstructed_operated_data_dict[linear_obj] = visibilities
 
-        return mapped_reconstructed_data_dict
+        return mapped_reconstructed_operated_data_dict

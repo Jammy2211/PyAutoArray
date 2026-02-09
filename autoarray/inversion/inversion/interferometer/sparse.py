@@ -109,7 +109,7 @@ class InversionInterferometerSparse(AbstractInversionInterferometer):
         )
 
     @property
-    def mapped_reconstructed_data_dict(
+    def mapped_reconstructed_operated_data_dict(
         self,
     ) -> Dict[LinearObj, Visibilities]:
         """
@@ -135,7 +135,7 @@ class InversionInterferometerSparse(AbstractInversionInterferometer):
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
             individual mapper (in the image-plane).
         """
-        mapped_reconstructed_data_dict = {}
+        mapped_reconstructed_operated_data_dict = {}
 
         image_dict = self.mapped_reconstructed_image_dict
 
@@ -146,6 +146,6 @@ class InversionInterferometerSparse(AbstractInversionInterferometer):
 
             visibilities = Visibilities(visibilities=visibilities)
 
-            mapped_reconstructed_data_dict[linear_obj] = visibilities
+            mapped_reconstructed_operated_data_dict[linear_obj] = visibilities
 
-        return mapped_reconstructed_data_dict
+        return mapped_reconstructed_operated_data_dict

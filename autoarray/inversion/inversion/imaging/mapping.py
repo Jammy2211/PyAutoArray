@@ -102,7 +102,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         )
 
     @property
-    def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_operated_data_dict(self) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
@@ -126,7 +126,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             individual mapper (in the image-plane).
         """
 
-        mapped_reconstructed_data_dict = {}
+        mapped_reconstructed_operated_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=self.reconstruction
@@ -149,6 +149,6 @@ class InversionImagingMapping(AbstractInversionImaging):
                 values=mapped_reconstructed_image, mask=self.mask
             )
 
-            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
+            mapped_reconstructed_operated_data_dict[linear_obj] = mapped_reconstructed_image
 
-        return mapped_reconstructed_data_dict
+        return mapped_reconstructed_operated_data_dict
