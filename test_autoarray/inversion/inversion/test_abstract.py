@@ -394,7 +394,9 @@ def test__mapped_reconstructed_operated_data():
         reconstruction_dict=[None],
     )
 
-    assert (inversion.mapped_reconstructed_operated_data_dict[linear_obj_0] == np.ones(3)).all()
+    assert (
+        inversion.mapped_reconstructed_operated_data_dict[linear_obj_0] == np.ones(3)
+    ).all()
     assert (inversion.mapped_reconstructed_operated_data == np.ones(3)).all()
 
     linear_obj_1 = aa.m.MockLinearObj()
@@ -411,9 +413,12 @@ def test__mapped_reconstructed_operated_data():
         reconstruction_dict=[None, None],
     )
 
-    assert (inversion.mapped_reconstructed_operated_data_dict[linear_obj_0] == np.ones(2)).all()
     assert (
-        inversion.mapped_reconstructed_operated_data_dict[linear_obj_1] == 2.0 * np.ones(2)
+        inversion.mapped_reconstructed_operated_data_dict[linear_obj_0] == np.ones(2)
+    ).all()
+    assert (
+        inversion.mapped_reconstructed_operated_data_dict[linear_obj_1]
+        == 2.0 * np.ones(2)
     ).all()
     assert (inversion.mapped_reconstructed_operated_data == 3.0 * np.ones(2)).all()
 

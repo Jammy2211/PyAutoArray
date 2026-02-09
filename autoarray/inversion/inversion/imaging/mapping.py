@@ -131,7 +131,9 @@ class InversionImagingMapping(AbstractInversionImaging):
                 mask=self.mask,
             )
 
-            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_operated_data
+            mapped_reconstructed_data_dict[linear_obj] = (
+                mapped_reconstructed_operated_data
+            )
 
         return mapped_reconstructed_data_dict
 
