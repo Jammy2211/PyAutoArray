@@ -467,6 +467,91 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
 
         return curvature_matrix
 
+    def _mapped_reconstructed_data_dict_from(
+        self,
+        *,
+        use_operated_for_linear_func: bool,
+    ) -> Dict["LinearObj", "Array2D"]:
+        """
+        Shared implementation for mapping a reconstruction to image-plane arrays for each linear object.
+
+        - AbstractMapper: uses unique mappings (w-tilde compatible) + PSF convolution.
+        - Linear-func: uses either operated or unoperated mapping matrix dict.
+        """
+        mapped_dict: Dict["LinearObj", "Array2D"] = {}
+
+        reconstruction_dict = self.source_quantity_dict_from(
+            source_quantity=self.reconstruction
+        )
+
+        for linear_obj in self.linear_obj_list:
+            reconstruction = reconstruction_dict[linear_obj]
+
+            if isinstance(linear_obj, AbstractMapper):
+
+                mapped = inversion_imaging_numba_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
+                    data_weights=linear_obj.unique_mappings.data_weights,
+                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
+                    reconstruction=np.array(reconstruction),
+                )
+
+                mapped = Array2D(values=mapped, mask=self.mask)
+
+                if use_operated_for_linear_func:
+                    mapped = self.psf.convolved_image_from(
+                        image=mapped,
+                        blurring_image=None,
+                    ).array
+
+                    mapped = Array2D(values=mapped, mask=self.mask)
+
+            else:
+                
+                if use_operated_for_linear_func:
+                    mapping_matrix = self.linear_func_operated_mapping_matrix_dict[linear_obj]
+                else:
+                    mapping_matrix = self.linear_func_mapping_matrix_dict[linear_obj]
+
+                mapped = np.sum(reconstruction * mapping_matrix, axis=1)
+                mapped = Array2D(values=mapped, mask=self.mask)
+
+            mapped_dict[linear_obj] = mapped
+
+        return mapped_dict
+
+    @property
+    def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
+        """
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
+        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
+        as ndarrays) do not contain information on which linear object(s) they correspond to.
+
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed data values, where the keys are the instances of each mapper in the inversion.
+
+        The images are the unconvolved reconstructed data values, meaning they are the solved for reconstruction
+        with PSF operations removed.
+
+        The w-tilde formalism bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
+        the reconstruction's values to the image-plane. Instead, the unique data-to-pixelization mappings are used,
+        including the 2D convolution operation after mapping is complete.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the image-plane).
+        """
+        return self._mapped_reconstructed_data_dict_from(
+            use_operated_for_linear_func=False
+        )
+
     @property
     def mapped_reconstructed_operated_data_dict(self) -> Dict[LinearObj, Array2D]:
         """
@@ -482,6 +567,9 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
         This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
         object's reconstructed data values, where the keys are the instances of each mapper in the inversion.
 
+        The images are the convolved reconstructed data values, meaning they are the solved for reconstruction with PSF
+        operations included.
+
         The w-tilde formalism bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
         the reconstruction's values to the image-plane. Instead, the unique data-to-pixelization mappings are used,
         including the 2D convolution operation after mapping is complete.
@@ -492,52 +580,8 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
             individual mapper (in the image-plane).
         """
-
-        mapped_reconstructed_operated_data_dict = {}
-
-        reconstruction_dict = self.source_quantity_dict_from(
-            source_quantity=self.reconstruction
+        return self._mapped_reconstructed_data_dict_from(
+            use_operated_for_linear_func=True
         )
 
-        for linear_obj in self.linear_obj_list:
-            reconstruction = reconstruction_dict[linear_obj]
 
-            if isinstance(linear_obj, AbstractMapper):
-
-                mapped_reconstructed_image = inversion_imaging_numba_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
-                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-                    data_weights=linear_obj.unique_mappings.data_weights,
-                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    reconstruction=np.array(reconstruction),
-                )
-
-                mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image, mask=self.mask
-                )
-
-                mapped_reconstructed_image = self.psf.convolved_image_from(
-                    image=mapped_reconstructed_image,
-                    blurring_image=None,
-                ).array
-
-                mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image, mask=self.mask
-                )
-
-            else:
-
-                operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
-                    linear_obj
-                ]
-
-                mapped_reconstructed_image = np.sum(
-                    reconstruction * operated_mapping_matrix, axis=1
-                )
-
-                mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image, mask=self.mask
-                )
-
-            mapped_reconstructed_operated_data_dict[linear_obj] = mapped_reconstructed_image
-
-        return mapped_reconstructed_operated_data_dict
