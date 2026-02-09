@@ -101,8 +101,43 @@ class InversionImagingMapping(AbstractInversionImaging):
             xp=self._xp,
         )
 
+
+    def _mapped_reconstructed_data_dict_from(
+            self,
+            mapping_matrix_list,
+    ) -> Dict["LinearObj", "Array2D"]:
+        """
+        Shared implementation for mapping a reconstruction to image-plane arrays
+        using a provided list of mapping matrices (operated or unoperated).
+        """
+        mapped_reconstructed_data_dict = {}
+
+        reconstruction_dict = self.source_quantity_dict_from(
+            source_quantity=self.reconstruction
+        )
+
+        for index, linear_obj in enumerate(self.linear_obj_list):
+            reconstruction = reconstruction_dict[linear_obj]
+
+            mapped_reconstructed_image = (
+                inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+                    mapping_matrix=mapping_matrix_list[index],
+                    reconstruction=reconstruction,
+                    xp=self._xp,
+                )
+            )
+
+            mapped_reconstructed_image = Array2D(
+                values=mapped_reconstructed_image,
+                mask=self.mask,
+            )
+
+            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
+
+        return mapped_reconstructed_data_dict
+
     @property
-    def mapped_reconstructed_operated_data_dict(self) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_data_dict(self) -> Dict["LinearObj", "Array2D"]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
@@ -116,6 +151,9 @@ class InversionImagingMapping(AbstractInversionImaging):
         This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
         object's reconstructed data values, where the keys are the instances of each mapper in the inversion.
 
+        The images are the unconvolved reconstructed data values, meaning they are the solved for reconstruction
+        with PSF operations removed.
+
         To perform this mapping the `mapping_matrix` is used, which straightforwardly describes how every value of
         the `reconstruction` maps to pixels in the data-frame after the 2D convolution operation has been performed.
 
@@ -125,30 +163,38 @@ class InversionImagingMapping(AbstractInversionImaging):
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
             individual mapper (in the image-plane).
         """
-
-        mapped_reconstructed_operated_data_dict = {}
-
-        reconstruction_dict = self.source_quantity_dict_from(
-            source_quantity=self.reconstruction
+        return self._mapped_reconstructed_data_dict_from(
+            mapping_matrix_list=self.mapping_matrix_list
         )
 
-        operated_mapping_matrix_list = self.operated_mapping_matrix_list
+    @property
+    def mapped_reconstructed_operated_data_dict(self) -> Dict["LinearObj", "Array2D"]:
+        """
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
+        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
+        as ndarrays) do not contain information on which linear object(s) they correspond to.
 
-        for index, linear_obj in enumerate(self.linear_obj_list):
-            reconstruction = reconstruction_dict[linear_obj]
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
 
-            mapped_reconstructed_image = (
-                inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                    mapping_matrix=operated_mapping_matrix_list[index],
-                    reconstruction=reconstruction,
-                    xp=self._xp,
-                )
-            )
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed data values, where the keys are the instances of each mapper in the inversion.
 
-            mapped_reconstructed_image = Array2D(
-                values=mapped_reconstructed_image, mask=self.mask
-            )
+        The images are the convolved reconstructed data values, meaning they are the solved for reconstruction with PSF
+        operations included.
 
-            mapped_reconstructed_operated_data_dict[linear_obj] = mapped_reconstructed_image
+        To perform this mapping the `mapping_matrix` is used, which straightforwardly describes how every value of
+        the `reconstruction` maps to pixels in the data-frame after the 2D convolution operation has been performed.
 
-        return mapped_reconstructed_operated_data_dict
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the image-plane).
+        """
+        return self._mapped_reconstructed_data_dict_from(
+            mapping_matrix_list=self.operated_mapping_matrix_list
+        )
+
