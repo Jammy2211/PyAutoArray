@@ -974,6 +974,7 @@ def test__pixel_coordinates_2d_from():
 
 import pytest
 
+
 def test__pixel_coordinates_wcs_2d_from():
     # -----------------------------
     # (2,2) grid: centre is (1.5, 1.5) in WCS pixels

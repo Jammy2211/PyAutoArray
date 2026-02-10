@@ -379,17 +379,10 @@ def pixel_coordinates_wcs_2d_from(
     xcen_wcs = (nx + 1) / 2.0
 
     # Continuous WCS pixel coordinates (NO int-cast, NO +0.5 binning)
-    y_wcs = (
-        (-scaled_coordinates_2d[0] + origins[0]) / pixel_scales[0]
-        + ycen_wcs
-    )
-    x_wcs = (
-        (scaled_coordinates_2d[1] - origins[1]) / pixel_scales[1]
-        + xcen_wcs
-    )
+    y_wcs = (-scaled_coordinates_2d[0] + origins[0]) / pixel_scales[0] + ycen_wcs
+    x_wcs = (scaled_coordinates_2d[1] - origins[1]) / pixel_scales[1] + xcen_wcs
 
     return (y_wcs, x_wcs)
-
 
 
 def transform_grid_2d_to_reference_frame(
