@@ -972,7 +972,6 @@ def test__pixel_coordinates_2d_from():
     assert scaled_coordinates == (0.0, 6.0)
 
 
-import pytest
 
 
 def test__pixel_coordinates_wcs_2d_from():
