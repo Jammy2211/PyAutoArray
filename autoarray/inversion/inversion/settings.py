@@ -59,8 +59,6 @@ class SettingsInversion:
         self.tolerance = tolerance
         self.maxiter = maxiter
 
-        print(self._use_border_relocator)
-
     @property
     def use_positive_only_solver(self):
         if self._use_positive_only_solver is None:
@@ -77,8 +75,6 @@ class SettingsInversion:
 
     @property
     def use_border_relocator(self):
-
-        print(self._use_border_relocator)
 
         if self._use_border_relocator is None:
             return conf.instance["general"]["inversion"]["use_border_relocator"]
