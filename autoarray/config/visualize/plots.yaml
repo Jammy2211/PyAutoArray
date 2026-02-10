@@ -21,7 +21,7 @@ fit:                                       # Settings for plots of all fits (e.g
 fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
 inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
-  subplot_mappings: true                   # Plot subplot of the image-to-source pixels mappings of each pixelization?
+  subplot_mappings: false                  # Plot subplot of the image-to-source pixels mappings of each pixelization?
   data_subtracted: false                   # Plot individual plots of the data with the other inversion linear objects subtracted?
   reconstruction_noise_map: false          # Plot image of the noise of every mesh-pixel reconstructed value?
   sub_pixels_per_image_pixels: false       # Plot the number of sub pixels per masked data pixels?

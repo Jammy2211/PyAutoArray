@@ -357,6 +357,57 @@ def scaled_coordinates_2d_from(
     return (y_pixel, x_pixel)
 
 
+def pixel_coordinates_wcs_2d_from(
+    scaled_coordinates_2d: Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: ty.PixelScales,
+    origins: Tuple[float, float] = (0.0, 0.0),
+) -> Tuple[float, float]:
+    """
+    Return FITS / WCS pixel coordinates (1-based, pixel-centre convention) as floats.
+
+    This function returns continuous pixel coordinates suitable for Astropy WCS
+    transforms (e.g. ``wcs_pix2world`` with ``origin=1``). Pixel centres lie at
+    integer values; for an image of shape ``(ny, nx)`` the geometric centre is::
+
+        ((ny + 1) / 2, (nx + 1) / 2)
+
+    e.g. ``(100, 100) -> (50.5, 50.5)``.
+
+    Parameters
+    ----------
+    scaled_coordinates_2d
+        The 2D (y, x) coordinates in scaled units which are converted to WCS
+        pixel coordinates.
+    shape_native
+        The (y, x) shape of the 2D array on which the scaled coordinates are
+        defined, used to determine the geometric centre in WCS pixel units.
+    pixel_scales
+        The (y, x) conversion factors from scaled units to pixel units.
+    origins
+        The (y, x) origin in scaled units about which the coordinates are
+        defined. The scaled coordinates are shifted by this origin before being
+        converted to WCS pixel coordinates.
+
+    Returns
+    -------
+    pixel_coordinates_wcs_2d
+        A 2D (y, x) WCS pixel coordinate in the 1-based, pixel-centre
+        convention, returned as floats.
+    """
+    ny, nx = shape_native
+
+    # Geometric centre in WCS pixel coordinates (1-based, pixel centres at integers)
+    ycen_wcs = (ny + 1) / 2.0
+    xcen_wcs = (nx + 1) / 2.0
+
+    # Continuous WCS pixel coordinates (NO int-cast, NO +0.5 binning)
+    y_wcs = (-scaled_coordinates_2d[0] + origins[0]) / pixel_scales[0] + ycen_wcs
+    x_wcs = (scaled_coordinates_2d[1] - origins[1]) / pixel_scales[1] + xcen_wcs
+
+    return (y_wcs, x_wcs)
+
+
 def transform_grid_2d_to_reference_frame(
     grid_2d: np.ndarray, centre: Tuple[float, float], angle: float, xp=np
 ) -> np.ndarray:

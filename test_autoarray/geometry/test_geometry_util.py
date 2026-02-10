@@ -972,6 +972,281 @@ def test__pixel_coordinates_2d_from():
     assert scaled_coordinates == (0.0, 6.0)
 
 
+
+
+def test__pixel_coordinates_wcs_2d_from():
+    # -----------------------------
+    # (2,2) grid: centre is (1.5, 1.5) in WCS pixels
+    # pixel_scales = (2,2)
+    # -----------------------------
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(1.0, -1.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(1.0, 1.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 2.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-1.0, -1.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-1.0, 1.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 2.0))
+
+    # -----------------------------
+    # (3,3) grid: centre is (2.0, 2.0) in WCS pixels
+    # pixel_scales = (3,3)
+    # -----------------------------
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(3.0, -3.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(3.0, 0.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 2.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(3.0, 3.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 3.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.0, -3.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.0, 0.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 2.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.0, 3.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 3.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-3.0, -3.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((3.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-3.0, 0.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((3.0, 2.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-3.0, 3.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((3.0, 3.0))
+
+    # -----------------------------------------
+    # Inputs near corners (continuous coordinates)
+    # -----------------------------------------
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(1.99, -1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((0.505, 0.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(1.99, -0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((0.505, 1.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.01, -1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.495, 0.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.01, -0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.495, 1.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(2.01, 0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((0.495, 1.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(2.01, 1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((0.495, 2.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.01, 0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.495, 1.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.01, 1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.495, 2.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-0.01, -1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.505, 0.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-0.01, -0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.505, 1.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-1.99, -1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.495, 0.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-1.99, -0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.495, 1.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-0.01, 0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.505, 1.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-0.01, 1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.505, 2.495))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-1.99, 0.01),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.495, 1.505))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(-1.99, 1.99),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.495, 2.495))
+
+    # -----------------------------------------
+    # Inputs are centres (origins shift), still continuous outputs
+    # -----------------------------------------
+
+    # Inputs are centres (origins shift), continuous outputs
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(2.0, 0.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+        origins=(1.0, 1.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(2.0, 2.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+        origins=(1.0, 1.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 2.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.0, 0.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+        origins=(1.0, 1.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(0.0, 2.0),
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+        origins=(1.0, 1.0),
+    )
+    assert pixel_coordinates == pytest.approx((2.0, 2.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(6.0, 0.0),
+        shape_native=(3, 3),
+        pixel_scales=(3.0, 3.0),
+        origins=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.0, 1.0))
+
+    pixel_coordinates = aa.util.geometry.pixel_coordinates_wcs_2d_from(
+        scaled_coordinates_2d=(6.0, 3.0),
+        shape_native=(4, 4),
+        pixel_scales=(3.0, 3.0),
+        origins=(3.0, 3.0),
+    )
+    assert pixel_coordinates == pytest.approx((1.5, 2.5))
+
+
 def test__transform_2d_grid_to_reference_frame():
     grid_2d = np.array([[0.0, 1.0], [1.0, 1.0], [1.0, 0.0]])
 
