@@ -194,24 +194,29 @@ class Geometry2D(AbstractGeometry2D):
         self, scaled_coordinates_2d: Tuple[float, float]
     ) -> Tuple[float, float]:
         """
-        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as floats such that they
-        include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
+        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) WCS/FITS-style pixel coordinate.
 
-        The conversion is performed according to the 2D geometry on a uniform grid, where the pixel coordinate origin
-        is at the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled
-        coordinate and lowest (most negative) x scaled coordinate on the gird.
+        The returned pixel coordinates follow the standard WCS convention:
 
-        The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
-        1D grid pixel coordinate values.
+        - Coordinates are 1-based rather than 0-based, so that the centre of the top-left pixel is at (y, x) = (1.0, 1.0).
+        - Coordinates refer to pixel centres, not pixel corners.
+        - Values are continuous floats, so the fractional part encodes the sub-pixel offset from the pixel centre.
+
+        This differs from integer pixel-index conversions (e.g. ``pixel_coordinates_2d_from``), which return 0-based
+        indices associated with pixel corners/top-left positions.
+
+        The mapping from scaled coordinates to WCS pixel coordinates is defined by this geometry's ``origin``: scaled
+        coordinates are first shifted by the specified origin(s) before being converted using the pixel scale and
+        array shape. Changing ``origin`` therefore translates the returned WCS pixel coordinates by a constant offset.
 
         Parameters
         ----------
         scaled_coordinates_2d
-            The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+            The 2D (y,x) coordinates in scaled units to be converted to WCS-style pixel coordinates.
 
         Returns
         -------
-        A 2D (y,x) pixel-value coordinate.
+        A 2D (y,x) WCS pixel coordinate, expressed as 1-based, pixel-centre, floating-point values.
         """
         return geometry_util.pixel_coordinates_wcs_2d_from(
             scaled_coordinates_2d=scaled_coordinates_2d,
