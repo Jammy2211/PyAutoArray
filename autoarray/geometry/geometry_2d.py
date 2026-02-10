@@ -134,8 +134,8 @@ class Geometry2D(AbstractGeometry2D):
         self, scaled_coordinates_2d: Tuple[float, float]
     ) -> Tuple[float, float]:
         """
-        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as floats such that they
-        include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
+        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as integers such that
+        they do not include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
 
         The conversion is performed according to the 2D geometry on a uniform grid, where the pixel coordinate origin
         is at the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled
@@ -185,6 +185,36 @@ class Geometry2D(AbstractGeometry2D):
 
         return geometry_util.scaled_coordinates_2d_from(
             pixel_coordinates_2d=pixel_coordinates_2d,
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origins=self.origin,
+        )
+
+    def pixel_coordinates_wcs_2d_from(
+        self, scaled_coordinates_2d: Tuple[float, float]
+    ) -> Tuple[float, float]:
+        """
+        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as floats such that they
+        include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
+
+        The conversion is performed according to the 2D geometry on a uniform grid, where the pixel coordinate origin
+        is at the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled
+        coordinate and lowest (most negative) x scaled coordinate on the gird.
+
+        The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
+        1D grid pixel coordinate values.
+
+        Parameters
+        ----------
+        scaled_coordinates_2d
+            The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+
+        Returns
+        -------
+        A 2D (y,x) pixel-value coordinate.
+        """
+        return geometry_util.pixel_coordinates_wcs_2d_from(
+            scaled_coordinates_2d=scaled_coordinates_2d,
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origins=self.origin,

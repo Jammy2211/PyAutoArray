@@ -357,6 +357,41 @@ def scaled_coordinates_2d_from(
     return (y_pixel, x_pixel)
 
 
+def pixel_coordinates_wcs_2d_from(
+    scaled_coordinates_2d,
+    shape_native,
+    pixel_scales,
+    origins=(0.0, 0.0),
+):
+    """
+    Return FITS / WCS pixel coordinates (1-based, pixel-centre convention) as floats.
+
+    This function returns continuous pixel coordinates suitable for Astropy WCS
+    transforms (e.g. wcs_pix2world with origin=1). Pixel centres lie at integer
+    values; for an image of shape (ny, nx) the geometric centre is:
+        ((ny + 1)/2, (nx + 1)/2)
+    e.g. (100, 100) -> (50.5, 50.5).
+    """
+    ny, nx = shape_native
+
+    # Geometric centre in WCS pixel coordinates (1-based, pixel centres at integers)
+    ycen_wcs = (ny + 1) / 2.0
+    xcen_wcs = (nx + 1) / 2.0
+
+    # Continuous WCS pixel coordinates (NO int-cast, NO +0.5 binning)
+    y_wcs = (
+        (-scaled_coordinates_2d[0] + origins[0]) / pixel_scales[0]
+        + ycen_wcs
+    )
+    x_wcs = (
+        (scaled_coordinates_2d[1] - origins[1]) / pixel_scales[1]
+        + xcen_wcs
+    )
+
+    return (y_wcs, x_wcs)
+
+
+
 def transform_grid_2d_to_reference_frame(
     grid_2d: np.ndarray, centre: Tuple[float, float], angle: float, xp=np
 ) -> np.ndarray:
