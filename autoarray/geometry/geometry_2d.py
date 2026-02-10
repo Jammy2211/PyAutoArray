@@ -132,7 +132,7 @@ class Geometry2D(AbstractGeometry2D):
 
     def pixel_coordinates_2d_from(
         self, scaled_coordinates_2d: Tuple[float, float]
-    ) -> Tuple[float, float]:
+    ) -> Tuple[int, int]:
         """
         Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as integers such that
         they do not include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
