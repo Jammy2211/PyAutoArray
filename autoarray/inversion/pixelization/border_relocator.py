@@ -263,7 +263,7 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     return origin, a, b, phi
 
 
-def relocated_grid_via_ellipse_border_fro1m(grid, origin, a, b, phi, xp=np, eps=1e-12):
+def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
     """
     Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
     rotated by phi radians (counterclockwise).
@@ -299,7 +299,8 @@ def relocated_grid_via_ellipse_border_fro1m(grid, origin, a, b, phi, xp=np, eps=
     q = (xprime / a) ** 2 + (yprime / b) ** 2
 
     outside = q > 1.0
-    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
+    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0))
+    scale = xp.minimum(scale, 1.0)
 
     # scale back to boundary
     xprime2 = xprime * scale
@@ -313,28 +314,6 @@ def relocated_grid_via_ellipse_border_fro1m(grid, origin, a, b, phi, xp=np, eps=
 
     return xp.where(outside[:, None], moved, grid)
 
-def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
-    dy = grid[:, 0] - origin[0]
-    dx = grid[:, 1] - origin[1]
-
-    c = xp.cos(phi)
-    s = xp.sin(phi)
-
-    xprime = c * dx + s * dy
-    yprime = -s * dx + c * dy
-
-    # ellipse radius in normalized coords
-    q = (xprime / a) ** 2 + (yprime / b) ** 2
-
-    outside = q > 1.0
-    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
-
-    # scale back to boundary
-    xprime2 = xprime * scale
-    yprime2 = yprime * scale
-
-    moved = xp.stack([origin[0] + yprime2, origin[1] + xprime2], axis=1)
-    return xp.where(outside[:, None], moved, grid)
 
 class BorderRelocator:
     def __init__(
