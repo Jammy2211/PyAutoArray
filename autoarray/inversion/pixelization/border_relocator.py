@@ -323,7 +323,10 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     xprime = c * dx + s * dy
     yprime = -s * dx + c * dy
 
-    outside = xprime > xp.asarray(0.0, dtype=grid.dtype)
+    # ellipse radius in normalized coords
+    q = (xprime / a) ** 2 + (yprime / b) ** 2
+
+    outside = q > 1.0
 
     moved = xp.stack([origin[0] + yprime, origin[1] + xprime], axis=1)
     return xp.where(outside[:, None], moved, grid)
