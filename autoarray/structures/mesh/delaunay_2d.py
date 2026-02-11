@@ -42,12 +42,7 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
 
     if use_voronoi_areas:
 
-        try:
-            areas = voronoi_areas_numpy(points)
-        except Exception as e:
-            # Qhull precision problems -> fallback
-            print(f"[pure_callback] Voronoi failed ({type(e).__name__}); falling back to barycentric areas.")
-            areas = barycentric_dual_area_from(points, simplices, xp=np)
+        areas = voronoi_areas_numpy(points)
 
         max_area = np.percentile(areas, 90.0)
 
