@@ -46,6 +46,28 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
             points,
         )
 
+        # --- DEBUG / SAFETY CHECK: Voronoi areas ---
+        if not np.isfinite(areas).all():
+            n_nan = np.isnan(areas).sum()
+            n_inf = np.isinf(areas).sum()
+            print(
+                f"[pure_callback] Voronoi areas NON-FINITE: "
+                f"n_nan={n_nan} n_inf={n_inf} "
+                f"min={np.nanmin(areas)} max={np.nanmax(areas)}"
+            )
+
+            # Save everything needed to reproduce offline
+            np.savez(
+                "callback_bad_voronoi_areas.npz",
+                points=points,
+                areas=areas,
+            )
+
+            raise FloatingPointError(
+                "voronoi_areas_numpy produced NaN/inf; "
+                "saved callback_bad_voronoi_areas.npz"
+            )
+
         max_area = np.percentile(areas, 90.0)
 
         areas[areas == -1] = max_area
@@ -66,17 +88,6 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
         points=points_np,
         area_weights=split_point_areas,
     )
-
-    # DEBUG: split_points must be finite for KDTree/query
-    if not np.isfinite(split_points).all():
-        n_nan = np.isnan(split_points).sum()
-        n_inf = np.isinf(split_points).sum()
-        print(f"[pure_callback] split_points NON-FINITE: n_nan={n_nan} n_inf={n_inf} "
-              f"min={np.nanmin(split_points)} max={np.nanmax(split_points)}")
-        np.savez("callback_bad_split_points.npz",
-                 points=points_np, split_point_areas=split_point_areas, split_points=split_points)
-        raise FloatingPointError("split_points contains NaN/inf; saved callback_bad_split_points.npz")
-
 
     # ---------- find_simplex for split cross points ----------
     split_points_idx = tri.find_simplex(split_points)
@@ -341,22 +352,9 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     # Case 2: Outside → KDTree NN
     # ---------------------------
     if outside_mask.any():
-        x = source_plane_data_grid[outside_mask]
-
-        if not np.isfinite(x).all():
-            n_nan = np.isnan(x).sum()
-            n_inf = np.isinf(x).sum()
-            print(f"[pure_callback] KDTree.query input NON-FINITE: n_nan={n_nan} n_inf={n_inf} "
-                  f"shape={x.shape} dtype={x.dtype}")
-            np.savez("callback_bad_kdtree_x.npz",
-                     x=x, source_plane_data_grid=source_plane_data_grid, outside_mask=outside_mask,
-                     delaunay_points=delaunay_points)
-            raise FloatingPointError("KDTree.query got NaN/inf; saved callback_bad_kdtree_x.npz")
-
         tree = cKDTree(delaunay_points)
-        _, idx = tree.query(x, k=1)
+        _, idx = tree.query(source_plane_data_grid[outside_mask], k=1)
         out[outside_mask, 0] = idx.astype(np.int32)
-
 
     out = out.astype(np.int32)
 
