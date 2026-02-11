@@ -311,7 +311,7 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
 
     moved = xp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
 
-    return grid
+    return moved
 
     return xp.where(outside[:, None], moved, grid)
 
