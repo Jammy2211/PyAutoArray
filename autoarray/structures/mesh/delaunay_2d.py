@@ -40,24 +40,24 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
 
     # ---------- Voronoi or Barycentric Areas used to weight split points ----------
 
-    if use_voronoi_areas:
+    # if use_voronoi_areas:
+    #
+    #     areas = voronoi_areas_numpy(
+    #         points,
+    #     )
+    #
+    #     max_area = np.percentile(areas, 90.0)
+    #
+    #     areas[areas == -1] = max_area
+    #     areas[areas > max_area] = max_area
+    #
+    # else:
 
-        areas = voronoi_areas_numpy(
-            points,
-        )
-
-        max_area = np.percentile(areas, 90.0)
-
-        areas[areas == -1] = max_area
-        areas[areas > max_area] = max_area
-
-    else:
-
-        areas = barycentric_dual_area_from(
-            points,
-            simplices,
-            xp=np,
-        )
+    areas = barycentric_dual_area_from(
+        points,
+        simplices,
+        xp=np,
+    )
 
     split_point_areas = areas_factor * np.sqrt(areas)
 

@@ -263,51 +263,55 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     return origin, a, b, phi
 
 
-def relocated_grid_via_ellipse_border_from(
-    grid, origin, a, b, phi, xp=np, eps=1e-12, border_frac=1e-2
-):
+def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
     """
-    Move points outside the ellipse to a contour slightly *outside* the border
-    to avoid geometric degeneracy in Voronoi/Delaunay.
+    Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
+    rotated by phi radians (counterclockwise).
 
-    border_frac: fractional expansion of ellipse radius
-                 (e.g. 1e-3 = +0.1% outside).
+    Parameters
+    ----------
+    grid : (N,2)
+        Coordinates in (y, x) order.
+    origin : (2,)
+        Ellipse center (y0, x0).
+    a, b : float
+        Semi-major and semi-minor axes.
+    phi : float
+        Rotation angle in radians.
+    xp : module
+        numpy-like module (np, jnp, cupy, etc.).
+    eps : float
+        Numerical safety epsilon.
     """
 
+    # shift to origin
     dy = grid[:, 0] - origin[0]
     dx = grid[:, 1] - origin[1]
 
     c = xp.cos(phi)
     s = xp.sin(phi)
 
-    # Rotate into ellipse-aligned frame
+    # rotate into ellipse-aligned frame
     xprime = c * dx + s * dy
     yprime = -s * dx + c * dy
 
-    # Normalized ellipse radius
+    # ellipse radius in normalized coords
     q = (xprime / a) ** 2 + (yprime / b) ** 2
 
     outside = q > 1.0
+    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
 
-    # Target radius slightly OUTSIDE ellipse
-    expand = xp.asarray(1.0 + border_frac, dtype=q.dtype)
-    q_target = expand * expand  # (1 + border_frac)^2
-
-    # Project only outside points
-    safe_q = xp.maximum(q, xp.asarray(1.0, dtype=q.dtype))
-    scale = xp.sqrt(q_target / safe_q)
-
+    # scale back to boundary
     xprime2 = xprime * scale
     yprime2 = yprime * scale
 
-    # Rotate back
+    # rotate back to original frame
     dx2 = c * xprime2 - s * yprime2
     dy2 = s * xprime2 + c * yprime2
 
     moved = xp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
 
     return xp.where(outside[:, None], moved, grid)
-
 
 
 class BorderRelocator:
