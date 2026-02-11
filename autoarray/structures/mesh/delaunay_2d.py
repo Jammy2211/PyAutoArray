@@ -168,7 +168,7 @@ def barycentric_dual_area_from(
     return dual_area
 
 
-def voronoi_areas_numpy(points, qhull_options="Qbb Qc Qx Qm"):
+def voronoi_areas_numpy(points, qhull_options="Qbb Qc Qx Qm Q12 Pp"):
     """
     Compute Voronoi cell areas with a fully optimized pure-NumPy pipeline.
     Exact match to the per-cell SciPy Voronoi loop but much faster.
