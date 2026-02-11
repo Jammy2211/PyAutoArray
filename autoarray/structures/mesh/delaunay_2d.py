@@ -59,9 +59,7 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
             xp=np,
         )
 
-    areas = np.maximum(areas, 0.0)
     split_point_areas = areas_factor * np.sqrt(areas)
-    split_point_areas = np.where(np.isfinite(split_point_areas), split_point_areas, 0.0)
 
     # ---------- Compute split cross points for Split regularization ----------
     split_points = split_points_from(

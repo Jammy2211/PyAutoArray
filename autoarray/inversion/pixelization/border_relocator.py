@@ -263,7 +263,7 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     return origin, a, b, phi
 
 
-def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
+def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, border_frac=1e-3):
     """
     Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
     rotated by phi radians (counterclockwise).
@@ -284,28 +284,32 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
         Numerical safety epsilon.
     """
 
-    # shift to origin
     dy = grid[:, 0] - origin[0]
     dx = grid[:, 1] - origin[1]
 
     c = xp.cos(phi)
     s = xp.sin(phi)
 
-    # rotate into ellipse-aligned frame
     xprime = c * dx + s * dy
     yprime = -s * dx + c * dy
 
-    # ellipse radius in normalized coords
     q = (xprime / a) ** 2 + (yprime / b) ** 2
 
     outside = q > 1.0
-    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
 
-    # scale back to boundary
+    # Target radius in normalized coords (slightly inside 1.0)
+    # Using squared target so it matches q's definition.
+    shrink = xp.asarray(1.0 - border_frac, dtype=q.dtype)
+    q_target = shrink * shrink  # (1 - border_frac)^2
+
+    # Project outside points to q = q_target
+    # scale^2 * q = q_target  ->  scale = sqrt(q_target / q)
+    safe_q = xp.maximum(q, xp.asarray(1.0, dtype=q.dtype))  # outside => q>=1; inside => 1
+    scale = xp.sqrt(q_target / safe_q)
+
     xprime2 = xprime * scale
     yprime2 = yprime * scale
 
-    # rotate back to original frame
     dx2 = c * xprime2 - s * yprime2
     dy2 = s * xprime2 + c * yprime2
 
