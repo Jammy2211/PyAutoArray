@@ -263,25 +263,15 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     return origin, a, b, phi
 
 
-def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, border_frac=1e-2):
+def relocated_grid_via_ellipse_border_from(
+    grid, origin, a, b, phi, xp=np, eps=1e-12, border_frac=1e-3
+):
     """
-    Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
-    rotated by phi radians (counterclockwise).
+    Move points outside the ellipse to a contour slightly *outside* the border
+    to avoid geometric degeneracy in Voronoi/Delaunay.
 
-    Parameters
-    ----------
-    grid : (N,2)
-        Coordinates in (y, x) order.
-    origin : (2,)
-        Ellipse center (y0, x0).
-    a, b : float
-        Semi-major and semi-minor axes.
-    phi : float
-        Rotation angle in radians.
-    xp : module
-        numpy-like module (np, jnp, cupy, etc.).
-    eps : float
-        Numerical safety epsilon.
+    border_frac: fractional expansion of ellipse radius
+                 (e.g. 1e-3 = +0.1% outside).
     """
 
     dy = grid[:, 0] - origin[0]
@@ -290,32 +280,34 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, borde
     c = xp.cos(phi)
     s = xp.sin(phi)
 
+    # Rotate into ellipse-aligned frame
     xprime = c * dx + s * dy
     yprime = -s * dx + c * dy
 
+    # Normalized ellipse radius
     q = (xprime / a) ** 2 + (yprime / b) ** 2
 
     outside = q > 1.0
 
-    # Target radius in normalized coords (slightly inside 1.0)
-    # Using squared target so it matches q's definition.
-    shrink = xp.asarray(1.0 - border_frac, dtype=q.dtype)
-    q_target = shrink * shrink  # (1 - border_frac)^2
+    # Target radius slightly OUTSIDE ellipse
+    expand = xp.asarray(1.0 + border_frac, dtype=q.dtype)
+    q_target = expand * expand  # (1 + border_frac)^2
 
-    # Project outside points to q = q_target
-    # scale^2 * q = q_target  ->  scale = sqrt(q_target / q)
-    safe_q = xp.maximum(q, xp.asarray(1.0, dtype=q.dtype))  # outside => q>=1; inside => 1
+    # Project only outside points
+    safe_q = xp.maximum(q, xp.asarray(1.0, dtype=q.dtype))
     scale = xp.sqrt(q_target / safe_q)
 
     xprime2 = xprime * scale
     yprime2 = yprime * scale
 
+    # Rotate back
     dx2 = c * xprime2 - s * yprime2
     dy2 = s * xprime2 + c * yprime2
 
     moved = xp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
 
     return xp.where(outside[:, None], moved, grid)
+
 
 
 class BorderRelocator:
