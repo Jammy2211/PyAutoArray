@@ -263,7 +263,7 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     return origin, a, b, phi
 
 
-def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
+def relocated_grid_via_ellipse_border_fro1m(grid, origin, a, b, phi, xp=np, eps=1e-12):
     """
     Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
     rotated by phi radians (counterclockwise).
@@ -284,14 +284,12 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
         Numerical safety epsilon.
     """
 
-    import jax.numpy as jnp
-
     # shift to origin
     dy = grid[:, 0] - origin[0]
     dx = grid[:, 1] - origin[1]
 
-    c = jnp.cos(phi)
-    s = jnp.sin(phi)
+    c = xp.cos(phi)
+    s = xp.sin(phi)
 
     # rotate into ellipse-aligned frame
     xprime = c * dx + s * dy
@@ -301,7 +299,7 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     q = (xprime / a) ** 2 + (yprime / b) ** 2
 
     outside = q > 1.0
-    scale = 1.0 / jnp.sqrt(jnp.maximum(q, 1.0 + eps))
+    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
 
     # scale back to boundary
     xprime2 = xprime * scale
@@ -311,10 +309,14 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     dx2 = c * xprime2 - s * yprime2
     dy2 = s * xprime2 + c * yprime2
 
-    moved = jnp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
+    moved = xp.stack([origin[0] + dy2, origin[1] + dx2], axis=1)
 
-    return jnp.where(outside[:, None], moved, grid)
+    return xp.where(outside[:, None], moved, grid)
 
+def relocated_grid_via_ellipse_border_from_v0(grid, origin, a, b, phi, xp=np, eps=1e-12):
+    outside = grid[:, 0] > xp.asarray(0.0, dtype=grid.dtype)
+    moved = grid  # identical
+    return xp.where(outside[:, None], moved, grid)
 
 class BorderRelocator:
     def __init__(
