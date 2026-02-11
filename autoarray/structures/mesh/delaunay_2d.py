@@ -64,6 +64,66 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
 
     max_simplices = 2 * points_np.shape[0]
 
+    # --- Delaunay mesh using source plane data grid ---
+    tri = Delaunay(points_np)
+
+    points = tri.points.astype(points_np.dtype)
+    simplices = tri.simplices.astype(np.int32)
+
+    # Pad simplices to max_simplices
+    simplices_padded = -np.ones((max_simplices, 3), dtype=np.int32)
+    simplices_padded[: simplices.shape[0]] = simplices
+
+    # ---------- find_simplex for source plane data grid ----------
+    simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
+
+    mappings = pix_indexes_for_sub_slim_index_delaunay_from(
+        source_plane_data_grid=query_points_np,
+        simplex_index_for_sub_slim_index=simplex_idx,
+        pix_indexes_for_simplex_index=simplices,
+        delaunay_points=points_np,
+    )
+
+    # ---------- Voronoi or Barycentric Areas used to weight split points ----------
+
+    if use_voronoi_areas:
+
+        areas = voronoi_areas_numpy(
+            points,
+        )
+
+        max_area = np.percentile(areas, 90.0)
+
+        areas[areas == -1] = max_area
+        areas[areas > max_area] = max_area
+
+    else:
+
+        areas = barycentric_dual_area_from(
+            points,
+            simplices,
+            xp=np,
+        )
+
+    split_point_areas = areas_factor * np.sqrt(areas)
+
+    # ---------- Compute split cross points for Split regularization ----------
+    split_points = split_points_from(
+        points=points_np,
+        area_weights=split_point_areas,
+    )
+
+    # ---------- find_simplex for split cross points ----------
+    split_points_idx = tri.find_simplex(split_points)
+
+    splitted_mappings = pix_indexes_for_sub_slim_index_delaunay_from(
+        source_plane_data_grid=split_points,
+        simplex_index_for_sub_slim_index=split_points_idx,
+        pix_indexes_for_simplex_index=simplices,
+        delaunay_points=points_np,
+    )
+
+    return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
 def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
@@ -81,7 +141,9 @@ def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
     splitted_mappings_shape = jax.ShapeDtypeStruct((N * 4, 3), jnp.int32)
 
     return jax.pure_callback(
-        lambda points, qpts: scipy_delaunay(points, qpts, use_voronoi_areas, areas_factor),
+        lambda points, qpts: scipy_delaunay(
+            np.asarray(points), np.asarray(qpts), use_voronoi_areas, areas_factor
+        ),
         (
             points_shape,
             simplices_padded_shape,
