@@ -67,28 +67,6 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
         area_weights=split_point_areas,
     )
 
-    # --- DEBUG / SAFETY CHECK: Voronoi areas ---
-    if not np.isfinite(split_points).all():
-        n_nan = np.isnan(split_points).sum()
-        n_inf = np.isinf(split_points).sum()
-        print(
-            f"[pure_callback] Voronoi split_points NON-FINITE: "
-            f"n_nan={n_nan} n_inf={n_inf} "
-            f"min={np.nanmin(split_points)} max={np.nanmax(split_points)}"
-        )
-
-        # Save everything needed to reproduce offline
-        np.savez(
-            "callback_bad_voronoi_split_points.npz",
-            points=points,
-            split_points=split_points,
-        )
-
-        raise FloatingPointError(
-            "voronoi_split_points_numpy produced NaN/inf; "
-            "saved callback_bad_voronoi_split_points.npz"
-        )
-
     # ---------- find_simplex for split cross points ----------
     split_points_idx = tri.find_simplex(split_points)
 
@@ -280,6 +258,28 @@ def split_points_from(points, area_weights, xp=np):
 
     N = points.shape[0]
     offsets = area_weights
+
+    if not np.isfinite(offsets).all():
+        n_nan = np.isnan(offsets).sum()
+        n_inf = np.isinf(offsets).sum()
+        print(
+            f"[pure_callback] Voronoi offsets NON-FINITE: "
+            f"n_nan={n_nan} n_inf={n_inf} "
+            f"min={np.nanmin(offsets)} max={np.nanmax(offsets)}"
+        )
+
+        # Save everything needed to reproduce offline
+        np.savez(
+            "callback_bad_voronoi_offsets.npz",
+            points=points,
+            offsets=offsets,
+        )
+
+        raise FloatingPointError(
+            "voronoi_offsets_numpy produced NaN/inf; "
+            "saved callback_bad_voronoi_offsets.npz"
+        )
+
 
     x = points[:, 0]
     y = points[:, 1]
