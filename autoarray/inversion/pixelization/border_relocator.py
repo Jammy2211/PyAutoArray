@@ -314,8 +314,18 @@ def relocated_grid_via_ellipse_border_fro1m(grid, origin, a, b, phi, xp=np, eps=
     return xp.where(outside[:, None], moved, grid)
 
 def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
-    outside = grid[:, 0] > xp.asarray(0.0, dtype=grid.dtype)
-    moved = grid + xp.asarray(1e-3, dtype=grid.dtype)  # constant shift
+    dy = grid[:, 0] - origin[0]
+    dx = grid[:, 1] - origin[1]
+
+    c = xp.cos(phi)
+    s = xp.sin(phi)
+
+    xprime = c * dx + s * dy
+    yprime = -s * dx + c * dy
+
+    outside = xprime > xp.asarray(0.0, dtype=grid.dtype)
+
+    moved = xp.stack([origin[0] + yprime, origin[1] + xprime], axis=1)
     return xp.where(outside[:, None], moved, grid)
 
 class BorderRelocator:
