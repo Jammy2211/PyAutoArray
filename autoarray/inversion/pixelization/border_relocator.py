@@ -284,6 +284,8 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
         Numerical safety epsilon.
     """
 
+    return grid
+
     # shift to origin
     dy = grid[:, 0] - origin[0]
     dx = grid[:, 1] - origin[1]
