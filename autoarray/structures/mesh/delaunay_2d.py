@@ -13,54 +13,8 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray import exc
 
 
-def _debug_host_array(name: str, x):
-    """
-    Print shape/dtype/strides and nan/inf counts for a host-side array-like.
-    Safe to call inside pure_callback.
-    """
-    arr = np.asarray(x)  # IMPORTANT: raw view BEFORE any dtype/contiguous conversion
-    finite = np.isfinite(arr)
-    n_nan = np.isnan(arr).sum()
-    n_inf = np.isinf(arr).sum()
-    n_bad = (~finite).sum()
-
-    print(
-        f"[pure_callback] {name}: shape={arr.shape} dtype={arr.dtype} strides={arr.strides} "
-        f"n_bad={n_bad} n_nan={n_nan} n_inf={n_inf}"
-    )
-
-    # Print a tiny sample for sanity (won't crash on empty)
-    flat = arr.reshape(-1)
-    head = flat[:10] if flat.size >= 10 else flat
-    print(f"[pure_callback] {name}: head={head}")
-
-    return arr
-
-
-
 def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
-
-    # --- Debug: what did the callback actually receive? ---
-    points_raw = _debug_host_array("points_raw", points_np)
-    qpts_raw = _debug_host_array("qpts_raw", query_points_np)
-
-    # If anything is non-finite, save inputs to replay and crash immediately.
-    if (not np.isfinite(points_raw).all()) or (not np.isfinite(qpts_raw).all()):
-        np.savez("callback_bad_inputs.npz", points=points_raw, qpts=qpts_raw)
-        raise FloatingPointError(
-            "Non-finite values at pure_callback entry; saved callback_bad_inputs.npz"
-        )
-
-    # (Optional but helpful) enforce expected rank early:
-    if points_raw.ndim != 2 or points_raw.shape[1] != 2:
-        raise ValueError(f"points_raw unexpected shape {points_raw.shape}")
-    if qpts_raw.ndim != 2 or qpts_raw.shape[1] != 2:
-        raise ValueError(f"qpts_raw unexpected shape {qpts_raw.shape}")
-
-    # Continue using the raw arrays
-    points_np = points_raw
-    query_points_np = qpts_raw
 
     max_simplices = 2 * points_np.shape[0]
 
@@ -112,6 +66,17 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
         points=points_np,
         area_weights=split_point_areas,
     )
+
+    # DEBUG: split_points must be finite for KDTree/query
+    if not np.isfinite(split_points).all():
+        n_nan = np.isnan(split_points).sum()
+        n_inf = np.isinf(split_points).sum()
+        print(f"[pure_callback] split_points NON-FINITE: n_nan={n_nan} n_inf={n_inf} "
+              f"min={np.nanmin(split_points)} max={np.nanmax(split_points)}")
+        np.savez("callback_bad_split_points.npz",
+                 points=points_np, split_point_areas=split_point_areas, split_points=split_points)
+        raise FloatingPointError("split_points contains NaN/inf; saved callback_bad_split_points.npz")
+
 
     # ---------- find_simplex for split cross points ----------
     split_points_idx = tri.find_simplex(split_points)
@@ -376,9 +341,22 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     # Case 2: Outside → KDTree NN
     # ---------------------------
     if outside_mask.any():
+        x = source_plane_data_grid[outside_mask]
+
+        if not np.isfinite(x).all():
+            n_nan = np.isnan(x).sum()
+            n_inf = np.isinf(x).sum()
+            print(f"[pure_callback] KDTree.query input NON-FINITE: n_nan={n_nan} n_inf={n_inf} "
+                  f"shape={x.shape} dtype={x.dtype}")
+            np.savez("callback_bad_kdtree_x.npz",
+                     x=x, source_plane_data_grid=source_plane_data_grid, outside_mask=outside_mask,
+                     delaunay_points=delaunay_points)
+            raise FloatingPointError("KDTree.query got NaN/inf; saved callback_bad_kdtree_x.npz")
+
         tree = cKDTree(delaunay_points)
-        _, idx = tree.query(source_plane_data_grid[outside_mask], k=1)
+        _, idx = tree.query(x, k=1)
         out[outside_mask, 0] = idx.astype(np.int32)
+
 
     out = out.astype(np.int32)
 
