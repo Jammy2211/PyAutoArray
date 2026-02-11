@@ -264,7 +264,7 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
 
 
 def relocated_grid_via_ellipse_border_from(
-    grid, origin, a, b, phi, xp=np, eps=1e-12, border_frac=1e-3
+    grid, origin, a, b, phi, xp=np, eps=1e-12, border_frac=1e-2
 ):
     """
     Move points outside the ellipse to a contour slightly *outside* the border
