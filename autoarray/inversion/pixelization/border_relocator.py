@@ -263,7 +263,7 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     return origin, a, b, phi
 
 
-def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, border_frac=1e-3):
+def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, border_frac=1e-2):
     """
     Rotated ellipse centered at origin with semi-axes a (major, x'), b (minor, y'),
     rotated by phi radians (counterclockwise).
