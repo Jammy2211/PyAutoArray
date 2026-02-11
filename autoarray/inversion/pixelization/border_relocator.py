@@ -298,7 +298,7 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     # # ellipse radius in normalized coords
     # q = (xprime / a) ** 2 + (yprime / b) ** 2
 
-    outside = q > 1.0
+    outside = a > 1.0
     # scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
     #
     # # scale back to boundary
