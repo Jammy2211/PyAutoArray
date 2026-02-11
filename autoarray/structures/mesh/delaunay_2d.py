@@ -13,71 +13,57 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray import exc
 
 
+def _debug_host_array(name: str, x):
+    """
+    Print shape/dtype/strides and nan/inf counts for a host-side array-like.
+    Safe to call inside pure_callback.
+    """
+    arr = np.asarray(x)  # IMPORTANT: raw view BEFORE any dtype/contiguous conversion
+    finite = np.isfinite(arr)
+    n_nan = np.isnan(arr).sum()
+    n_inf = np.isinf(arr).sum()
+    n_bad = (~finite).sum()
+
+    print(
+        f"[pure_callback] {name}: shape={arr.shape} dtype={arr.dtype} strides={arr.strides} "
+        f"n_bad={n_bad} n_nan={n_nan} n_inf={n_inf}"
+    )
+
+    # Print a tiny sample for sanity (won't crash on empty)
+    flat = arr.reshape(-1)
+    head = flat[:10] if flat.size >= 10 else flat
+    print(f"[pure_callback] {name}: head={head}")
+
+    return arr
+
+
+
 def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
 
+    # --- Debug: what did the callback actually receive? ---
+    points_raw = _debug_host_array("points_raw", points_np)
+    qpts_raw = _debug_host_array("qpts_raw", query_points_np)
+
+    # If anything is non-finite, save inputs to replay and crash immediately.
+    if (not np.isfinite(points_raw).all()) or (not np.isfinite(qpts_raw).all()):
+        np.savez("callback_bad_inputs.npz", points=points_raw, qpts=qpts_raw)
+        raise FloatingPointError(
+            "Non-finite values at pure_callback entry; saved callback_bad_inputs.npz"
+        )
+
+    # (Optional but helpful) enforce expected rank early:
+    if points_raw.ndim != 2 or points_raw.shape[1] != 2:
+        raise ValueError(f"points_raw unexpected shape {points_raw.shape}")
+    if qpts_raw.ndim != 2 or qpts_raw.shape[1] != 2:
+        raise ValueError(f"qpts_raw unexpected shape {qpts_raw.shape}")
+
+    # Continue using the raw arrays
+    points_np = points_raw
+    query_points_np = qpts_raw
+
     max_simplices = 2 * points_np.shape[0]
 
-    # --- Delaunay mesh using source plane data grid ---
-    tri = Delaunay(points_np)
-
-    points = tri.points.astype(points_np.dtype)
-    simplices = tri.simplices.astype(np.int32)
-
-    # Pad simplices to max_simplices
-    simplices_padded = -np.ones((max_simplices, 3), dtype=np.int32)
-    simplices_padded[: simplices.shape[0]] = simplices
-
-    # ---------- find_simplex for source plane data grid ----------
-    simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
-
-    mappings = pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=query_points_np,
-        simplex_index_for_sub_slim_index=simplex_idx,
-        pix_indexes_for_simplex_index=simplices,
-        delaunay_points=points_np,
-    )
-
-    # ---------- Voronoi or Barycentric Areas used to weight split points ----------
-
-    if use_voronoi_areas:
-
-        areas = voronoi_areas_numpy(
-            points,
-        )
-
-        max_area = np.percentile(areas, 90.0)
-
-        areas[areas == -1] = max_area
-        areas[areas > max_area] = max_area
-
-    else:
-
-        areas = barycentric_dual_area_from(
-            points,
-            simplices,
-            xp=np,
-        )
-
-    split_point_areas = areas_factor * np.sqrt(areas)
-
-    # ---------- Compute split cross points for Split regularization ----------
-    split_points = split_points_from(
-        points=points_np,
-        area_weights=split_point_areas,
-    )
-
-    # ---------- find_simplex for split cross points ----------
-    split_points_idx = tri.find_simplex(split_points)
-
-    splitted_mappings = pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=split_points,
-        simplex_index_for_sub_slim_index=split_points_idx,
-        pix_indexes_for_simplex_index=simplices,
-        delaunay_points=points_np,
-    )
-
-    return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
 def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
@@ -95,9 +81,7 @@ def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
     splitted_mappings_shape = jax.ShapeDtypeStruct((N * 4, 3), jnp.int32)
 
     return jax.pure_callback(
-        lambda points, qpts: scipy_delaunay(
-            np.asarray(points), np.asarray(qpts), use_voronoi_areas, areas_factor
-        ),
+        lambda points, qpts: scipy_delaunay(points, qpts, use_voronoi_areas, areas_factor),
         (
             points_shape,
             simplices_padded_shape,
