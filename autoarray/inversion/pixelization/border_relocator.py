@@ -327,8 +327,13 @@ def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1
     q = (xprime / a) ** 2 + (yprime / b) ** 2
 
     outside = q > 1.0
+    scale = 1.0 / xp.sqrt(xp.maximum(q, 1.0 + eps))
 
-    moved = xp.stack([origin[0] + yprime, origin[1] + xprime], axis=1)
+    # scale back to boundary
+    xprime2 = xprime * scale
+    yprime2 = yprime * scale
+
+    moved = xp.stack([origin[0] + yprime2, origin[1] + xprime2], axis=1)
     return xp.where(outside[:, None], moved, grid)
 
 class BorderRelocator:
