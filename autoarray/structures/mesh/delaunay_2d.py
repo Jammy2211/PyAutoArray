@@ -45,6 +45,8 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
         areas = voronoi_areas_numpy(points)
 
         max_area = np.percentile(areas, 90.0)
+        if max_area <= 0:
+            max_area = 0.1
 
         areas[areas == -1] = max_area
         areas[areas > max_area] = max_area
