@@ -59,7 +59,9 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
             xp=np,
         )
 
+    areas = np.maximum(areas, 0.0)
     split_point_areas = areas_factor * np.sqrt(areas)
+    split_point_areas = np.where(np.isfinite(split_point_areas), split_point_areas, 0.0)
 
     # ---------- Compute split cross points for Split regularization ----------
     split_points = split_points_from(
@@ -258,28 +260,6 @@ def split_points_from(points, area_weights, xp=np):
 
     N = points.shape[0]
     offsets = area_weights
-
-    if not np.isfinite(offsets).all():
-        n_nan = np.isnan(offsets).sum()
-        n_inf = np.isinf(offsets).sum()
-        print(
-            f"[pure_callback] Voronoi offsets NON-FINITE: "
-            f"n_nan={n_nan} n_inf={n_inf} "
-            f"min={np.nanmin(offsets)} max={np.nanmax(offsets)}"
-        )
-
-        # Save everything needed to reproduce offline
-        np.savez(
-            "callback_bad_voronoi_offsets.npz",
-            points=points,
-            offsets=offsets,
-        )
-
-        raise FloatingPointError(
-            "voronoi_offsets_numpy produced NaN/inf; "
-            "saved callback_bad_voronoi_offsets.npz"
-        )
-
 
     x = points[:, 0]
     y = points[:, 1]
