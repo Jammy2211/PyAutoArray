@@ -126,7 +126,7 @@ class Delaunay(AbstractMesh):
 
         relocated_mesh_grid = self.relocated_mesh_grid_from(
             border_relocator=border_relocator,
-            source_plane_data_grid=Grid2DIrregular(relocated_grid.over_sampled),
+            source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             xp=xp,
         )
