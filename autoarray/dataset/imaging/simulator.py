@@ -138,10 +138,14 @@ class SimulatorImaging:
 
         if self.use_real_space_convolution:
             image = self.psf.convolved_image_via_real_space_from(
-                image=image, blurring_image=None, xp=xp,
+                image=image,
+                blurring_image=None,
+                xp=xp,
             )
         else:
-            image = self.psf.convolved_image_from(image=image, blurring_image=None, xp=xp)
+            image = self.psf.convolved_image_from(
+                image=image, blurring_image=None, xp=xp
+            )
 
         image = image + background_sky_map
 
