@@ -612,6 +612,7 @@ class Kernel2D(AbstractArray2D):
         image,
         blurring_image,
         jax_method="direct",
+        use_mixed_precision : bool = False,
         xp=np,
     ):
         """
@@ -741,6 +742,9 @@ class Kernel2D(AbstractArray2D):
             blurred_image = blurred_image.resized_from(
                 new_shape=image_shape_original, mask_pad_value=0
             )
+
+        if use_mixed_precision:
+            blurred_image = blurred_image.astype(jnp.float32)
 
         return blurred_image
 
@@ -1120,6 +1124,7 @@ class Kernel2D(AbstractArray2D):
             blurring_mask=blurring_mask,
             xp=xp,
         )
+
         # 6) Real-space convolution, broadcast kernel over source axis
         kernel = self.stored_native.array
 
