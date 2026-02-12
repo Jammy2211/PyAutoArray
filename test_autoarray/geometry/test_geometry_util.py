@@ -972,8 +972,6 @@ def test__pixel_coordinates_2d_from():
     assert scaled_coordinates == (0.0, 6.0)
 
 
-
-
 def test__pixel_coordinates_wcs_2d_from():
     # -----------------------------
     # (2,2) grid: centre is (1.5, 1.5) in WCS pixels
