@@ -20,6 +20,7 @@ class SimulatorImaging:
         background_sky_level: float = 0.0,
         subtract_background_sky: bool = True,
         psf: Kernel2D = None,
+        use_real_space_convolution: bool = True,
         normalize_psf: bool = True,
         add_poisson_noise_to_data: bool = True,
         include_poisson_noise_in_noise_map: bool = True,
@@ -69,7 +70,12 @@ class SimulatorImaging:
         subtract_background_sky
             If `True`, the background sky level is subtracted from the simulated dataset, otherwise it is left in.
         psf
-            An array describing the PSF kernel of the image.
+            An array describing the PSF kernel of the image, if None no PSF convolution is applied.
+        use_real_space_convolution
+            If `True`, the PSF convolution is performed in real space, if `False` it is performed in Fourier space.
+            Real space convolution avoids aliasing effects that can occur in Fourier space convolution, but is slower.
+            If the PSF kernel is small (e.g. 11x11) then real space convolution is recommended, whereas if the PSF
+            kernel is large (e.g. 51x51) then Fourier space convolution with care to pad the image to avoid aliasing is recommended.
         normalize_psf
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
         add_poisson_noise_to_data
@@ -91,6 +97,7 @@ class SimulatorImaging:
         else:
             self.psf = Kernel2D.no_blur(pixel_scales=1.0)
 
+        self.use_real_space_convolution = use_real_space_convolution
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
         self.subtract_background_sky = subtract_background_sky
@@ -129,7 +136,12 @@ class SimulatorImaging:
             pixel_scales=image.pixel_scales,
         )
 
-        image = self.psf.convolved_image_from(image=image, blurring_image=None, xp=xp)
+        if self.use_real_space_convolution:
+            image = self.psf.convolved_image_via_real_space_from(
+                image=image, blurring_image=None, xp=xp,
+            )
+        else:
+            image = self.psf.convolved_image_from(image=image, blurring_image=None, xp=xp)
 
         image = image + background_sky_map
 
