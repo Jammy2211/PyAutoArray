@@ -612,7 +612,6 @@ class Kernel2D(AbstractArray2D):
         image,
         blurring_image,
         jax_method="direct",
-        use_mixed_precision: bool = False,
         xp=np,
     ):
         """
@@ -670,18 +669,14 @@ class Kernel2D(AbstractArray2D):
         import jax.numpy as jnp
         from autoarray.structures.arrays.uniform_2d import Array2D
 
-        # FFT path dtypes (JAX only)
-        fft_real_dtype = jnp.float32 if use_mixed_precision else jnp.float64
-        fft_complex_dtype = jnp.complex64 if use_mixed_precision else jnp.complex128
-
         if self.fft_shape is None:
             # Shapes computed on the fly
             full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=image.mask)
 
             # Compute PSF FFT on the fly in the chosen precision
-            psf_native = jnp.asarray(self.stored_native.array, dtype=fft_real_dtype)
+            psf_native = jnp.asarray(self.stored_native.array, dtype=jnp.float64)
             fft_psf = xp.fft.rfft2(psf_native, s=fft_shape, axes=(0, 1)).astype(
-                fft_complex_dtype
+                jnp.complex128
             )
 
             image_shape_original = image.shape_native
@@ -701,19 +696,19 @@ class Kernel2D(AbstractArray2D):
             # Use cached PSF FFT but ensure it matches chosen precision.
             # IMPORTANT: casting here may create an extra buffer if self.fft_psf is complex128.
             # Best practice is to cache a complex64 version on the object when MP is enabled.
-            fft_psf = jnp.asarray(self.fft_psf, dtype=fft_complex_dtype)
+            fft_psf = jnp.asarray(self.fft_psf, dtype=jnp.complex128)
 
         # Build combined native image in the FFT dtype
-        image_both_native = xp.zeros(image.mask.shape, dtype=fft_real_dtype)
+        image_both_native = xp.zeros(image.mask.shape, dtype=jnp.float64)
 
         image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(
-            jnp.asarray(image.array, dtype=fft_real_dtype)
+            jnp.asarray(image.array, dtype=jnp.float64)
         )
 
         if blurring_image is not None:
             image_both_native = image_both_native.at[
                 blurring_image.mask.slim_to_native_tuple
-            ].set(jnp.asarray(blurring_image.array, dtype=fft_real_dtype))
+            ].set(jnp.asarray(blurring_image.array, dtype=jnp.float64))
         else:
             warnings.warn(
                 "No blurring_image provided. Only the direct image will be convolved. "
