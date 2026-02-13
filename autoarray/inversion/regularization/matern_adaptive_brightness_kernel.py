@@ -107,9 +107,11 @@ class MaternAdaptiveBrightnessKernel(MaternKernel):
         coefficient
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         scale
-            The typical scale of the exponential regularization pattern.
+            The typical scale (correlation length) of the Matérn regularization kernel.
         nu
-            Controls the derivative of the regularization pattern (`nu=0.5` is a Gaussian).
+            Controls the smoothness (differentiability) of the Matérn kernel; ``nu=0.5`` corresponds to an
+            exponential (Ornstein–Uhlenbeck) kernel, while a Gaussian covariance is obtained in the limit
+            as ``nu`` approaches infinity.
         rho
             Controls how strongly the kernel weights adapt to pixel brightness. Larger values make bright pixels
             receive significantly higher weights (and faint pixels lower weights), while smaller values produce a
