@@ -89,7 +89,7 @@ class MaternAdaptiveBrightnessKernel(MaternKernel):
         schemes, where regularization is based on neighboring (e.g. do the pixels share a Delaunay edge?) or computing
         derivatives around the center of the pixel (where nearby pixels are regularization locally in similar ways).
 
-        This makes the regularization matrix fully dense and therefore maybe change the run times of the solution.
+        This makes the regularization matrix fully dense and therefore may change the run times of the solution.
         It also leads to more overall smoothing which can lead to more stable linear inversions.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is
