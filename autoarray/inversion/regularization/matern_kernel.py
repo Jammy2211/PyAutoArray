@@ -44,6 +44,20 @@ def kv_xp(v, z, xp=np):
             )
 
 
+def gamma_xp(x, xp=np):
+    """
+    XP-compatible Gamma(x).
+    """
+    if xp is np:
+        import scipy.special as sc
+
+        return sc.gamma(x)
+    else:
+        import jax.scipy.special as jsp
+
+        return jsp.gamma(x)
+
+
 def matern_kernel(r, l: float = 1.0, v: float = 0.5, xp=np):
     """
     XP-compatible Matérn kernel.
@@ -55,7 +69,7 @@ def matern_kernel(r, l: float = 1.0, v: float = 0.5, xp=np):
 
     z = xp.sqrt(2.0 * v) * r / l
 
-    part1 = 2.0 ** (1.0 - v) / math.gamma(v)  # scalar constant
+    part1 = 2.0 ** (1.0 - v) / gamma_xp(v, xp)  # scalar constant
     part2 = z**v
     part3 = kv_xp(v, z, xp)
 
@@ -141,8 +155,8 @@ class MaternKernel(AbstractRegularization):
         """
 
         self.coefficient = coefficient
-        self.scale = float(scale)
-        self.nu = float(nu)
+        self.scale = scale
+        self.nu = nu
         super().__init__()
 
     def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:

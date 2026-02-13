@@ -26,6 +26,7 @@ class Preloads:
         linear_light_profile_blurred_mapping_matrix=None,
         use_voronoi_areas: bool = True,
         areas_factor: float = 0.5,
+        skip_areas: bool = False,
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
@@ -81,6 +82,16 @@ class Preloads:
             inversion, with the other component being the pixelization's pixels. These are fixed when the lens light
             is fixed to the maximum likelihood solution, allowing the blurred mapping matrix to be preloaded, but
             the intensity values will still be solved for during the inversion.
+        use_voronoi_areas
+            Whether to use Voronoi areas during Delaunay triangulation. When True, computes areas for each Voronoi
+            region which can be used in certain regularization schemes. Default is True.
+        areas_factor
+            Factor used to scale the Voronoi areas during split point computation. Default is 0.5.
+        skip_areas
+            Whether to skip Voronoi area calculations and split point computations during Delaunay triangulation.
+            When True, the Delaunay interface returns only the minimal set of outputs (points, simplices, mappings)
+            without computing split_points or splitted_mappings. This optimization is useful for regularization
+            schemes like Matérn kernels that don't require area-based calculations. Default is False.
         """
         self.mapper_indices = None
         self.source_pixel_zeroed_indices = None
@@ -123,3 +134,4 @@ class Preloads:
 
         self.use_voronoi_areas = use_voronoi_areas
         self.areas_factor = areas_factor
+        self.skip_areas = skip_areas

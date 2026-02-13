@@ -612,7 +612,7 @@ class Kernel2D(AbstractArray2D):
         image,
         blurring_image,
         jax_method="direct",
-        use_mixed_precision : bool = False,
+        use_mixed_precision: bool = False,
         xp=np,
     ):
         """
