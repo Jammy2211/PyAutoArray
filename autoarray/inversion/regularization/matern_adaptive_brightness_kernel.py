@@ -87,7 +87,7 @@ class MaternAdaptiveBrightnessKernel(MaternKernel):
 
         For this regularization scheme, every pixel is regularized with every other pixel. This contrasts many other
         schemes, where regularization is based on neighboring (e.g. do the pixels share a Delaunay edge?) or computing
-        derivates around the center of the pixel (where nearby pixels are regularization locally in similar ways).
+        derivatives around the center of the pixel (where nearby pixels are regularization locally in similar ways).
 
         This makes the regularization matrix fully dense and therefore maybe change the run times of the solution.
         It also leads to more overall smoothing which can lead to more stable linear inversions.
