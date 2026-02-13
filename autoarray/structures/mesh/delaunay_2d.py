@@ -346,7 +346,9 @@ def scipy_delaunay_matern(points_np, query_points_np):
     Returns only what’s needed for mapping:
       - points (tri.points)
       - simplices_padded
-      - mappings (pix indexes for each query point)
+      - mappings: integer array of pixel indices for each query point,
+        typically of shape (Q, 3), where each row gives the indices of the
+        Delaunay mesh vertices ("pixels") associated with that query point.
     """
 
     max_simplices = 2 * points_np.shape[0]
