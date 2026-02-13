@@ -1,3 +1,5 @@
+import numpy as np
+
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 
 class Mesh2DDelaunayKNN(Mesh2DDelaunay):
