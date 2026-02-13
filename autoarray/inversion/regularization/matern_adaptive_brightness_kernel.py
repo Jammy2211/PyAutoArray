@@ -110,6 +110,10 @@ class MaternAdaptiveBrightnessKernel(MaternKernel):
             The typical scale of the exponential regularization pattern.
         nu
             Controls the derivative of the regularization pattern (`nu=0.5` is a Gaussian).
+        rho
+            Controls how strongly the kernel weights adapt to pixel brightness. Larger values make bright pixels
+            receive significantly higher weights (and faint pixels lower weights), while smaller values produce a
+            more uniform weighting. Typical values are of order unity (e.g. 0.5–2.0).
         """
         super().__init__(coefficient=coefficient, scale=scale, nu=nu)
         self.rho = rho
