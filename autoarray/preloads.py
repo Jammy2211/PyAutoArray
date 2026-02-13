@@ -26,6 +26,7 @@ class Preloads:
         linear_light_profile_blurred_mapping_matrix=None,
         use_voronoi_areas: bool = True,
         areas_factor: float = 0.5,
+        skip_areas: bool = False,
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
@@ -123,3 +124,4 @@ class Preloads:
 
         self.use_voronoi_areas = use_voronoi_areas
         self.areas_factor = areas_factor
+        self.skip_areas = skip_areas

@@ -339,6 +339,65 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     return out
 
 
+def scipy_delaunay_matern(points_np, query_points_np):
+    """
+    Minimal SciPy Delaunay callback for Matérn regularization.
+
+    Returns only what’s needed for mapping:
+      - points (tri.points)
+      - simplices_padded
+      - mappings (pix indexes for each query point)
+    """
+
+    max_simplices = 2 * points_np.shape[0]
+
+    # --- Delaunay mesh ---
+    tri = Delaunay(points_np)
+
+    points = tri.points.astype(points_np.dtype)
+    simplices = tri.simplices.astype(np.int32)
+
+    # --- Pad simplices to fixed shape for JAX ---
+    simplices_padded = -np.ones((max_simplices, 3), dtype=np.int32)
+    simplices_padded[: simplices.shape[0]] = simplices
+
+    # --- find_simplex for query points ---
+    simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
+
+    mappings = pix_indexes_for_sub_slim_index_delaunay_from(
+        source_plane_data_grid=query_points_np,
+        simplex_index_for_sub_slim_index=simplex_idx,
+        pix_indexes_for_simplex_index=simplices,
+        delaunay_points=points_np,
+    )
+
+    return points, simplices_padded, mappings
+
+
+def jax_delaunay_matern(points, query_points):
+    """
+    JAX wrapper using pure_callback to run SciPy Delaunay on CPU,
+    returning only the minimal outputs needed for Matérn usage.
+    """
+    import jax
+    import jax.numpy as jnp
+
+    N = points.shape[0]
+    Q = query_points.shape[0]
+    max_simplices = 2 * N
+
+    points_shape = jax.ShapeDtypeStruct((N, 2), points.dtype)
+    simplices_padded_shape = jax.ShapeDtypeStruct((max_simplices, 3), jnp.int32)
+    mappings_shape = jax.ShapeDtypeStruct((Q, 3), jnp.int32)
+
+    return jax.pure_callback(
+        lambda pts, qpts: scipy_delaunay_matern(np.asarray(pts), np.asarray(qpts)),
+        (points_shape, simplices_padded_shape, mappings_shape),
+        points,
+        query_points,
+    )
+
+
 class DelaunayInterface:
 
     def __init__(
@@ -466,33 +525,60 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
             use_voronoi_areas = self.preloads.use_voronoi_areas
             areas_factor = self.preloads.areas_factor
+            skip_areas = self.preloads.skip_areas
 
         else:
 
             use_voronoi_areas = True
             areas_factor = 0.5
+            skip_areas = False
 
-        if self._xp.__name__.startswith("jax"):
+        if not skip_areas:
 
-            import jax.numpy as jnp
+            if self._xp.__name__.startswith("jax"):
 
-            points, simplices, mappings, split_points, splitted_mappings = jax_delaunay(
-                points=self.mesh_grid_xy,
-                query_points=self._source_plane_data_grid_over_sampled,
-                use_voronoi_areas=use_voronoi_areas,
-                areas_factor=areas_factor,
-            )
+                import jax.numpy as jnp
+
+                points, simplices, mappings, split_points, splitted_mappings = (
+                    jax_delaunay(
+                        points=self.mesh_grid_xy,
+                        query_points=self._source_plane_data_grid_over_sampled,
+                        use_voronoi_areas=use_voronoi_areas,
+                        areas_factor=areas_factor,
+                    )
+                )
+
+            else:
+
+                points, simplices, mappings, split_points, splitted_mappings = (
+                    scipy_delaunay(
+                        points_np=self.mesh_grid_xy,
+                        query_points_np=self._source_plane_data_grid_over_sampled,
+                        use_voronoi_areas=use_voronoi_areas,
+                        areas_factor=areas_factor,
+                    )
+                )
 
         else:
 
-            points, simplices, mappings, split_points, splitted_mappings = (
-                scipy_delaunay(
+            if self._xp.__name__.startswith("jax"):
+
+                import jax.numpy as jnp
+
+                points, simplices, mappings = jax_delaunay_matern(
+                    points=self.mesh_grid_xy,
+                    query_points=self._source_plane_data_grid_over_sampled,
+                )
+
+            else:
+
+                points, simplices, mappings = scipy_delaunay_matern(
                     points_np=self.mesh_grid_xy,
                     query_points_np=self._source_plane_data_grid_over_sampled,
-                    use_voronoi_areas=use_voronoi_areas,
-                    areas_factor=areas_factor,
                 )
-            )
+
+            split_points = None
+            splitted_mappings = None
 
         return DelaunayInterface(
             points=points,

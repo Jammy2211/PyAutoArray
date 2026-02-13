@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 from autoarray.inversion.regularization.matern_kernel import matern_kernel
 
+
 def matern_cov_matrix_from(
     scale: float,
     nu: float,
@@ -47,7 +48,7 @@ def matern_cov_matrix_from(
     # Pairwise distances (broadcasted)
     # --------------------------------
     diff = pixel_points[:, None, :] - pixel_points[None, :, :]  # (N, N, 2)
-    d_ij = xp.sqrt(diff[..., 0] ** 2 + diff[..., 1] ** 2)       # (N, N)
+    d_ij = xp.sqrt(diff[..., 0] ** 2 + diff[..., 1] ** 2)  # (N, N)
 
     # --------------------------------
     # Base Matérn covariance
@@ -113,7 +114,9 @@ class MaternAdaptiveBrightnessKernel(MaternKernel):
         super().__init__(coefficient=coefficient, scale=scale, nu=nu)
         self.rho = rho
 
-    def covariance_kernel_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
+    def covariance_kernel_weights_from(
+        self, linear_obj: LinearObj, xp=np
+    ) -> np.ndarray:
         """
         Returns per-pixel kernel weights that adapt to the reconstructed pixel brightness.
         """
@@ -126,10 +129,12 @@ class MaternAdaptiveBrightnessKernel(MaternKernel):
         return xp.exp(-self.rho * (1.0 - pixel_signals / max_signal))
 
     def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
-        kernel_weights = self.covariance_kernel_weights_from(linear_obj=linear_obj, xp=xp)
+        kernel_weights = self.covariance_kernel_weights_from(
+            linear_obj=linear_obj, xp=xp
+        )
 
         # Follow the xp pattern used in the Matérn kernel module (often `.array` for grids).
-        pixel_points = linear_obj.source_plane_mesh_grid
+        pixel_points = linear_obj.source_plane_mesh_grid.array
 
         covariance_matrix = matern_cov_matrix_from(
             scale=self.scale,
