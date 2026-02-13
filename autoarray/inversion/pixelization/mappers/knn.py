@@ -11,26 +11,15 @@ class MapperKNNInterpolator(AbstractMapper):
     Mapper using kNN + compact Wendland kernel interpolation (partition of unity).
     """
 
-    # ---- You almost certainly want these as configurable attributes somewhere ----
-    # If your Mesh / Pixelization already stores these, read them from self.mesh instead.
-    @property
-    def k_neighbors(self) -> int:
-        # e.g. return self.pixelization.k_neighbors or self.mesh.k_neighbors
-        return getattr(self.pixelization, "k_neighbors", 10)
-
-    @property
-    def kernel(self) -> str:
-        return getattr(self.pixelization, "kernel", "wendland_c4")
-
-    @property
-    def radius_scale(self) -> float:
-        return getattr(self.pixelization, "radius_scale", 1.5)
-
     def _pix_sub_weights_from_query_points(self, query_points) -> PixSubWeights:
         """
         Compute PixSubWeights for arbitrary query points using the kNN kernel module.
         Arrays are created in self._xp (numpy or jax.numpy) from the start.
         """
+
+        k_neighbors = 10
+        kernel = 'wendland_c4'
+        radius_scale = 1.5
 
         xp = self._xp  # numpy or jax.numpy
 
@@ -53,9 +42,9 @@ class MapperKNNInterpolator(AbstractMapper):
         weights_jax, indices_jax, _ = get_interpolation_weights(
             points=points,
             query_points=query_points,
-            k_neighbors=int(self.k_neighbors),
-            kernel=self.kernel,
-            radius_scale=float(self.radius_scale),
+            k_neighbors=int(k_neighbors),
+            kernel=kernel,
+            radius_scale=float(radius_scale),
         )
 
         # ------------------------------------------------------------------

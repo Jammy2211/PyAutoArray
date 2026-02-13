@@ -8,6 +8,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.structures.mesh.knn_delaunay_2d import Mesh2DDelaunayKNN
 
 
 def mapper_from(
@@ -49,6 +50,7 @@ def mapper_from(
         MapperRectangularUniform,
     )
     from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+    from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
 
     if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangularUniform):
         return MapperRectangularUniform(
@@ -70,6 +72,15 @@ def mapper_from(
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
         return MapperDelaunay(
+            mapper_grids=mapper_grids,
+            border_relocator=border_relocator,
+            regularization=regularization,
+            settings=settings,
+            preloads=preloads,
+            xp=xp,
+        )
+    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunayKNN):
+        return MapperKNNInterpolator(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,

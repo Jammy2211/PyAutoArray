@@ -259,7 +259,12 @@ from autoarray.inversion.pixelization.mesh.delaunay import Delaunay
 
 class KNNInterpolator(Delaunay):
 
-    def __init__(self):
+    def __init__(self,  k_neighbors=10, kernel='wendland_c4',
+                              radius_scale=1.5):
+
+        self.k_neighbors = k_neighbors
+        self.kernel = kernel
+        self.radius_scale = radius_scale
 
         super().__init__()
 
