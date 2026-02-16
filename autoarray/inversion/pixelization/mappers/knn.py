@@ -50,13 +50,12 @@ class MapperKNNInterpolator(AbstractMapper):
         # ------------------------------------------------------------------
         # Convert outputs to xp backend *only if needed*
         # ------------------------------------------------------------------
-        if xp is jnp:
-            weights = weights_jax
-            mappings = indices_jax
-        else:
-            # xp is numpy
+        if xp is np:
             weights = np.asarray(weights_jax)
             mappings = np.asarray(indices_jax)
+        else:
+            weights = weights_jax
+            mappings = indices_jax
 
         # ------------------------------------------------------------------
         # Sizes: always k for kNN
@@ -90,11 +89,40 @@ class MapperKNNInterpolator(AbstractMapper):
     @property
     def pix_sub_weights_split_points(self) -> PixSubWeights:
         """
-        kNN mappings + kernel weights computed at split points (for split regularization schemes).
+        kNN mappings + kernel weights computed at split points (for split regularization schemes),
+        with split-point step sizes derived from kNN local spacing (no Delaunay / simplices).
         """
-        # Your Delaunay mesh exposes split points via self.delaunay.split_points.
-        # For KNN mesh, you should expose the same property. If not, route appropriately:
-        #   split_points = self.mesh.split_points
-        split_points = self.delaunay.split_points  # keep consistent with existing API
+        from autoarray.structures.mesh.delaunay_2d import split_points_from
 
+        # TODO: wire these to your pixelization / regularization config rather than hard-code.
+        k_neighbors = 10
+        kernel = "wendland_c4"
+        radius_scale = 1.5
+        areas_factor = 0.5
+
+        xp = self._xp  # np or jnp
+
+        # Mesh points (N, 2)
+        points = xp.asarray(self.source_plane_mesh_grid.array, dtype=xp.float64)
+
+        # kNN distances of each point to its neighbors (include self, then drop it)
+        _, _, dist_self = get_interpolation_weights(
+            points=points,
+            query_points=points,
+            k_neighbors=int(k_neighbors) + 1,
+            kernel=kernel,
+            radius_scale=float(radius_scale),
+        )
+
+        # Local spacing scale: distance to k-th nearest OTHER point
+        r_k = dist_self[:, 1:][:, -1]  # (N,)
+
+        # Split cross step size (length): sqrt(area) ~ r_k
+        split_step = xp.asarray(areas_factor, dtype=xp.float64) * r_k  # (N,)
+
+        # Split points (xp-native)
+        split_points = split_points_from(points=points, area_weights=split_step, xp=xp)
+
+        # Compute kNN mappings/weights at split points
         return self._pix_sub_weights_from_query_points(query_points=split_points)
+

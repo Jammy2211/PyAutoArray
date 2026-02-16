@@ -70,8 +70,8 @@ def mapper_from(
             preloads=preloads,
             xp=xp,
         )
-    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
-        return MapperDelaunay(
+    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunayKNN):
+        return MapperKNNInterpolator(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
@@ -79,8 +79,9 @@ def mapper_from(
             preloads=preloads,
             xp=xp,
         )
-    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunayKNN):
-        return MapperKNNInterpolator(
+
+    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
+        return MapperDelaunay(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,

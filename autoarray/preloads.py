@@ -27,6 +27,7 @@ class Preloads:
         use_voronoi_areas: bool = True,
         areas_factor: float = 0.5,
         skip_areas: bool = False,
+        splitted_only : bool = False
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
