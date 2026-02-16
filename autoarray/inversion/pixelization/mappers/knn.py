@@ -1,7 +1,10 @@
 import numpy as np
 from autoconf import cached_property
 
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper, PixSubWeights
+from autoarray.inversion.pixelization.mappers.abstract import (
+    AbstractMapper,
+    PixSubWeights,
+)
 
 from autoarray.inversion.pixelization.mesh.knn import get_interpolation_weights
 
@@ -11,6 +14,10 @@ class MapperKNNInterpolator(AbstractMapper):
     Mapper using kNN + compact Wendland kernel interpolation (partition of unity).
     """
 
+    @property
+    def delaunay(self):
+        return self.source_plane_mesh_grid.delaunay
+
     def _pix_sub_weights_from_query_points(self, query_points) -> PixSubWeights:
         """
         Compute PixSubWeights for arbitrary query points using the kNN kernel module.
@@ -18,7 +25,6 @@ class MapperKNNInterpolator(AbstractMapper):
         """
 
         k_neighbors = 10
-        kernel = 'wendland_c4'
         radius_scale = 1.5
 
         xp = self._xp  # numpy or jax.numpy
@@ -43,7 +49,6 @@ class MapperKNNInterpolator(AbstractMapper):
             points=points,
             query_points=query_points,
             k_neighbors=int(k_neighbors),
-            kernel=kernel,
             radius_scale=float(radius_scale),
         )
 
@@ -93,10 +98,10 @@ class MapperKNNInterpolator(AbstractMapper):
         with split-point step sizes derived from kNN local spacing (no Delaunay / simplices).
         """
         from autoarray.structures.mesh.delaunay_2d import split_points_from
+        import jax
 
         # TODO: wire these to your pixelization / regularization config rather than hard-code.
         k_neighbors = 10
-        kernel = "wendland_c4"
         radius_scale = 1.5
         areas_factor = 0.5
 
@@ -106,11 +111,13 @@ class MapperKNNInterpolator(AbstractMapper):
         points = xp.asarray(self.source_plane_mesh_grid.array, dtype=xp.float64)
 
         # kNN distances of each point to its neighbors (include self, then drop it)
+
+        neighbor_index = int(k_neighbors) // 2  # half neighbors for self-distance
+
         _, _, dist_self = get_interpolation_weights(
             points=points,
             query_points=points,
-            k_neighbors=int(k_neighbors) + 1,
-            kernel=kernel,
+            k_neighbors=k_neighbors,
             radius_scale=float(radius_scale),
         )
 
@@ -125,4 +132,3 @@ class MapperKNNInterpolator(AbstractMapper):
 
         # Compute kNN mappings/weights at split points
         return self._pix_sub_weights_from_query_points(query_points=split_points)
-

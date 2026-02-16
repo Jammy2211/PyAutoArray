@@ -8,6 +8,7 @@ from autoarray.inversion.pixelization.mappers.rectangular import (
     MapperRectangular,
 )
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
 from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
@@ -498,7 +499,9 @@ class MatPlot2D(AbstractMatPlot):
                 zoom_to_brightest=zoom_to_brightest,
             )
 
-        elif isinstance(mapper, MapperDelaunay):
+        elif isinstance(mapper, MapperDelaunay) or isinstance(
+            mapper, MapperKNNInterpolator
+        ):
             self._plot_delaunay_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
