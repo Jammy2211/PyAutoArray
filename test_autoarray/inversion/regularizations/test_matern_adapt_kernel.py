@@ -8,7 +8,7 @@ np.set_printoptions(threshold=np.inf)
 
 def test__regularization_matrix():
 
-    reg = aa.reg.MaternAdaptiveBrightnessKernel(
+    reg = aa.reg.MaternAdaptKernel(
         coefficient=1.0, scale=2.0, nu=2.0, rho=1.0
     )
 
@@ -29,7 +29,7 @@ def test__regularization_matrix():
     assert regularization_matrix[0, 0] == pytest.approx(18.7439565009, 1.0e-4)
     assert regularization_matrix[0, 1] == pytest.approx(-8.786547368, 1.0e-4)
 
-    reg = aa.reg.MaternAdaptiveBrightnessKernel(
+    reg = aa.reg.MaternAdaptKernel(
         coefficient=1.5, scale=2.5, nu=2.5, rho=1.5
     )
 

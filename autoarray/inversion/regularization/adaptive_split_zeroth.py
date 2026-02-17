@@ -5,24 +5,23 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
-from autoarray.inversion.regularization.adaptive_brightness import AdaptiveBrightness
-
+from autoarray.inversion.regularization.adaptive_brightness import Adapt
+from autoarray.inversion.regularization.brightness_zeroth import BrightnessZeroth
 from autoarray.inversion.regularization import regularization_util
 
 
-class AdaptiveBrightnessSplit(AdaptiveBrightness):
+class AdaptSplitZeroth(Adapt):
     def __init__(
         self,
+        zeroth_coefficient: float = 1.0,
+        zeroth_signal_scale: float = 1.0,
         inner_coefficient: float = 1.0,
         outer_coefficient: float = 1.0,
         signal_scale: float = 1.0,
     ):
         """
-        Regularization which uses the derivatives at a cross of four points around each pixel centre and values
-        adapted to the data being fitted to smooth an inversion's solution.
-
-        An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
-        and interpolates to these points in order to smooth an inversion's solution.
+        Regularization which uses zeroth order regularization, the derivatives at a cross of four points around each
+        pixel centre and values adapted to the data being fitted to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
         Delaunay pixel the area of the pixel is computed and the distance of each point of the cross is given by
@@ -71,6 +70,9 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             low signal regions.
         """
 
+        self.zeroth_coefficient = zeroth_coefficient
+        self.zeroth_signal_scale = zeroth_signal_scale
+
         super().__init__(
             inner_coefficient=inner_coefficient,
             outer_coefficient=outer_coefficient,
@@ -107,10 +109,22 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             xp=xp,
         )
 
-        return regularization_util.pixel_splitted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
-            splitted_mappings=splitted_mappings,
-            splitted_sizes=splitted_sizes,
-            splitted_weights=splitted_weights,
-            xp=xp,
+        regularization_matrix = (
+            regularization_util.pixel_splitted_regularization_matrix_from(
+                regularization_weights=regularization_weights,
+                splitted_mappings=splitted_mappings,
+                splitted_sizes=splitted_sizes,
+                splitted_weights=splitted_weights,
+                xp=xp,
+            )
         )
+
+        brightness_zeroth = BrightnessZeroth(
+            coefficient=self.zeroth_coefficient, signal_scale=self.zeroth_signal_scale
+        )
+
+        regularization_matrix_zeroth = brightness_zeroth.regularization_matrix_from(
+            linear_obj=linear_obj, xp=xp
+        )
+
+        return regularization_matrix + regularization_matrix_zeroth

@@ -8,11 +8,11 @@ if TYPE_CHECKING:
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 
-def adaptive_regularization_weights_from(
+def adapt_regularization_weights_from(
     inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray
 ) -> np.ndarray:
     """
-    Returns the regularization weights for the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
+    Returns the regularization weights for the adaptive regularization scheme (e.g. ``Adapt``).
 
     The weights define the effective regularization coefficient of every mesh parameter (typically pixels
     of a ``Mapper``).
@@ -53,10 +53,10 @@ def weighted_regularization_matrix_from(
     xp=np,
 ) -> np.ndarray:
     """
-    Returns the regularization matrix of the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
+    Returns the regularization matrix of the adaptive regularization scheme (e.g. ``Adapt``).
 
     This matrix is computed using the regularization weights of every mesh pixel, which are computed using the
-    function ``adaptive_regularization_weights_from``. These act as the effective regularization coefficients of
+    function ``adapt_regularization_weights_from``. These act as the effective regularization coefficients of
     every mesh pixel.
 
     The regularization matrix is computed using the pixel-neighbors array, which is setup using the appropriate
@@ -128,7 +128,7 @@ def weighted_regularization_matrix_from(
     return mat[:S, :S]
 
 
-class AdaptiveBrightness(AbstractRegularization):
+class Adapt(AbstractRegularization):
     def __init__(
         self,
         inner_coefficient: float = 1.0,
@@ -196,7 +196,7 @@ class AdaptiveBrightness(AbstractRegularization):
         (e.g. the ``pixels`` in a ``Mapper``).
 
         For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
-        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+        (e.g. ``Adapt``) they vary to adapt to the data being reconstructed.
 
         Parameters
         ----------
@@ -211,7 +211,7 @@ class AdaptiveBrightness(AbstractRegularization):
             signal_scale=self.signal_scale, xp=xp
         )
 
-        return adaptive_regularization_weights_from(
+        return adapt_regularization_weights_from(
             inner_coefficient=self.inner_coefficient,
             outer_coefficient=self.outer_coefficient,
             pixel_signals=pixel_signals,

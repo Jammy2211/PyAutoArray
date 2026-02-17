@@ -3,7 +3,7 @@ import numpy as np
 
 
 def test__weight_list__matches_util():
-    reg = aa.reg.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
+    reg = aa.reg.Adapt(inner_coefficient=10.0, outer_coefficient=15.0)
 
     pixel_signals = np.array([0.21, 0.586, 0.45])
 
@@ -11,7 +11,7 @@ def test__weight_list__matches_util():
 
     weight_list = reg.regularization_weights_from(linear_obj=mapper)
 
-    weight_list_util = aa.util.regularization.adaptive_regularization_weights_from(
+    weight_list_util = aa.util.regularization.adapt_regularization_weights_from(
         inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals
     )
 
@@ -19,7 +19,7 @@ def test__weight_list__matches_util():
 
 
 def test__regularization_matrix__matches_util():
-    reg = aa.reg.AdaptiveBrightness(
+    reg = aa.reg.Adapt(
         inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
     )
 
@@ -46,7 +46,7 @@ def test__regularization_matrix__matches_util():
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
     regularization_weights = (
-        aa.util.regularization.adaptive_regularization_weights_from(
+        aa.util.regularization.adapt_regularization_weights_from(
             pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
         )
     )

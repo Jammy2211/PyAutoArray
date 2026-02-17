@@ -4,7 +4,7 @@ from typing import Tuple
 from autoarray import exc
 
 from autoarray.inversion.regularization.adaptive_brightness import (
-    adaptive_regularization_weights_from,
+    adapt_regularization_weights_from,
 )
 from autoarray.inversion.regularization.adaptive_brightness import (
     weighted_regularization_matrix_from,

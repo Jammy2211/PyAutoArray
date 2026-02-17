@@ -3,11 +3,11 @@ from .zeroth import Zeroth
 from .constant import Constant
 from .constant_zeroth import ConstantZeroth
 from .constant_split import ConstantSplit
-from .adaptive_brightness import AdaptiveBrightness
-from .adaptive_brightness_split import AdaptiveBrightnessSplit
+from .adaptive_brightness import Adapt
+from .adaptive_brightness_split import AdaptSplit
 from .brightness_zeroth import BrightnessZeroth
-from .adaptive_brightness_split_zeroth import AdaptiveBrightnessSplitZeroth
+from .adaptive_brightness_split_zeroth import AdaptSplitZeroth
 from .gaussian_kernel import GaussianKernel
 from .exponential_kernel import ExponentialKernel
 from .matern_kernel import MaternKernel
-from .matern_adaptive_brightness_kernel import MaternAdaptiveBrightnessKernel
+from .matern_adaptive_brightness_kernel import MaternAdaptKernel

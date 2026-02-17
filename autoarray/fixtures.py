@@ -332,13 +332,13 @@ def make_regularization_constant_split():
 
 
 def make_regularization_adaptive_brightness():
-    return aa.reg.AdaptiveBrightness(
+    return aa.reg.Adapt(
         inner_coefficient=0.1, outer_coefficient=10.0, signal_scale=0.5
     )
 
 
 def make_regularization_adaptive_brightness_split():
-    return aa.reg.AdaptiveBrightnessSplit(
+    return aa.reg.AdaptSplit(
         inner_coefficient=0.1, outer_coefficient=10.0, signal_scale=0.5
     )
 

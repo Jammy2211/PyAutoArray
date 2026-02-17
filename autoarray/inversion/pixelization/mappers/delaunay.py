@@ -203,7 +203,7 @@ class MapperDelaunay(AbstractMapper):
         The property `pix_sub_weights` property describes the calculation of the `PixSubWeights` object, which contains
         numpy arrays describing how data-points and mapper pixels map to one another and the weights of these mappings.
 
-        For certain regularization schemes (e.g. `ConstantSplit`, `AdaptiveBrightnessSplit`) regularization uses
+        For certain regularization schemes (e.g. `ConstantSplit`, `AdaptSplit`) regularization uses
         mappings which are split in a cross configuration in order to factor in the derivative of the mapper
         reconstruction.
 

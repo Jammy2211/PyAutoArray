@@ -10,15 +10,18 @@ if TYPE_CHECKING:
 from autoarray.inversion.regularization.matern_kernel import matern_kernel
 from autoarray.inversion.regularization.matern_kernel import matern_cov_matrix_from
 from autoarray.inversion.regularization.matern_kernel import inv_via_cholesky
+from autoarray.inversion.regularization.adaptive_brightness import adapt_regularization_weights_from
 
 
-class MaternAdaptiveBrightnessKernelMinor(MaternKernel):
+class MaternAdaptKernel(MaternKernel):
     def __init__(
         self,
         coefficient: float = 1.0,
         scale: float = 1.0,
         nu: float = 0.5,
-        rho: float = 1.0,
+        inner_coefficient: float = 1.0,
+        outer_coefficient: float = 1.0,
+        signal_scale: float = 1.0,
     ):
         """
         Regularization which uses a Matern smoothing kernel to regularize the solution with regularization weights
@@ -57,26 +60,42 @@ class MaternAdaptiveBrightnessKernelMinor(MaternKernel):
             more uniform weighting. Typical values are of order unity (e.g. 0.5–2.0).
         """
         super().__init__(coefficient=coefficient, scale=scale, nu=nu)
-        self.rho = rho
+        self.inner_coefficient = inner_coefficient
+        self.outer_coefficient = outer_coefficient
+        self.signal_scale = signal_scale
 
     def regularization_weights_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
+
+        The regularization weights define the level of regularization applied to each parameter in the linear object
+        (e.g. the ``pixels`` in a ``Mapper``).
+
+        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
+        (e.g. ``Adapt``) they vary to adapt to the data being reconstructed.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses these weights when performing regularization.
+
+        Returns
+        -------
+        The regularization weights.
         """
-        # Assumes linear_obj.pixel_signals_from is xp-aware elsewhere in the codebase.
-        pixel_signals = linear_obj.pixel_signals_from(signal_scale=1.0, xp=xp)
+        pixel_signals = linear_obj.pixel_signals_from(
+            signal_scale=self.signal_scale, xp=xp
+        )
 
-        max_signal = xp.max(pixel_signals)
-        max_signal = xp.maximum(max_signal, 1e-8)  # avoid divide-by-zero (JAX-safe)
-
-        weights = xp.exp(-self.rho * (1.0 - pixel_signals / max_signal))
-
-        return 1.0 / weights
+        return adapt_regularization_weights_from(
+            inner_coefficient=self.inner_coefficient,
+            outer_coefficient=self.outer_coefficient,
+            pixel_signals=pixel_signals,
+        )
 
     def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
         kernel_weights = 1.0 / self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
 
-        # Follow the xp pattern used in the Matérn kernel module (often `.array` for grids).
         pixel_points = linear_obj.source_plane_mesh_grid.array
 
         covariance_matrix = matern_cov_matrix_from(
