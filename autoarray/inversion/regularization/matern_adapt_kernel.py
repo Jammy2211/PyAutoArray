@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from autoarray.inversion.regularization.matern_kernel import matern_kernel
 from autoarray.inversion.regularization.matern_kernel import matern_cov_matrix_from
 from autoarray.inversion.regularization.matern_kernel import inv_via_cholesky
-from autoarray.inversion.regularization.adaptive_brightness import adapt_regularization_weights_from
+from autoarray.inversion.regularization.adapt import adapt_regularization_weights_from
 
 
 class MaternAdaptKernel(MaternKernel):

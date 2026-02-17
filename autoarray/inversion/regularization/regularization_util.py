@@ -3,10 +3,10 @@ from typing import Tuple
 
 from autoarray import exc
 
-from autoarray.inversion.regularization.adaptive_brightness import (
+from autoarray.inversion.regularization.adapt import (
     adapt_regularization_weights_from,
 )
-from autoarray.inversion.regularization.adaptive_brightness import (
+from autoarray.inversion.regularization.adapt import (
     weighted_regularization_matrix_from,
 )
 from autoarray.inversion.regularization.brightness_zeroth import (

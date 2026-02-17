@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
-from autoarray.inversion.regularization.adaptive_brightness import Adapt
+from autoarray.inversion.regularization.adapt import Adapt
 from autoarray.inversion.regularization.brightness_zeroth import BrightnessZeroth
 from autoarray.inversion.regularization import regularization_util
 
