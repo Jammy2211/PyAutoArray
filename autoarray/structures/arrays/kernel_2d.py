@@ -723,14 +723,18 @@ class Kernel2D(AbstractArray2D):
         blurred_image_full = xp.fft.irfft2(
             fft_psf * fft_image_native, s=fft_shape, axes=(0, 1)
         )
+        ky, kx = self.native.array.shape  # (21, 21)
+        off_y = (ky - 1) // 2
+        off_x = (kx - 1) // 2
 
-        # Crop back to mask_shape
-        start_indices = tuple(
-            (full_size - out_size) // 2
-            for full_size, out_size in zip(full_shape, mask_shape)
+        blurred_image_full = xp.roll(
+            blurred_image_full, shift=(-off_y, -off_x), axis=(0, 1)
         )
+
+        start_indices = (off_y, off_x)
+
         blurred_image_native = jax.lax.dynamic_slice(
-            blurred_image_full, start_indices, mask_shape
+            blurred_image_full, start_indices, image.mask.shape
         )
 
         # Return slim form; optionally cast for downstream stability
@@ -809,6 +813,10 @@ class Kernel2D(AbstractArray2D):
         # -------------------------------------------------------------------------
         # NumPy path unchanged
         # -------------------------------------------------------------------------
+
+        # -------------------------------------------------------------------------
+        # NumPy path unchanged
+        # -------------------------------------------------------------------------
         if xp is np:
             return self.convolved_mapping_matrix_via_real_space_np_from(
                 mapping_matrix=mapping_matrix,
@@ -835,34 +843,24 @@ class Kernel2D(AbstractArray2D):
         import jax.numpy as jnp
 
         # -------------------------------------------------------------------------
-        # Validate cached FFT shapes / state
+        # Cached FFT shapes/state (REQUIRED)
         # -------------------------------------------------------------------------
         if self.fft_shape is None:
-            full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=mask)
             raise ValueError(
-                f"FFT convolution requires precomputed padded shapes, but `self.fft_shape` is None.\n"
-                f"Expected mapping matrix padded to match FFT shape of PSF.\n"
-                f"PSF fft_shape: {fft_shape}, mask shape: {mask.shape}, "
-                f"mapping_matrix shape: {getattr(mapping_matrix, 'shape', 'unknown')}."
+                "FFT convolution requires precomputed FFT shapes on the PSF."
             )
-        else:
-            fft_shape = self.fft_shape
-            full_shape = self.full_shape
-            mask_shape = self.mask_shape
-            fft_psf_mapping = self.fft_psf_mapping
+
+        fft_shape = self.fft_shape
+        fft_psf_mapping = self.fft_psf_mapping
 
         # -------------------------------------------------------------------------
-        # Mixed precision dtypes (JAX only)
+        # Mixed precision handling
         # -------------------------------------------------------------------------
         fft_complex_dtype = jnp.complex64 if use_mixed_precision else jnp.complex128
-
-        # Ensure PSF FFT dtype matches the FFT path
         fft_psf_mapping = jnp.asarray(fft_psf_mapping, dtype=fft_complex_dtype)
 
         # -------------------------------------------------------------------------
-        # Build native cube in the FFT dtype (THIS IS THE KEY)
-        # This relies on mapping_matrix_native_from honoring the use_mixed_precision
-        # kwarg when constructing the native mapping matrix.
+        # Build native cube on the *native mask grid*
         # -------------------------------------------------------------------------
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
@@ -872,6 +870,7 @@ class Kernel2D(AbstractArray2D):
             use_mixed_precision=use_mixed_precision,
             xp=xp,
         )
+        # shape: (ny_native, nx_native, n_src)
 
         # -------------------------------------------------------------------------
         # FFT convolution
@@ -879,6 +878,7 @@ class Kernel2D(AbstractArray2D):
         fft_mapping_matrix_native = xp.fft.rfft2(
             mapping_matrix_native, s=fft_shape, axes=(0, 1)
         )
+
         blurred_mapping_matrix_full = xp.fft.irfft2(
             fft_psf_mapping * fft_mapping_matrix_native,
             s=fft_shape,
@@ -886,21 +886,35 @@ class Kernel2D(AbstractArray2D):
         )
 
         # -------------------------------------------------------------------------
-        # Crop back to mask-shape
+        # APPLY SAME FIX AS convolved_image_from
         # -------------------------------------------------------------------------
-        start_indices = tuple(
-            (full_size - out_size) // 2
-            for full_size, out_size in zip(full_shape, mask_shape)
-        ) + (0,)
-        out_shape_full = mask_shape + (blurred_mapping_matrix_full.shape[2],)
+        ky, kx = self.native.array.shape
+        off_y = (ky - 1) // 2
+        off_x = (kx - 1) // 2
+
+        blurred_mapping_matrix_full = xp.roll(
+            blurred_mapping_matrix_full,
+            shift=(-off_y, -off_x),
+            axis=(0, 1),
+        )
+
+        # -------------------------------------------------------------------------
+        # Extract native grid (same as image path)
+        # -------------------------------------------------------------------------
+        native_shape = mask.shape
+        start_indices = (off_y, off_x, 0)
+
+        out_shape = native_shape + (blurred_mapping_matrix_full.shape[2],)
 
         blurred_mapping_matrix_native = jax.lax.dynamic_slice(
             blurred_mapping_matrix_full,
             start_indices,
-            out_shape_full,
+            out_shape,
         )
 
-        # Return slim form
+        # -------------------------------------------------------------------------
+        # Slim using ORIGINAL mask indices (same grid)
+        # -------------------------------------------------------------------------
         blurred_slim = blurred_mapping_matrix_native[mask.slim_to_native_tuple]
 
         return blurred_slim

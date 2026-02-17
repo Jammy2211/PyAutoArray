@@ -189,8 +189,9 @@ class Imaging(AbstractDataset):
         self.psf = psf
 
         if psf is not None:
-            if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
-                raise exc.KernelException("Kernel2D Kernel2D must be odd")
+            if not psf.use_fft:
+                if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
+                    raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
         self.grids = GridsDataset(
             mask=self.data.mask,
