@@ -40,7 +40,7 @@ def test__neighbors(grid_2d_sub_1_7x7):
 
 def test__voronoi_areas_via_delaunay_from(grid_2d_sub_1_7x7):
 
-    mesh_grid = np.array(
+    mesh_grid = aa.Grid2DIrregular(
         [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]]
     )
 

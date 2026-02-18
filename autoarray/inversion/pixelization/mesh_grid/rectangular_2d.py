@@ -67,10 +67,20 @@ class Mesh2DRectangular(Abstract2DMesh):
 
     @property
     def geometry(self):
+
+        xmin = np.min(self.mesh_grid[:, 1])
+        xmax = np.max(self.mesh_grid[:, 1])
+        ymin = np.min(self.mesh_grid[:, 0])
+        ymax = np.max(self.mesh_grid[:, 0])
+
+        pixel_scales = (ymax - ymin) / (self.shape[0] - 1), (xmax - xmin) / (self.shape[1] - 1)
+
+        origin = ((ymax + ymin) / 2.0, (xmax + xmin) / 2.0)
+
         return Geometry2D(
             shape_native=self.shape_native,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
+            pixel_scales=pixel_scales,
+            origin=origin,
         )
 
     @property
@@ -81,28 +91,12 @@ class Mesh2DRectangular(Abstract2DMesh):
         return self.shape
 
     @property
-    def extent(self):
-
-        xmin = np.min(self.mesh_grid[:, 1])
-        xmax = np.max(self.mesh_grid[:, 1])
-        ymin = np.min(self.mesh_grid[:, 0])
-        ymax = np.max(self.mesh_grid[:, 0])
-
-        return (xmin, xmax, ymin, ymax)
-
-    @property
     def pixel_scales(self) -> Tuple[float, float]:
-
-        xmin, xmax, ymin, ymax = self.extent
-
-        return (ymax - ymin) / (self.shape[0] - 1), (xmax - xmin) / (self.shape[1] - 1)
+        return self.geometry.pixel_scales
 
     @property
     def origin(self) -> Tuple[float, float]:
-
-        xmin, xmax, ymin, ymax = self.extent
-
-        return ((ymax + ymin) / 2.0, (xmax + xmin) / 2.0)
+        return self.geometry.origin
 
     @property
     def neighbors(self) -> Neighbors:

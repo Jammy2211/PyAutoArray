@@ -590,7 +590,7 @@ def test__max_pixel_list_from_and_centre():
 
 
 def test__max_pixel_list_from__filter_neighbors():
-    source_plane_mesh_grid = np.array([
+    source_plane_mesh_grid = aa.Grid2DIrregular([
         [1.0, 1.0],
         [1.0, 2.0],
         [1.0, 3.0],
