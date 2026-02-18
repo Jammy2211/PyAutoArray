@@ -3,6 +3,10 @@ import pytest
 
 import autoarray as aa
 
+from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+    overlay_grid_from,
+)
+
 
 def test__pix_indexes_for_sub_slim_index__matches_util():
     grid = aa.Grid2D.no_mask(
@@ -22,12 +26,15 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DRectangularUniform.overlay_grid(
-        shape_native=(3, 3), grid=grid.over_sampled
+    mesh_grid = overlay_grid_from(
+        shape_native=(3, 3), grid=grid.over_sampled, buffer=1e-8
     )
 
     mapper_grids = aa.MapperGrids(
-        mask=grid.mask, source_plane_data_grid=grid, source_plane_mesh_grid=mesh_grid
+        mask=grid.mask,
+        mesh=aa.mesh.RectangularUniform(shape=(3, 3)),
+        source_plane_data_grid=grid,
+        source_plane_mesh_grid=aa.Grid2DIrregular(mesh_grid),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -35,24 +42,29 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     mappings, weights = (
         aa.util.mapper.rectangular_mappings_weights_via_interpolation_from(
             shape_native=(3, 3),
-            source_plane_mesh_grid=mesh_grid.array,
+            source_plane_mesh_grid=mesh_grid,
             source_plane_data_grid=aa.Grid2DIrregular(
                 mapper_grids.source_plane_data_grid.over_sampled
             ).array,
         )
     )
 
+    print(mappings)
+    print(mapper.pix_sub_weights.mappings)
+
     assert (mapper.pix_sub_weights.mappings == mappings).all()
     assert (mapper.pix_sub_weights.weights == weights).all()
 
 
 def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
-    mesh_grid = aa.Mesh2DRectangularUniform.overlay_grid(
-        shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled
+
+    mesh_grid = overlay_grid_from(
+        shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled, buffer=1e-8
     )
 
     mapper_grids = aa.MapperGrids(
         mask=grid_2d_sub_1_7x7.mask,
+        mesh=aa.mesh.RectangularAdaptDensity(shape=(3, 3)),
         source_plane_data_grid=grid_2d_sub_1_7x7,
         source_plane_mesh_grid=mesh_grid,
         adapt_data=image_7x7,
@@ -91,14 +103,13 @@ def test__areas_transformed(mask_2d_7x7):
         ],
     )
 
-    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
-        shape_native=(3, 3), grid=grid, buffer=1e-8
-    )
+    mesh_grid = overlay_grid_from(shape_native=(3, 3), grid=grid, buffer=1e-8)
 
     mapper_grids = aa.MapperGrids(
         mask=mask_2d_7x7,
+        mesh=aa.mesh.RectangularAdaptDensity(shape=(3, 3)),
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=mesh,
+        source_plane_mesh_grid=mesh_grid,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -125,14 +136,13 @@ def test__edges_transformed(mask_2d_7x7):
         ],
     )
 
-    mesh = aa.Mesh2DRectangularUniform.overlay_grid(
-        shape_native=(3, 3), grid=grid, buffer=1e-8
-    )
+    mesh_grid = overlay_grid_from(shape_native=(3, 3), grid=grid, buffer=1e-8)
 
     mapper_grids = aa.MapperGrids(
         mask=mask_2d_7x7,
+        mesh=aa.mesh.RectangularAdaptDensity(shape=(3, 3)),
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=mesh,
+        source_plane_mesh_grid=mesh_grid,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)

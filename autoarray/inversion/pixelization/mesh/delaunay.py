@@ -103,7 +103,7 @@ class Delaunay(AbstractMesh):
             mask=mask,
             mesh=self,
             source_plane_data_grid=relocated_grid,
-            source_plane_mesh_grid=source_plane_mesh_grid,
+            source_plane_mesh_grid=relocated_mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
         )

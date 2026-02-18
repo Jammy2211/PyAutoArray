@@ -7,7 +7,9 @@ from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRect
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import RectangularAdaptDensity
+from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+    RectangularAdaptDensity,
+)
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 from autoarray import exc

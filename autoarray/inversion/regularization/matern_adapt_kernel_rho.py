@@ -74,7 +74,9 @@ class MaternAdaptKernelRho(MaternKernel):
         return 1.0 / weights
 
     def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
-        kernel_weights = 1.0 / self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
+        kernel_weights = 1.0 / self.regularization_weights_from(
+            linear_obj=linear_obj, xp=xp
+        )
 
         # Follow the xp pattern used in the Matérn kernel module (often `.array` for grids).
         pixel_points = linear_obj.source_plane_mesh_grid.array

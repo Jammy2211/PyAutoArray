@@ -17,13 +17,8 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid,
-        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7.over_sampled,
-        _xp=np,
-    )
-
     mapper_grids = aa.MapperGrids(
+        mesh=aa.mesh.Delaunay(),
         mask=grid_2d_sub_1_7x7.mask,
         source_plane_data_grid=grid_2d_sub_1_7x7,
         source_plane_mesh_grid=mesh_grid,
@@ -31,7 +26,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    delaunay = scipy.spatial.Delaunay(mesh_grid.mesh_grid_xy)
+    delaunay = scipy.spatial.Delaunay(mapper.mesh_geometry.mesh_grid_xy)
 
     simplex_index_for_sub_slim_index = delaunay.find_simplex(
         mapper.source_plane_data_grid
@@ -87,7 +82,9 @@ def test__scipy_delaunay__simplices(grid_2d_sub_1_7x7):
     )
 
     mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid, source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
+        mesh=aa.mesh.Delaunay(),
+        mesh_grid=mesh_grid,
+        data_grid_over_sampled=grid_2d_sub_1_7x7,
     )
 
     assert (mesh_grid.delaunay.simplices[0, :] == np.array([3, 4, 0])).all()
@@ -105,7 +102,9 @@ def test__scipy_delaunay__split(grid_2d_sub_1_7x7):
     )
 
     mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid, source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7
+        mesh=aa.mesh.Delaunay(),
+        mesh_grid=mesh_grid,
+        data_grid_over_sampled=grid_2d_sub_1_7x7,
     )
 
     assert mesh_grid.delaunay.split_points[0, :] == pytest.approx(
@@ -139,8 +138,9 @@ def test__scipy_delaunay__split__uses_barycentric_dual_area_from(grid_2d_sub_1_7
     )
 
     mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid,
-        source_plane_data_grid_over_sampled=grid_2d_sub_1_7x7,
+        mesh=aa.mesh.Delaunay(),
+        mesh_grid=mesh_grid,
+        data_grid_over_sampled=grid_2d_sub_1_7x7,
         preloads=aa.Preloads(use_voronoi_areas=False),
     )
 

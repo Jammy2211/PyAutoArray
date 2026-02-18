@@ -56,6 +56,7 @@ class MapperRectangular(AbstractMapper):
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
     """
+
     @property
     def mesh_geometry(self):
         """
@@ -121,9 +122,7 @@ class MapperRectangular(AbstractMapper):
             mapper_util.adaptive_rectangular_mappings_weights_via_interpolation_from(
                 source_grid_size=self.shape_native[0],
                 source_plane_data_grid=self.source_plane_data_grid.array,
-                source_plane_data_grid_over_sampled=self._xp.array(
-                    self.source_plane_data_grid.over_sampled
-                ),
+                source_plane_data_grid_over_sampled=self.source_plane_data_grid.over_sampled,
                 mesh_weight_map=self.mapper_grids.mesh_weight_map,
                 xp=self._xp,
             )

@@ -468,6 +468,13 @@ class Mesh2DDelaunay(Abstract2DMesh):
         )
 
     @property
+    def origin(self) -> Tuple[float, float]:
+        """
+        The (y,x) origin of the Voronoi grid, which is fixed to (0.0, 0.0) for simplicity.
+        """
+        return 0.0, 0.0
+
+    @property
     def geometry(self):
         shape_native_scaled = (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),

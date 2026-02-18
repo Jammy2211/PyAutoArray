@@ -332,9 +332,7 @@ def make_regularization_constant_split():
 
 
 def make_regularization_adaptive_brightness():
-    return aa.reg.Adapt(
-        inner_coefficient=0.1, outer_coefficient=10.0, signal_scale=0.5
-    )
+    return aa.reg.Adapt(inner_coefficient=0.1, outer_coefficient=10.0, signal_scale=0.5)
 
 
 def make_regularization_adaptive_brightness_split():
@@ -355,7 +353,6 @@ def make_regularization_matern_kernel():
     return aa.reg.MaternKernel(coefficient=1.0, scale=0.5, nu=0.7)
 
 
-
 def make_over_sampler_2d_7x7():
     return aa.OverSampler(mask=make_mask_2d_7x7(), sub_size=2)
 
@@ -368,13 +365,14 @@ def make_border_relocator_2d_7x7():
 
 def make_rectangular_mapper_7x7_3x3():
 
-    from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import overlay_grid_from
+    from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+        overlay_grid_from,
+    )
 
     shape_native = (3, 3)
 
     source_plane_mesh_grid = overlay_grid_from(
-        shape_native=shape_native,
-        grid=make_grid_2d_sub_2_7x7().over_sampled
+        shape_native=shape_native, grid=make_grid_2d_sub_2_7x7().over_sampled
     )
 
     mapper_grids = aa.MapperGrids(
@@ -392,8 +390,8 @@ def make_rectangular_mapper_7x7_3x3():
         regularization=make_regularization_constant(),
     )
 
-def make_delaunay_mesh_grid_9():
 
+def make_delaunay_mesh_grid_9():
 
     return aa.Mesh2DDelaunay(
         values=grid_9,

@@ -13,6 +13,7 @@ from autoarray.structures.grids import grid_2d_util
 
 from autoarray import exc
 
+
 def overlay_grid_from(
     shape_native: Tuple[int, int],
     grid: np.ndarray,
@@ -59,6 +60,7 @@ def overlay_grid_from(
     )
 
     return grid_slim
+
 
 class RectangularAdaptDensity(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
@@ -173,10 +175,8 @@ class RectangularAdaptDensity(AbstractMesh):
             mask=mask,
             mesh=self,
             source_plane_data_grid=relocated_grid,
-            source_plane_mesh_grid=mesh_grid,
+            source_plane_mesh_grid=Grid2DIrregular(mesh_grid),
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
             mesh_weight_map=mesh_weight_map,
         )
-
-

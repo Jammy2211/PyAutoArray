@@ -141,11 +141,8 @@ def test__mapped_to_source_from(grid_2d_7x7):
         over_sample_size=1,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(
-        values=mesh_grid, source_plane_data_grid_over_sampled=grid_2d_7x7.over_sampled
-    )
-
     mapper_grids = aa.MapperGrids(
+        mesh=aa.mesh.Delaunay(),
         mask=grid_2d_7x7.mask,
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=mesh_grid,

@@ -6,6 +6,7 @@ from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.inversion.pixelization.mesh_grid.delaunay_2d import Mesh2DDelaunay
 
+
 def triangle_area_xp(c0, c1, c2, xp):
     """
     Twice triangle area using vector cross product magnitude.
@@ -134,6 +135,7 @@ class MapperDelaunay(AbstractMapper):
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
     """
+
     @property
     def delaunay(self):
         return self.mesh_geometry.delaunay

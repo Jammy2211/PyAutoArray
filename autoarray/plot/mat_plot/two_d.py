@@ -521,9 +521,7 @@ class MatPlot2D(AbstractMatPlot):
         if pixel_values is not None:
             solution_array_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=pixel_values,
-                mask_2d=np.full(
-                    fill_value=False, shape=mapper.mesh_geometry.shape
-                ),
+                mask_2d=np.full(fill_value=False, shape=mapper.mesh_geometry.shape),
             )
 
             pixel_values = Array2D.no_mask(

@@ -19,9 +19,7 @@ def test__weight_list__matches_util():
 
 
 def test__regularization_matrix__matches_util():
-    reg = aa.reg.Adapt(
-        inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
-    )
+    reg = aa.reg.Adapt(inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0)
 
     neighbors = np.array(
         [
@@ -45,10 +43,8 @@ def test__regularization_matrix__matches_util():
 
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
-    regularization_weights = (
-        aa.util.regularization.adapt_regularization_weights_from(
-            pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
-        )
+    regularization_weights = aa.util.regularization.adapt_regularization_weights_from(
+        pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
     )
 
     regularization_matrix_util = (

@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 
 from autoarray import type as ty
 from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.mask.mask_2d import Mask2D
+from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
@@ -66,6 +66,14 @@ class Mesh2DRectangular(Abstract2DMesh):
         return self.mesh.shape
 
     @property
+    def geometry(self):
+        return Geometry2D(
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    @property
     def shape_native(self):
         """
         The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
@@ -73,14 +81,28 @@ class Mesh2DRectangular(Abstract2DMesh):
         return self.shape
 
     @property
-    def pixel_scales(self):
+    def extent(self):
 
         xmin = np.min(self.mesh_grid[:, 1])
         xmax = np.max(self.mesh_grid[:, 1])
         ymin = np.min(self.mesh_grid[:, 0])
         ymax = np.max(self.mesh_grid[:, 0])
 
-        return (ymax - ymin) / (self.shape[0]-1), (xmax - xmin) / (self.shape[1]-1)
+        return (xmin, xmax, ymin, ymax)
+
+    @property
+    def pixel_scales(self) -> Tuple[float, float]:
+
+        xmin, xmax, ymin, ymax = self.extent
+
+        return (ymax - ymin) / (self.shape[0] - 1), (xmax - xmin) / (self.shape[1] - 1)
+
+    @property
+    def origin(self) -> Tuple[float, float]:
+
+        xmin, xmax, ymin, ymax = self.extent
+
+        return ((ymax + ymin) / 2.0, (xmax + xmin) / 2.0)
 
     @property
     def neighbors(self) -> Neighbors:
@@ -96,5 +118,3 @@ class Mesh2DRectangular(Abstract2DMesh):
         )
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
-
-

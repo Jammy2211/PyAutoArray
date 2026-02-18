@@ -6,8 +6,12 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import RectangularAdaptDensity
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_image import RectangularAdaptImage
+from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+    RectangularAdaptDensity,
+)
+from autoarray.inversion.pixelization.mesh.rectangular_adapt_image import (
+    RectangularAdaptImage,
+)
 from autoarray.inversion.pixelization.mesh.rectangular_uniform import RectangularUniform
 from autoarray.inversion.pixelization.mesh.knn import KNNInterpolator
 from autoarray.inversion.pixelization.mesh.delaunay import Delaunay
@@ -63,7 +67,9 @@ def mapper_from(
             preloads=preloads,
             xp=xp,
         )
-    elif isinstance(mapper_grids.mesh, RectangularAdaptDensity) or isinstance(mapper_grids.mesh, RectangularAdaptImage):
+    elif isinstance(mapper_grids.mesh, RectangularAdaptDensity) or isinstance(
+        mapper_grids.mesh, RectangularAdaptImage
+    ):
         return MapperRectangular(
             mapper_grids=mapper_grids,
             border_relocator=border_relocator,

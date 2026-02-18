@@ -94,7 +94,9 @@ class MaternAdaptKernel(MaternKernel):
         )
 
     def regularization_matrix_from(self, linear_obj: LinearObj, xp=np) -> np.ndarray:
-        kernel_weights = 1.0 / self.regularization_weights_from(linear_obj=linear_obj, xp=xp)
+        kernel_weights = 1.0 / self.regularization_weights_from(
+            linear_obj=linear_obj, xp=xp
+        )
 
         pixel_points = linear_obj.source_plane_mesh_grid.array
 

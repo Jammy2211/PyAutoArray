@@ -16,7 +16,7 @@ def test__neighbors(grid_2d_sub_1_7x7):
     mesh_grid = aa.Mesh2DDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=mesh_grid,
-        data_grid_over_sampled=grid_2d_sub_1_7x7
+        data_grid_over_sampled=grid_2d_sub_1_7x7,
     )
 
     neighbors = mesh_grid.neighbors
