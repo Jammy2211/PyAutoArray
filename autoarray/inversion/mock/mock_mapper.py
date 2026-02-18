@@ -23,6 +23,7 @@ class MockMapper(AbstractMapper):
     ):
         mapper_grids = MapperGrids(
             mask=mask,
+            mesh=None,
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             adapt_data=adapt_data,
@@ -45,6 +46,10 @@ class MockMapper(AbstractMapper):
         if self._pixel_signals is None:
             return super().pixel_signals_from(signal_scale=signal_scale)
         return self._pixel_signals
+
+    @property
+    def mesh_geometry(self):
+        return self.source_plane_mesh_grid
 
     @property
     def params(self):

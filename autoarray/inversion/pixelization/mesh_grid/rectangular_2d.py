@@ -7,7 +7,7 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
 
 from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids import grid_2d_util
@@ -17,10 +17,11 @@ class Mesh2DRectangular(Abstract2DMesh):
 
     def __init__(
         self,
-        values: np.ndarray,
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
+        mesh,
+        mesh_grid,
+        data_grid_over_sampled,
+        preloads=None,
+        _xp=np,
     ):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
@@ -49,70 +50,37 @@ class Mesh2DRectangular(Abstract2DMesh):
         origin
             The (y,x) origin of the pixelization.
         """
-
-        mask = Mask2D.all_false(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
+        super().__init__(
+            mesh=mesh,
+            mesh_grid=mesh_grid,
+            data_grid_over_sampled=data_grid_over_sampled,
+            preloads=preloads,
+            _xp=_xp,
         )
 
-        self.mask = mask
-
-        super().__init__(array=values)
-
-    @classmethod
-    def overlay_grid(
-        cls,
-        shape_native: Tuple[int, int],
-        grid: np.ndarray,
-        buffer: float = 1e-8,
-        xp=np,
-    ) -> "Mesh2DRectangular":
+    @property
+    def shape(self):
         """
-        Creates a `Grid2DRecntagular` by overlaying the rectangular pixelization over an input grid of (y,x)
-        coordinates.
-
-        This is performed by first computing the minimum and maximum y and x coordinates of the input grid. A
-        rectangular pixelization with dimensions `shape_native` is then laid over the grid using these coordinates,
-        such that the extreme edges of this rectangular pixelization overlap these maximum and minimum (y,x) coordinates.
-
-        A a `buffer` can be included which increases the size of the rectangular pixelization, placing additional
-        spacing beyond these maximum and minimum coordinates.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
-        grid
-            A grid of (y,x) coordinates which the rectangular pixelization is laid-over.
-        buffer
-            The size of the extra spacing placed between the edges of the rectangular pixelization and input grid.
+        The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
         """
-        grid = grid.array
+        return self.mesh.shape
 
-        y_min = xp.min(grid[:, 0]) - buffer
-        y_max = xp.max(grid[:, 0]) + buffer
-        x_min = xp.min(grid[:, 1]) - buffer
-        x_max = xp.max(grid[:, 1]) + buffer
+    @property
+    def shape_native(self):
+        """
+        The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
+        """
+        return self.shape
 
-        pixel_scales = xp.array(
-            (
-                (y_max - y_min) / shape_native[0],
-                (x_max - x_min) / shape_native[1],
-            )
-        )
-        origin = xp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
+    @property
+    def pixel_scales(self):
 
-        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(
-            shape_native=shape_native, pixel_scales=pixel_scales, origin=origin, xp=xp
-        )
+        xmin = np.min(self.mesh_grid[:, 1])
+        xmax = np.max(self.mesh_grid[:, 1])
+        ymin = np.min(self.mesh_grid[:, 0])
+        ymax = np.max(self.mesh_grid[:, 0])
 
-        return cls(
-            values=grid_slim,
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
-        )
+        return (ymax - ymin) / (self.shape[0]-1), (xmax - xmin) / (self.shape[1]-1)
 
     @property
     def neighbors(self) -> Neighbors:
@@ -124,14 +92,9 @@ class Mesh2DRectangular(Abstract2DMesh):
         rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
         """
         neighbors, sizes = mesh_util.rectangular_neighbors_from(
-            shape_native=self.shape_native
+            shape_native=self.mesh.shape
         )
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @property
-    def pixels(self) -> int:
-        """
-        The total number of pixels in the rectangular pixelization.
-        """
-        return self.shape_native[0] * self.shape_native[1]
+

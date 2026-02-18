@@ -1,17 +1,64 @@
 import numpy as np
 from typing import Optional, Tuple
 
-
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.mesh.rectangular_2d import Mesh2DRectangular
+from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
+from autoarray.structures.grids import grid_2d_util
+
 from autoarray import exc
 
+def overlay_grid_from(
+    shape_native: Tuple[int, int],
+    grid: np.ndarray,
+    buffer: float = 1e-8,
+    xp=np,
+) -> np.ndarray:
+    """
+    Creates a `Grid2DRecntagular` by overlaying the rectangular pixelization over an input grid of (y,x)
+    coordinates.
+
+    This is performed by first computing the minimum and maximum y and x coordinates of the input grid. A
+    rectangular pixelization with dimensions `shape_native` is then laid over the grid using these coordinates,
+    such that the extreme edges of this rectangular pixelization overlap these maximum and minimum (y,x) coordinates.
+
+    A a `buffer` can be included which increases the size of the rectangular pixelization, placing additional
+    spacing beyond these maximum and minimum coordinates.
+
+    Parameters
+    ----------
+    shape_native
+        The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
+    grid
+        A grid of (y,x) coordinates which the rectangular pixelization is laid-over.
+    buffer
+        The size of the extra spacing placed between the edges of the rectangular pixelization and input grid.
+    """
+    grid = grid.array
+
+    y_min = xp.min(grid[:, 0]) - buffer
+    y_max = xp.max(grid[:, 0]) + buffer
+    x_min = xp.min(grid[:, 1]) - buffer
+    x_max = xp.max(grid[:, 1]) + buffer
+
+    pixel_scales = xp.array(
+        (
+            (y_max - y_min) / shape_native[0],
+            (x_max - x_min) / shape_native[1],
+        )
+    )
+    origin = xp.array(((y_max + y_min) / 2.0, (x_max + x_min) / 2.0))
+
+    grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_not_mask_from(
+        shape_native=shape_native, pixel_scales=pixel_scales, origin=origin, xp=xp
+    )
+
+    return grid_slim
 
 class RectangularAdaptDensity(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
@@ -114,12 +161,17 @@ class RectangularAdaptDensity(AbstractMesh):
             xp=xp,
         )
 
-        mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid, xp=xp)
+        mesh_grid = overlay_grid_from(
+            shape_native=self.shape,
+            grid=Grid2DIrregular(relocated_grid.over_sampled),
+            xp=xp,
+        )
 
         mesh_weight_map = self.mesh_weight_map_from(adapt_data=adapt_data, xp=xp)
 
         return MapperGrids(
             mask=mask,
+            mesh=self,
             source_plane_data_grid=relocated_grid,
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
@@ -127,96 +179,4 @@ class RectangularAdaptDensity(AbstractMesh):
             mesh_weight_map=mesh_weight_map,
         )
 
-    def mesh_grid_from(
-        self,
-        source_plane_data_grid: Optional[Grid2D] = None,
-        source_plane_mesh_grid: Optional[Grid2D] = None,
-        xp=np,
-    ) -> Mesh2DRectangular:
-        """
-        Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
-        functionality for perform operatons that exploit the geometry of a rectangular pixelization.
 
-        Parameters
-        ----------
-        source_plane_data_grid
-            The (y,x) grid of coordinates over which the rectangular pixelization is overlaid, where this grid may have
-            had exterior pixels relocated to its edge via the border.
-        source_plane_mesh_grid
-            Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
-            by overlaying the `source_plane_data_grid` with the rectangular pixelization.
-        """
-        return Mesh2DRectangular.overlay_grid(
-            shape_native=self.shape,
-            grid=Grid2DIrregular(source_plane_data_grid.over_sampled),
-            xp=xp,
-        )
-
-
-class RectangularAdaptImage(RectangularAdaptDensity):
-
-    def __init__(
-        self,
-        shape: Tuple[int, int] = (3, 3),
-        weight_power: float = 1.0,
-        weight_floor: float = 0.0,
-    ):
-        """
-        A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
-        coordinates.
-
-        For a full description of how a mesh is paired with another grid,
-        see the :meth:`Pixelization API documentation <autoarray.inversion.pixelization.pixelization.Pixelization>`.
-
-        The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
-        in the top-left corner and going rightwards and downwards.
-
-        A ``Pixelization`` using a ``RectangularAdaptDensity`` mesh has three grids associated with it:
-
-        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
-          the source-plane).
-        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
-        - ``source_plane_mesh_grid``: The centres of each rectangular pixel.
-
-        It does not have a ``image_plane_mesh_grid`` because a rectangular pixelization is constructed by overlaying
-        a grid of rectangular over the `source_plane_data_grid`.
-
-        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the rectangular pixelization pixel
-        it falls within. No interpolation is performed when making these associations.
-        Parameters
-        ----------
-        shape
-            The 2D dimensions of the rectangular grid of pixels (total_y_pixels, total_x_pixel).
-        """
-
-        super().__init__(shape=shape)
-
-        self.weight_power = weight_power
-        self.weight_floor = weight_floor
-
-    def mesh_weight_map_from(self, adapt_data, xp=np) -> np.ndarray:
-        """
-        The weight map of a rectangular pixelization is None, because magnificaiton adaption uses
-        the distribution and density of traced (y,x) coordinates in the source plane and
-        not weights or the adapt data.
-
-        Parameters
-        ----------
-        xp
-            The array library to use.
-        """
-        mesh_weight_map = adapt_data.array
-        mesh_weight_map = xp.clip(mesh_weight_map, 1e-12, None)
-        mesh_weight_map = mesh_weight_map**self.weight_power
-
-        # Apply floor using xp.where (safe for NumPy and JAX)
-        mesh_weight_map = xp.where(
-            mesh_weight_map < self.weight_floor,
-            self.weight_floor,
-            mesh_weight_map,
-        )
-
-        # Normalize
-        mesh_weight_map = mesh_weight_map / xp.sum(mesh_weight_map)
-
-        return mesh_weight_map

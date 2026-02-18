@@ -14,7 +14,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
 
 from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
@@ -96,11 +96,19 @@ class AbstractMapper(LinearObj):
 
     @property
     def params(self) -> int:
-        return self.source_plane_mesh_grid.pixels
+        return self.source_plane_mesh_grid.shape[0]
 
     @property
     def pixels(self) -> int:
         return self.params
+
+    @property
+    def mesh(self):
+        return self.mapper_grids.mesh
+
+    @property
+    def mesh_geometry(self):
+        raise NotImplementedError
 
     @property
     def source_plane_data_grid(self) -> Grid2D:
@@ -124,7 +132,7 @@ class AbstractMapper(LinearObj):
 
     @property
     def neighbors(self) -> Neighbors:
-        return self.source_plane_mesh_grid.neighbors
+        return self.mesh_geometry.neighbors
 
     @property
     def pix_sub_weights(self) -> "PixSubWeights":

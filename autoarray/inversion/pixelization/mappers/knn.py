@@ -5,18 +5,12 @@ from autoarray.inversion.pixelization.mappers.abstract import (
     AbstractMapper,
     PixSubWeights,
 )
+from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 
 from autoarray.inversion.pixelization.mesh.knn import get_interpolation_weights
 
 
-class MapperKNNInterpolator(AbstractMapper):
-    """
-    Mapper using kNN + compact Wendland kernel interpolation (partition of unity).
-    """
-
-    @property
-    def delaunay(self):
-        return self.source_plane_mesh_grid.delaunay
+class MapperKNNInterpolator(MapperDelaunay):
 
     def _pix_sub_weights_from_query_points(self, query_points) -> PixSubWeights:
         """
@@ -97,7 +91,7 @@ class MapperKNNInterpolator(AbstractMapper):
         kNN mappings + kernel weights computed at split points (for split regularization schemes),
         with split-point step sizes derived from kNN local spacing (no Delaunay / simplices).
         """
-        from autoarray.inversion.pixelization.mesh.delaunay_2d import split_points_from
+        from autoarray.inversion.pixelization.mesh_grid.delaunay_2d import split_points_from
         import jax
 
         # TODO: wire these to your pixelization / regularization config rather than hard-code.

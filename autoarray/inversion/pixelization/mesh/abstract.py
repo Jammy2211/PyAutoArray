@@ -104,14 +104,6 @@ class AbstractMesh:
     ) -> MapperGrids:
         raise NotImplementedError
 
-    def mesh_grid_from(
-        self,
-        source_plane_data_grid: Grid2D,
-        source_plane_mesh_grid: Grid2DIrregular,
-        xp=np,
-    ):
-        raise NotImplementedError
-
     def __str__(self):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
 

@@ -6,7 +6,7 @@ from typing import List, Union, Optional, Tuple
 from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
-from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 
@@ -426,8 +426,9 @@ class DelaunayInterface:
 class Mesh2DDelaunay(Abstract2DMesh):
     def __init__(
         self,
-        values: Union[np.ndarray, List],
-        source_plane_data_grid_over_sampled=None,
+        mesh,
+        mesh_grid,
+        data_grid_over_sampled,
         preloads=None,
         _xp=np,
     ):
@@ -458,13 +459,13 @@ class Mesh2DDelaunay(Abstract2DMesh):
             The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
         """
 
-        if type(values) is list:
-            values = np.asarray(values)
-
-        super().__init__(values, xp=_xp)
-
-        self._source_plane_data_grid_over_sampled = source_plane_data_grid_over_sampled
-        self.preloads = preloads
+        super().__init__(
+            mesh=mesh,
+            mesh_grid=mesh_grid,
+            data_grid_over_sampled=data_grid_over_sampled,
+            preloads=preloads,
+            _xp=_xp,
+        )
 
     @property
     def geometry(self):
@@ -497,7 +498,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
         Therefore, this property simply converts the (y,x) grid of irregular coordinates into an (x,y) grid.
         """
-        return self._xp.stack([self.array[:, 0], self.array[:, 1]]).T
+        return self._xp.stack([self.mesh_grid[:, 0], self.mesh_grid[:, 1]]).T
 
     @cached_property
     def delaunay(self) -> "scipy.spatial.Delaunay":
@@ -513,15 +514,6 @@ class Mesh2DDelaunay(Abstract2DMesh):
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
         `MeshException`, which helps exception handling in the `inversion` package.
         """
-
-        if self._source_plane_data_grid_over_sampled is None:
-
-            raise ValueError(
-                """
-                You must input the `source_plane_data_grid_over_sampled` parameter of the `Mesh2DDelaunay` object
-                in order to compute the Delaunay triangulation.
-                """
-            )
 
         if self.preloads is not None:
 
@@ -544,7 +536,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
                 points, simplices, mappings, split_points, splitted_mappings = (
                     jax_delaunay(
                         points=self.mesh_grid_xy,
-                        query_points=self._source_plane_data_grid_over_sampled,
+                        query_points=self.data_grid_over_sampled,
                         use_voronoi_areas=use_voronoi_areas,
                         areas_factor=areas_factor,
                     )
@@ -555,7 +547,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
                 points, simplices, mappings, split_points, splitted_mappings = (
                     scipy_delaunay(
                         points_np=self.mesh_grid_xy,
-                        query_points_np=self._source_plane_data_grid_over_sampled,
+                        query_points_np=self.data_grid_over_sampled,
                         use_voronoi_areas=use_voronoi_areas,
                         areas_factor=areas_factor,
                     )
@@ -569,14 +561,14 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
                 points, simplices, mappings = jax_delaunay_matern(
                     points=self.mesh_grid_xy,
-                    query_points=self._source_plane_data_grid_over_sampled,
+                    query_points=self.data_grid_over_sampled,
                 )
 
             else:
 
                 points, simplices, mappings = scipy_delaunay_matern(
                     points_np=self.mesh_grid_xy,
-                    query_points_np=self._source_plane_data_grid_over_sampled,
+                    query_points_np=self.data_grid_over_sampled,
                 )
 
             split_points = None
@@ -686,10 +678,3 @@ class Mesh2DDelaunay(Abstract2DMesh):
         The (y,x) origin of the Voronoi grid, which is fixed to (0.0, 0.0) for simplicity.
         """
         return 0.0, 0.0
-
-    @property
-    def pixels(self) -> int:
-        """
-        The total number of pixels in the Voronoi mesh.
-        """
-        return self.shape[0]

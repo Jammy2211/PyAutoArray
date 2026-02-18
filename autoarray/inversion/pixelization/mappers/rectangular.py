@@ -4,6 +4,7 @@ from autoconf import cached_property
 
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
+from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
 
 from autoarray.inversion.pixelization.mappers import mapper_util
 
@@ -55,10 +56,32 @@ class MapperRectangular(AbstractMapper):
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
     """
+    @property
+    def mesh_geometry(self):
+        """
+        Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
+        functionality for perform operatons that exploit the geometry of a rectangular pixelization.
+
+        Parameters
+        ----------
+        source_plane_data_grid
+            The (y,x) grid of coordinates over which the rectangular pixelization is overlaid, where this grid may have
+            had exterior pixels relocated to its edge via the border.
+        source_plane_mesh_grid
+            Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
+            by overlaying the `source_plane_data_grid` with the rectangular pixelization.
+        """
+        return Mesh2DRectangular(
+            mesh=self.mesh,
+            mesh_grid=self.source_plane_mesh_grid,
+            data_grid_over_sampled=self.source_plane_data_grid.over_sampled,
+            preloads=self.preloads,
+            _xp=self._xp,
+        )
 
     @property
     def shape_native(self) -> Tuple[int, ...]:
-        return self.source_plane_mesh_grid.shape_native
+        return self.mesh.shape
 
     @cached_property
     def pix_sub_weights(self) -> PixSubWeights:

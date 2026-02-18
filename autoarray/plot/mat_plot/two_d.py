@@ -522,7 +522,7 @@ class MatPlot2D(AbstractMatPlot):
             solution_array_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=pixel_values,
                 mask_2d=np.full(
-                    fill_value=False, shape=mapper.source_plane_mesh_grid.shape_native
+                    fill_value=False, shape=mapper.mesh_geometry.shape
                 ),
             )
 
@@ -545,7 +545,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-        shape_native = mapper.source_plane_mesh_grid.shape_native
+        shape_native = mapper.mesh_geometry.shape
 
         if pixel_values is not None:
 
