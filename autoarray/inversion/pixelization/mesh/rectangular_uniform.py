@@ -5,7 +5,7 @@ from autoarray.inversion.pixelization.mesh.rectangular import RectangularAdaptDe
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
+from autoarray.inversion.pixelization.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
 
 
 class RectangularUniform(RectangularAdaptDensity):

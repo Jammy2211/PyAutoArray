@@ -6,7 +6,8 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray.structures.grids import grid_2d_util
 
@@ -15,8 +16,9 @@ class MapperGrids:
     def __init__(
         self,
         mask: Mask2D,
+        mesh : AbstractMesh,
         source_plane_data_grid: Grid2D,
-        source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
+        source_plane_mesh_grid: Grid2D,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
         mesh_weight_map: Optional[Array2D] = None,
@@ -61,6 +63,7 @@ class MapperGrids:
         """
 
         self.mask = mask
+        self.mesh = mesh
         self.source_plane_data_grid = source_plane_data_grid
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid

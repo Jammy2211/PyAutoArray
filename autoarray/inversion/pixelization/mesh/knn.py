@@ -4,7 +4,7 @@ import jax.numpy as jnp
 from functools import partial
 
 from autoarray.inversion.pixelization.mesh.delaunay import Delaunay
-from autoarray.structures.mesh.knn_delaunay_2d import Mesh2DDelaunayKNN
+from autoarray.inversion.pixelization.mesh.knn_delaunay_2d import Mesh2DDelaunayKNN
 
 
 def wendland_c4(r, h):
@@ -187,7 +187,6 @@ class KNNInterpolator(Delaunay):
         return Mesh2DDelaunayKNN(
             values=source_plane_mesh_grid,
             source_plane_data_grid_over_sampled=source_plane_data_grid,
-            mash=self,
             preloads=preloads,
             _xp=xp,
         )

@@ -14,7 +14,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mappers import mapper_numba_util

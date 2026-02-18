@@ -5,10 +5,10 @@ from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
-from autoarray.structures.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
-from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
-from autoarray.structures.mesh.knn_delaunay_2d import Mesh2DDelaunayKNN
+from autoarray.inversion.pixelization.mesh.rectangular_2d import Mesh2DRectangular
+from autoarray.inversion.pixelization.mesh.rectangular_2d_uniform import Mesh2DRectangularUniform
+from autoarray.inversion.pixelization.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.inversion.pixelization.mesh.knn_delaunay_2d import Mesh2DDelaunayKNN
 
 
 def mapper_from(

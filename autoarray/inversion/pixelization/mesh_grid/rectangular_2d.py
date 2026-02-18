@@ -7,7 +7,7 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids import grid_2d_util

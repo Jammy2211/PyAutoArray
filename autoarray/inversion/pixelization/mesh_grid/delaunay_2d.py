@@ -6,7 +6,7 @@ from typing import List, Union, Optional, Tuple
 from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh.abstract_2d import Abstract2DMesh
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 

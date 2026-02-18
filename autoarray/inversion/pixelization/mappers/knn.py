@@ -97,7 +97,7 @@ class MapperKNNInterpolator(AbstractMapper):
         kNN mappings + kernel weights computed at split points (for split regularization schemes),
         with split-point step sizes derived from kNN local spacing (no Delaunay / simplices).
         """
-        from autoarray.structures.mesh.delaunay_2d import split_points_from
+        from autoarray.inversion.pixelization.mesh.delaunay_2d import split_points_from
         import jax
 
         # TODO: wire these to your pixelization / regularization config rather than hard-code.
