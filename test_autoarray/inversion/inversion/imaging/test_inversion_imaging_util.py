@@ -326,5 +326,5 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
     )
 
     assert curvature_matrix_via_sparse_operator == pytest.approx(
-        curvature_matrix, rel=1.0e-3
+        curvature_matrix, abs=1.0e-4
     )

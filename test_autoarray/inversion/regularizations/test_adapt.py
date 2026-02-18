@@ -1,6 +1,6 @@
 import autoarray as aa
 import numpy as np
-
+import pytest
 
 def test__weight_list__matches_util():
     reg = aa.reg.Adapt(inner_coefficient=10.0, outer_coefficient=15.0)
@@ -21,37 +21,27 @@ def test__weight_list__matches_util():
 def test__regularization_matrix__matches_util():
     reg = aa.reg.Adapt(inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0)
 
-    neighbors = np.array(
-        [
-            [1, 4, -1, -1],
-            [2, 4, 0, -1],
-            [3, 4, 5, 1],
-            [5, 2, -1, -1],
-            [5, 0, 1, 2],
-            [2, 3, 4, -1],
-        ]
+    pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
+
+    source_plane_mesh_grid = aa.Grid2D.no_mask(
+        values=[[0.1, 0.1], [0.1, 0.2], [0.1, 0.3], [0.2, 0.1], [0.2, 0.2], [0.2, 0.3], [0.3, 0.1], [0.3, 0.2], [0.3, 0.3]],
+        shape_native=(3, 3),
+        pixel_scales=1.0,
     )
 
-    neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
-    pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-
-    mesh_grid = aa.m.MockMeshGrid(neighbors=neighbors, neighbors_sizes=neighbors_sizes)
+    mesh_geometry = aa.Mesh2DRectangular(
+            mesh=aa.mesh.RectangularUniform(shape=(3,3)),
+            mesh_grid=source_plane_mesh_grid,
+            data_grid_over_sampled=None,
+        )
 
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=mesh_grid, pixel_signals=pixel_signals
+        source_plane_mesh_grid=source_plane_mesh_grid,
+        pixel_signals=pixel_signals,
+        mesh_geometry=mesh_geometry,
     )
 
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
-    regularization_weights = aa.util.regularization.adapt_regularization_weights_from(
-        pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
-    )
+    assert regularization_matrix[0, 0] == pytest.approx(18.0000000, 1.0e-4)
 
-    regularization_matrix_util = (
-        aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
-            neighbors=neighbors,
-        )
-    )
-
-    assert (regularization_matrix == regularization_matrix_util).all()

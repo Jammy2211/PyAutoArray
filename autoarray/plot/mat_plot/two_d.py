@@ -526,8 +526,8 @@ class MatPlot2D(AbstractMatPlot):
 
             pixel_values = Array2D.no_mask(
                 values=solution_array_2d,
-                pixel_scales=mapper.source_plane_mesh_grid.pixel_scales,
-                origin=mapper.source_plane_mesh_grid.origin,
+                pixel_scales=mapper.mesh_geometry.pixel_scales,
+                origin=mapper.mesh_geometry.origin,
             )
 
         extent = self.axis.config_dict.get("extent")
