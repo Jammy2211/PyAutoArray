@@ -169,15 +169,20 @@ class RectangularAdaptDensity(AbstractMesh):
         """
         from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
 
+        print(source_plane_data_grid)
+
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
             xp=xp,
         )
 
+        print(relocated_grid)
+        ffff
+
         mesh_grid = overlay_grid_from(
             shape_native=self.shape,
-            grid=Grid2DIrregular(relocated_grid.over_sampled),
+            grid=Grid2DIrregular(relocated_grid),
             xp=xp,
         )
 
