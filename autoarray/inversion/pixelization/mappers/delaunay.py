@@ -12,6 +12,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers import mapper_util
 
+
 def triangle_area_xp(c0, c1, c2, xp):
     """
     Twice triangle area using vector cross product magnitude.
@@ -107,7 +108,7 @@ class MapperDelaunay(AbstractMapper):
         preloads=None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         xp=np,
-        ):
+    ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
         the four grids are explained (`image_plane_data_grid`, `source_plane_data_grid`,

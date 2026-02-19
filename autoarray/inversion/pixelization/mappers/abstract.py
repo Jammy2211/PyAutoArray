@@ -556,6 +556,7 @@ class AbstractMapper(LinearObj):
             mask=self.mask,
         )
 
+
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):
         """

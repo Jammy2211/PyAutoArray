@@ -73,7 +73,9 @@ class Mesh2DRectangular(Abstract2DMesh):
         ymin = np.min(self.mesh_grid[:, 0])
         ymax = np.max(self.mesh_grid[:, 0])
 
-        pixel_scales = (ymax - ymin) / (self.shape[0] - 1), (xmax - xmin) / (self.shape[1] - 1)
+        pixel_scales = (ymax - ymin) / (self.shape[0] - 1), (xmax - xmin) / (
+            self.shape[1] - 1
+        )
 
         origin = ((ymax + ymin) / 2.0, (xmax + xmin) / 2.0)
 

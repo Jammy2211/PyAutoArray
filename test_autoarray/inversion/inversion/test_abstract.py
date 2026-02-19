@@ -554,16 +554,16 @@ def test__reconstruction_noise_map():
 
 def test__max_pixel_list_from_and_centre():
 
-    source_plane_mesh_grid = aa.Grid2DIrregular([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]])
-
-    mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=source_plane_mesh_grid
+    source_plane_mesh_grid = aa.Grid2DIrregular(
+        [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
     )
+
+    mapper = aa.m.MockMapper(source_plane_mesh_grid=source_plane_mesh_grid)
 
     mesh_geometry = aa.Mesh2DDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=source_plane_mesh_grid,
-        data_grid_over_sampled=None
+        data_grid_over_sampled=None,
     )
 
     mapper = aa.m.MockMapper(
@@ -584,22 +584,24 @@ def test__max_pixel_list_from_and_centre():
 
 
 def test__max_pixel_list_from__filter_neighbors():
-    source_plane_mesh_grid = aa.Grid2DIrregular([
-        [1.0, 1.0],
-        [1.0, 2.0],
-        [1.0, 3.0],
-        [2.0, 1.0],
-        [2.0, 2.0],
-        [2.0, 3.0],
-        [3.0, 1.0],
-        [3.0, 2.0],
-        [3.0, 3.0],
-    ])
+    source_plane_mesh_grid = aa.Grid2DIrregular(
+        [
+            [1.0, 1.0],
+            [1.0, 2.0],
+            [1.0, 3.0],
+            [2.0, 1.0],
+            [2.0, 2.0],
+            [2.0, 3.0],
+            [3.0, 1.0],
+            [3.0, 2.0],
+            [3.0, 3.0],
+        ]
+    )
 
     mesh_geometry = aa.Mesh2DDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=source_plane_mesh_grid,
-        data_grid_over_sampled=None
+        data_grid_over_sampled=None,
     )
 
     mapper = aa.m.MockMapper(

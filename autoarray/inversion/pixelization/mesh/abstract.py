@@ -99,7 +99,7 @@ class AbstractMesh:
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
-        regularization: Optional[AbstractRegularization]= None,
+        regularization: Optional[AbstractRegularization] = None,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
         settings: SettingsInversion = SettingsInversion(),

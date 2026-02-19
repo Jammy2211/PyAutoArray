@@ -7,6 +7,8 @@ class RectangularUniform(RectangularAdaptDensity):
 
     @property
     def mapper_cls(self):
-        from autoarray.inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
+        from autoarray.inversion.pixelization.mappers.rectangular_uniform import (
+            MapperRectangularUniform,
+        )
 
         return MapperRectangularUniform

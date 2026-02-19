@@ -42,12 +42,9 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         aa.util.mapper.rectangular_mappings_weights_via_interpolation_from(
             shape_native=(3, 3),
             source_plane_mesh_grid=aa.Grid2DIrregular(mesh_grid),
-            source_plane_data_grid=aa.Grid2DIrregular(
-                grid.over_sampled
-            ).array,
+            source_plane_data_grid=aa.Grid2DIrregular(grid.over_sampled).array,
         )
     )
-
 
     assert (mapper.pix_sub_weights.mappings == mappings).all()
     assert (mapper.pix_sub_weights.weights == weights).all()
@@ -58,7 +55,6 @@ def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
     mesh_grid = overlay_grid_from(
         shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled, buffer=1e-8
     )
-
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(3, 3))
 
@@ -100,7 +96,7 @@ def test__areas_transformed(mask_2d_7x7):
         ],
         pixel_scales=1.5,
         shape_native=(3, 3),
-        over_sample_size=1
+        over_sample_size=1,
     )
 
     mesh_grid = overlay_grid_from(shape_native=(3, 3), grid=grid, buffer=1e-8)
@@ -135,7 +131,7 @@ def test__edges_transformed(mask_2d_7x7):
         ],
         pixel_scales=1.5,
         shape_native=(3, 3),
-        over_sample_size=1
+        over_sample_size=1,
     )
 
     mesh_grid = overlay_grid_from(shape_native=(3, 3), grid=grid, buffer=1e-8)

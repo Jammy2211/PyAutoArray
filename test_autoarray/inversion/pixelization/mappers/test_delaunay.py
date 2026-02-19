@@ -23,7 +23,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         mask=grid_2d_sub_1_7x7.mask,
         source_plane_data_grid=grid_2d_sub_1_7x7,
         source_plane_mesh_grid=mesh_grid,
-        regularization=None
+        regularization=None,
     )
 
     delaunay = scipy.spatial.Delaunay(mapper.mesh_geometry.mesh_grid_xy)

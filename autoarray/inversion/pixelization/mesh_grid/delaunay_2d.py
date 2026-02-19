@@ -505,7 +505,9 @@ class Mesh2DDelaunay(Abstract2DMesh):
 
         Therefore, this property simply converts the (y,x) grid of irregular coordinates into an (x,y) grid.
         """
-        return self._xp.stack([self.mesh_grid.array[:, 0], self.mesh_grid.array[:, 1]]).T
+        return self._xp.stack(
+            [self.mesh_grid.array[:, 0], self.mesh_grid.array[:, 1]]
+        ).T
 
     @cached_property
     def delaunay(self) -> "scipy.spatial.Delaunay":

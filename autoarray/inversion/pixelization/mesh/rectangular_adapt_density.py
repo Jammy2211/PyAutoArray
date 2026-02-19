@@ -106,7 +106,9 @@ class RectangularAdaptDensity(AbstractMesh):
 
     @property
     def mapper_cls(self):
-        from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
+        from autoarray.inversion.pixelization.mappers.rectangular import (
+            MapperRectangular,
+        )
 
         return MapperRectangular
 
@@ -167,7 +169,9 @@ class RectangularAdaptDensity(AbstractMesh):
         adapt_data
             Not used for a rectangular pixelization.
         """
-        from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
+        from autoarray.inversion.pixelization.mappers.rectangular import (
+            MapperRectangular,
+        )
 
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
@@ -194,5 +198,5 @@ class RectangularAdaptDensity(AbstractMesh):
             adapt_data=adapt_data,
             settings=settings,
             preloads=preloads,
-            xp=xp
+            xp=xp,
         )

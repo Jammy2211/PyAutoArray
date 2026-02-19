@@ -16,10 +16,10 @@ def test__regularization_matrix():
     )
 
     mesh_geometry = aa.Mesh2DRectangular(
-            mesh=aa.mesh.RectangularUniform(shape=(3,3)),
-            mesh_grid=source_plane_mesh_grid,
-            data_grid_over_sampled=None,
-        )
+        mesh=aa.mesh.RectangularUniform(shape=(3, 3)),
+        mesh_grid=source_plane_mesh_grid,
+        data_grid_over_sampled=None,
+    )
 
     mapper = aa.m.MockMapper(
         source_plane_mesh_grid=source_plane_mesh_grid,

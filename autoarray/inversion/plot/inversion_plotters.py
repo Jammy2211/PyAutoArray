@@ -334,9 +334,7 @@ class InversionPlotter(AbstractPlotter):
 
         mapper = self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index]
 
-        self.visuals_2d += Visuals2D(
-            mesh_grid=mapper.image_plane_mesh_grid
-        )
+        self.visuals_2d += Visuals2D(mesh_grid=mapper.image_plane_mesh_grid)
 
         self.set_title(label="Mesh Pixel Grid Overlaid")
         self.figures_2d_of_pixelization(
