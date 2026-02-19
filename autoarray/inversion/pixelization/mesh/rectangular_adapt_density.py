@@ -187,7 +187,7 @@ class RectangularAdaptDensity(AbstractMesh):
             mask=mask,
             mesh=self,
             source_plane_data_grid=relocated_grid,
-            source_plane_mesh_grid=mesh_grid,
+            source_plane_mesh_grid=Grid2DIrregular(mesh_grid),
             regularization=regularization,
             border_relocator=border_relocator,
             mesh_weight_map=mesh_weight_map,

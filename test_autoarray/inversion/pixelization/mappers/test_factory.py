@@ -26,17 +26,14 @@ def test__rectangular_mapper():
 
     mesh = aa.mesh.RectangularUniform(shape=(3, 3))
 
-    mapper_grids = mesh.mapper_grids_from(
+    mapper = mesh.mapper_from(
         mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
-
     assert isinstance(mapper, aa.MapperRectangularUniform)
-    assert mapper.image_plane_mesh_grid == None
 
     assert mapper.mesh_geometry.geometry.shape_native_scaled == pytest.approx(
         (5.0, 5.0), 1.0e-4
@@ -81,14 +78,12 @@ def test__delaunay_mapper():
         mask=mask, adapt_data=None
     )
 
-    mapper_grids = mesh.mapper_grids_from(
+    mapper = mesh.mapper_from(
         mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
-
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
