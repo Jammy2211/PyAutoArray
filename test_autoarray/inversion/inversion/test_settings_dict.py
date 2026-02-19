@@ -14,10 +14,7 @@ def make_settings_dict():
         "type": "instance",
         "arguments": {
             "use_positive_only_solver": False,
-            "positive_only_uses_p_initial": False,
             "no_regularization_add_to_curvature_diag_value": 1e-08,
-            "tolerance": 1e-08,
-            "maxiter": 250,
         },
     }
 

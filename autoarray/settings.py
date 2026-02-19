@@ -41,7 +41,6 @@ class Settings:
         """
         self.use_mixed_precision = use_mixed_precision
         self._use_positive_only_solver = use_positive_only_solver
-        self._positive_only_uses_p_initial = positive_only_uses_p_initial
         self._use_border_relocator = use_border_relocator
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
