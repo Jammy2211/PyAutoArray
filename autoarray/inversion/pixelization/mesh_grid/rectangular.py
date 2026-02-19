@@ -7,9 +7,8 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract import Abstract2DMesh
 
-from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids import grid_2d_util
 
 
@@ -493,9 +492,9 @@ class Mesh2DRectangular(Abstract2DMesh):
         `Neighbors` for a complete description of the neighboring scheme).
 
         The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
+        rectangular grid, as described in the method `rectangular_neighbors_from`.
         """
-        neighbors, sizes = mesh_util.rectangular_neighbors_from(
+        neighbors, sizes = rectangular_neighbors_from(
             shape_native=self.mesh.shape
         )
 

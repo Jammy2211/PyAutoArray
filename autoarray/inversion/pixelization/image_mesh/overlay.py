@@ -4,7 +4,7 @@ from typing import Optional
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util

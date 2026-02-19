@@ -6,7 +6,7 @@ from typing import List, Union, Optional, Tuple
 from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
-from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract import Abstract2DMesh
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 
@@ -620,7 +620,7 @@ class Mesh2DDelaunay(Abstract2DMesh):
         see `Neighbors` for a complete description of the neighboring scheme.
 
         The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
-        object, as described in the method `mesh_util.voronoi_neighbors_from`.
+        object, as described in the method `voronoi_neighbors_from`.
         """
 
         delaunay = scipy.spatial.Delaunay(self.mesh_grid_xy)

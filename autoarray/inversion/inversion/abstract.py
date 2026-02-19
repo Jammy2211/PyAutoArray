@@ -11,7 +11,7 @@ from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -26,7 +26,7 @@ class AbstractInversion:
         self,
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads: Preloads = None,
         xp=np,
     ):
@@ -72,7 +72,7 @@ class AbstractInversion:
 
         self.linear_obj_list = linear_obj_list
 
-        self.settings = settings
+        self.settings = settings or Settings()
 
         self.preloads = preloads or Preloads()
 

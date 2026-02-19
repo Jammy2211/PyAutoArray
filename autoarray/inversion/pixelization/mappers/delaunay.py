@@ -4,10 +4,10 @@ import numpy as np
 from autoconf import cached_property
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
-from autoarray.inversion.pixelization.mesh_grid.delaunay_2d import Mesh2DDelaunay
+from autoarray.inversion.pixelization.mesh_grid.delaunay import Mesh2DDelaunay
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers import mapper_util
@@ -104,7 +104,7 @@ class MapperDelaunay(AbstractMapper):
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
         adapt_data: Optional[np.ndarray] = None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads=None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         xp=np,

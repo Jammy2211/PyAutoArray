@@ -4,7 +4,7 @@ from typing import Optional
 from autoarray.inversion.mock.mock_mapper import MockMapper
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract import Abstract2DMesh
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 

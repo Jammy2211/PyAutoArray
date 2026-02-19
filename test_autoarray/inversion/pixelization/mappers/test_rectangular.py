@@ -6,6 +6,7 @@ import autoarray as aa
 from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
     overlay_grid_from,
 )
+from autoarray.inversion.pixelization.mappers.rectangular_uniform import rectangular_mappings_weights_via_interpolation_from
 
 
 def test__pix_indexes_for_sub_slim_index__matches_util():
@@ -39,7 +40,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     )
 
     mappings, weights = (
-        aa.util.mapper.rectangular_mappings_weights_via_interpolation_from(
+        rectangular_mappings_weights_via_interpolation_from(
             shape_native=(3, 3),
             source_plane_mesh_grid=aa.Grid2DIrregular(mesh_grid),
             source_plane_data_grid=aa.Grid2DIrregular(grid.over_sampled).array,

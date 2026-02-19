@@ -7,16 +7,13 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class SettingsInversion:
+class Settings:
     def __init__(
         self,
         use_mixed_precision: bool = False,
         use_positive_only_solver: Optional[bool] = None,
-        positive_only_uses_p_initial: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,
         no_regularization_add_to_curvature_diag_value: float = None,
-        tolerance: float = 1e-8,
-        maxiter: int = 250,
     ):
         """
         The settings of an Inversion, customizing how a linear set of equations are solved for.
@@ -41,12 +38,6 @@ class SettingsInversion:
         no_regularization_add_to_curvature_diag_value
             If a linear func object does not have a corresponding regularization, this value is added to its
             diagonal entries of the curvature regularization matrix to ensure the matrix is positive-definite.
-        tolerance
-            For an interferometer inversion using the linear operators method, sets the tolerance of the solver
-            (this input does nothing for dataset data and other interferometer methods).
-        maxiter
-            For an interferometer inversion using the linear operators method, sets the maximum number of iterations
-            of the solver (this input does nothing for dataset data and other interferometer methods).
         """
         self.use_mixed_precision = use_mixed_precision
         self._use_positive_only_solver = use_positive_only_solver
@@ -56,22 +47,12 @@ class SettingsInversion:
             no_regularization_add_to_curvature_diag_value
         )
 
-        self.tolerance = tolerance
-        self.maxiter = maxiter
-
     @property
     def use_positive_only_solver(self):
         if self._use_positive_only_solver is None:
             return conf.instance["general"]["inversion"]["use_positive_only_solver"]
 
         return self._use_positive_only_solver
-
-    @property
-    def positive_only_uses_p_initial(self):
-        if self._positive_only_uses_p_initial is None:
-            return conf.instance["general"]["inversion"]["positive_only_uses_p_initial"]
-
-        return self._positive_only_uses_p_initial
 
     @property
     def use_border_relocator(self):

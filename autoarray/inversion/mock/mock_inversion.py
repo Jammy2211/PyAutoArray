@@ -3,7 +3,7 @@ from typing import List
 
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 
 
 class MockInversion(AbstractInversion):
@@ -30,14 +30,14 @@ class MockInversion(AbstractInversion):
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
         fast_chi_squared: float = None,
-        settings: SettingsInversion = None,
+        settings: Settings = None,
     ):
         dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
         )
 
-        settings = settings or SettingsInversion()
+        settings = settings or Settings()
 
         super().__init__(
             dataset=dataset,

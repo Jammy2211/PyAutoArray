@@ -4,7 +4,7 @@ from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.interferometer.mapping import (
     InversionInterferometerMapping,
 )
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 
 
 class MockInversionInterferometer(InversionInterferometerMapping):
@@ -15,7 +15,7 @@ class MockInversionInterferometer(InversionInterferometerMapping):
         transformer=None,
         linear_obj_list=None,
         operated_mapping_matrix=None,
-        settings: SettingsInversion = None,
+        settings: Settings = None,
     ):
         dataset = DatasetInterface(
             data=data,
@@ -23,7 +23,7 @@ class MockInversionInterferometer(InversionInterferometerMapping):
             transformer=transformer,
         )
 
-        settings = settings or SettingsInversion()
+        settings = settings or Settings()
 
         super().__init__(
             dataset=dataset,

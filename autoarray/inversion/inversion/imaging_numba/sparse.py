@@ -7,7 +7,7 @@ from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.preloads import Preloads
@@ -21,7 +21,7 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
         self,
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads: Preloads = None,
         xp=np,
     ):

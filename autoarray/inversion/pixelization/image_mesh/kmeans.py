@@ -9,7 +9,7 @@ from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 
 from autoarray import exc
 

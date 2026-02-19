@@ -7,7 +7,7 @@ from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
@@ -19,7 +19,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         self,
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         xp=np,
     ):
         """

@@ -114,7 +114,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     inversion = aa.InversionImagingMapping(
         dataset=dataset,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(
+        settings=aa.Settings(
             no_regularization_add_to_curvature_diag_value=False
         ),
     )
@@ -129,7 +129,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     inversion = aa.InversionImagingMapping(
         dataset=dataset,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(
+        settings=aa.Settings(
             no_regularization_add_to_curvature_diag_value=True
         ),
     )

@@ -10,11 +10,11 @@ from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
+from autoarray.inversion.pixelization.mesh_grid.abstract import Abstract2DMesh
 
 from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
@@ -30,7 +30,7 @@ class AbstractMapper(LinearObj):
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
         adapt_data: Optional[np.ndarray] = None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         image_plane_mesh_grid=None,
         preloads=None,
         xp=np,
@@ -113,7 +113,7 @@ class AbstractMapper(LinearObj):
         self.adapt_data = adapt_data
         self.image_plane_mesh_grid = image_plane_mesh_grid
         self.preloads = preloads
-        self.settings = settings
+        self.settings = settings or Settings()
 
     @property
     def params(self) -> int:

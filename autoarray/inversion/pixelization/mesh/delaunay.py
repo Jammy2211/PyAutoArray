@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Optional
 
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
@@ -52,7 +52,7 @@ class Delaunay(AbstractMesh):
         regularization: Optional[AbstractRegularization] = None,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads=None,
         xp=np,
     ):

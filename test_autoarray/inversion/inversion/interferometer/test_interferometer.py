@@ -17,7 +17,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[aa.m.MockLinearObj(parameters=1), rectangular_mapper_7x7_3x3],
         operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
-        settings=aa.SettingsInversion(
+        settings=aa.Settings(
             no_regularization_add_to_curvature_diag_value=False
         ),
     )
@@ -33,7 +33,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[aa.m.MockLinearObj(parameters=1), rectangular_mapper_7x7_3x3],
         operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
-        settings=aa.SettingsInversion(
+        settings=aa.Settings(
             no_regularization_add_to_curvature_diag_value=True
         ),
     )
@@ -50,7 +50,7 @@ def test__fast_chi_squared(
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(),
+        settings=aa.Settings(),
     )
 
     residual_map = aa.util.fit.residual_map_from(

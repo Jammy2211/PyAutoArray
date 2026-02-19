@@ -4,7 +4,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.mesh_grid.delaunay_2d import (
+from autoarray.inversion.pixelization.mesh_grid.delaunay import (
     pix_indexes_for_sub_slim_index_delaunay_from,
 )
 

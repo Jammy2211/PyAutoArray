@@ -6,7 +6,7 @@ from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.inversion.inversion import inversion_util
@@ -17,7 +17,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         self,
         dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         xp=np,
     ):
         """

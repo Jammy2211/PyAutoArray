@@ -1,3 +1,6 @@
+import numpy as np
+from typing import Tuple
+
 from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 

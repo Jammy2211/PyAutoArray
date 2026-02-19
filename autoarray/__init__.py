@@ -27,7 +27,7 @@ from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization import mesh
 from .inversion.pixelization import image_mesh
 from .inversion import regularization as reg
-from .inversion.inversion.settings import SettingsInversion
+from .settings import Settings
 from .inversion.inversion.abstract import AbstractInversion
 from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
@@ -40,8 +40,8 @@ from .inversion.pixelization.mappers.delaunay import MapperDelaunay
 from .inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
-from .inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
-from .inversion.pixelization.mesh_grid.delaunay_2d import Mesh2DDelaunay
+from .inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
+from .inversion.pixelization.mesh_grid.delaunay import Mesh2DDelaunay
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.sparse import InversionImagingSparse
 from .inversion.inversion.imaging.inversion_imaging_util import ImagingSparseOperator
@@ -77,8 +77,8 @@ from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
 from .operators.over_sampling.over_sampler import OverSampler
 from .structures.grids.irregular_2d import Grid2DIrregular
-from .inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
-from .inversion.pixelization.mesh_grid.delaunay_2d import Mesh2DDelaunay
+from .inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
+from .inversion.pixelization.mesh_grid.delaunay import Mesh2DDelaunay
 from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular

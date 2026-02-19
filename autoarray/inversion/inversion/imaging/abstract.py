@@ -7,7 +7,7 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.preloads import Preloads
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
@@ -18,7 +18,7 @@ class AbstractInversionImaging(AbstractInversion):
         self,
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads: Preloads = None,
         xp=np,
     ):

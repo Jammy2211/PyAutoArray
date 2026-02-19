@@ -1,13 +1,13 @@
 import numpy as np
 from typing import Optional, Tuple
 
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
+from autoarray.inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
 
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
@@ -134,7 +134,7 @@ class RectangularAdaptDensity(AbstractMesh):
         regularization: Optional[AbstractRegularization] = None,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads=None,
         xp=np,
     ):

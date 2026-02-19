@@ -1,13 +1,14 @@
 from typing import Optional, Tuple
 import numpy as np
+from functools import partial
 
 from autoconf import cached_property
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
-from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
+from autoarray.inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
@@ -270,7 +271,7 @@ class MapperRectangular(AbstractMapper):
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
         adapt_data: Optional[np.ndarray] = None,
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads=None,
         mesh_weight_map: Optional[np.ndarray] = None,
         xp=np,
@@ -444,7 +445,7 @@ class MapperRectangular(AbstractMapper):
         `Neighbors` for a complete description of the neighboring scheme).
 
         The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
+        rectangular grid, as described in the method `rectangular_neighbors_from`.
         """
         return adaptive_rectangular_areas_from(
             source_grid_shape=self.shape_native,
@@ -472,7 +473,7 @@ class MapperRectangular(AbstractMapper):
         `Neighbors` for a complete description of the neighboring scheme).
 
         The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
+        rectangular grid, as described in the method `rectangular_neighbors_from`.
         """
 
         # edges defined in 0 -> 1 space, there is one more edge than pixel centers on each side
