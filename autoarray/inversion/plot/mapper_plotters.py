@@ -69,7 +69,7 @@ class MapperPlotter(AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=image,
             visuals_2d=self.visuals_2d,
-            grid_indexes=self.mapper.mapper_grids.image_plane_data_grid.over_sampled,
+            grid_indexes=self.mapper.image_plane_data_grid.over_sampled,
             auto_labels=AutoLabels(
                 title="Image (Image-Plane)", filename="mapper_image"
             ),

@@ -9,10 +9,10 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.inversion.pixelization.mesh_grid.abstract_2d import Abstract2DMesh
 
@@ -23,20 +23,24 @@ from autoarray.inversion.pixelization.mappers import mapper_numba_util
 class AbstractMapper(LinearObj):
     def __init__(
         self,
-        mapper_grids: MapperGrids,
+        mask,
+        mesh,
+        source_plane_data_grid: Grid2D,
+        source_plane_mesh_grid: Grid2DIrregular,
         regularization: Optional[AbstractRegularization],
         border_relocator: BorderRelocator,
+        adapt_data: Optional[np.ndarray] = None,
         settings: SettingsInversion = SettingsInversion(),
         preloads=None,
         xp=np,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
-        the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
+        the four grids are explained (`image_plane_data_grid`, `source_plane_data_grid`,
         `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
         If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
-        `mapper_grids` packages.
+        `image_mesh` packages.
 
         A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
         `source_plane_data_grid`) and the pxelization's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
@@ -76,9 +80,20 @@ class AbstractMapper(LinearObj):
 
         Parameters
         ----------
-        mapper_grids
-            An object containing the data grid and mesh grid in both the data-frame and source-frame used by the
-            mapper to map data-points to linear object parameters.
+        source_plane_data_grid
+            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
+            `source` reference frame.
+        source_plane_mesh_grid
+            The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
+        image_plane_mesh_grid
+            The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
+            transformation applied to it to create the `source_plane_mesh_grid`.
+        adapt_data
+            An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
+            pixels of the Delaunay grid to the data it discretizes.
+        mesh_weight_map
+            The weight map used to weight the creation of the rectangular mesh grid, which is used for the
+            `RectangularBrightness` mesh which adapts the size of its pixels to where the source is reconstructed.
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
@@ -89,8 +104,12 @@ class AbstractMapper(LinearObj):
 
         super().__init__(regularization=regularization, xp=xp)
 
+        self.mask = mask
+        self.mesh = mesh
+        self.source_plane_data_grid = source_plane_data_grid
+        self.source_plane_mesh_grid = source_plane_mesh_grid
         self.border_relocator = border_relocator
-        self.mapper_grids = mapper_grids
+        self.adapt_data = adapt_data
         self.preloads = preloads
         self.settings = settings
 
@@ -103,32 +122,12 @@ class AbstractMapper(LinearObj):
         return self.params
 
     @property
-    def mesh(self):
-        return self.mapper_grids.mesh
-
-    @property
     def mesh_geometry(self):
         raise NotImplementedError
 
     @property
-    def source_plane_data_grid(self) -> Grid2D:
-        return self.mapper_grids.source_plane_data_grid
-
-    @property
-    def source_plane_mesh_grid(self) -> Abstract2DMesh:
-        return self.mapper_grids.source_plane_mesh_grid
-
-    @property
-    def image_plane_mesh_grid(self) -> Grid2D:
-        return self.mapper_grids.image_plane_mesh_grid
-
-    @property
     def over_sampler(self):
-        return self.mapper_grids.source_plane_data_grid.over_sampler
-
-    @property
-    def adapt_data(self) -> np.ndarray:
-        return self.mapper_grids.adapt_data
+        return self.source_plane_data_grid.over_sampler
 
     @property
     def neighbors(self) -> Neighbors:
@@ -330,7 +329,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
             slim_index_for_sub=self.slim_index_for_sub_slim_index,
-            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
             sub_fraction_slim=self.over_sampler.sub_fraction.array,
             xp=self._xp,
         )
@@ -386,7 +385,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub=self.pix_indexes_for_sub_slim_index,
             pix_weights_for_sub=self.pix_weights_for_sub_slim_index,
             slim_index_for_sub=self.slim_index_for_sub_slim_index,
-            fft_index_for_masked_pixel=self.mapper_grids.mask.fft_index_for_masked_pixel,
+            fft_index_for_masked_pixel=self.mask.fft_index_for_masked_pixel,
             sub_fraction_slim=self.over_sampler.sub_fraction.array,
             xp=self._xp,
             return_rows_slim=False,
@@ -536,6 +535,24 @@ class AbstractMapper(LinearObj):
             extent=self.source_plane_mesh_grid.geometry.extent
         )
 
+    @property
+    def image_plane_data_grid(self):
+        return self.mask.derive_grid.unmasked
+
+    @property
+    def mesh_pixels_per_image_pixels(self):
+
+        mesh_pixels_per_image_pixels = grid_2d_util.grid_pixels_in_mask_pixels_from(
+            grid=np.array(self.image_plane_mesh_grid),
+            shape_native=self.mask.shape_native,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
+        return Array2D(
+            values=mesh_pixels_per_image_pixels,
+            mask=self.mask,
+        )
 
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):

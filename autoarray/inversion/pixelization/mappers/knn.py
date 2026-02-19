@@ -12,6 +12,13 @@ from autoarray.inversion.pixelization.mesh.knn import get_interpolation_weights
 
 class MapperKNNInterpolator(MapperDelaunay):
 
+    @property
+    def mapper_cls(self):
+
+        from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
+
+        return MapperKNNInterpolator
+
     def _pix_sub_weights_from_query_points(self, query_points) -> PixSubWeights:
         """
         Compute PixSubWeights for arbitrary query points using the kNN kernel module.

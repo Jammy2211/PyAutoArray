@@ -2,7 +2,6 @@ import numpy as np
 from typing import Optional, Tuple
 
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 
 
 class MockMapper(AbstractMapper):
@@ -22,16 +21,13 @@ class MockMapper(AbstractMapper):
         pixel_signals=None,
         parameters=None,
     ):
-        mapper_grids = MapperGrids(
+
+        super().__init__(
             mask=mask,
             mesh=None,
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             adapt_data=adapt_data,
-        )
-
-        super().__init__(
-            mapper_grids=mapper_grids,
             border_relocator=border_relocator,
             regularization=regularization,
         )

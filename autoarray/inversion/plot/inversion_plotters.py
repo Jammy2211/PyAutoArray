@@ -267,7 +267,7 @@ class InversionPlotter(AbstractPlotter):
         if mesh_pixels_per_image_pixels:
             try:
                 mesh_pixels_per_image_pixels = (
-                    mapper_plotter.mapper.mapper_grids.mesh_pixels_per_image_pixels
+                    mapper_plotter.mapper.mesh_pixels_per_image_pixels
                 )
 
                 self.mat_plot_2d.plot_array(
@@ -335,7 +335,7 @@ class InversionPlotter(AbstractPlotter):
         mapper = self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index]
 
         self.visuals_2d += Visuals2D(
-            mesh_grid=mapper.mapper_grids.image_plane_mesh_grid
+            mesh_grid=mapper.image_plane_mesh_grid
         )
 
         self.set_title(label="Mesh Pixel Grid Overlaid")

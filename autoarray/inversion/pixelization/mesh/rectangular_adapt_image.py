@@ -4,13 +4,13 @@ from typing import Optional, Tuple
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
-
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
     RectangularAdaptDensity,
 )
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray import exc
 

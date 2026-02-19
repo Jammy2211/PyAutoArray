@@ -7,11 +7,11 @@ from autoarray.inversion.pixelization.mappers import mapper_util
 class MapperRectangularUniform(MapperRectangular):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
-    the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
+    the four grids are explained (`image_plane_data_grid`, `source_plane_data_grid`,
     `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
     If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
-    `mapper_grids` packages.
+    `image_mesh` packages.
 
     A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
     `source_plane_data_grid`) and the mesh's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
@@ -44,9 +44,6 @@ class MapperRectangularUniform(MapperRectangular):
 
     Parameters
     ----------
-    mapper_grids
-        An object containing the data grid and mesh grid in both the data-frame and source-frame used by the
-        mapper to map data-points to linear object parameters.
     regularization
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.

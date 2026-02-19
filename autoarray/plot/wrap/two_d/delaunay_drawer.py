@@ -73,7 +73,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
         if ax is None:
             ax = plt.gca()
 
-        source_pixelization_grid = mapper.mapper_grids.source_plane_mesh_grid
+        source_pixelization_grid = mapper.source_plane_mesh_grid
 
         simplices = mapper.delaunay.simplices
 

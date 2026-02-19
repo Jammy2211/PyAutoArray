@@ -19,7 +19,7 @@ directory = path.dirname(path.realpath(__file__))
 def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
 
     inversion = aa.m.MockInversionImaging(
-        mask=rectangular_mapper_7x7_3x3.mapper_grids.mask,
+        mask=rectangular_mapper_7x7_3x3.mask,
         psf=psf_3x3,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
     )
@@ -73,7 +73,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
     )
 
     inversion = aa.m.MockInversionImaging(
-        mask=rectangular_mapper_7x7_3x3.mapper_grids.mask,
+        mask=rectangular_mapper_7x7_3x3.mask,
         psf=psf,
         linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj],
     )

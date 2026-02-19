@@ -155,15 +155,6 @@ class Pixelization:
         self.mesh = mesh
         self.regularization = regularization
 
-    @property
-    def mapper_grids_from(self) -> Callable:
-        """
-        Returns a ``MapperGrids`` object, which contains all of the different grids used by a
-        pixelization (``image_plane_data_grid``, ``image_plane_mesh_grid``, ``source_plane_data_grid``,
-        ``source_plane_mesh_grid``).
-        """
-        return self.mesh.mapper_grids_from
-
     def __repr__(self):
         string = "{}\n{}".format(self.__class__.__name__, str(self.mesh))
         if self.regularization is not None:

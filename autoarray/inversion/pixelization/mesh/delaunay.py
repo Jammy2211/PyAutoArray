@@ -1,9 +1,10 @@
 import numpy as np
 from typing import Optional
 
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -35,17 +36,26 @@ class Delaunay(AbstractMesh):
         """
         super().__init__()
 
-    def mapper_grids_from(
+    @property
+    def mapper_cls(self):
+
+        from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+
+        return MapperDelaunay
+
+    def mapper_from(
         self,
         mask,
         source_plane_data_grid: Grid2D,
-        border_relocator: Optional[BorderRelocator] = None,
-        source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        source_plane_mesh_grid: Grid2DIrregular,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        regularization: Optional[AbstractRegularization]= None,
+        border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
+        settings: SettingsInversion = SettingsInversion(),
         preloads=None,
         xp=np,
-    ) -> MapperGrids:
+    ):
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
         in both the `data` and `source` frames.
@@ -85,7 +95,6 @@ class Delaunay(AbstractMesh):
         adapt_data
             Not used for a rectangular mesh.
         """
-
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
@@ -99,11 +108,16 @@ class Delaunay(AbstractMesh):
             xp=xp,
         )
 
-        return MapperGrids(
+        return self.mapper_cls(
             mask=mask,
             mesh=self,
             source_plane_data_grid=relocated_grid,
             source_plane_mesh_grid=relocated_mesh_grid,
+            regularization=regularization,
+            border_relocator=border_relocator,
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
+            settings=settings,
+            preloads=preloads,
+            xp=xp
         )

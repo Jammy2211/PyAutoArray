@@ -17,14 +17,15 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
         over_sample_size=1,
     )
 
-    mapper_grids = aa.MapperGrids(
+    mesh = aa.mesh.Delaunay()
+
+    mapper = mesh.mapper_from(
         mesh=aa.mesh.Delaunay(),
         mask=grid_2d_sub_1_7x7.mask,
         source_plane_data_grid=grid_2d_sub_1_7x7,
         source_plane_mesh_grid=mesh_grid,
+        regularization=None
     )
-
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     delaunay = scipy.spatial.Delaunay(mapper.mesh_geometry.mesh_grid_xy)
 

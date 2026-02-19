@@ -1,11 +1,14 @@
 import numpy as np
 from typing import Optional, Tuple
 
+from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.inversion.pixelization.mesh_grid.rectangular_2d import Mesh2DRectangular
 
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
@@ -101,6 +104,12 @@ class RectangularAdaptDensity(AbstractMesh):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
+    @property
+    def mapper_cls(self):
+        from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
+
+        return MapperRectangular
+
     def mesh_weight_map_from(self, adapt_data, xp=np) -> np.ndarray:
         """
         The weight map of a rectangular pixelization is None, because magnificaiton adaption uses
@@ -114,17 +123,19 @@ class RectangularAdaptDensity(AbstractMesh):
         """
         return None
 
-    def mapper_grids_from(
+    def mapper_from(
         self,
         mask,
         source_plane_data_grid: Grid2D,
-        border_relocator: Optional[BorderRelocator] = None,
-        source_plane_mesh_grid: Grid2D = None,
+        source_plane_mesh_grid: Grid2DIrregular = None,
         image_plane_mesh_grid: Grid2D = None,
+        regularization: Optional[AbstractRegularization] = None,
+        border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
+        settings: SettingsInversion = SettingsInversion(),
         preloads=None,
         xp=np,
-    ) -> MapperGrids:
+    ):
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
@@ -156,6 +167,7 @@ class RectangularAdaptDensity(AbstractMesh):
         adapt_data
             Not used for a rectangular pixelization.
         """
+        from autoarray.inversion.pixelization.mappers.rectangular import MapperRectangular
 
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
@@ -171,12 +183,16 @@ class RectangularAdaptDensity(AbstractMesh):
 
         mesh_weight_map = self.mesh_weight_map_from(adapt_data=adapt_data, xp=xp)
 
-        return MapperGrids(
+        return self.mapper_cls(
             mask=mask,
             mesh=self,
             source_plane_data_grid=relocated_grid,
-            source_plane_mesh_grid=Grid2DIrregular(mesh_grid),
-            image_plane_mesh_grid=image_plane_mesh_grid,
-            adapt_data=adapt_data,
+            source_plane_mesh_grid=mesh_grid,
+            regularization=regularization,
+            border_relocator=border_relocator,
             mesh_weight_map=mesh_weight_map,
+            adapt_data=adapt_data,
+            settings=settings,
+            preloads=preloads,
+            xp=xp
         )

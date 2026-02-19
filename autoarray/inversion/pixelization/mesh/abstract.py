@@ -1,8 +1,9 @@
 import numpy as np
 from typing import Optional
 
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -92,16 +93,19 @@ class AbstractMesh:
             )
         return source_plane_mesh_grid
 
-    def mapper_grids_from(
+    def mapper_from(
         self,
         mask,
         source_plane_data_grid: Grid2D,
-        border_relocator: Optional[BorderRelocator] = None,
-        source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        source_plane_mesh_grid: Grid2DIrregular,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        regularization: Optional[AbstractRegularization]= None,
+        border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
+        settings: SettingsInversion = SettingsInversion(),
+        preloads=None,
         xp=np,
-    ) -> MapperGrids:
+    ):
         raise NotImplementedError
 
     def __str__(self):

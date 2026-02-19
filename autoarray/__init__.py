@@ -35,8 +35,6 @@ from .inversion.inversion.dataset_interface import DatasetInterface
 from .inversion.pixelization.border_relocator import BorderRelocator
 from .inversion.pixelization.pixelization import Pixelization
 from .inversion.pixelization.mappers.abstract import AbstractMapper
-from .inversion.pixelization.mappers.mapper_grids import MapperGrids
-from .inversion.pixelization.mappers.factory import mapper_from as Mapper
 from .inversion.pixelization.mappers.rectangular import MapperRectangular
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay
 from .inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform

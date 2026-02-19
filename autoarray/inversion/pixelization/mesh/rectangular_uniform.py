@@ -5,4 +5,8 @@ from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
 
 class RectangularUniform(RectangularAdaptDensity):
 
-    pass
+    @property
+    def mapper_cls(self):
+        from autoarray.inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
+
+        return MapperRectangularUniform

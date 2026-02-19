@@ -375,17 +375,14 @@ def make_rectangular_mapper_7x7_3x3():
         shape_native=shape_native, grid=make_grid_2d_sub_2_7x7().over_sampled
     )
 
-    mapper_grids = aa.MapperGrids(
+    mesh = aa.mesh.RectangularAdaptDensity(shape=shape_native)
+
+    return mesh.mapper_from(
         mask=make_mask_2d_7x7(),
-        mesh=aa.mesh.RectangularAdaptDensity(shape=shape_native),
         source_plane_data_grid=make_grid_2d_sub_2_7x7(),
         source_plane_mesh_grid=aa.Grid2DIrregular(source_plane_mesh_grid),
         image_plane_mesh_grid=None,
         adapt_data=aa.Array2D.ones(shape_native, pixel_scales=0.1),
-    )
-
-    return aa.MapperRectangularUniform(
-        mapper_grids=mapper_grids,
         border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),
     )
@@ -417,17 +414,14 @@ def make_delaunay_mapper_9_3x3():
         pixel_scales=1.0,
     )
 
-    mapper_grids = aa.MapperGrids(
+    mesh = aa.mesh.Delaunay()
+
+    return mesh.mapper_from(
         mask=make_mask_2d_7x7(),
-        mesh=aa.mesh.Delaunay,
         source_plane_data_grid=make_grid_2d_sub_2_7x7(),
         source_plane_mesh_grid=grid_9,
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
-    )
-
-    return aa.MapperDelaunay(
-        mapper_grids=mapper_grids,
         border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),
     )
