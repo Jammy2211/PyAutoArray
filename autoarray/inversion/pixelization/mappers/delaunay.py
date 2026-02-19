@@ -188,9 +188,9 @@ class MapperDelaunay(AbstractMapper):
             adapt_data=adapt_data,
             settings=settings,
             preloads=preloads,
+            image_plane_mesh_grid=image_plane_mesh_grid,
             xp=xp,
         )
-        self.image_plane_mesh_grid = image_plane_mesh_grid
 
     @property
     def delaunay(self):

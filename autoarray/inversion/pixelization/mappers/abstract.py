@@ -31,6 +31,7 @@ class AbstractMapper(LinearObj):
         border_relocator: BorderRelocator,
         adapt_data: Optional[np.ndarray] = None,
         settings: SettingsInversion = SettingsInversion(),
+        image_plane_mesh_grid=None,
         preloads=None,
         xp=np,
     ):
@@ -110,6 +111,7 @@ class AbstractMapper(LinearObj):
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.border_relocator = border_relocator
         self.adapt_data = adapt_data
+        self.image_plane_mesh_grid = image_plane_mesh_grid
         self.preloads = preloads
         self.settings = settings
 

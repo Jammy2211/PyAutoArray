@@ -103,14 +103,14 @@ def test__curvature_matrix__via_sparse_operator__identical_to_mapping():
     mesh_0 = aa.mesh.RectangularUniform(shape=(3, 3))
     mesh_1 = aa.mesh.RectangularUniform(shape=(4, 4))
 
-    mapper_grids_0 = mesh_0.mapper_grids_from(
+    mapper_0 = mesh_0.mapper_from(
         mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
-    mapper_grids_1 = mesh_1.mapper_grids_from(
+    mapper_1 = mesh_1.mapper_from(
         mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
@@ -118,9 +118,6 @@ def test__curvature_matrix__via_sparse_operator__identical_to_mapping():
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
-
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -178,14 +175,14 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
         mask=mask, adapt_data=None
     )
 
-    mapper_grids_0 = mesh_0.mapper_grids_from(
+    mapper_0 = mesh_0.mapper_from(
         mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_0,
     )
 
-    mapper_grids_1 = mesh_1.mapper_grids_from(
+    mapper_1 = mesh_1.mapper_from(
         mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
@@ -193,9 +190,6 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
-
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)

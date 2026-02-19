@@ -375,7 +375,7 @@ def make_rectangular_mapper_7x7_3x3():
         shape_native=shape_native, grid=make_grid_2d_sub_2_7x7().over_sampled
     )
 
-    mesh = aa.mesh.RectangularAdaptDensity(shape=shape_native)
+    mesh = aa.mesh.RectangularUniform(shape=shape_native)
 
     return mesh.mapper_from(
         mask=make_mask_2d_7x7(),
