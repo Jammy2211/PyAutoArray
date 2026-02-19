@@ -108,11 +108,16 @@ class RectangularAdaptDensity(AbstractMesh):
             Not used for a rectangular pixelization.
         """
 
+        print(source_plane_data_grid)
+
         relocated_grid = self.relocated_grid_from(
             border_relocator=border_relocator,
             source_plane_data_grid=source_plane_data_grid,
             xp=xp,
         )
+
+        print(relocated_grid)
+        ffff
 
         mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid, xp=xp)
 
