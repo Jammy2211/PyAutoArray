@@ -39,7 +39,6 @@ class AbstractMesh:
             A 2D (y,x) grid of coordinates, whose coordinates outside the border are relocated to its edge.
         """
         if border_relocator is not None:
-            fff
             return border_relocator.relocated_grid_from(
                 grid=source_plane_data_grid, xp=xp
             )

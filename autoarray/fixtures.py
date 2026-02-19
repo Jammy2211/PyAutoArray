@@ -377,15 +377,13 @@ def make_rectangular_mapper_7x7_3x3():
 
     mesh = aa.mesh.RectangularUniform(shape=shape_native)
 
-    print(make_grid_2d_sub_2_7x7())
-
     return mesh.mapper_from(
         mask=make_mask_2d_7x7(),
         source_plane_data_grid=make_grid_2d_sub_2_7x7(),
         source_plane_mesh_grid=aa.Grid2DIrregular(source_plane_mesh_grid),
         image_plane_mesh_grid=None,
         adapt_data=aa.Array2D.ones(shape_native, pixel_scales=0.1),
-        border_relocator=make_border_relocator_2d_7x7(),
+     #   border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),
     )
 
