@@ -24,9 +24,6 @@ def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
         linear_obj_list=[rectangular_mapper_7x7_3x3],
     )
 
-    print(rectangular_mapper_7x7_3x3.source_plane_data_grid)
-    print(rectangular_mapper_7x7_3x3.source_plane_mesh_grid)
-
     assert inversion.operated_mapping_matrix_list[0][0, 0] == pytest.approx(
         1.61999997, 1e-4
     )
