@@ -424,15 +424,7 @@ class InterpolatorDelaunay(AbstractInterpolator):
         `MeshException`, which helps exception handling in the `inversion` package.
         """
 
-        if self.preloads is not None:
-
-            skip_areas = self.preloads.skip_areas
-
-        else:
-
-            skip_areas = False
-
-        if not skip_areas:
+        if not self.mesh.skip_areas:
 
             if self._xp.__name__.startswith("jax"):
 

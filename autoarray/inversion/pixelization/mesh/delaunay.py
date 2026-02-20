@@ -38,6 +38,16 @@ class Delaunay(AbstractMesh):
         self.areas_factor = areas_factor
 
     @property
+    def skip_areas(self):
+        """
+        Whether to skip barycentric  area calculations and split point computations during Delaunay triangulation.
+        When True, the Delaunay interface returns only the minimal set of outputs (points, simplices, mappings)
+        without computing split_points or splitted_mappings. This optimization is useful for regularization
+        schemes like Matérn kernels that don't require area-based calculations. Default is False.
+        """
+        return False
+
+    @property
     def mapper_cls(self):
 
         from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay

@@ -24,7 +24,6 @@ class Preloads:
         source_pixel_zeroed_indices: np.ndarray = None,
         image_plane_mesh_grid_list: np.ndarray = None,
         linear_light_profile_blurred_mapping_matrix=None,
-        skip_areas: bool = False,
     ):
         """
         Stores preloaded arrays and matrices used during pixelized linear inversions, improving both performance
@@ -80,11 +79,6 @@ class Preloads:
             inversion, with the other component being the pixelization's pixels. These are fixed when the lens light
             is fixed to the maximum likelihood solution, allowing the blurred mapping matrix to be preloaded, but
             the intensity values will still be solved for during the inversion.
-        skip_areas
-            Whether to skip Voronoi area calculations and split point computations during Delaunay triangulation.
-            When True, the Delaunay interface returns only the minimal set of outputs (points, simplices, mappings)
-            without computing split_points or splitted_mappings. This optimization is useful for regularization
-            schemes like Matérn kernels that don't require area-based calculations. Default is False.
         """
         self.mapper_indices = None
         self.source_pixel_zeroed_indices = None
@@ -124,5 +118,3 @@ class Preloads:
             self.linear_light_profile_blurred_mapping_matrix = np.array(
                 linear_light_profile_blurred_mapping_matrix
             )
-
-        self.skip_areas = skip_areas
