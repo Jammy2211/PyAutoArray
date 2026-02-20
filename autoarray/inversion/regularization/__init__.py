@@ -11,4 +11,3 @@ from .gaussian_kernel import GaussianKernel
 from .exponential_kernel import ExponentialKernel
 from .matern_kernel import MaternKernel
 from .matern_adapt_kernel import MaternAdaptKernel
-from .matern_adapt_kernel_rho import MaternAdaptKernelRho

@@ -141,11 +141,12 @@ def test__mapped_to_source_from(grid_2d_7x7):
 
     mesh = aa.mesh.Delaunay()
 
-    mapper = mesh.mapper_from(
-        mask=grid_2d_7x7.mask,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=mesh_grid,
     )
+
+    mapper = aa.Mapper(interpolator=interpolator)
 
     array_slim = aa.Array2D.no_mask(
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],

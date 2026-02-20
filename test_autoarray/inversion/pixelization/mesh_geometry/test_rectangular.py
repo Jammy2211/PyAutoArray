@@ -3,12 +3,12 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import (
     overlay_grid_from,
 )
 
 
-from autoarray.inversion.pixelization.mesh_geometry.rectangular import (
+from autoarray.inversion.mesh.mesh_geometry.rectangular import (
     rectangular_neighbors_from,
 )
 
@@ -153,13 +153,12 @@ def test__areas_transformed(mask_2d_7x7):
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(3, 3))
 
-    mapper = mesh.mapper_from(
-        mask=mask_2d_7x7,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=mesh_grid,
     )
 
-    assert mapper.mesh_geometry.areas_transformed[4] == pytest.approx(
+    assert interpolator.mesh_geometry.areas_transformed[4] == pytest.approx(
         4.0,
         abs=1e-8,
     )
@@ -188,13 +187,14 @@ def test__edges_transformed(mask_2d_7x7):
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(3, 3))
 
-    mapper = mesh.mapper_from(
-        mask=mask_2d_7x7,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=mesh_grid,
     )
 
-    assert mapper.mesh_geometry.edges_transformed[3] == pytest.approx(
+    mapper = aa.Mapper(interpolator=interpolator)
+
+    assert interpolator.mesh_geometry.edges_transformed[3] == pytest.approx(
         np.array(
             [-1.5, 1.5],  # left
         ),

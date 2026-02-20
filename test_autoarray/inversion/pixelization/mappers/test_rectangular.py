@@ -1,9 +1,9 @@
 import autoarray as aa
 
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import (
     overlay_grid_from,
 )
-from autoarray.inversion.pixelization.interpolator.rectangular_uniform import (
+from autoarray.inversion.mesh.interpolator.rectangular_uniform import (
     rectangular_mappings_weights_via_interpolation_from,
 )
 
@@ -34,11 +34,12 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
     mesh = aa.mesh.RectangularUniform(shape=(3, 3))
 
-    mapper = mesh.mapper_from(
-        mask=grid.mask,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=aa.Grid2DIrregular(mesh_grid),
     )
+
+    mapper = aa.Mapper(interpolator=interpolator)
 
     mappings, weights = rectangular_mappings_weights_via_interpolation_from(
         shape_native=(3, 3),
@@ -58,12 +59,13 @@ def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(3, 3))
 
-    mapper = mesh.mapper_from(
-        mask=grid_2d_sub_1_7x7.mask,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=grid_2d_sub_1_7x7,
         source_plane_mesh_grid=mesh_grid,
         adapt_data=image_7x7,
     )
+
+    mapper = aa.Mapper(interpolator=interpolator)
 
     pixel_signals = mapper.pixel_signals_from(signal_scale=2.0)
 

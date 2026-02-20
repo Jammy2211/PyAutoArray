@@ -4,11 +4,16 @@ from typing import Optional, List, Union
 
 from autoconf import conf
 
-from autoarray.inversion.pixelization.mappers.rectangular import (
-    MapperRectangular,
+from autoarray.inversion.mesh.interpolator.rectangular import (
+    InterpolatorRectangular,
 )
-from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
+from autoarray.inversion.mesh.interpolator.rectangular_uniform import (
+    InterpolatorRectangularUniform,
+)
+from autoarray.inversion.mesh.interpolator.delaunay import InterpolatorDelaunay
+from autoarray.inversion.mesh.interpolator.knn import (
+    InterpolatorKNearestNeighbor,
+)
 from autoarray.mask.derive.zoom_2d import Zoom2D
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
@@ -484,13 +489,15 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_mapper(
         self,
-        mapper: MapperRectangular,
+        mapper,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
-        if isinstance(mapper, MapperRectangular):
+        if isinstance(mapper.interpolator, InterpolatorRectangular) or isinstance(
+            mapper.interpolator, InterpolatorRectangularUniform
+        ):
             self._plot_rectangular_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
@@ -499,8 +506,8 @@ class MatPlot2D(AbstractMatPlot):
                 zoom_to_brightest=zoom_to_brightest,
             )
 
-        elif isinstance(mapper, MapperDelaunay) or isinstance(
-            mapper, MapperKNNInterpolator
+        elif isinstance(mapper.interpolator, InterpolatorDelaunay) or isinstance(
+            mapper.interpolator, InterpolatorKNearestNeighbor
         ):
             self._plot_delaunay_mapper(
                 mapper=mapper,
@@ -512,7 +519,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_rectangular_mapper(
         self,
-        mapper: MapperRectangular,
+        mapper,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         pixel_values: np.ndarray = Optional[None],
@@ -547,14 +554,14 @@ class MatPlot2D(AbstractMatPlot):
 
         if pixel_values is not None:
 
-            from autoarray.inversion.pixelization.mappers.rectangular_uniform import (
-                MapperRectangularUniform,
+            from autoarray.inversion.mesh.interpolator.rectangular_uniform import (
+                InterpolatorRectangularUniform,
             )
-            from autoarray.inversion.pixelization.mappers.rectangular import (
-                MapperRectangular,
+            from autoarray.inversion.mesh.interpolator.rectangular import (
+                InterpolatorRectangular,
             )
 
-            if isinstance(mapper, MapperRectangularUniform):
+            if isinstance(mapper.interpolator, InterpolatorRectangularUniform):
 
                 self.plot_array(
                     array=pixel_values,
@@ -646,7 +653,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_delaunay_mapper(
         self,
-        mapper: MapperDelaunay,
+        mapper,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         pixel_values: np.ndarray = Optional[None],

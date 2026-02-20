@@ -2,7 +2,7 @@ import numpy as np
 from typing import Optional
 
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
+from autoarray.inversion.mesh.image_mesh.abstract import AbstractImageMesh
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.settings import Settings
 

@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Tuple
 
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import (
     RectangularAdaptDensity,
 )
 

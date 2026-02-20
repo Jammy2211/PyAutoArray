@@ -47,7 +47,7 @@ class Preloads:
         This function iterates over all galaxies with pixelizations, determines which pixelizations have an
         `image_mesh` and for these pixelizations computes the image-plane mesh-grid.
 
-        It returns a list of all image-plane mesh-grids, which in the functions `mapper_from` and `mapper_galaxy_dict`
+        It returns a list of all image-plane mesh-grids, which in the functions `interpolator_from` and `mapper_galaxy_dict`
         are grouped into a `Mapper` object with other information required to perform the inversion using the
         pixelization.
 

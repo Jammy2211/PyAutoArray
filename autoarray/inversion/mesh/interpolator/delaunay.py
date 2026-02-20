@@ -4,10 +4,11 @@ from scipy.spatial import cKDTree, Delaunay, Voronoi
 
 from autoconf import cached_property
 
-from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
+from autoarray.inversion.mesh.interpolator.abstract import AbstractInterpolator
 from autoarray.inversion.regularization.regularization_util import (
     split_points_from,
 )
+
 
 def scipy_delaunay(points_np, query_points_np, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
@@ -307,7 +308,14 @@ def pixel_weights_delaunay_from(
     area_sum = a0 + a1 + a2
 
     # (N_sub, 3)
-    weights_bary = xp.stack([a0, a1, a2], axis=1) / area_sum[:, None]
+    eps = xp.asarray(1e-12, dtype=area_sum.dtype)
+    den = xp.where(xp.abs(area_sum) > eps, area_sum, 1.0)  # avoid 0 in denominator
+
+    weights_bary = xp.stack([a0, a1, a2], axis=1) / den[:, None]
+
+    # If degenerate, set weights to 0 (or something sensible)
+    degenerate = xp.abs(area_sum) <= eps
+    weights_bary = xp.where(degenerate[:, None], 0.0, weights_bary)
 
     # -----------------------------
     # NEAREST-NEIGHBOUR CASE
@@ -359,8 +367,9 @@ class InterpolatorDelaunay(AbstractInterpolator):
         mesh,
         mesh_grid,
         data_grid,
+        adapt_data: np.ndarray = None,
         preloads=None,
-        _xp=np,
+        xp=np,
     ):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
@@ -393,8 +402,23 @@ class InterpolatorDelaunay(AbstractInterpolator):
             mesh=mesh,
             mesh_grid=mesh_grid,
             data_grid=data_grid,
+            adapt_data=adapt_data,
             preloads=preloads,
-            _xp=_xp,
+            xp=xp,
+        )
+
+    @cached_property
+    def mesh_geometry(self):
+
+        from autoarray.inversion.mesh.mesh_geometry.delaunay import (
+            MeshGeometryDelaunay,
+        )
+
+        return MeshGeometryDelaunay(
+            mesh=self.mesh,
+            mesh_grid=self.mesh_grid,
+            data_grid=self.data_grid,
+            xp=self._xp,
         )
 
     @cached_property

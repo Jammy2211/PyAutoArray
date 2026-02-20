@@ -206,11 +206,11 @@ def test__data_vector_via_weighted_data_two_methods_agree():
 
         grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=sub_size)
 
-        mapper = mesh.mapper_from(
-            mask=mask,
-            border_relocator=None,
-            source_plane_data_grid=grid,
+        interpolator = mesh.interpolator_from(
+            source_plane_data_grid=grid, source_plane_mesh_grid=None
         )
+
+        mapper = aa.Mapper(interpolator=interpolator)
 
         mapping_matrix = mapper.mapping_matrix
 
@@ -279,11 +279,12 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(20, 20))
 
-    mapper = mesh.mapper_from(
-        mask=mask,
-        border_relocator=None,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=mask.derive_grid.unmasked,
+        source_plane_mesh_grid=None,
     )
+
+    mapper = aa.Mapper(interpolator=interpolator)
 
     mapping_matrix = mapper.mapping_matrix
 

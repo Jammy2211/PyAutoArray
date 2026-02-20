@@ -6,7 +6,7 @@ from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.inversion.pixelization.mesh_geometry.abstract import AbstractMeshGeometry
+from autoarray.inversion.mesh.mesh_geometry.abstract import AbstractMeshGeometry
 
 from autoarray import exc
 

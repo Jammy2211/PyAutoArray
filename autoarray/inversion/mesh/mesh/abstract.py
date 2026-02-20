@@ -2,7 +2,7 @@ import numpy as np
 from typing import Optional
 
 from autoarray.settings import Settings
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -93,16 +93,12 @@ class AbstractMesh:
             )
         return source_plane_mesh_grid
 
-    def mapper_from(
+    def interpolator_from(
         self,
-        mask,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
-        image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
-        regularization: Optional[AbstractRegularization] = None,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        settings: Settings = None,
         preloads=None,
         xp=np,
     ):

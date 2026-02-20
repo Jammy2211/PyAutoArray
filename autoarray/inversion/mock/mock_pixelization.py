@@ -1,5 +1,5 @@
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.inversion.pixelization.pixelization import Pixelization
+from autoarray.inversion.pixelization import Pixelization
 
 
 class MockPixelization(Pixelization):
@@ -16,7 +16,7 @@ class MockPixelization(Pixelization):
         self.image_plane_mesh_grid = image_plane_mesh_grid
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from(
+    def interpolator_from(
         self,
         mask,
         source_plane_data_grid,

@@ -16,7 +16,6 @@ from autoarray.inversion.regularization.adapt import adapt_regularization_weight
 class MaternAdaptKernel(MaternKernel):
     def __init__(
         self,
-        coefficient: float = 1.0,
         scale: float = 1.0,
         nu: float = 0.5,
         inner_coefficient: float = 1.0,
@@ -59,7 +58,7 @@ class MaternAdaptKernel(MaternKernel):
             receive significantly higher weights (and faint pixels lower weights), while smaller values produce a
             more uniform weighting. Typical values are of order unity (e.g. 0.5–2.0).
         """
-        super().__init__(coefficient=coefficient, scale=scale, nu=nu)
+        super().__init__(coefficient=0.0, scale=scale, nu=nu)
         self.inner_coefficient = inner_coefficient
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
@@ -108,4 +107,4 @@ class MaternAdaptKernel(MaternKernel):
             xp=xp,
         )
 
-        return self.coefficient * inv_via_cholesky(covariance_matrix, xp=xp)
+        return inv_via_cholesky(covariance_matrix, xp=xp)

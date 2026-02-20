@@ -4,7 +4,7 @@ from typing import Tuple
 from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.abstract_structure import Structure
-from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
+from autoarray.inversion.mesh.interpolator.abstract import AbstractInterpolator
 
 
 class MockGeometry(AbstractGeometry2D):

@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.inversion.pixelization.mesh_geometry.abstract import AbstractMeshGeometry
+from autoarray.inversion.mesh.mesh_geometry.abstract import AbstractMeshGeometry
 
 
 def rectangular_neighbors_from(
@@ -395,7 +395,7 @@ def adaptive_rectangular_areas_from(
     source_grid_shape, data_grid, mesh_weight_map=None, xp=np
 ):
 
-    from autoarray.inversion.pixelization.interpolator.rectangular import (
+    from autoarray.inversion.mesh.interpolator.rectangular import (
         create_transforms,
     )
 
@@ -504,7 +504,7 @@ class MeshGeometryRectangular(AbstractMeshGeometry):
         rectangular grid, as described in the method `rectangular_neighbors_from`.
         """
 
-        from autoarray.inversion.pixelization.interpolator.rectangular import (
+        from autoarray.inversion.mesh.interpolator.rectangular import (
             adaptive_rectangular_transformed_grid_from,
         )
 

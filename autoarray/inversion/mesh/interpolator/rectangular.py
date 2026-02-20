@@ -3,7 +3,7 @@ from functools import partial
 
 from autoconf import cached_property
 
-from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
+from autoarray.inversion.mesh.interpolator.abstract import AbstractInterpolator
 
 
 def forward_interp(xp, yp, x):
@@ -235,8 +235,9 @@ class InterpolatorRectangular(AbstractInterpolator):
         mesh_grid,
         data_grid,
         mesh_weight_map,
+        adapt_data: np.ndarray = None,
         preloads=None,
-        _xp=np,
+        xp=np,
     ):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
@@ -269,10 +270,26 @@ class InterpolatorRectangular(AbstractInterpolator):
             mesh=mesh,
             mesh_grid=mesh_grid,
             data_grid=data_grid,
+            adapt_data=adapt_data,
             preloads=preloads,
-            _xp=_xp,
+            xp=xp,
         )
         self.mesh_weight_map = mesh_weight_map
+
+    @cached_property
+    def mesh_geometry(self):
+
+        from autoarray.inversion.mesh.mesh_geometry.rectangular import (
+            MeshGeometryRectangular,
+        )
+
+        return MeshGeometryRectangular(
+            mesh=self.mesh,
+            mesh_grid=self.mesh_grid,
+            data_grid=self.data_grid,
+            mesh_weight_map=self.mesh_weight_map,
+            xp=self._xp,
+        )
 
     @cached_property
     def _mappings_sizes_weights(self):

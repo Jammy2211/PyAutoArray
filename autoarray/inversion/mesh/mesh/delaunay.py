@@ -1,10 +1,8 @@
 import numpy as np
 from typing import Optional
 
-from autoarray.settings import Settings
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.mesh.abstract import AbstractMesh
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -48,22 +46,20 @@ class Delaunay(AbstractMesh):
         return False
 
     @property
-    def mapper_cls(self):
+    def interpolator_cls(self):
 
-        from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+        from autoarray.inversion.mesh.interpolator.delaunay import (
+            InterpolatorDelaunay,
+        )
 
-        return MapperDelaunay
+        return InterpolatorDelaunay
 
-    def mapper_from(
+    def interpolator_from(
         self,
-        mask,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DIrregular,
-        image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
-        regularization: Optional[AbstractRegularization] = None,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        settings: Settings = None,
         preloads=None,
         xp=np,
     ):
@@ -119,16 +115,11 @@ class Delaunay(AbstractMesh):
             xp=xp,
         )
 
-        return self.mapper_cls(
-            mask=mask,
+        return self.interpolator_cls(
             mesh=self,
-            source_plane_data_grid=relocated_grid,
-            source_plane_mesh_grid=relocated_mesh_grid,
-            regularization=regularization,
-            border_relocator=border_relocator,
-            image_plane_mesh_grid=image_plane_mesh_grid,
+            data_grid=relocated_grid,
+            mesh_grid=relocated_mesh_grid,
             adapt_data=adapt_data,
-            settings=settings,
             preloads=preloads,
             xp=xp,
         )

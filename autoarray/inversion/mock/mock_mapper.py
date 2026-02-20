@@ -1,21 +1,18 @@
 import numpy as np
-from typing import Optional, Tuple
 
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 
 
-class MockMapper(AbstractMapper):
+class MockMapper(Mapper):
     def __init__(
         self,
-        mask=None,
         mesh=None,
         mesh_geometry=None,
         interpolator=None,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        over_sampler=None,
-        border_relocator=None,
         adapt_data=None,
+        over_sampler=None,
         regularization=None,
         mapping_matrix=None,
         pixel_signals=None,
@@ -23,16 +20,14 @@ class MockMapper(AbstractMapper):
     ):
 
         super().__init__(
-            mask=mask,
-            mesh=mesh,
-            source_plane_data_grid=source_plane_data_grid,
-            source_plane_mesh_grid=source_plane_mesh_grid,
-            adapt_data=adapt_data,
-            border_relocator=border_relocator,
+            interpolator=interpolator,
             regularization=regularization,
         )
 
-        self._interpolator = interpolator
+        self._mesh = mesh
+        self._source_plane_data_grid = source_plane_data_grid
+        self._source_plane_mesh_grid = source_plane_mesh_grid
+        self._adapt_data = adapt_data
         self._mesh_geometry = mesh_geometry
         self._over_sampler = over_sampler
         self._mapping_matrix = mapping_matrix
@@ -45,10 +40,22 @@ class MockMapper(AbstractMapper):
         return self._pixel_signals
 
     @property
-    def interpolator(self):
-        if self._interpolator is None:
-            return super().interpolator
-        return self._interpolator
+    def source_plane_data_grid(self):
+        if self._source_plane_data_grid is None:
+            return super().source_plane_data_grid
+        return self._source_plane_data_grid
+
+    @property
+    def source_plane_mesh_grid(self):
+        if self._source_plane_mesh_grid is None:
+            return super().source_plane_mesh_grid
+        return self._source_plane_mesh_grid
+
+    @property
+    def adapt_data(self):
+        if self._adapt_data is None:
+            return super().adapt_data
+        return self._adapt_data
 
     @property
     def mesh_geometry(self):

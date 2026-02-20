@@ -1,4 +1,4 @@
-from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
+from autoarray.inversion.mesh.interpolator.abstract import AbstractInterpolator
 
 
 class MockInterpolator(AbstractInterpolator):

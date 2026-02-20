@@ -330,7 +330,7 @@ def param_range_list_from(cls: Type, linear_obj_list) -> List[List[int]]:
     - The first `Mapper` values are in the entries `[3:103]`.
     - The second `Mapper` values are in the entries `[103:303]
 
-    For this example, `param_range_list_from(cls=AbstractMapper)` therefore returns the
+    For this example, `param_range_list_from(cls=Mapper)` therefore returns the
     list `[[3, 103], [103, 303]]`.
 
     Parameters

@@ -2,7 +2,7 @@ import numpy as np
 
 from autoconf import conf
 
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
@@ -61,7 +61,7 @@ class InversionPlotter(AbstractPlotter):
             An object that plots mappers which is used for plotting attributes of the inversion.
         """
         return MapperPlotter(
-            mapper=self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index],
+            mapper=self.inversion.cls_list_from(cls=Mapper)[mapper_index],
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
         )
@@ -137,7 +137,7 @@ class InversionPlotter(AbstractPlotter):
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
         """
 
-        if not self.inversion.has(cls=AbstractMapper):
+        if not self.inversion.has(cls=Mapper):
             return
 
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
@@ -332,7 +332,7 @@ class InversionPlotter(AbstractPlotter):
 
         self.mat_plot_2d.use_log10 = False
 
-        mapper = self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index]
+        mapper = self.inversion.cls_list_from(cls=Mapper)[mapper_index]
 
         self.visuals_2d += Visuals2D(mesh_grid=mapper.image_plane_mesh_grid)
 
@@ -409,7 +409,7 @@ class InversionPlotter(AbstractPlotter):
             "total_mappings_pixels"
         ]
 
-        mapper = self.inversion.cls_list_from(cls=AbstractMapper)[pixelization_index]
+        mapper = self.inversion.cls_list_from(cls=Mapper)[pixelization_index]
 
         pix_indexes = self.inversion.max_pixel_list_from(
             total_pixels=total_pixels,

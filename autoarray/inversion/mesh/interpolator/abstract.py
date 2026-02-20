@@ -8,14 +8,24 @@ class AbstractInterpolator:
         mesh,
         mesh_grid,
         data_grid,
+        adapt_data: np.ndarray = None,
         preloads=None,
-        _xp=np,
+        xp=np,
     ):
         self.mesh = mesh
         self.mesh_grid = mesh_grid
         self.data_grid = data_grid
+        self.adapt_data = adapt_data
         self.preloads = preloads
-        self._xp = _xp
+        self.use_jax = xp is not np
+
+    @property
+    def _xp(self):
+        if self.use_jax:
+            import jax.numpy as jnp
+
+            return jnp
+        return np
 
     @property
     def _mappings_sizes_weights(self):

@@ -9,7 +9,7 @@ from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImag
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.settings import Settings
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -72,13 +72,13 @@ class InversionImagingSparse(AbstractInversionImaging):
         in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
         """
 
-        if not self.has(cls=AbstractMapper):
+        if not self.has(cls=Mapper):
             return None
 
         data_vector = self._xp.zeros(self.total_params)
 
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
+        mapper_list = self.cls_list_from(cls=Mapper)
+        mapper_param_range = self.param_range_list_from(cls=Mapper)
 
         for mapper_index, mapper in enumerate(mapper_list):
 
@@ -121,7 +121,7 @@ class InversionImagingSparse(AbstractInversionImaging):
         """
         if self.has(cls=AbstractLinearObjFuncList):
             return self._data_vector_func_list_and_mapper
-        elif self.total(cls=AbstractMapper) == 1:
+        elif self.total(cls=Mapper) == 1:
             return self._data_vector_x1_mapper
         return self._data_vector_multi_mapper
 
@@ -158,7 +158,7 @@ class InversionImagingSparse(AbstractInversionImaging):
 
         data_vector_list = []
 
-        for mapper in self.cls_list_from(cls=AbstractMapper):
+        for mapper in self.cls_list_from(cls=Mapper):
 
             rows, cols, vals = mapper.sparse_triplets_data
 
@@ -243,7 +243,7 @@ class InversionImagingSparse(AbstractInversionImaging):
         """
         if self.has(cls=AbstractLinearObjFuncList):
             curvature_matrix = self._curvature_matrix_func_list_and_mapper
-        elif self.total(cls=AbstractMapper) == 1:
+        elif self.total(cls=Mapper) == 1:
             curvature_matrix = self._curvature_matrix_x1_mapper
         else:
             curvature_matrix = self._curvature_matrix_multi_mapper
@@ -276,13 +276,13 @@ class InversionImagingSparse(AbstractInversionImaging):
         other calculations to enable preloading of this calculation.
         """
 
-        if not self.has(cls=AbstractMapper):
+        if not self.has(cls=Mapper):
             return None
 
         curvature_matrix = self._xp.zeros((self.total_params, self.total_params))
 
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+        mapper_list = self.cls_list_from(cls=Mapper)
+        mapper_param_range_list = self.param_range_list_from(cls=Mapper)
 
         for i in range(len(mapper_list)):
             mapper_i = mapper_list[i]
@@ -304,13 +304,13 @@ class InversionImagingSparse(AbstractInversionImaging):
             else:
                 curvature_matrix = curvature_matrix.at[start:end, start:end].set(diag)
 
-            if self.total(cls=AbstractMapper) == 1:
+            if self.total(cls=Mapper) == 1:
                 return curvature_matrix
 
         return curvature_matrix
 
     def _curvature_matrix_off_diag_from(
-        self, mapper_0: AbstractMapper, mapper_1: AbstractMapper
+        self, mapper_0: Mapper, mapper_1: Mapper
     ) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -362,11 +362,11 @@ class InversionImagingSparse(AbstractInversionImaging):
 
         curvature_matrix = self._curvature_matrix_mapper_diag
 
-        if self.total(cls=AbstractMapper) == 1:
+        if self.total(cls=Mapper) == 1:
             return curvature_matrix
 
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+        mapper_list = self.cls_list_from(cls=Mapper)
+        mapper_param_range_list = self.param_range_list_from(cls=Mapper)
 
         for i in range(len(mapper_list)):
             mapper_i = mapper_list[i]
@@ -401,8 +401,8 @@ class InversionImagingSparse(AbstractInversionImaging):
 
         curvature_matrix = self._curvature_matrix_multi_mapper
 
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+        mapper_list = self.cls_list_from(cls=Mapper)
+        mapper_param_range_list = self.param_range_list_from(cls=Mapper)
 
         linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
         linear_func_param_range_list = self.param_range_list_from(
@@ -491,7 +491,7 @@ class InversionImagingSparse(AbstractInversionImaging):
         """
         Shared implementation for mapping a reconstruction to image-plane arrays for each linear object.
 
-        For AbstractMapper objects this uses the sparse operator mapping, and optionally applies the PSF.
+        For Mapper objects this uses the sparse operator mapping, and optionally applies the PSF.
         For linear-func objects this uses either the operated or unoperated mapping matrix dict.
         """
         mapped_dict = {}
@@ -504,7 +504,7 @@ class InversionImagingSparse(AbstractInversionImaging):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            if isinstance(linear_obj, AbstractMapper):
+            if isinstance(linear_obj, Mapper):
 
                 rows, cols, vals = linear_obj.sparse_triplets_curvature
 

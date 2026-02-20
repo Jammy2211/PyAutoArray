@@ -7,7 +7,7 @@ from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.settings import Settings
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D

@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional
 
-from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.plot.wrap.base.units import Units
 
@@ -31,7 +30,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
     def draw_delaunay_pixels(
         self,
-        mapper: MapperDelaunay,
+        mapper,
         pixel_values: Optional[np.ndarray],
         units: Units,
         cmap: Optional[wb.Cmap],
@@ -75,7 +74,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         source_pixelization_grid = mapper.source_plane_mesh_grid
 
-        simplices = mapper.delaunay.simplices
+        simplices = mapper.interpolator.delaunay.simplices
 
         # Remove padded -1 values required for JAX
         simplices = np.asarray(simplices)

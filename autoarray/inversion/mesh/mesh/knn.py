@@ -1,4 +1,4 @@
-from autoarray.inversion.pixelization.mesh.delaunay import Delaunay
+from autoarray.inversion.mesh.mesh.delaunay import Delaunay
 
 
 class KNearestNeighbor(Delaunay):
@@ -29,8 +29,10 @@ class KNearestNeighbor(Delaunay):
         return False
 
     @property
-    def mapper_cls(self):
+    def interpolator_cls(self):
 
-        from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
+        from autoarray.inversion.mesh.interpolator.knn import (
+            InterpolatorKNearestNeighbor,
+        )
 
-        return MapperKNNInterpolator
+        return InterpolatorKNearestNeighbor

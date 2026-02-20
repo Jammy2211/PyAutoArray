@@ -1,6 +1,6 @@
 from autoconf import cached_property
 
-from autoarray.inversion.pixelization.interpolator.delaunay import InterpolatorDelaunay
+from autoarray.inversion.mesh.interpolator.delaunay import InterpolatorDelaunay
 
 
 def wendland_c4(r, h):
@@ -218,7 +218,7 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
             mesh_grid=self.mesh_grid,
             data_grid=split_points,
             preloads=self.preloads,
-            _xp=self._xp,
+            xp=self._xp,
         )
 
         mappings = interpolator.mappings

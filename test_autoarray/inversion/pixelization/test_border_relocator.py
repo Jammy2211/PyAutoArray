@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.border_relocator import (
+from autoarray.inversion.mesh.border_relocator import (
     sub_border_pixel_slim_indexes_from,
 )
 

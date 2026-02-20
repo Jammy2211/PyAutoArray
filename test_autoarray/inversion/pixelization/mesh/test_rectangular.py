@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import (
     overlay_grid_from,
 )
 

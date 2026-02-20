@@ -8,7 +8,7 @@ from autoarray.inversion.inversion.interferometer.abstract import (
 )
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.settings import Settings
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
@@ -99,7 +99,7 @@ class InversionInterferometerSparse(AbstractInversionInterferometer):
         This function computes the diagonal terms of F using the sparse linear algebra formalism.
         """
 
-        mapper = self.cls_list_from(cls=AbstractMapper)[0]
+        mapper = self.cls_list_from(cls=Mapper)[0]
 
         return self.dataset.sparse_operator.curvature_matrix_via_sparse_operator_from(
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,

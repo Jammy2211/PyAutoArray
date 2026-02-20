@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
-from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.mesh.image_mesh.abstract import AbstractImageMesh
+from autoarray.inversion.mesh.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray import exc

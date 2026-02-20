@@ -5,8 +5,8 @@ from autoarray.settings import Settings
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.mesh.abstract import AbstractMesh
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
 from autoarray.structures.grids import grid_2d_util
 
@@ -101,12 +101,12 @@ class RectangularAdaptDensity(AbstractMesh):
         super().__init__()
 
     @property
-    def mapper_cls(self):
-        from autoarray.inversion.pixelization.mappers.rectangular import (
-            MapperRectangular,
+    def interpolator_cls(self):
+        from autoarray.inversion.mesh.interpolator.rectangular import (
+            InterpolatorRectangular,
         )
 
-        return MapperRectangular
+        return InterpolatorRectangular
 
     def mesh_weight_map_from(self, adapt_data, xp=np) -> np.ndarray:
         """
@@ -121,16 +121,12 @@ class RectangularAdaptDensity(AbstractMesh):
         """
         return None
 
-    def mapper_from(
+    def interpolator_from(
         self,
-        mask,
         source_plane_data_grid: Grid2D,
-        source_plane_mesh_grid: Grid2DIrregular = None,
-        image_plane_mesh_grid: Grid2D = None,
-        regularization: Optional[AbstractRegularization] = None,
+        source_plane_mesh_grid: Grid2DIrregular,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        settings: Settings = None,
         preloads=None,
         xp=np,
     ):
@@ -179,16 +175,12 @@ class RectangularAdaptDensity(AbstractMesh):
 
         mesh_weight_map = self.mesh_weight_map_from(adapt_data=adapt_data, xp=xp)
 
-        return self.mapper_cls(
-            mask=mask,
+        return self.interpolator_cls(
             mesh=self,
-            source_plane_data_grid=relocated_grid,
-            source_plane_mesh_grid=Grid2DIrregular(mesh_grid),
-            regularization=regularization,
-            border_relocator=border_relocator,
+            data_grid=relocated_grid,
+            mesh_grid=Grid2DIrregular(mesh_grid),
             mesh_weight_map=mesh_weight_map,
             adapt_data=adapt_data,
-            settings=settings,
             preloads=preloads,
             xp=xp,
         )

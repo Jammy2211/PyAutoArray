@@ -8,27 +8,19 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.settings import Settings
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.inversion.pixelization.mappers import mapper_util
-from autoarray.inversion.pixelization.mappers import mapper_numba_util
+from autoarray.inversion.mappers import mapper_util
+from autoarray.inversion.mappers import mapper_numba_util
 
 
-class AbstractMapper(LinearObj):
+class Mapper(LinearObj):
     def __init__(
         self,
-        mask,
-        mesh,
-        source_plane_data_grid: Grid2D,
-        source_plane_mesh_grid: Grid2DIrregular,
-        regularization: Optional[AbstractRegularization],
-        border_relocator: BorderRelocator,
-        adapt_data: Optional[np.ndarray] = None,
+        interpolator,
+        regularization: Optional[AbstractRegularization] = None,
         settings: Settings = None,
         image_plane_mesh_grid=None,
         preloads=None,
@@ -97,19 +89,12 @@ class AbstractMapper(LinearObj):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
-        border_relocator
-           The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
-           edge.
         """
 
         super().__init__(regularization=regularization, xp=xp)
 
-        self.mask = mask
-        self.mesh = mesh
-        self.source_plane_data_grid = source_plane_data_grid
-        self.source_plane_mesh_grid = source_plane_mesh_grid
-        self.border_relocator = border_relocator
-        self.adapt_data = adapt_data
+        self.interpolator = interpolator
+
         self.image_plane_mesh_grid = image_plane_mesh_grid
         self.preloads = preloads
         self.settings = settings or Settings()
@@ -123,16 +108,28 @@ class AbstractMapper(LinearObj):
         return self.params
 
     @property
-    def interpolator(self):
-        raise NotImplementedError
+    def mask(self):
+        return self.source_plane_data_grid.mask
 
     @property
     def mesh_geometry(self):
-        raise NotImplementedError
+        return self.interpolator.mesh_geometry
 
     @property
     def over_sampler(self):
         return self.source_plane_data_grid.over_sampler
+
+    @property
+    def source_plane_data_grid(self):
+        return self.interpolator.data_grid
+
+    @property
+    def source_plane_mesh_grid(self):
+        return self.interpolator.mesh_grid
+
+    @property
+    def adapt_data(self):
+        return self.interpolator.adapt_data
 
     @property
     def neighbors(self) -> Neighbors:
