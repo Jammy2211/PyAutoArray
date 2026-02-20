@@ -256,6 +256,11 @@ def make_delaunay_mapper_9_3x3():
     return fixtures.make_delaunay_mapper_9_3x3()
 
 
+@pytest.fixture(name="knn_mapper_9_3x3")
+def make_knn_mapper_9_3x3():
+    return fixtures.make_knn_mapper_9_3x3()
+
+
 @pytest.fixture(name="rectangular_inversion_7x7_3x3")
 def make_rectangular_inversion_7x7_3x3():
     return fixtures.make_rectangular_inversion_7x7_3x3()

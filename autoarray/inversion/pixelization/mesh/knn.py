@@ -9,3 +9,10 @@ class KNearestNeighbor(Delaunay):
         self.radius_scale = radius_scale
 
         super().__init__()
+
+    @property
+    def mapper_cls(self):
+
+        from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
+
+        return MapperKNNInterpolator

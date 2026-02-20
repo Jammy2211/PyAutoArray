@@ -38,6 +38,7 @@ from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization.mappers.rectangular import MapperRectangular
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay
 from .inversion.pixelization.mappers.rectangular_uniform import MapperRectangularUniform
+from .inversion.pixelization.mappers.knn import MapperKNNInterpolator
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.pixelization.interpolator.rectangular import InterpolatorRectangular

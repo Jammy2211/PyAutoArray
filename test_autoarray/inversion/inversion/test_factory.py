@@ -69,6 +69,7 @@ def test__inversion_imaging__via_mapper(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
+        knn_mapper_9_3x3
 ):
 
     inversion = aa.Inversion(
@@ -128,6 +129,17 @@ def test__inversion_imaging__via_mapper(
         np.ones(9), 1.0e-4
     )
 
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[knn_mapper_9_3x3],
+    )
+
+    assert isinstance(inversion.linear_obj_list[0], aa.MapperKNNInterpolator)
+    assert isinstance(inversion, aa.InversionImagingMapping)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.354595079218747, 1.0e-4)
+    assert inversion.mapped_reconstructed_operated_data == pytest.approx(
+        np.ones(9), 1.0e-4
+    )
 
 def test__inversion_imaging__via_regularizations(
     masked_imaging_7x7_no_blur,
