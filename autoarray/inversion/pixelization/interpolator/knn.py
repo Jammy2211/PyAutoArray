@@ -16,7 +16,9 @@ def wendland_c4(r, h):
     return w
 
 
-def get_interpolation_weights(points, query_points, k_neighbors, radius_scale, point_block=128):
+def get_interpolation_weights(
+    points, query_points, k_neighbors, radius_scale, point_block=128
+):
     import jax
     import jax.numpy as jnp
 
@@ -64,8 +66,8 @@ def get_interpolation_weights(points, query_points, k_neighbors, radius_scale, p
 
         # dist_sq = ||q||^2 + ||p||^2 - 2 q·p
         p2 = jnp.sum(p_block * p_block, axis=1, keepdims=True).T  # (1, B)
-        qp = query_points @ p_block.T                              # (M, B)
-        dist_sq = q2 + p2 - 2.0 * qp                               # (M, B)
+        qp = query_points @ p_block.T  # (M, B)
+        dist_sq = q2 + p2 - 2.0 * qp  # (M, B)
         dist_sq = jnp.maximum(dist_sq, 0.0)
 
         # Invalidate padded points
@@ -78,15 +80,17 @@ def get_interpolation_weights(points, query_points, k_neighbors, radius_scale, p
         idx_block = jnp.broadcast_to(idx_block, (M, B))
 
         # Merge + top-k
-        merged_vals = jnp.concatenate([best_vals, vals], axis=1)    # (M, k+B)
-        merged_idx  = jnp.concatenate([best_idx, idx_block], axis=1)
+        merged_vals = jnp.concatenate([best_vals, vals], axis=1)  # (M, k+B)
+        merged_idx = jnp.concatenate([best_idx, idx_block], axis=1)
 
         new_vals, new_pos = jax.lax.top_k(merged_vals, k)
         new_idx = jnp.take_along_axis(merged_idx, new_pos, axis=1)
 
         return new_vals, new_idx
 
-    best_vals, best_idx = jax.lax.fori_loop(0, n_blocks, body_fun, (best_vals, best_idx))
+    best_vals, best_idx = jax.lax.fori_loop(
+        0, n_blocks, body_fun, (best_vals, best_idx)
+    )
 
     # Distances for selected k
     knn_dist_sq = -best_vals
@@ -100,7 +104,7 @@ def get_interpolation_weights(points, query_points, k_neighbors, radius_scale, p
     weights_sum = jnp.sum(weights, axis=1, keepdims=True) + 1e-10
     weights_normalized = weights / weights_sum
 
-    return weights_normalized, best_idx, knn_distances
+    return best_idx, weights_normalized, knn_distances
 
 
 def kernel_interpolate_points(points, query_chunk, values, k, radius_scale):
@@ -142,14 +146,14 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
     @cached_property
     def _interpolation_and_weights(self):
 
-        weights, mappings, _ = get_interpolation_weights(
+        mappings, weights, _ = get_interpolation_weights(
             points=self.mesh_grid_xy,
             query_points=self.data_grid.over_sampled,
             k_neighbors=self.mesh.k_neighbors,
             radius_scale=self.mesh.radius_scale,
         )
 
-        return weights, mappings
+        return mappings, weights
 
     @cached_property
     def distance_to_self(self):
