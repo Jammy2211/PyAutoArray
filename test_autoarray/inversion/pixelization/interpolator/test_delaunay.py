@@ -73,7 +73,6 @@ def test__scipy_delaunay__split__uses_barycentric_dual_area_from(grid_2d_sub_1_7
         mesh=aa.mesh.Delaunay(),
         mesh_grid=mesh_grid,
         data_grid=grid_2d_sub_1_7x7,
-        preloads=aa.Preloads(use_voronoi_areas=False),
     )
 
     assert mesh_grid.delaunay.split_points[0, :] == pytest.approx(

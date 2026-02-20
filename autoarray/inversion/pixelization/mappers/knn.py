@@ -8,13 +8,6 @@ from autoarray.inversion.pixelization.interpolator.knn import (
 
 class MapperKNNInterpolator(MapperDelaunay):
 
-    @property
-    def mapper_cls(self):
-
-        from autoarray.inversion.pixelization.mappers.knn import MapperKNNInterpolator
-
-        return MapperKNNInterpolator
-
     @cached_property
     def interpolator(self):
         """

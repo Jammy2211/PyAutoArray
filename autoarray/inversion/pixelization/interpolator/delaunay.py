@@ -7,7 +7,7 @@ from autoconf import cached_property
 from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
 
 
-def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
+def scipy_delaunay(points_np, query_points_np, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
 
     max_simplices = 2 * points_np.shape[0]
@@ -32,26 +32,13 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
         delaunay_points=points_np,
     )
 
-    # ---------- Voronoi or Barycentric Areas used to weight split points ----------
+    # ---------- Barycentric Areas used to weight split points ----------
 
-    if use_voronoi_areas:
-
-        areas = voronoi_areas_numpy(points)
-
-        max_area = np.percentile(areas, 90.0)
-        if max_area <= 0:
-            max_area = 0.1
-
-        areas[areas == -1] = max_area
-        areas[areas > max_area] = max_area
-
-    else:
-
-        areas = barycentric_dual_area_from(
-            points,
-            simplices,
-            xp=np,
-        )
+    areas = barycentric_dual_area_from(
+        points,
+        simplices,
+        xp=np,
+    )
 
     split_point_areas = areas_factor * np.sqrt(areas)
 
@@ -74,7 +61,7 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
     return points, simplices_padded, mappings, split_points, splitted_mappings
 
 
-def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
+def jax_delaunay(points, query_points, areas_factor=0.5):
     import jax
     import jax.numpy as jnp
 
@@ -90,7 +77,7 @@ def jax_delaunay(points, query_points, use_voronoi_areas, areas_factor=0.5):
 
     return jax.pure_callback(
         lambda points, qpts: scipy_delaunay(
-            np.asarray(points), np.asarray(qpts), use_voronoi_areas, areas_factor
+            np.asarray(points), np.asarray(qpts), areas_factor
         ),
         (
             points_shape,
@@ -570,13 +557,11 @@ class InterpolatorDelaunay(AbstractInterpolator):
 
         if self.preloads is not None:
 
-            use_voronoi_areas = self.preloads.use_voronoi_areas
             areas_factor = self.preloads.areas_factor
             skip_areas = self.preloads.skip_areas
 
         else:
 
-            use_voronoi_areas = True
             areas_factor = 0.5
             skip_areas = False
 
@@ -590,7 +575,6 @@ class InterpolatorDelaunay(AbstractInterpolator):
                     jax_delaunay(
                         points=self.mesh_grid_xy,
                         query_points=self.data_grid.over_sampled,
-                        use_voronoi_areas=use_voronoi_areas,
                         areas_factor=areas_factor,
                     )
                 )
@@ -601,7 +585,6 @@ class InterpolatorDelaunay(AbstractInterpolator):
                     scipy_delaunay(
                         points_np=self.mesh_grid_xy,
                         query_points_np=self.data_grid.over_sampled,
-                        use_voronoi_areas=use_voronoi_areas,
                         areas_factor=areas_factor,
                     )
                 )
