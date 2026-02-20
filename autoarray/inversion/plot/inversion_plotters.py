@@ -79,13 +79,22 @@ class InversionPlotter(AbstractPlotter):
             Whether to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
         if reconstructed_operated_data:
-            self.mat_plot_2d.plot_array(
-                array=self.inversion.mapped_reconstructed_operated_data,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Reconstructed Image", filename="reconstructed_operated_data"
-                ),
-            )
+            try:
+                self.mat_plot_2d.plot_array(
+                    array=self.inversion.mapped_reconstructed_operated_data,
+                    visuals_2d=self.visuals_2d,
+                    auto_labels=AutoLabels(
+                        title="Reconstructed Image", filename="reconstructed_operated_data"
+                    ),
+                )
+            except AttributeError:
+                self.mat_plot_2d.plot_array(
+                    array=self.inversion.mapped_reconstructed_data,
+                    visuals_2d=self.visuals_2d,
+                    auto_labels=AutoLabels(
+                        title="Reconstructed Image", filename="reconstructed_data"
+                    ),
+                )
 
     def figures_2d_of_pixelization(
         self,
