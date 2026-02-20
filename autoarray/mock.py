@@ -4,6 +4,7 @@ from autoarray.inversion.mock.mock_image_mesh import MockImageMesh
 from autoarray.inversion.mock.mock_regularization import MockRegularization
 from autoarray.inversion.mock.mock_pixelization import MockPixelization
 from autoarray.inversion.mock.mock_mapper import MockMapper
+from autoarray.inversion.mock.mock_interpolator import MockInterpolator
 from autoarray.inversion.mock.mock_linear_obj import MockLinearObj
 from autoarray.inversion.mock.mock_linear_obj_func_list import MockLinearObjFuncList
 from autoarray.inversion.mock.mock_inversion import MockInversion

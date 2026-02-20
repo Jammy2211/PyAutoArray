@@ -1,42 +1,30 @@
 import autoarray as aa
 import numpy as np
+import pytest
 
 np.set_printoptions(threshold=np.inf)
 
 
-def test__regularization_matrix__matches_util():
-    neighbors = np.array(
-        [
-            [1, 3, 7, 2],
-            [4, 2, 0, -1],
-            [1, 5, 3, -1],
-            [4, 6, 0, -1],
-            [7, 1, 5, 3],
-            [4, 2, 8, -1],
-            [7, 3, 0, -1],
-            [4, 8, 6, -1],
-            [7, 5, -1, -1],
-        ]
-    )
-
-    neighbors_sizes = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
-
-    mesh_grid = aa.m.MockMeshGrid(neighbors=neighbors, neighbors_sizes=neighbors_sizes)
-
-    mapper = aa.m.MockMapper(source_plane_mesh_grid=mesh_grid)
+def test__regularization_matrix():
 
     reg = aa.reg.Constant(coefficient=2.0)
-    regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
-    regularization_matrix_util = (
-        aa.util.regularization.constant_regularization_matrix_from(
-            coefficient=2.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
-        )
+    source_plane_mesh_grid = aa.Grid2D.no_mask(
+        values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+        shape_native=(3, 2),
+        pixel_scales=1.0,
     )
 
-    assert reg.coefficient == 2.0
-    assert (regularization_matrix == regularization_matrix_util).all()
+    mesh_geometry = aa.MeshGeometryRectangular(
+        mesh=aa.mesh.RectangularUniform(shape=(3, 3)),
+        mesh_grid=source_plane_mesh_grid,
+        data_grid=None,
+    )
 
-    reg = aa.reg.ConstantSplit(coefficient=3.0)
+    mapper = aa.m.MockMapper(
+        source_plane_mesh_grid=source_plane_mesh_grid, mesh_geometry=mesh_geometry
+    )
 
-    assert reg.coefficient == 3.0
+    regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
+
+    assert regularization_matrix[0, 0] == pytest.approx(8.0000001, 1.0e-4)

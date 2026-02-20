@@ -104,7 +104,7 @@ class Constant(AbstractRegularization):
         (e.g. the ``pixels`` in a ``Mapper``).
 
         For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
-        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+        (e.g. ``Adapt``) they vary to adapt to the data being reconstructed.
 
         Parameters
         ----------

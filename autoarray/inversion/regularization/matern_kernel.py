@@ -80,51 +80,86 @@ def matern_cov_matrix_from(
     scale: float,
     nu: float,
     pixel_points,
+    weights=None,
     xp=np,
 ):
     """
-    Consutruct the regularization covariance matrix, which is used to determined the regularization pattern (i.e,
-    how the different pixels are correlated).
+    Construct the regularization covariance matrix (N x N) using a Matérn kernel,
+    optionally modulated by per-pixel weights.
 
-    the covariance matrix includes two non-linear parameters, the scale coefficient, which is used to determine
-    the typical scale of the regularization pattern. The smoothness order parameters mu, whose value determie
-    the inversion solution is mu-th differentiable.
+    If `weights` is provided (shape [N]), the covariance is:
+        C_ij = K(d_ij; scale, nu) * w_i * w_j
+    with a small diagonal jitter added for numerical stability.
 
     Parameters
     ----------
     scale
-        the typical scale of the regularization pattern .
+        Typical correlation length of the Matérn kernel.
+    nu
+        Smoothness parameter of the Matérn kernel.
     pixel_points
-        An 2d array with shape [N_source_pixels, 2], which save the source pixelization coordinates (on source plane).
-        Something like [[y1,x1], [y2,x2], ...]
+        Array-like of shape [N, 2] with (y, x) coordinates (or any 2D coords; only distances matter).
+    weights
+        Optional array-like of shape [N]. If None, treated as all ones.
+    xp
+        Backend (numpy or jax.numpy).
 
     Returns
     -------
-    np.ndarray
-        The source covariance matrix (2d array), shape [N_source_pixels, N_source_pixels].
+    covariance_matrix
+        Array of shape [N, N].
     """
 
     # --------------------------------
-    # Pairwise distances (broadcasted)
+    # Pairwise distances WITHOUT (N,N,2) diff
     # --------------------------------
-    # pixel_points[:, None, :]  -> (N, 1, 2)
-    # pixel_points[None, :, :]  -> (1, N, 2)
-    diff = pixel_points[:, None, :] - pixel_points[None, :, :]  # (N, N, 2)
+    pts = xp.asarray(pixel_points)
 
-    d_ij = xp.sqrt(diff[..., 0] ** 2 + diff[..., 1] ** 2)  # (N, N)
+    # ||x - y||^2 = ||x||^2 + ||y||^2 - 2 x·y
+    x2 = xp.sum(pts * pts, axis=1, keepdims=True)  # (N, 1)
+    dist_sq = x2 + x2.T - 2.0 * (pts @ pts.T)  # (N, N)
+    dist_sq = xp.maximum(dist_sq, 0.0)  # numerical safety
+
+    d_ij = xp.sqrt(dist_sq + 1e-20)  # (N, N)
 
     # --------------------------------
-    # Apply Matérn kernel elementwise
+    # Base Matérn covariance
     # --------------------------------
-    covariance_matrix = matern_kernel(d_ij, l=scale, v=nu, xp=xp)
+    covariance_matrix = matern_kernel(d_ij, l=scale, v=nu, xp=xp)  # (N, N)
+
+    # --------------------------------
+    # Apply weights: C_ij *= w_i * w_j
+    # --------------------------------
+    if weights is not None:
+        w = xp.asarray(weights)
+        covariance_matrix = covariance_matrix * (w[:, None] * w[None, :])
 
     # --------------------------------
     # Add diagonal jitter (JAX-safe)
     # --------------------------------
-    pixels = pixel_points.shape[0]
-    covariance_matrix = covariance_matrix + 1e-8 * xp.eye(pixels)
+    pixels = pts.shape[0]
+    covariance_matrix = covariance_matrix + 1e-8 * xp.eye(
+        pixels, dtype=covariance_matrix.dtype
+    )
 
     return covariance_matrix
+
+
+def inv_via_cholesky(C, xp=np):
+    # NumPy
+    if xp is np:
+        import scipy.linalg as la
+
+        cho = la.cho_factor(C, lower=True, check_finite=False)
+        I = np.eye(C.shape[0], dtype=C.dtype)
+        return la.cho_solve(cho, I, check_finite=False)
+
+    # JAX
+    import jax.scipy.linalg as jla
+
+    L = xp.linalg.cholesky(C)
+    I = xp.eye(C.shape[0], dtype=C.dtype)
+    return jla.cho_solve((L, True), I)
 
 
 class MaternKernel(AbstractRegularization):
@@ -167,7 +202,7 @@ class MaternKernel(AbstractRegularization):
         (e.g. the ``pixels`` in a ``Mapper``).
 
         For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
-        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+        (e.g. ``Adapt``) they vary to adapt to the data being reconstructed.
 
         Parameters
         ----------
@@ -200,4 +235,4 @@ class MaternKernel(AbstractRegularization):
             xp=xp,
         )
 
-        return self.coefficient * xp.linalg.inv(covariance_matrix)
+        return self.coefficient * inv_via_cholesky(covariance_matrix, xp=xp)

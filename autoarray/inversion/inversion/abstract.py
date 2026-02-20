@@ -9,9 +9,9 @@ from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -26,7 +26,7 @@ class AbstractInversion:
         self,
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads: Preloads = None,
         xp=np,
     ):
@@ -72,7 +72,7 @@ class AbstractInversion:
 
         self.linear_obj_list = linear_obj_list
 
-        self.settings = settings
+        self.settings = settings or Settings()
 
         self.preloads = preloads or Preloads()
 
@@ -143,7 +143,7 @@ class AbstractInversion:
         - The first `Mapper` values are in the entries `[3:103]`.
         - The second `Mapper` values are in the entries `[103:303]
 
-        For this example, `param_range_list_from(cls=AbstractMapper)` therefore returns the
+        For this example, `param_range_list_from(cls=Mapper)` therefore returns the
         list `[[3, 103], [103, 303]]`.
 
         Parameters
@@ -239,7 +239,7 @@ class AbstractInversion:
 
         mapper_indices = []
 
-        param_range_list = self.param_range_list_from(cls=AbstractMapper)
+        param_range_list = self.param_range_list_from(cls=Mapper)
 
         for param_range in param_range_list:
 
@@ -713,7 +713,7 @@ class AbstractInversion:
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
         regularization_weights_dict = {}
 
-        for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
+        for index, mapper in enumerate(self.cls_list_from(cls=Mapper)):
             regularization_weights_dict[mapper] = self.regularization_weights_from(
                 index=index,
             )
@@ -773,7 +773,7 @@ class AbstractInversion:
         -------
 
         """
-        mapper = self.cls_list_from(cls=AbstractMapper)[mapper_index]
+        mapper = self.cls_list_from(cls=Mapper)[mapper_index]
         reconstruction = self.reconstruction_dict[mapper]
 
         max_pixel_list = []
@@ -818,7 +818,7 @@ class AbstractInversion:
         -------
         The centre of the brightest pixel in the mapper values.
         """
-        mapper = self.cls_list_from(cls=AbstractMapper)[mapper_index]
+        mapper = self.cls_list_from(cls=Mapper)[mapper_index]
         reconstruction = self.reconstruction_dict[mapper]
 
         max_pixel = np.argmax(reconstruction)

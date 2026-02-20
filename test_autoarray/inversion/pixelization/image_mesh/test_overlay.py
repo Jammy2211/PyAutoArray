@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.image_mesh import overlay as overlay_util
+from autoarray.inversion.mesh.image_mesh import overlay as overlay_util
 
 
 def test__total_pixels_2d_from():

@@ -48,7 +48,7 @@ def test__index_range_list_from():
     )
 
     assert inversion.param_range_list_from(cls=aa.LinearObj) == [[0, 2], [2, 3]]
-    assert inversion.param_range_list_from(cls=aa.AbstractMapper) == [[2, 3]]
+    assert inversion.param_range_list_from(cls=aa.Mapper) == [[2, 3]]
 
 
 def test__no_regularization_index_list():
@@ -103,24 +103,18 @@ def test__curvature_matrix__via_sparse_operator__identical_to_mapping():
     mesh_0 = aa.mesh.RectangularUniform(shape=(3, 3))
     mesh_1 = aa.mesh.RectangularUniform(shape=(4, 4))
 
-    mapper_grids_0 = mesh_0.mapper_grids_from(
-        mask=mask,
-        border_relocator=None,
+    interpolator_0 = mesh_0.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
-    mapper_grids_1 = mesh_1.mapper_grids_from(
-        mask=mask,
-        border_relocator=None,
+    interpolator_1 = mesh_1.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
-    reg = aa.reg.Constant(coefficient=1.0)
-
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
+    mapper_0 = aa.Mapper(interpolator=interpolator_0)
+    mapper_1 = aa.Mapper(interpolator=interpolator_1)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -178,24 +172,18 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
         mask=mask, adapt_data=None
     )
 
-    mapper_grids_0 = mesh_0.mapper_grids_from(
-        mask=mask,
-        border_relocator=None,
+    interpolator_0 = mesh_0.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_0,
     )
 
-    mapper_grids_1 = mesh_1.mapper_grids_from(
-        mask=mask,
-        border_relocator=None,
+    interpolator_1 = mesh_1.interpolator_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_1,
     )
 
-    reg = aa.reg.Constant(coefficient=1.0)
-
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
+    mapper_0 = aa.Mapper(interpolator=interpolator_0)
+    mapper_1 = aa.Mapper(interpolator=interpolator_1)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -559,10 +547,22 @@ def test__reconstruction_noise_map():
 
 
 def test__max_pixel_list_from_and_centre():
+
+    source_plane_mesh_grid = aa.Grid2DIrregular(
+        [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
+    )
+
+    mapper = aa.m.MockMapper(source_plane_mesh_grid=source_plane_mesh_grid)
+
+    interpolator = aa.InterpolatorDelaunay(
+        mesh=aa.mesh.Delaunay(),
+        mesh_grid=source_plane_mesh_grid,
+        data_grid=None,
+    )
+
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=aa.Mesh2DDelaunay(
-            [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
-        )
+        source_plane_mesh_grid=source_plane_mesh_grid,
+        interpolator=interpolator,
     )
 
     inversion = aa.m.MockInversion(
@@ -578,21 +578,29 @@ def test__max_pixel_list_from_and_centre():
 
 
 def test__max_pixel_list_from__filter_neighbors():
+    source_plane_mesh_grid = aa.Grid2DIrregular(
+        [
+            [1.0, 1.0],
+            [1.0, 2.0],
+            [1.0, 3.0],
+            [2.0, 1.0],
+            [2.0, 2.0],
+            [2.0, 3.0],
+            [3.0, 1.0],
+            [3.0, 2.0],
+            [3.0, 3.0],
+        ]
+    )
+
+    mesh_geometry = aa.MeshGeometryDelaunay(
+        mesh=aa.mesh.Delaunay(),
+        mesh_grid=source_plane_mesh_grid,
+        data_grid=None,
+    )
 
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=aa.Mesh2DDelaunay(
-            [
-                [1.0, 1.0],
-                [1.0, 2.0],
-                [1.0, 3.0],
-                [2.0, 1.0],
-                [2.0, 2.0],
-                [2.0, 3.0],
-                [3.0, 1.0],
-                [3.0, 2.0],
-                [3.0, 3.0],
-            ]
-        )
+        source_plane_mesh_grid=source_plane_mesh_grid,
+        mesh_geometry=mesh_geometry,
     )
 
     inversion = aa.m.MockInversion(

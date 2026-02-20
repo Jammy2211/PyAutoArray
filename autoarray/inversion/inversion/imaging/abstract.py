@@ -4,10 +4,10 @@ from typing import Dict, List, Union, Type
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.preloads import Preloads
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
@@ -18,7 +18,7 @@ class AbstractInversionImaging(AbstractInversion):
         self,
         dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
+        settings: Settings = None,
         preloads: Preloads = None,
         xp=np,
     ):
@@ -255,7 +255,7 @@ class AbstractInversionImaging(AbstractInversion):
         """
         mapper_operated_mapping_matrix_dict = {}
 
-        for mapper in self.cls_list_from(cls=AbstractMapper):
+        for mapper in self.cls_list_from(cls=Mapper):
             operated_mapping_matrix = self.psf.convolved_mapping_matrix_from(
                 mapping_matrix=mapper.mapping_matrix, mask=self.mask, xp=self._xp
             )
