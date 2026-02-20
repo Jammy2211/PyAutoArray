@@ -577,7 +577,7 @@ class MatPlot2D(AbstractMatPlot):
                 )
 
                 # Unpack edges (assuming shape is (N_edges, 2) → (y_edges, x_edges))
-                y_edges, x_edges = mapper.edges_transformed.T  # explicit, safe
+                y_edges, x_edges = mapper.mesh_geometry.edges_transformed.T  # explicit, safe
 
                 # Build meshes with ij-indexing: (row = y, col = x)
                 Y, X = np.meshgrid(y_edges, x_edges, indexing="ij")
