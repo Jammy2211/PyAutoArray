@@ -7,10 +7,9 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.settings import Settings
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
-from autoarray.inversion.pixelization.mesh_grid.delaunay import Mesh2DDelaunay
+from autoarray.inversion.pixelization.interpolator.delaunay import InterpolatorDelaunay
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.inversion.pixelization.mappers import mapper_util
 
 
 def triangle_area_xp(c0, c1, c2, xp):
@@ -195,12 +194,12 @@ class MapperDelaunay(AbstractMapper):
 
     @property
     def delaunay(self):
-        return self.mesh_geometry.delaunay
+        return self.interpolator.delaunay
 
     @property
-    def mesh_geometry(self):
+    def interpolator(self):
         """
-        Return the Delaunay ``source_plane_mesh_grid`` as a ``Mesh2DDelaunay`` object, which provides additional
+        Return the Delaunay ``source_plane_mesh_grid`` as a ``InterpolatorDelaunay`` object, which provides additional
         functionality for performing operations that exploit the geometry of a Delaunay mesh.
 
         Parameters
@@ -215,7 +214,7 @@ class MapperDelaunay(AbstractMapper):
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-        return Mesh2DDelaunay(
+        return InterpolatorDelaunay(
             mesh=self.mesh,
             mesh_grid=self.source_plane_mesh_grid,
             data_grid_over_sampled=self.source_plane_data_grid.over_sampled,
@@ -267,7 +266,7 @@ class MapperDelaunay(AbstractMapper):
         For the Delaunay pixelization these mappings are calculated using the Scipy spatial library
         (see `mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from`).
         """
-        delaunay = self.mesh_geometry.delaunay
+        delaunay = self.interpolator.delaunay
 
         mappings = delaunay.mappings.astype("int")
         sizes = delaunay.sizes.astype("int")
@@ -294,7 +293,7 @@ class MapperDelaunay(AbstractMapper):
         This property returns a unique set of `PixSubWeights` used for these regularization schemes which compute
         mappings and weights at each point on the split cross.
         """
-        delaunay = self.mesh_geometry.delaunay
+        delaunay = self.interpolator.delaunay
 
         splitted_weights = pixel_weights_delaunay_from(
             source_plane_data_grid=delaunay.split_points,

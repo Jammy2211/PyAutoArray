@@ -8,7 +8,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.settings import Settings
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
-from autoarray.inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
+from autoarray.inversion.pixelization.interpolator.rectangular import InterpolatorRectangular
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
@@ -362,9 +362,9 @@ class MapperRectangular(AbstractMapper):
         self.mesh_weight_map = mesh_weight_map
 
     @property
-    def mesh_geometry(self):
+    def interpolator(self):
         """
-        Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
+        Return the rectangular `source_plane_mesh_grid` as a `InterpolatorRectangular` object, which provides additional
         functionality for perform operatons that exploit the geometry of a rectangular pixelization.
 
         Parameters
@@ -376,7 +376,7 @@ class MapperRectangular(AbstractMapper):
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         """
-        return Mesh2DRectangular(
+        return InterpolatorRectangular(
             mesh=self.mesh,
             mesh_grid=self.source_plane_mesh_grid,
             data_grid_over_sampled=self.source_plane_data_grid.over_sampled,

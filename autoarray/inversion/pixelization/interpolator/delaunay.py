@@ -6,7 +6,7 @@ from typing import List, Union, Optional, Tuple
 from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
-from autoarray.inversion.pixelization.mesh_grid.abstract import Abstract2DMesh
+from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 
@@ -423,7 +423,7 @@ class DelaunayInterface:
         return self.xp.sum(self.splitted_mappings >= 0, axis=1).astype(np.int32)
 
 
-class Mesh2DDelaunay(Abstract2DMesh):
+class InterpolatorDelaunay(AbstractInterpolator):
     def __init__(
         self,
         mesh,

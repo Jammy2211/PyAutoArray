@@ -560,7 +560,7 @@ def test__max_pixel_list_from_and_centre():
 
     mapper = aa.m.MockMapper(source_plane_mesh_grid=source_plane_mesh_grid)
 
-    mesh_geometry = aa.Mesh2DDelaunay(
+    interpolator = aa.InterpolatorDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=source_plane_mesh_grid,
         data_grid_over_sampled=None,
@@ -568,7 +568,7 @@ def test__max_pixel_list_from_and_centre():
 
     mapper = aa.m.MockMapper(
         source_plane_mesh_grid=source_plane_mesh_grid,
-        mesh_geometry=mesh_geometry,
+        interpolator=interpolator,
     )
 
     inversion = aa.m.MockInversion(
@@ -598,7 +598,7 @@ def test__max_pixel_list_from__filter_neighbors():
         ]
     )
 
-    mesh_geometry = aa.Mesh2DDelaunay(
+    interpolator = aa.InterpolatorDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=source_plane_mesh_grid,
         data_grid_over_sampled=None,
@@ -606,7 +606,7 @@ def test__max_pixel_list_from__filter_neighbors():
 
     mapper = aa.m.MockMapper(
         source_plane_mesh_grid=source_plane_mesh_grid,
-        mesh_geometry=mesh_geometry,
+        interpolator=interpolator,
     )
 
     inversion = aa.m.MockInversion(

@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.mesh_grid.rectangular import Mesh2DRectangular
+from autoarray.inversion.pixelization.interpolator.rectangular import InterpolatorRectangular
 from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
     RectangularAdaptDensity,
 )

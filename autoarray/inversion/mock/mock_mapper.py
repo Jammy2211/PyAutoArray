@@ -10,7 +10,7 @@ class MockMapper(AbstractMapper):
         mask=None,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        mesh_geometry=None,
+        interpolator=None,
         over_sampler=None,
         border_relocator=None,
         adapt_data=None,
@@ -32,7 +32,7 @@ class MockMapper(AbstractMapper):
             regularization=regularization,
         )
 
-        self._mesh_geometry = mesh_geometry
+        self._mesh_geometry = interpolator
         self._over_sampler = over_sampler
         self._pix_sub_weights = pix_sub_weights
         self._pix_sub_weights_split_points = pix_sub_weights_split_points
@@ -46,9 +46,9 @@ class MockMapper(AbstractMapper):
         return self._pixel_signals
 
     @property
-    def mesh_geometry(self):
+    def interpolator(self):
         if self._mesh_geometry is None:
-            return super().mesh_geometry
+            return super().interpolator
         return self._mesh_geometry
 
     @property

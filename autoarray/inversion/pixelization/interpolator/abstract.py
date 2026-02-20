@@ -5,7 +5,7 @@ from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 
-class Abstract2DMesh:
+class AbstractInterpolator:
 
     def __init__(
         self,

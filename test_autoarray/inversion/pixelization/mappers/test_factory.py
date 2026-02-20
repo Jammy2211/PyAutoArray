@@ -35,10 +35,10 @@ def test__rectangular_mapper():
 
     assert isinstance(mapper, aa.MapperRectangularUniform)
 
-    assert mapper.mesh_geometry.geometry.shape_native_scaled == pytest.approx(
+    assert mapper.interpolator.geometry.shape_native_scaled == pytest.approx(
         (5.0, 5.0), 1.0e-4
     )
-    assert mapper.mesh_geometry.origin == pytest.approx((0.5, 0.5), 1.0e-4)
+    assert mapper.interpolator.origin == pytest.approx((0.5, 0.5), 1.0e-4)
     assert mapper.mapping_matrix == pytest.approx(
         np.array(
             [
@@ -87,7 +87,7 @@ def test__delaunay_mapper():
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
-    assert mapper.mesh_geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert mapper.interpolator.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert mapper.mapping_matrix == pytest.approx(
         np.array(

@@ -8,7 +8,8 @@ import autoarray as aa
 from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
     overlay_grid_from,
 )
-from autoarray.inversion.pixelization.mesh_grid.rectangular import rectangular_neighbors_from
+
+from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import rectangular_neighbors_from
 
 
 
@@ -125,7 +126,7 @@ def test__neighbors__compare_to_mesh_util():
         shape_native=mesh.shape, grid=aa.Grid2DIrregular(np.zeros((2, 2))), buffer=1e-8
     )
 
-    mesh = aa.Mesh2DRectangular(
+    mesh = aa.InterpolatorRectangular(
         mesh=mesh, mesh_grid=mesh_grid, data_grid_over_sampled=None
     )
 
@@ -137,7 +138,7 @@ def test__neighbors__compare_to_mesh_util():
     assert (mesh.neighbors.sizes == neighbors_sizes_util).all()
 
 
-def test__shape_native_and_pixel_scales():
+def test__overlay_grid_from__shape_native_and_pixel_scales():
     grid = aa.Grid2DIrregular(
         [
             [-1.0, -1.0],
@@ -156,7 +157,7 @@ def test__shape_native_and_pixel_scales():
 
     mesh_grid = overlay_grid_from(shape_native=mesh.shape, grid=grid, buffer=1e-8)
 
-    mesh = aa.Mesh2DRectangular(
+    mesh = aa.InterpolatorRectangular(
         mesh=mesh, mesh_grid=mesh_grid, data_grid_over_sampled=None
     )
 
@@ -181,7 +182,7 @@ def test__shape_native_and_pixel_scales():
 
     mesh_grid = overlay_grid_from(shape_native=mesh.shape, grid=grid, buffer=1e-8)
 
-    mesh = aa.Mesh2DRectangular(
+    mesh = aa.InterpolatorRectangular(
         mesh=mesh, mesh_grid=mesh_grid, data_grid_over_sampled=None
     )
 
@@ -194,7 +195,7 @@ def test__shape_native_and_pixel_scales():
 
     mesh_grid = overlay_grid_from(shape_native=mesh.shape, grid=grid, buffer=1e-8)
 
-    mesh = aa.Mesh2DRectangular(
+    mesh = aa.InterpolatorRectangular(
         mesh=mesh, mesh_grid=mesh_grid, data_grid_over_sampled=None
     )
 
@@ -202,7 +203,7 @@ def test__shape_native_and_pixel_scales():
     assert mesh.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
 
 
-def test__pixel_centres__3x3_grid__pixel_centres():
+def test__overlay_grid_from__pixel_centres__3x3_grid__pixel_centres():
     grid = aa.Grid2DIrregular(
         [
             [1.0, -1.0],
