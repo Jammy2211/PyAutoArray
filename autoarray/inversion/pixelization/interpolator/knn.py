@@ -146,12 +146,20 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
     @cached_property
     def _interpolation_and_weights(self):
 
+        try:
+            query_points = self.data_grid.over_sampled
+        except AttributeError:
+            query_points = self.data_grid
+
         mappings, weights, _ = get_interpolation_weights(
             points=self.mesh_grid_xy,
-            query_points=self.data_grid.over_sampled,
+            query_points=query_points,
             k_neighbors=self.mesh.k_neighbors,
             radius_scale=self.mesh.radius_scale,
         )
+
+        mappings = self._xp.asarray(mappings)
+        weights = self._xp.asarray(weights)
 
         return mappings, weights
 

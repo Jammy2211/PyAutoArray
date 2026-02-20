@@ -73,23 +73,25 @@ class MapperKNNInterpolator(MapperDelaunay):
             split_points_from,
         )
 
-        areas_factor = 0.5
+        neighbor_index = int(self.mesh.k_neighbors) // self.mesh.split_neighbor_division
+        # e.g. k=10, division=2 -> neighbor_index=5
 
-        neighbor_index = (
-            int(self.mesh.k_neighbors) // 2
-        )  # half neighbors for self-distance
+        distance_to_self = self.interpolator.distance_to_self  # (N, k_neighbors), col 0 is self
 
-        distance_to_self = self.interpolator.distance_to_self  # (N, k_neighbors)
+        others = distance_to_self[:, 1:]  # (N, k_neighbors-1)
 
-        # Local spacing scale: distance to k-th nearest OTHER point
-        r_k = distance_to_self[:, 1:][:, -1]  # (N,)
+        # Clamp to valid range (0-based indexing into `others`)
+        idx = int(neighbor_index) - 1
+        idx = max(0, min(idx, others.shape[1] - 1))
+
+        r_k = others[:, idx]  # (N,)
 
         # Split cross step size (length): sqrt(area) ~ r_k
-        split_step = self._xp.asarray(areas_factor) * r_k  # (N,)
+        split_step = self.mesh.areas_factor * r_k  # (N,)
 
         # Split points (xp-native)
         split_points = split_points_from(
-            points=self.source_plane_data_grid.over_sampled,
+            points=self.source_plane_mesh_grid.array,
             area_weights=split_step,
             xp=self._xp,
         )
@@ -102,5 +104,16 @@ class MapperKNNInterpolator(MapperDelaunay):
             _xp=self._xp,
         )
 
-        # Compute kNN mappings/weights at split points
-        return interpolator.pix_sub_weights
+        mappings = interpolator.mappings
+        weights = interpolator.weights
+
+        sizes = self._xp.full(
+            (mappings.shape[0],),
+            mappings.shape[1],
+        )
+
+        return PixSubWeights(
+            mappings=mappings,
+            sizes=sizes,
+            weights=weights,
+        )

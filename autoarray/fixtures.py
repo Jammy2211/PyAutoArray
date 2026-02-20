@@ -437,7 +437,7 @@ def make_knn_mapper_9_3x3():
         pixel_scales=1.0,
     )
 
-    mesh = aa.mesh.KNearestNeighbor()
+    mesh = aa.mesh.KNearestNeighbor(split_neighbor_division=1)
 
     return mesh.mapper_from(
         mask=make_mask_2d_7x7(),

@@ -62,7 +62,7 @@ def reg_split_np_from(
     -------
 
     """
-    splitted_weights *= -1.0
+    splitted_weights = -1.0 * splitted_weights
 
     for i in range(len(splitted_mappings)):
 
