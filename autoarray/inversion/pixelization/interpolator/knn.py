@@ -186,7 +186,7 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
         kNN mappings + kernel weights computed at split points (for split regularization schemes),
         with split-point step sizes derived from kNN local spacing (no Delaunay / simplices).
         """
-        from autoarray.inversion.pixelization.interpolator.delaunay import (
+        from autoarray.inversion.regularization.regularization_util import (
             split_points_from,
         )
 

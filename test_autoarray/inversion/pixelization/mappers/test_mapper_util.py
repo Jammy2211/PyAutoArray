@@ -4,7 +4,6 @@ import pytest
 import autoarray as aa
 
 
-
 @pytest.fixture(name="three_pixels")
 def make_three_pixels():
     return np.array([[0, 0], [0, 1], [1, 0]])
@@ -334,9 +333,6 @@ def test__data_to_pix_unique_from():
         data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0])
     ).all()
     assert (pix_lengths == np.array([3, 3])).all()
-
-
-
 
 
 def test__adaptive_pixel_signals_from():

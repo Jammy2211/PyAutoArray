@@ -27,6 +27,60 @@ from autoarray.inversion.regularization.matern_kernel import matern_kernel
 from autoarray.inversion.regularization.zeroth import zeroth_regularization_matrix_from
 
 
+def split_points_from(points, area_weights, xp=np):
+    """
+    points : (N, 2)
+    areas  : (N,)
+    xp     : np or jnp
+
+    Returns (4*N, 2)
+    """
+
+    N = points.shape[0]
+    offsets = area_weights
+
+    x = points[:, 0]
+    y = points[:, 1]
+
+    # Allocate output (N, 4, 2)
+    out = xp.zeros((N, 4, 2), dtype=points.dtype)
+
+    if xp.__name__.startswith("jax"):
+        # ----------------------------
+        # JAX → use .at[] updates
+        # ----------------------------
+        out = out.at[:, 0, 0].set(x + offsets)
+        out = out.at[:, 0, 1].set(y)
+
+        out = out.at[:, 1, 0].set(x - offsets)
+        out = out.at[:, 1, 1].set(y)
+
+        out = out.at[:, 2, 0].set(x)
+        out = out.at[:, 2, 1].set(y + offsets)
+
+        out = out.at[:, 3, 0].set(x)
+        out = out.at[:, 3, 1].set(y - offsets)
+
+    else:
+
+        # ----------------------------
+        # NumPy → direct assignment OK
+        # ----------------------------
+        out[:, 0, 0] = x + offsets
+        out[:, 0, 1] = y
+
+        out[:, 1, 0] = x - offsets
+        out[:, 1, 1] = y
+
+        out[:, 2, 0] = x
+        out[:, 2, 1] = y + offsets
+
+        out[:, 3, 0] = x
+        out[:, 3, 1] = y - offsets
+
+    return out.reshape((N * 4, 2))
+
+
 def reg_split_np_from(
     splitted_mappings: np.ndarray,
     splitted_sizes: np.ndarray,

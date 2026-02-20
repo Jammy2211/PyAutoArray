@@ -5,6 +5,9 @@ from scipy.spatial import cKDTree, Delaunay, Voronoi
 from autoconf import cached_property
 
 from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
+from autoarray.inversion.regularization.regularization_util import (
+    split_points_from,
+)
 
 
 def scipy_delaunay(points_np, query_points_np, areas_factor):
@@ -147,139 +150,6 @@ def barycentric_dual_area_from(
         xp.add.at(dual_area, simplices[:, k], contrib)
 
     return dual_area
-
-
-def voronoi_areas_numpy(points, qhull_options="Qbb Qc Qx Qm Q12 Pp"):
-    """
-    Compute Voronoi cell areas with a fully optimized pure-NumPy pipeline.
-    Exact match to the per-cell SciPy Voronoi loop but much faster.
-    """
-    vor = Voronoi(points, qhull_options=qhull_options)
-
-    vertices = vor.vertices
-    point_region = vor.point_region
-    regions = vor.regions
-    N = len(point_region)
-
-    # ------------------------------------------------------------
-    # 1) Collect all region lists in one go (list comprehension is fast)
-    # ------------------------------------------------------------
-    region_lists = [regions[r] for r in point_region]
-
-    # Precompute which regions are unbounded (vectorized test)
-    unbounded = np.array([(-1 in r) for r in region_lists], dtype=bool)
-
-    # Filter only bounded region vertex indices
-    clean_regions = [
-        np.asarray([v for v in r if v != -1], dtype=int) for r in region_lists
-    ]
-
-    # Compute lengths once
-    lengths = np.array([len(r) for r in clean_regions], dtype=int)
-    max_len = lengths.max()
-
-    # ------------------------------------------------------------
-    # 2) Build padded idx + mask in a vectorized-like way
-    #
-    # Instead of doing Python work inside the loop, we pre-pack
-    # the flattened data and then reshape.
-    # ------------------------------------------------------------
-    idx = np.full((N, max_len), -1, dtype=int)
-    mask = np.zeros((N, max_len), dtype=bool)
-
-    # Single loop remaining: extremely cheap
-    for i, (r, L) in enumerate(zip(clean_regions, lengths)):
-        if L:
-            idx[i, :L] = r
-            mask[i, :L] = True
-
-    # ------------------------------------------------------------
-    # 3) Gather polygon vertices (vectorized)
-    # ------------------------------------------------------------
-    safe_idx = idx.clip(min=0)
-    verts = vertices[safe_idx]  # (N, max_len, 2)
-
-    # Extract x, y with masked invalid entries zeroed
-    x = np.where(mask, verts[..., 1], 0.0)
-    y = np.where(mask, verts[..., 0], 0.0)
-
-    # ------------------------------------------------------------
-    # 4) Vectorized "previous index" per polygon
-    # ------------------------------------------------------------
-    safe_lengths = np.where(lengths == 0, 1, lengths)
-    j = np.arange(max_len)
-    prev = (j[None, :] - 1) % safe_lengths[:, None]
-
-    # Efficient take-along-axis
-    x_prev = np.take_along_axis(x, prev, axis=1)
-    y_prev = np.take_along_axis(y, prev, axis=1)
-
-    # ------------------------------------------------------------
-    # 5) Shoelace vectorized
-    # ------------------------------------------------------------
-    cross = x * y_prev - y * x_prev
-    areas = 0.5 * np.abs(cross.sum(axis=1))
-
-    # ------------------------------------------------------------
-    # 6) Mark unbounded regions
-    # ------------------------------------------------------------
-    areas[unbounded] = -1.0
-
-    return areas
-
-
-def split_points_from(points, area_weights, xp=np):
-    """
-    points : (N, 2)
-    areas  : (N,)
-    xp     : np or jnp
-
-    Returns (4*N, 2)
-    """
-
-    N = points.shape[0]
-    offsets = area_weights
-
-    x = points[:, 0]
-    y = points[:, 1]
-
-    # Allocate output (N, 4, 2)
-    out = xp.zeros((N, 4, 2), dtype=points.dtype)
-
-    if xp.__name__.startswith("jax"):
-        # ----------------------------
-        # JAX → use .at[] updates
-        # ----------------------------
-        out = out.at[:, 0, 0].set(x + offsets)
-        out = out.at[:, 0, 1].set(y)
-
-        out = out.at[:, 1, 0].set(x - offsets)
-        out = out.at[:, 1, 1].set(y)
-
-        out = out.at[:, 2, 0].set(x)
-        out = out.at[:, 2, 1].set(y + offsets)
-
-        out = out.at[:, 3, 0].set(x)
-        out = out.at[:, 3, 1].set(y - offsets)
-
-    else:
-
-        # ----------------------------
-        # NumPy → direct assignment OK
-        # ----------------------------
-        out[:, 0, 0] = x + offsets
-        out[:, 0, 1] = y
-
-        out[:, 1, 0] = x - offsets
-        out[:, 1, 1] = y
-
-        out[:, 2, 0] = x
-        out[:, 2, 1] = y + offsets
-
-        out[:, 3, 0] = x
-        out[:, 3, 1] = y - offsets
-
-    return out.reshape((N * 4, 2))
 
 
 def pix_indexes_for_sub_slim_index_delaunay_from(

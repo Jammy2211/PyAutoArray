@@ -12,6 +12,7 @@ from autoarray.inversion.pixelization.interpolator.delaunay import (
     pixel_weights_delaunay_from,
 )
 
+
 def test__pixel_weights_delaunay_from():
     data_grid = np.array([[0.1, 0.1], [1.0, 1.0]])
 
@@ -89,4 +90,3 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     assert (
         mapper.pix_sizes_for_sub_slim_index == np.array([1, 1, 3, 1, 1, 1, 1, 1, 1])
     ).all()
-
