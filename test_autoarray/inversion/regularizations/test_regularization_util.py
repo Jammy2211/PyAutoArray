@@ -164,10 +164,10 @@ def test__constant_zeroth_regularization_matrix_from():
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-def test__adaptive_regularization_weights_from():
+def test__adapt_regularization_weights_from():
     pixel_signals = np.array([1.0, 1.0, 1.0])
 
-    weight_list = aa.util.regularization.adaptive_regularization_weights_from(
+    weight_list = aa.util.regularization.adapt_regularization_weights_from(
         inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
     )
 
@@ -175,7 +175,7 @@ def test__adaptive_regularization_weights_from():
 
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
-    weight_list = aa.util.regularization.adaptive_regularization_weights_from(
+    weight_list = aa.util.regularization.adapt_regularization_weights_from(
         inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
     )
 
@@ -183,7 +183,7 @@ def test__adaptive_regularization_weights_from():
 
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
-    weight_list = aa.util.regularization.adaptive_regularization_weights_from(
+    weight_list = aa.util.regularization.adapt_regularization_weights_from(
         inner_coefficient=1.0, outer_coefficient=0.0, pixel_signals=pixel_signals
     )
 
@@ -191,7 +191,7 @@ def test__adaptive_regularization_weights_from():
 
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
-    weight_list = aa.util.regularization.adaptive_regularization_weights_from(
+    weight_list = aa.util.regularization.adapt_regularization_weights_from(
         inner_coefficient=0.0, outer_coefficient=1.0, pixel_signals=pixel_signals
     )
 

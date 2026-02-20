@@ -3,7 +3,7 @@ from typing import Dict
 
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 
 
 class MockInversionImaging(InversionImagingMapping):
@@ -17,10 +17,10 @@ class MockInversionImaging(InversionImagingMapping):
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
-        settings: SettingsInversion = None,
+        settings: Settings = None,
     ):
 
-        settings = settings or SettingsInversion()
+        settings = settings or Settings()
 
         dataset = DatasetInterface(
             data=data,

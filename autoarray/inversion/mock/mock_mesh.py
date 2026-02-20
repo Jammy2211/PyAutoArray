@@ -1,10 +1,10 @@
 import numpy as np
 from typing import Optional
 
+from autoarray.inversion.mock.mock_mapper import MockMapper
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.mesh.mesh.abstract import AbstractMesh
+from autoarray.inversion.mesh.interpolator.abstract import AbstractInterpolator
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -15,16 +15,16 @@ class MockMesh(AbstractMesh):
 
         self.image_plane_mesh_grid = image_plane_mesh_grid
 
-    def mapper_grids_from(
+    def interpolator_from(
         self,
         mask=None,
         source_plane_data_grid: Grid2D = None,
         border_relocator=None,
-        source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
+        source_plane_mesh_grid: Optional[AbstractInterpolator] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
-    ) -> MapperGrids:
-        return MapperGrids(
+    ):
+        return MockMapper(
             mask=mask,
             source_plane_data_grid=source_plane_data_grid,
             border_relocator=border_relocator,

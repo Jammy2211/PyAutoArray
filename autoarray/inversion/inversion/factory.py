@@ -23,7 +23,7 @@ from autoarray.inversion.inversion.imaging_numba.sparse import (
 from autoarray.inversion.inversion.imaging.sparse import (
     InversionImagingSparse,
 )
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -31,7 +31,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 def inversion_from(
     dataset: Union[Imaging, Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
-    settings: SettingsInversion = SettingsInversion(),
+    settings: Settings = None,
     preloads: Preloads = None,
     xp=np,
 ):
@@ -80,7 +80,7 @@ def inversion_from(
 def inversion_imaging_from(
     dataset,
     linear_obj_list: List[LinearObj],
-    settings: SettingsInversion = SettingsInversion(),
+    settings: Settings = None,
     preloads: Preloads = None,
     xp=np,
 ):
@@ -157,7 +157,7 @@ def inversion_imaging_from(
 def inversion_interferometer_from(
     dataset: Union[Interferometer, DatasetInterface],
     linear_obj_list: List[LinearObj],
-    settings: SettingsInversion = SettingsInversion(),
+    settings: Settings = None,
     xp=np,
 ):
     """

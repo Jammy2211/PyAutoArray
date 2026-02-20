@@ -5,7 +5,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
 from autoarray import exc
 

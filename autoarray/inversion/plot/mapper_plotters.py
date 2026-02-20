@@ -1,14 +1,10 @@
 import numpy as np
-from typing import Union
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.inversion.pixelization.mappers.rectangular import (
-    MapperRectangular,
-)
 
 import logging
 
@@ -18,7 +14,7 @@ logger = logging.getLogger(__name__)
 class MapperPlotter(AbstractPlotter):
     def __init__(
         self,
-        mapper: MapperRectangular,
+        mapper,
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
     ):
@@ -69,7 +65,7 @@ class MapperPlotter(AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=image,
             visuals_2d=self.visuals_2d,
-            grid_indexes=self.mapper.mapper_grids.image_plane_data_grid.over_sampled,
+            grid_indexes=self.mapper.image_plane_data_grid.over_sampled,
             auto_labels=AutoLabels(
                 title="Image (Image-Plane)", filename="mapper_image"
             ),

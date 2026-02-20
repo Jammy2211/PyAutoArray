@@ -1,42 +1,35 @@
 import numpy as np
-from typing import Optional, Tuple
 
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.mappers.abstract import Mapper
 
 
-class MockMapper(AbstractMapper):
+class MockMapper(Mapper):
     def __init__(
         self,
-        mask=None,
+        mesh=None,
+        mesh_geometry=None,
+        interpolator=None,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        over_sampler=None,
-        border_relocator=None,
         adapt_data=None,
+        over_sampler=None,
         regularization=None,
-        pix_sub_weights=None,
-        pix_sub_weights_split_points=None,
         mapping_matrix=None,
         pixel_signals=None,
         parameters=None,
     ):
-        mapper_grids = MapperGrids(
-            mask=mask,
-            source_plane_data_grid=source_plane_data_grid,
-            source_plane_mesh_grid=source_plane_mesh_grid,
-            adapt_data=adapt_data,
-        )
 
         super().__init__(
-            mapper_grids=mapper_grids,
-            border_relocator=border_relocator,
+            interpolator=interpolator,
             regularization=regularization,
         )
 
+        self._mesh = mesh
+        self._source_plane_data_grid = source_plane_data_grid
+        self._source_plane_mesh_grid = source_plane_mesh_grid
+        self._adapt_data = adapt_data
+        self._mesh_geometry = mesh_geometry
         self._over_sampler = over_sampler
-        self._pix_sub_weights = pix_sub_weights
-        self._pix_sub_weights_split_points = pix_sub_weights_split_points
         self._mapping_matrix = mapping_matrix
         self._parameters = parameters
         self._pixel_signals = pixel_signals
@@ -45,6 +38,30 @@ class MockMapper(AbstractMapper):
         if self._pixel_signals is None:
             return super().pixel_signals_from(signal_scale=signal_scale)
         return self._pixel_signals
+
+    @property
+    def source_plane_data_grid(self):
+        if self._source_plane_data_grid is None:
+            return super().source_plane_data_grid
+        return self._source_plane_data_grid
+
+    @property
+    def source_plane_mesh_grid(self):
+        if self._source_plane_mesh_grid is None:
+            return super().source_plane_mesh_grid
+        return self._source_plane_mesh_grid
+
+    @property
+    def adapt_data(self):
+        if self._adapt_data is None:
+            return super().adapt_data
+        return self._adapt_data
+
+    @property
+    def mesh_geometry(self):
+        if self._mesh_geometry is None:
+            return super().mesh_geometry
+        return self._mesh_geometry
 
     @property
     def params(self):
@@ -57,14 +74,6 @@ class MockMapper(AbstractMapper):
         if self._over_sampler is None:
             return super().over_sampler
         return self._over_sampler
-
-    @property
-    def pix_sub_weights(self):
-        return self._pix_sub_weights
-
-    @property
-    def pix_sub_weights_split_points(self):
-        return self._pix_sub_weights_split_points
 
     @property
     def mapping_matrix(self):

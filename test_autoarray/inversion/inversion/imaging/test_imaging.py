@@ -19,7 +19,7 @@ directory = path.dirname(path.realpath(__file__))
 def test__operated_mapping_matrix_property(psf_3x3, rectangular_mapper_7x7_3x3):
 
     inversion = aa.m.MockInversionImaging(
-        mask=rectangular_mapper_7x7_3x3.mapper_grids.mask,
+        mask=rectangular_mapper_7x7_3x3.mask,
         psf=psf_3x3,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
     )
@@ -73,7 +73,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
     )
 
     inversion = aa.m.MockInversionImaging(
-        mask=rectangular_mapper_7x7_3x3.mapper_grids.mask,
+        mask=rectangular_mapper_7x7_3x3.mask,
         psf=psf,
         linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj],
     )
@@ -114,9 +114,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     inversion = aa.InversionImagingMapping(
         dataset=dataset,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(
-            no_regularization_add_to_curvature_diag_value=False
-        ),
+        settings=aa.Settings(no_regularization_add_to_curvature_diag_value=False),
     )
 
     assert inversion.curvature_matrix[0:2, 0:2] == pytest.approx(
@@ -129,9 +127,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     inversion = aa.InversionImagingMapping(
         dataset=dataset,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        settings=aa.SettingsInversion(
-            no_regularization_add_to_curvature_diag_value=True
-        ),
+        settings=aa.Settings(no_regularization_add_to_curvature_diag_value=True),
     )
 
     assert inversion.curvature_matrix[0, 0] - 10.0 > 0.0

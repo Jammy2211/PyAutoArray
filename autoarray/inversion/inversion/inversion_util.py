@@ -2,7 +2,7 @@ import numpy as np
 
 from typing import List, Optional, Type
 
-from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.settings import Settings
 
 from autoarray import exc
 from autoarray.util.fnnls import fnnls_cholesky
@@ -82,7 +82,7 @@ def curvature_matrix_via_mapping_matrix_from(
     noise_map: "np.ndarray",
     add_to_curvature_diag: bool = False,
     no_regularization_index_list: Optional[List] = None,
-    settings: "SettingsInversion" = SettingsInversion(),
+    settings: "Settings" = Settings(),
     xp=np,
 ) -> np.ndarray:
     """
@@ -218,7 +218,7 @@ def reconstruction_positive_negative_from(
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
-    settings: SettingsInversion = SettingsInversion(),
+    settings: Settings = None,
     xp=np,
 ):
     """
@@ -270,15 +270,11 @@ def reconstruction_positive_only_from(
         return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
 
     try:
-        if settings.positive_only_uses_p_initial:
-            P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
-        else:
-            P_initial = np.zeros(0, dtype=int)
 
         return fnnls_cholesky(
             curvature_reg_matrix,
             (data_vector).T,
-            P_initial=P_initial,
+            P_initial=np.linalg.solve(curvature_reg_matrix, data_vector) > 0,
         )
 
     except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
@@ -334,7 +330,7 @@ def param_range_list_from(cls: Type, linear_obj_list) -> List[List[int]]:
     - The first `Mapper` values are in the entries `[3:103]`.
     - The second `Mapper` values are in the entries `[103:303]
 
-    For this example, `param_range_list_from(cls=AbstractMapper)` therefore returns the
+    For this example, `param_range_list_from(cls=Mapper)` therefore returns the
     list `[[3, 103], [103, 303]]`.
 
     Parameters

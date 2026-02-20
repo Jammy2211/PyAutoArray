@@ -198,7 +198,7 @@ def test__data_vector_via_weighted_data_two_methods_agree():
 
     psf = kernel
 
-    pixelization = aa.mesh.RectangularUniform(shape=(20, 20))
+    mesh = aa.mesh.RectangularUniform(shape=(20, 20))
 
     # TODO : Use pytest.parameterize
 
@@ -206,16 +206,11 @@ def test__data_vector_via_weighted_data_two_methods_agree():
 
         grid = aa.Grid2D.from_mask(mask=mask, over_sample_size=sub_size)
 
-        mapper_grids = pixelization.mapper_grids_from(
-            mask=mask,
-            border_relocator=None,
-            source_plane_data_grid=grid,
+        interpolator = mesh.interpolator_from(
+            source_plane_data_grid=grid, source_plane_mesh_grid=None
         )
 
-        mapper = aa.Mapper(
-            mapper_grids=mapper_grids,
-            regularization=None,
-        )
+        mapper = aa.Mapper(interpolator=interpolator)
 
         mapping_matrix = mapper.mapping_matrix
 
@@ -256,7 +251,7 @@ def test__data_vector_via_weighted_data_two_methods_agree():
                 rows=rows,
                 cols=cols,
                 vals=vals,
-                S=pixelization.pixels,
+                S=mesh.pixels,
             )
         )
 
@@ -284,13 +279,12 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(20, 20))
 
-    mapper_grids = mesh.mapper_grids_from(
-        mask=mask,
-        border_relocator=None,
+    interpolator = mesh.interpolator_from(
         source_plane_data_grid=mask.derive_grid.unmasked,
+        source_plane_mesh_grid=None,
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    mapper = aa.Mapper(interpolator=interpolator)
 
     mapping_matrix = mapper.mapping_matrix
 
@@ -326,5 +320,5 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
     )
 
     assert curvature_matrix_via_sparse_operator == pytest.approx(
-        curvature_matrix, rel=1.0e-3
+        curvature_matrix, abs=1.0e-4
     )

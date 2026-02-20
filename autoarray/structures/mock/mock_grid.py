@@ -4,7 +4,7 @@ from typing import Tuple
 from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.abstract_structure import Structure
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoarray.inversion.mesh.interpolator.abstract import AbstractInterpolator
 
 
 class MockGeometry(AbstractGeometry2D):
@@ -16,7 +16,7 @@ class MockGeometry(AbstractGeometry2D):
         return self._extent
 
 
-class MockGrid2DMesh(Abstract2DMesh):
+class MockGrid2DMesh(AbstractInterpolator):
     @property
     def pixels(self) -> int:
         raise NotImplementedError()
@@ -35,7 +35,7 @@ class MockGrid2DMesh(Abstract2DMesh):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
 
-        A `Mesh2DRectangular` is ordered such pixels begin from the top-row and go rightwards and then downwards.
+        A `InterpolatorRectangular` is ordered such pixels begin from the top-row and go rightwards and then downwards.
         It is an ndarray of shape [total_pixels, 2], where the first dimension of the ndarray corresponds to the
         pixelization's pixel index and second element whether it is a y or x arc-second coordinate.
 
