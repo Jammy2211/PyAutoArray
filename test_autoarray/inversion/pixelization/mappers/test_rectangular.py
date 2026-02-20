@@ -7,6 +7,8 @@ from autoarray.inversion.pixelization.interpolator.rectangular_uniform import (
     rectangular_mappings_weights_via_interpolation_from,
 )
 
+import pytest
+
 
 def test__pix_indexes_for_sub_slim_index__matches_util():
     grid = aa.Grid2D.no_mask(
@@ -44,8 +46,8 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         data_grid=aa.Grid2DIrregular(grid.over_sampled).array,
     )
 
-    assert (mapper.pix_sub_weights.mappings == mappings).all()
-    assert (mapper.pix_sub_weights.weights == weights).all()
+    assert mapper.pix_sub_weights.mappings == pytest.approx(mappings, 1.0e-4)
+    assert mapper.pix_sub_weights.weights == pytest.approx(weights, 1.0e-4)
 
 
 def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):

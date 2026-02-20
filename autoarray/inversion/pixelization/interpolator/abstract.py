@@ -25,10 +25,10 @@ class AbstractInterpolator:
 
     @property
     def weights(self):
-        weights, _ = self._interpolation_and_weights
+        _, weights = self._interpolation_and_weights
         return weights
 
     @property
     def mappings(self):
-        _, mappings = self._interpolation_and_weights
+        mappings, _ = self._interpolation_and_weights
         return mappings

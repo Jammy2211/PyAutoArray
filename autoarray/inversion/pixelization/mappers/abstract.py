@@ -583,6 +583,6 @@ class PixSubWeights:
         weights
             The interpolation weights of every data pixel's pixelization pixel mapping.
         """
-        self.mappings = mappings.astype("int")
+        self.mappings = mappings
         self.sizes = sizes
         self.weights = weights
