@@ -6,7 +6,6 @@ from autoconf import cached_property
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.settings import Settings
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.inversion.pixelization.interpolator.rectangular import (
     InterpolatorRectangular,
 )
@@ -155,47 +154,3 @@ class MapperRectangular(AbstractMapper):
     @property
     def shape_native(self) -> Tuple[int, ...]:
         return self.mesh.shape
-
-    @cached_property
-    def pix_sub_weights(self) -> PixSubWeights:
-        """
-        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
-        and pixel in the `RectangularAdaptDensity` mesh.
-
-        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
-        to mesh pixels (given their `pix_indexes`).
-
-        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to mesh pixels.
-
-        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's mesh
-        pixel mapping
-
-        These are packaged into the class `PixSubWeights` with attributes `mappings`, `sizes` and `weights`.
-
-        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the mesh pixel indexes,
-        for example:
-
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the RectangularAdaptDensity
-        mesh's third (index 2) pixel.
-
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the RectangularAdaptDensity
-        mesh's fifth (index 4) pixel.
-
-        The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
-        for cases where a data pixel maps to more than one mesh pixel (for example a `Delaunay` triangulation
-        where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
-        are stored in the array `pix_weights_for_sub_slim_index`.
-
-        For a RectangularAdaptDensity pixelization each data sub-pixel maps to a single mesh pixel, thus the second
-        dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
-        are equal to 1.0.
-        """
-
-        mappings = self.interpolator.mappings
-        weights = self.interpolator.weights
-
-        return PixSubWeights(
-            mappings=mappings,
-            sizes=4 * self._xp.ones(len(mappings), dtype="int"),
-            weights=weights,
-        )

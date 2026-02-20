@@ -96,16 +96,16 @@ class AdaptSplitZeroth(Adapt):
             linear_obj=linear_obj, xp=xp
         )
 
-        pix_sub_weights_split_points = linear_obj.pix_sub_weights_split_points
+        mappings, sizes, weights = linear_obj.interpolator._mappings_sizes_weights_split
 
         (
             splitted_mappings,
             splitted_sizes,
             splitted_weights,
         ) = regularization_util.reg_split_from(
-            splitted_mappings=pix_sub_weights_split_points.mappings,
-            splitted_sizes=pix_sub_weights_split_points.sizes,
-            splitted_weights=pix_sub_weights_split_points.weights,
+            splitted_mappings=mappings,
+            splitted_sizes=sizes,
+            splitted_weights=weights,
             xp=xp,
         )
 

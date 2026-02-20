@@ -125,7 +125,7 @@ def kernel_interpolate_points(points, query_chunk, values, k, radius_scale):
     import jax.numpy as jnp
 
     # Compute weights using the intermediate function
-    weights_normalized, top_k_indices, _ = get_interpolation_weights(
+    top_k_indices, weights_normalized, _ = get_interpolation_weights(
         points,
         query_chunk,
         k,
@@ -144,7 +144,7 @@ def kernel_interpolate_points(points, query_chunk, values, k, radius_scale):
 class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
 
     @cached_property
-    def _interpolation_and_weights(self):
+    def _mappings_sizes_weights(self):
 
         try:
             query_points = self.data_grid.over_sampled
@@ -161,7 +161,12 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
         mappings = self._xp.asarray(mappings)
         weights = self._xp.asarray(weights)
 
-        return mappings, weights
+        sizes = self._xp.full(
+            (mappings.shape[0],),
+            mappings.shape[1],
+        )
+
+        return mappings, sizes, weights
 
     @cached_property
     def distance_to_self(self):
@@ -174,6 +179,57 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
         )
 
         return distance_to_self
+
+    @cached_property
+    def _mappings_sizes_weights_split(self):
+        """
+        kNN mappings + kernel weights computed at split points (for split regularization schemes),
+        with split-point step sizes derived from kNN local spacing (no Delaunay / simplices).
+        """
+        from autoarray.inversion.pixelization.interpolator.delaunay import (
+            split_points_from,
+        )
+
+        neighbor_index = int(self.mesh.k_neighbors) // self.mesh.split_neighbor_division
+        # e.g. k=10, division=2 -> neighbor_index=5
+
+        distance_to_self = self.distance_to_self  # (N, k_neighbors), col 0 is self
+
+        others = distance_to_self[:, 1:]  # (N, k_neighbors-1)
+
+        # Clamp to valid range (0-based indexing into `others`)
+        idx = int(neighbor_index) - 1
+        idx = max(0, min(idx, others.shape[1] - 1))
+
+        r_k = others[:, idx]  # (N,)
+
+        # Split cross step size (length): sqrt(area) ~ r_k
+        split_step = self.mesh.areas_factor * r_k  # (N,)
+
+        # Split points (xp-native)
+        split_points = split_points_from(
+            points=self.mesh_grid.array,
+            area_weights=split_step,
+            xp=self._xp,
+        )
+
+        interpolator = InterpolatorKNearestNeighbor(
+            mesh=self.mesh,
+            mesh_grid=self.mesh_grid,
+            data_grid=split_points,
+            preloads=self.preloads,
+            _xp=self._xp,
+        )
+
+        mappings = interpolator.mappings
+        weights = interpolator.weights
+
+        sizes = self._xp.full(
+            (mappings.shape[0],),
+            mappings.shape[1],
+        )
+
+        return mappings, sizes, weights
 
     # def interpolate(self, query_points, points, values):
     #     return kernel_interpolate_points(

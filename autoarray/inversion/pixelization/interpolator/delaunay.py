@@ -26,7 +26,7 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
     simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
 
     mappings = pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=query_points_np,
+        data_grid=query_points_np,
         simplex_index_for_sub_slim_index=simplex_idx,
         pix_indexes_for_simplex_index=simplices,
         delaunay_points=points_np,
@@ -65,7 +65,7 @@ def scipy_delaunay(points_np, query_points_np, use_voronoi_areas, areas_factor):
     split_points_idx = tri.find_simplex(split_points)
 
     splitted_mappings = pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=split_points,
+        data_grid=split_points,
         simplex_index_for_sub_slim_index=split_points_idx,
         pix_indexes_for_simplex_index=simplices,
         delaunay_points=points_np,
@@ -296,13 +296,13 @@ def split_points_from(points, area_weights, xp=np):
 
 
 def pix_indexes_for_sub_slim_index_delaunay_from(
-    source_plane_data_grid,  # (N_sub, 2)
+    data_grid,  # (N_sub, 2)
     simplex_index_for_sub_slim_index,  # (N_sub,)
     pix_indexes_for_simplex_index,  # (M, 3)
     delaunay_points,  # (N_pix, 2)
 ):
 
-    N_sub = source_plane_data_grid.shape[0]
+    N_sub = data_grid.shape[0]
 
     inside_mask = simplex_index_for_sub_slim_index >= 0
     outside_mask = ~inside_mask
@@ -325,7 +325,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     # ---------------------------
     if outside_mask.any():
         tree = cKDTree(delaunay_points)
-        _, idx = tree.query(source_plane_data_grid[outside_mask], k=1)
+        _, idx = tree.query(data_grid[outside_mask], k=1)
         out[outside_mask, 0] = idx.astype(np.int32)
 
     out = out.astype(np.int32)
@@ -361,7 +361,7 @@ def scipy_delaunay_matern(points_np, query_points_np):
     simplex_idx = tri.find_simplex(query_points_np).astype(np.int32)  # (Q,)
 
     mappings = pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=query_points_np,
+        data_grid=query_points_np,
         simplex_index_for_sub_slim_index=simplex_idx,
         pix_indexes_for_simplex_index=simplices,
         delaunay_points=points_np,
@@ -392,6 +392,86 @@ def jax_delaunay_matern(points, query_points):
         points,
         query_points,
     )
+
+
+def triangle_area_xp(c0, c1, c2, xp):
+    """
+    Twice triangle area using vector cross product magnitude.
+    Calling via xp ensures NumPy or JAX backend operation.
+    """
+    v0 = c1 - c0  # (..., 2)
+    v1 = c2 - c0
+    cross = v0[..., 0] * v1[..., 1] - v0[..., 1] * v1[..., 0]
+    return xp.abs(cross)
+
+
+def pixel_weights_delaunay_from(
+    data_grid,  # (N_sub, 2)
+    mesh_grid,  # (N_pix, 2)
+    pix_indexes_for_sub_slim_index,  # (N_sub, 3), padded with -1
+    xp=np,  # backend: np (default) or jnp
+):
+    """
+    XP-compatible (NumPy/JAX) version of pixel_weights_delaunay_from.
+
+    Computes barycentric weights for Delaunay triangle interpolation.
+    """
+
+    N_sub = pix_indexes_for_sub_slim_index.shape[0]
+
+    # -----------------------------
+    # CASE MASKS
+    # -----------------------------
+    # If pix_indexes_for_sub_slim_index[sub][1] == -1 → NOT in simplex
+    has_simplex = pix_indexes_for_sub_slim_index[:, 1] != -1  # (N_sub,)
+
+    # -----------------------------
+    # GATHER TRIANGLE VERTICES
+    # -----------------------------
+    # Clip negatives (for padded entries) so that indexing doesn't crash
+    safe_indices = pix_indexes_for_sub_slim_index.clip(min=0)
+
+    # (N_sub, 3, 2)
+    vertices = mesh_grid[safe_indices]
+
+    p0 = vertices[:, 0]  # (N_sub, 2)
+    p1 = vertices[:, 1]
+    p2 = vertices[:, 2]
+
+    # Query points
+    q = data_grid  # (N_sub, 2)
+
+    # -----------------------------
+    # TRIANGLE AREAS (barycentric numerators)
+    # -----------------------------
+    a0 = triangle_area_xp(p1, p2, q, xp)
+    a1 = triangle_area_xp(p0, p2, q, xp)
+    a2 = triangle_area_xp(p0, p1, q, xp)
+
+    area_sum = a0 + a1 + a2
+
+    # (N_sub, 3)
+    weights_bary = xp.stack([a0, a1, a2], axis=1) / area_sum[:, None]
+
+    # -----------------------------
+    # NEAREST-NEIGHBOUR CASE
+    # -----------------------------
+    # For no-simplex: weight = [1,0,0]
+    weights_nn = xp.stack(
+        [
+            xp.ones(N_sub),
+            xp.zeros(N_sub),
+            xp.zeros(N_sub),
+        ],
+        axis=1,
+    )
+
+    # -----------------------------
+    # SELECT BETWEEN CASES
+    # -----------------------------
+    pixel_weights = xp.where(has_simplex[:, None], weights_bary, weights_nn)
+
+    return pixel_weights
 
 
 class DelaunayInterface:
@@ -574,3 +654,92 @@ class InterpolatorDelaunay(AbstractInterpolator):
         gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
         """
         return self.delaunay.split_points
+
+    @cached_property
+    def _mappings_sizes_weights(self):
+        """
+        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
+        and pixel in the `Delaunay` pixelization.
+
+        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
+        to pixelization pixels (given their `pix_indexes`).
+
+        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to pixelization pixels.
+
+        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's pixelization
+        pixel mapping
+
+        These are packaged into the attributes `mappings`, `sizes` and `weights`.
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the RectangularAdaptDensity
+        pixelization's third (index 2) pixel.
+
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the RectangularAdaptDensity
+        pixelization's fifth (index 4) pixel.
+
+        The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
+        for cases where a data pixel maps to more than one pixelization pixel.
+
+        For a `Delaunay` pixelization each data pixel maps to 3 Delaunay triangles with interpolation, for example:
+
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay
+        pixelization's third (index 2) pixel.
+
+        - `pix_indexes_for_sub_slim_index[0, 1] = 5`: The data's first (index 0) sub-pixel also maps to the Delaunay
+        pixelization's sixth (index 5) pixel.
+
+        - `pix_indexes_for_sub_slim_index[0, 2] = 8`: The data's first (index 0) sub-pixel also maps to the Delaunay
+        pixelization's ninth (index 8) pixel.
+
+        The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
+
+        For the Delaunay pixelization these mappings are calculated using the Scipy spatial library
+        (see `mapper_numba_util.pix_indexes_for_sub_slim_index_delaunay_from`).
+        """
+        mappings = self.delaunay.mappings.astype("int")
+        sizes = self.delaunay.sizes.astype("int")
+
+        weights = pixel_weights_delaunay_from(
+            data_grid=self.data_grid.over_sampled,
+            mesh_grid=self.mesh_grid.array,
+            pix_indexes_for_sub_slim_index=mappings,
+            xp=self._xp,
+        )
+
+        return mappings, sizes, weights
+
+    @cached_property
+    def _mappings_sizes_weights_split(self):
+        """
+        The property `_mappings_sizes_weightss` property describes the calculation of the mapping attributes, which contains
+        numpy arrays describing how data-points and mapper pixels map to one another and the weights of these mappings.
+
+        For certain regularization schemes (e.g. `ConstantSplit`, `AdaptSplit`) regularization uses
+        mappings which are split in a cross configuration in order to factor in the derivative of the mapper
+        reconstruction.
+
+        This property returns a unique set of mapping values used for these regularization schemes which compute
+        mappings and weights at each point on the split cross.
+        """
+        splitted_weights = pixel_weights_delaunay_from(
+            data_grid=self.delaunay.split_points,
+            mesh_grid=self.mesh_grid.array,
+            pix_indexes_for_sub_slim_index=self.delaunay.splitted_mappings.astype(
+                "int"
+            ),
+            xp=self._xp,
+        )
+
+        append_line_int = np.zeros((len(splitted_weights), 1), dtype="int") - 1
+        append_line_float = np.zeros((len(splitted_weights), 1), dtype="float")
+
+        mappings = self._xp.hstack(
+            (self.delaunay.splitted_mappings.astype(self._xp.int32), append_line_int)
+        )
+        sizes = self.delaunay.splitted_sizes.astype(self._xp.int32)
+        weights = self._xp.hstack((splitted_weights, append_line_float))
+
+        return mappings, sizes, weights

@@ -1,12 +1,31 @@
 import numpy as np
 import scipy.spatial
-import pytest
 
 import autoarray as aa
 
 from autoarray.inversion.pixelization.interpolator.delaunay import (
     pix_indexes_for_sub_slim_index_delaunay_from,
 )
+
+
+from autoarray.inversion.pixelization.interpolator.delaunay import (
+    pixel_weights_delaunay_from,
+)
+
+def test__pixel_weights_delaunay_from():
+    data_grid = np.array([[0.1, 0.1], [1.0, 1.0]])
+
+    mesh_grid = np.array([[0.0, 0.0], [0.1, 0.0], [0.2, 0.0]])
+
+    pix_indexes_for_sub_slim_index = np.array([[0, 1, 2], [2, -1, -1]])
+
+    pixel_weights = pixel_weights_delaunay_from(
+        data_grid=data_grid,
+        mesh_grid=mesh_grid,
+        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+    )
+
+    assert (pixel_weights == np.array([[0.25, 0.5, 0.25], [1.0, 0.0, 0.0]])).all()
 
 
 def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
@@ -34,7 +53,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     pix_indexes_for_simplex_index = mapper.delaunay.simplices
 
     pix_indexes_for_sub_slim_index_util = pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=mapper.source_plane_data_grid.array,
+        data_grid=mapper.source_plane_data_grid.array,
         simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
         delaunay_points=mapper.delaunay.points,
@@ -70,3 +89,4 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_sub_1_7x7):
     assert (
         mapper.pix_sizes_for_sub_slim_index == np.array([1, 1, 3, 1, 1, 1, 1, 1, 1])
     ).all()
+

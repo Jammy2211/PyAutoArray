@@ -139,10 +139,6 @@ class AbstractMapper(LinearObj):
         return self.mesh_geometry.neighbors
 
     @property
-    def pix_sub_weights(self) -> "PixSubWeights":
-        raise NotImplementedError
-
-    @property
     def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
         """
         The mapping of every data pixel (given its `sub_slim_index`) to pixelization pixels (given their `pix_indexes`).
@@ -156,7 +152,7 @@ class AbstractMapper(LinearObj):
         - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the pixelization's
         fifth (index 4) pixel.
         """
-        return self.pix_sub_weights.mappings
+        return self.interpolator.mappings
 
     @property
     def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
@@ -172,7 +168,7 @@ class AbstractMapper(LinearObj):
         - `pix_sizes_for_sub_slim_index[2] = 4`: The data's third (index 2) sub-pixel maps to 4 pixels in the
         pixelization.
         """
-        return self.pix_sub_weights.sizes
+        return self.interpolator.sizes
 
     @property
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
@@ -189,7 +185,7 @@ class AbstractMapper(LinearObj):
         - `pix_weights_for_sub_slim_index[2, 0] = 0.2`: The data's third (index 2) sub-pixel mapping to the
         pixelization's fifth (index 4) pixel has an interpolation weight of 0.2.
         """
-        return self.pix_sub_weights.weights
+        return self.interpolator.weights
 
     @property
     def slim_index_for_sub_slim_index(self) -> np.ndarray:
@@ -560,29 +556,3 @@ class AbstractMapper(LinearObj):
             values=mesh_pixels_per_image_pixels,
             mask=self.mask,
         )
-
-
-class PixSubWeights:
-    def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):
-        """
-        Packages the mappings, sizes and weights of every data pixel to pixelization pixels, which are computed
-        from associated ``Mapper`` properties..
-
-        The need to store separately the mappings and sizes is so that the `sizes` can be easy iterated over when
-        perform calculations for efficiency.
-
-        Parameters
-        ----------
-        mappings
-            The mapping of every data pixel, given its `sub_slim_index`, to its corresponding pixelization mesh
-            pixels, given their `pix_indexes` (corresponds to the ``Mapper``
-            property ``pix_indexes_for_sub_slim_index``)
-        sizes
-            The number of mappings of every data pixel to pixelization mesh pixels (corresponds to the ``Mapper``
-            property ``pix_sizes_for_sub_slim_index``).
-        weights
-            The interpolation weights of every data pixel's pixelization pixel mapping.
-        """
-        self.mappings = mappings
-        self.sizes = sizes
-        self.weights = weights

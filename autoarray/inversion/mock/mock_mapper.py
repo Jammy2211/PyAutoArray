@@ -10,15 +10,13 @@ class MockMapper(AbstractMapper):
         mask=None,
         mesh=None,
         mesh_geometry=None,
+        interpolator=None,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        interpolator=None,
         over_sampler=None,
         border_relocator=None,
         adapt_data=None,
         regularization=None,
-        pix_sub_weights=None,
-        pix_sub_weights_split_points=None,
         mapping_matrix=None,
         pixel_signals=None,
         parameters=None,
@@ -37,8 +35,6 @@ class MockMapper(AbstractMapper):
         self._interpolator = interpolator
         self._mesh_geometry = mesh_geometry
         self._over_sampler = over_sampler
-        self._pix_sub_weights = pix_sub_weights
-        self._pix_sub_weights_split_points = pix_sub_weights_split_points
         self._mapping_matrix = mapping_matrix
         self._parameters = parameters
         self._pixel_signals = pixel_signals
@@ -71,14 +67,6 @@ class MockMapper(AbstractMapper):
         if self._over_sampler is None:
             return super().over_sampler
         return self._over_sampler
-
-    @property
-    def pix_sub_weights(self):
-        return self._pix_sub_weights
-
-    @property
-    def pix_sub_weights_split_points(self):
-        return self._pix_sub_weights_split_points
 
     @property
     def mapping_matrix(self):

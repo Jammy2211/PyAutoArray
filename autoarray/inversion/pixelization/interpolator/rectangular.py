@@ -275,7 +275,7 @@ class InterpolatorRectangular(AbstractInterpolator):
         self.mesh_weight_map = mesh_weight_map
 
     @cached_property
-    def _interpolation_and_weights(self):
+    def _mappings_sizes_weights(self):
 
         mappings, weights = (
             adaptive_rectangular_mappings_weights_via_interpolation_from(
@@ -287,4 +287,6 @@ class InterpolatorRectangular(AbstractInterpolator):
             )
         )
 
-        return mappings, weights
+        sizes = 4 * self._xp.ones(len(mappings), dtype="int")
+
+        return mappings, sizes, weights

@@ -46,8 +46,8 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         data_grid=aa.Grid2DIrregular(grid.over_sampled).array,
     )
 
-    assert mapper.pix_sub_weights.mappings == pytest.approx(mappings, 1.0e-4)
-    assert mapper.pix_sub_weights.weights == pytest.approx(weights, 1.0e-4)
+    assert mapper.pix_indexes_for_sub_slim_index == pytest.approx(mappings, 1.0e-4)
+    assert mapper.pix_weights_for_sub_slim_index == pytest.approx(weights, 1.0e-4)
 
 
 def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):

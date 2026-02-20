@@ -145,7 +145,7 @@ class InterpolatorRectangularUniform(AbstractInterpolator):
         )
 
     @cached_property
-    def _interpolation_and_weights(self):
+    def _mappings_sizes_weights(self):
 
         mappings, weights = rectangular_mappings_weights_via_interpolation_from(
             shape_native=self.mesh.shape,
@@ -154,4 +154,6 @@ class InterpolatorRectangularUniform(AbstractInterpolator):
             xp=self._xp,
         )
 
-        return mappings, weights
+        sizes = 4 * self._xp.ones(len(mappings), dtype="int")
+
+        return mappings, sizes, weights

@@ -140,17 +140,17 @@ def test__inversion_imaging__via_mapper_knn(
         linear_obj_list=[knn_mapper_9_3x3],
     )
 
-    assert knn_mapper_9_3x3.pix_sub_weights.mappings[0, :] == pytest.approx(
+    assert knn_mapper_9_3x3.pix_indexes_for_sub_slim_index[0, :] == pytest.approx(
         [1, 0, 4, 6, 2, 5, 3, 7, 8], 1.0e-4
     )
-    assert knn_mapper_9_3x3.pix_sub_weights.mappings[1, :] == pytest.approx(
+    assert knn_mapper_9_3x3.pix_indexes_for_sub_slim_index[1, :] == pytest.approx(
         [1, 0, 2, 4, 6, 3, 5, 7, 8], 1.0e-4
     )
-    assert knn_mapper_9_3x3.pix_sub_weights.mappings[2, :] == pytest.approx(
+    assert knn_mapper_9_3x3.pix_indexes_for_sub_slim_index[2, :] == pytest.approx(
         [1, 0, 4, 6, 2, 5, 3, 7, 8], 1.0e-4
     )
 
-    assert knn_mapper_9_3x3.pix_sub_weights.weights[0, :] == pytest.approx(
+    assert knn_mapper_9_3x3.pix_weights_for_sub_slim_index[0, :] == pytest.approx(
         [
             0.24139248,
             0.20182463,
@@ -164,7 +164,7 @@ def test__inversion_imaging__via_mapper_knn(
         ],
         1.0e-4,
     )
-    assert knn_mapper_9_3x3.pix_sub_weights.weights[1, :] == pytest.approx(
+    assert knn_mapper_9_3x3.pix_weights_for_sub_slim_index[1, :] == pytest.approx(
         [
             0.23255487,
             0.22727716,
@@ -178,7 +178,7 @@ def test__inversion_imaging__via_mapper_knn(
         ],
         1.0e-4,
     )
-    assert knn_mapper_9_3x3.pix_sub_weights.weights[2, :] == pytest.approx(
+    assert knn_mapper_9_3x3.pix_weights_for_sub_slim_index[2, :] == pytest.approx(
         [
             0.2334672,
             0.1785593,

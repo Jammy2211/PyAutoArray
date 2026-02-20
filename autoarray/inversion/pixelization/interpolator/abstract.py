@@ -18,17 +18,22 @@ class AbstractInterpolator:
         self._xp = _xp
 
     @property
-    def _interpolation_and_weights(self):
+    def _mappings_sizes_weights(self):
         raise NotImplementedError(
-            "Subclasses of AbstractInterpolator must implement the _interpolation_and_weights property."
+            "Subclasses of AbstractInterpolator must implement the _mappings_sizes_weights property."
         )
 
     @property
-    def weights(self):
-        _, weights = self._interpolation_and_weights
-        return weights
+    def mappings(self):
+        mappings, _, _ = self._mappings_sizes_weights
+        return mappings
 
     @property
-    def mappings(self):
-        mappings, _ = self._interpolation_and_weights
-        return mappings
+    def sizes(self):
+        _, sizes, _ = self._mappings_sizes_weights
+        return sizes
+
+    @property
+    def weights(self):
+        _, _, weights = self._mappings_sizes_weights
+        return weights

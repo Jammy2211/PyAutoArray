@@ -3,12 +3,10 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
-
 
 def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
     mapper = aa.m.MockMapper(
-        pix_sub_weights=PixSubWeights(
+        interpolator=aa.m.MockInterpolator(
             mappings=np.array([[0], [0], [0], [0], [0], [0], [0], [0]]),
             sizes=np.ones(8, dtype="int"),
             weights=np.ones(9),
@@ -23,7 +21,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
     assert pixe_indexes_for_slim_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
 
     mapper = aa.m.MockMapper(
-        pix_sub_weights=PixSubWeights(
+        interpolator=aa.m.MockInterpolator(
             mappings=np.array([[0], [0], [0], [0], [3], [4], [4], [7]]),
             sizes=np.ones(8, dtype="int"),
             weights=np.ones(8),
@@ -40,7 +38,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
 
 def test__sub_slim_indexes_for_pix_index():
     mapper = aa.m.MockMapper(
-        pix_sub_weights=PixSubWeights(
+        interpolator=aa.m.MockInterpolator(
             mappings=np.array(
                 [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
             ).astype("int"),
@@ -72,7 +70,7 @@ def test__sub_slim_indexes_for_pix_index():
 
 def test__data_weight_total_for_pix_from():
     mapper = aa.m.MockMapper(
-        pix_sub_weights=PixSubWeights(
+        interpolator=aa.m.MockInterpolator(
             mappings=np.array(
                 [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
             ).astype("int"),
@@ -101,7 +99,7 @@ def test__data_weight_total_for_pix_from():
 def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     pixels = 6
     signal_scale = 2.0
-    pix_sub_weights = PixSubWeights(
+    interpolator = aa.m.MockInterpolator(
         mappings=np.array([[1], [1], [4], [0], [0], [3], [0], [0], [3]]),
         sizes=np.array([1, 1, 1, 1, 1, 1, 1, 1, 1]),
         weights=np.ones(9),
@@ -113,7 +111,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     mapper = aa.m.MockMapper(
         source_plane_data_grid=grid_2d_7x7,
         over_sampler=over_sampler,
-        pix_sub_weights=pix_sub_weights,
+        interpolator=interpolator,
         adapt_data=image_7x7,
         parameters=pixels,
     )
@@ -124,8 +122,8 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         pixels=pixels,
         pixel_weights=pix_weights_for_sub_slim_index,
         signal_scale=signal_scale,
-        pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
-        pix_size_for_sub_slim_index=pix_sub_weights.sizes,
+        pix_indexes_for_sub_slim_index=interpolator.mappings,
+        pix_size_for_sub_slim_index=interpolator.sizes,
         slim_index_for_sub_slim_index=over_sampler.slim_for_sub_slim,
         adapt_data=np.array(image_7x7),
     )
