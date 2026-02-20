@@ -563,7 +563,7 @@ def test__max_pixel_list_from_and_centre():
     interpolator = aa.InterpolatorDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=source_plane_mesh_grid,
-        data_grid_over_sampled=None,
+        data_grid=None,
     )
 
     mapper = aa.m.MockMapper(
@@ -601,7 +601,7 @@ def test__max_pixel_list_from__filter_neighbors():
     interpolator = aa.InterpolatorDelaunay(
         mesh=aa.mesh.Delaunay(),
         mesh_grid=source_plane_mesh_grid,
-        data_grid_over_sampled=None,
+        data_grid=None,
     )
 
     mapper = aa.m.MockMapper(

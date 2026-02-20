@@ -10,6 +10,7 @@ from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 from autoarray.inversion.pixelization.interpolator.delaunay import InterpolatorDelaunay
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.pixelization.mesh_geometry.delaunay import MeshGeometryDelaunay
 
 
 def triangle_area_xp(c0, c1, c2, xp):
@@ -196,7 +197,7 @@ class MapperDelaunay(AbstractMapper):
     def delaunay(self):
         return self.interpolator.delaunay
 
-    @property
+    @cached_property
     def interpolator(self):
         """
         Return the Delaunay ``source_plane_mesh_grid`` as a ``InterpolatorDelaunay`` object, which provides additional
@@ -217,9 +218,18 @@ class MapperDelaunay(AbstractMapper):
         return InterpolatorDelaunay(
             mesh=self.mesh,
             mesh_grid=self.source_plane_mesh_grid,
-            data_grid_over_sampled=self.source_plane_data_grid.over_sampled,
+            data_grid=self.source_plane_data_grid,
             preloads=self.preloads,
             _xp=self._xp,
+        )
+
+    @cached_property
+    def mesh_geometry(self):
+        return MeshGeometryDelaunay(
+            mesh=self.mesh,
+            mesh_grid=self.source_plane_mesh_grid,
+            data_grid=self.source_plane_data_grid,
+            xp=self._xp,
         )
 
     @cached_property

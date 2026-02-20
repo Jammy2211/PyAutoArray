@@ -1,13 +1,12 @@
-import numpy as np
 from autoconf import cached_property
 
 from autoarray.inversion.pixelization.mappers.abstract import (
     PixSubWeights,
 )
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.pixelization.interpolator.knn import InterpolatorKNearestNeighbor
-
-from autoarray.inversion.pixelization.interpolator.knn import get_interpolation_weights
+from autoarray.inversion.pixelization.interpolator.knn import (
+    InterpolatorKNearestNeighbor,
+)
 
 
 class MapperKNNInterpolator(MapperDelaunay):
@@ -40,7 +39,7 @@ class MapperKNNInterpolator(MapperDelaunay):
         return InterpolatorKNearestNeighbor(
             mesh=self.mesh,
             mesh_grid=self.source_plane_mesh_grid,
-            data_grid_over_sampled=self.source_plane_data_grid.over_sampled,
+            data_grid=self.source_plane_data_grid,
             preloads=self.preloads,
             _xp=self._xp,
         )
@@ -50,7 +49,8 @@ class MapperKNNInterpolator(MapperDelaunay):
         """
         kNN mappings + kernel weights for every oversampled source-plane data-grid point.
         """
-        weights, mappings = self.interpolator.interpolation_weights
+        weights = self.interpolator.weights
+        mappings = self.interpolator.mappings
 
         sizes = self._xp.full(
             (mappings.shape[0],),
@@ -75,7 +75,9 @@ class MapperKNNInterpolator(MapperDelaunay):
 
         areas_factor = 0.5
 
-        neighbor_index = int(self.mesh.k_neighbors) // 2  # half neighbors for self-distance
+        neighbor_index = (
+            int(self.mesh.k_neighbors) // 2
+        )  # half neighbors for self-distance
 
         distance_to_self = self.interpolator.distance_to_self  # (N, k_neighbors)
 
@@ -86,12 +88,16 @@ class MapperKNNInterpolator(MapperDelaunay):
         split_step = self._xp.asarray(areas_factor) * r_k  # (N,)
 
         # Split points (xp-native)
-        split_points = split_points_from(points=self.source_plane_data_grid.over_sampled, area_weights=split_step, xp=self._xp)
+        split_points = split_points_from(
+            points=self.source_plane_data_grid.over_sampled,
+            area_weights=split_step,
+            xp=self._xp,
+        )
 
         interpolator = InterpolatorKNearestNeighbor(
             mesh=self.mesh,
             mesh_grid=self.source_plane_mesh_grid,
-            data_grid_over_sampled=split_points,
+            data_grid=split_points,
             preloads=self.preloads,
             _xp=self._xp,
         )

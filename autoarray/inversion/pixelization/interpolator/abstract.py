@@ -1,8 +1,4 @@
 import numpy as np
-from typing import Optional, Tuple
-
-from autoarray.structures.abstract_structure import Structure
-from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 class AbstractInterpolator:
@@ -11,12 +7,28 @@ class AbstractInterpolator:
         self,
         mesh,
         mesh_grid,
-        data_grid_over_sampled,
+        data_grid,
         preloads=None,
         _xp=np,
     ):
         self.mesh = mesh
         self.mesh_grid = mesh_grid
-        self.data_grid_over_sampled = data_grid_over_sampled
+        self.data_grid = data_grid
         self.preloads = preloads
         self._xp = _xp
+
+    @property
+    def _interpolation_and_weights(self):
+        raise NotImplementedError(
+            "Subclasses of AbstractInterpolator must implement the _interpolation_and_weights property."
+        )
+
+    @property
+    def weights(self):
+        weights, _ = self._interpolation_and_weights
+        return weights
+
+    @property
+    def mappings(self):
+        _, mappings = self._interpolation_and_weights
+        return mappings

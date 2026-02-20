@@ -8,6 +8,8 @@ class MockMapper(AbstractMapper):
     def __init__(
         self,
         mask=None,
+        mesh=None,
+        mesh_geometry=None,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
         interpolator=None,
@@ -24,7 +26,7 @@ class MockMapper(AbstractMapper):
 
         super().__init__(
             mask=mask,
-            mesh=None,
+            mesh=mesh,
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             adapt_data=adapt_data,
@@ -32,7 +34,8 @@ class MockMapper(AbstractMapper):
             regularization=regularization,
         )
 
-        self._mesh_geometry = interpolator
+        self._interpolator = interpolator
+        self._mesh_geometry = mesh_geometry
         self._over_sampler = over_sampler
         self._pix_sub_weights = pix_sub_weights
         self._pix_sub_weights_split_points = pix_sub_weights_split_points
@@ -47,8 +50,14 @@ class MockMapper(AbstractMapper):
 
     @property
     def interpolator(self):
-        if self._mesh_geometry is None:
+        if self._interpolator is None:
             return super().interpolator
+        return self._interpolator
+
+    @property
+    def mesh_geometry(self):
+        if self._mesh_geometry is None:
+            return super().mesh_geometry
         return self._mesh_geometry
 
     @property

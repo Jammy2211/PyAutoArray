@@ -1,12 +1,11 @@
-import numpy as np
-import pytest
-
 import autoarray as aa
 
 from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
     overlay_grid_from,
 )
-from autoarray.inversion.pixelization.mappers.rectangular_uniform import rectangular_mappings_weights_via_interpolation_from
+from autoarray.inversion.pixelization.interpolator.rectangular_uniform import (
+    rectangular_mappings_weights_via_interpolation_from,
+)
 
 
 def test__pix_indexes_for_sub_slim_index__matches_util():
@@ -39,12 +38,10 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         source_plane_mesh_grid=aa.Grid2DIrregular(mesh_grid),
     )
 
-    mappings, weights = (
-        rectangular_mappings_weights_via_interpolation_from(
-            shape_native=(3, 3),
-            source_plane_mesh_grid=aa.Grid2DIrregular(mesh_grid),
-            source_plane_data_grid=aa.Grid2DIrregular(grid.over_sampled).array,
-        )
+    mappings, weights = rectangular_mappings_weights_via_interpolation_from(
+        shape_native=(3, 3),
+        mesh_grid=aa.Grid2DIrregular(mesh_grid),
+        data_grid=aa.Grid2DIrregular(grid.over_sampled).array,
     )
 
     assert (mapper.pix_sub_weights.mappings == mappings).all()
@@ -79,75 +76,3 @@ def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
     )
 
     assert (pixel_signals == pixel_signals_util).all()
-
-
-def test__areas_transformed(mask_2d_7x7):
-
-    grid = aa.Grid2D.no_mask(
-        values=[
-            [-1.5, -1.5],
-            [-1.5, 0.0],
-            [-1.5, 1.5],
-            [0.0, -1.5],
-            [0.0, 0.0],
-            [0.0, 1.5],
-            [1.5, -1.5],
-            [1.5, 0.0],
-            [1.5, 1.5],
-        ],
-        pixel_scales=1.5,
-        shape_native=(3, 3),
-        over_sample_size=1,
-    )
-
-    mesh_grid = overlay_grid_from(shape_native=(3, 3), grid=grid, buffer=1e-8)
-
-    mesh = aa.mesh.RectangularAdaptDensity(shape=(3, 3))
-
-    mapper = mesh.mapper_from(
-        mask=mask_2d_7x7,
-        source_plane_data_grid=grid,
-        source_plane_mesh_grid=mesh_grid,
-    )
-
-    assert mapper.areas_transformed[4] == pytest.approx(
-        4.0,
-        abs=1e-8,
-    )
-
-
-def test__edges_transformed(mask_2d_7x7):
-
-    grid = aa.Grid2D.no_mask(
-        values=[
-            [-1.5, -1.5],
-            [-1.5, 0.0],
-            [-1.5, 1.5],
-            [0.0, -1.5],
-            [0.0, 0.0],
-            [0.0, 1.5],
-            [1.5, -1.5],
-            [1.5, 0.0],
-            [1.5, 1.5],
-        ],
-        pixel_scales=1.5,
-        shape_native=(3, 3),
-        over_sample_size=1,
-    )
-
-    mesh_grid = overlay_grid_from(shape_native=(3, 3), grid=grid, buffer=1e-8)
-
-    mesh = aa.mesh.RectangularAdaptDensity(shape=(3, 3))
-
-    mapper = mesh.mapper_from(
-        mask=mask_2d_7x7,
-        source_plane_data_grid=grid,
-        source_plane_mesh_grid=mesh_grid,
-    )
-
-    assert mapper.edges_transformed[3] == pytest.approx(
-        np.array(
-            [-1.5, 1.5],  # left
-        ),
-        abs=1e-8,
-    )

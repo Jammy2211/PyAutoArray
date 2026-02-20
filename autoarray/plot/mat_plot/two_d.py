@@ -521,13 +521,13 @@ class MatPlot2D(AbstractMatPlot):
         if pixel_values is not None:
             solution_array_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=pixel_values,
-                mask_2d=np.full(fill_value=False, shape=mapper.interpolator.shape),
+                mask_2d=np.full(fill_value=False, shape=mapper.mesh_geometry.shape),
             )
 
             pixel_values = Array2D.no_mask(
                 values=solution_array_2d,
-                pixel_scales=mapper.interpolator.pixel_scales,
-                origin=mapper.interpolator.origin,
+                pixel_scales=mapper.mesh_geometry.pixel_scales,
+                origin=mapper.mesh_geometry.origin,
             )
 
         extent = self.axis.config_dict.get("extent")
@@ -543,7 +543,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-        shape_native = mapper.interpolator.shape
+        shape_native = mapper.mesh_geometry.shape
 
         if pixel_values is not None:
 

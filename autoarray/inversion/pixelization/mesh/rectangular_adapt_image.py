@@ -1,18 +1,9 @@
 import numpy as np
-from typing import Optional, Tuple
+from typing import Tuple
 
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.interpolator.rectangular import InterpolatorRectangular
 from autoarray.inversion.pixelization.mesh.rectangular_adapt_density import (
     RectangularAdaptDensity,
 )
-from autoarray.settings import Settings
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.regularization.abstract import AbstractRegularization
-
-from autoarray import exc
 
 
 class RectangularAdaptImage(RectangularAdaptDensity):

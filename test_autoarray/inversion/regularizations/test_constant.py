@@ -15,15 +15,14 @@ def test__regularization_matrix():
         pixel_scales=1.0,
     )
 
-    interpolator = aa.InterpolatorRectangular(
+    mesh_geometry = aa.MeshGeometryRectangular(
         mesh=aa.mesh.RectangularUniform(shape=(3, 3)),
         mesh_grid=source_plane_mesh_grid,
-        data_grid_over_sampled=None,
+        data_grid=None,
     )
 
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=source_plane_mesh_grid,
-        interpolator=interpolator,
+        source_plane_mesh_grid=source_plane_mesh_grid, mesh_geometry=mesh_geometry
     )
 
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)

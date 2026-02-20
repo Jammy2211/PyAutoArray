@@ -3,12 +3,6 @@ import numpy as np
 from typing import Tuple
 
 
-
-
-
-
-
-
 def adaptive_pixel_signals_from(
     pixels: int,
     pixel_weights: np.ndarray,

@@ -77,6 +77,8 @@ from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
 from .operators.over_sampling.over_sampler import OverSampler
 from .structures.grids.irregular_2d import Grid2DIrregular
+from .inversion.pixelization.mesh_geometry.rectangular import MeshGeometryRectangular
+from .inversion.pixelization.mesh_geometry.delaunay import MeshGeometryDelaunay
 from .inversion.pixelization.interpolator.rectangular import InterpolatorRectangular
 from .inversion.pixelization.interpolator.delaunay import InterpolatorDelaunay
 from .structures.arrays.kernel_2d import Kernel2D

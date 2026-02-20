@@ -14,7 +14,6 @@ from autoarray.settings import Settings
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.inversion.pixelization.interpolator.abstract import AbstractInterpolator
 
 from autoarray.inversion.pixelization.mappers import mapper_util
 from autoarray.inversion.pixelization.mappers import mapper_numba_util
@@ -128,12 +127,16 @@ class AbstractMapper(LinearObj):
         raise NotImplementedError
 
     @property
+    def mesh_geometry(self):
+        raise NotImplementedError
+
+    @property
     def over_sampler(self):
         return self.source_plane_data_grid.over_sampler
 
     @property
     def neighbors(self) -> Neighbors:
-        return self.interpolator.neighbors
+        return self.mesh_geometry.neighbors
 
     @property
     def pix_sub_weights(self) -> "PixSubWeights":
@@ -544,6 +547,8 @@ class AbstractMapper(LinearObj):
     @property
     def mesh_pixels_per_image_pixels(self):
 
+        from autoarray.structures.grids import grid_2d_util
+
         mesh_pixels_per_image_pixels = grid_2d_util.grid_pixels_in_mask_pixels_from(
             grid=np.array(self.image_plane_mesh_grid),
             shape_native=self.mask.shape_native,
@@ -578,6 +583,6 @@ class PixSubWeights:
         weights
             The interpolation weights of every data pixel's pixelization pixel mapping.
         """
-        self.mappings = mappings
+        self.mappings = mappings.astype("int")
         self.sizes = sizes
         self.weights = weights

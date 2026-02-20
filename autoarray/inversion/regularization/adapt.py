@@ -236,6 +236,6 @@ class Adapt(AbstractRegularization):
 
         return weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
-            neighbors=linear_obj.interpolator.neighbors,
+            neighbors=linear_obj.mesh_geometry.neighbors,
             xp=xp,
         )

@@ -1,6 +1,7 @@
-import numpy as np
+from autoconf import cached_property
 
 from autoarray.inversion.pixelization.interpolator.delaunay import InterpolatorDelaunay
+
 
 def wendland_c4(r, h):
 
@@ -138,7 +139,7 @@ def kernel_interpolate_points(points, query_chunk, values, k, radius_scale):
     """
 
     import jax.numpy as jnp
-    
+
     # Compute weights using the intermediate function
     weights_normalized, top_k_indices, _ = get_interpolation_weights(
         points,
@@ -156,37 +157,36 @@ def kernel_interpolate_points(points, query_chunk, values, k, radius_scale):
     return interpolated
 
 
-
 class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
 
-    @property
-    def interpolation_weights(self):
-        
+    @cached_property
+    def _interpolation_and_weights(self):
+
         weights, mappings, _ = get_interpolation_weights(
             points=self.mesh_grid_xy,
-            query_points=self.data_grid_over_sampled,
+            query_points=self.data_grid.over_sampled,
             k_neighbors=self.mesh.k_neighbors,
             radius_scale=self.mesh.radius_scale,
         )
-                
+
         return weights, mappings
 
-    @property
+    @cached_property
     def distance_to_self(self):
-        
+
         _, _, distance_to_self = get_interpolation_weights(
             points=self.mesh_grid_xy,
             query_points=self.mesh_grid_xy,
             k_neighbors=self.mesh.k_neighbors,
             radius_scale=self.mesh.radius_scale,
         )
-        
+
         return distance_to_self
 
     # def interpolate(self, query_points, points, values):
     #     return kernel_interpolate_points(
     #         points=self.mesh_grid_xy,
-    #         query_points=self.data_grid_over_sampled,
+    #         query_points=self.data_grid.over_sampled,
     #         values,
     #         k=self.mesh.k_neighbors,
     #         radius_scale=self.mesh.radius_scale,
