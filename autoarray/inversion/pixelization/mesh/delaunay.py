@@ -10,7 +10,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
 class Delaunay(AbstractMesh):
-    def __init__(self):
+    def __init__(self, areas_factor: float = 0.5):
         """
         An irregular mesh of Delaunay triangle pixels, which using linear barycentric interpolation are paired with
         a 2D grid of (y,x) coordinates.
@@ -35,6 +35,7 @@ class Delaunay(AbstractMesh):
         triangle corners they are a closer distance to.
         """
         super().__init__()
+        self.areas_factor = areas_factor
 
     @property
     def mapper_cls(self):

@@ -9,7 +9,6 @@ from autoarray.inversion.regularization.regularization_util import (
     split_points_from,
 )
 
-
 def scipy_delaunay(points_np, query_points_np, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
 
@@ -427,12 +426,10 @@ class InterpolatorDelaunay(AbstractInterpolator):
 
         if self.preloads is not None:
 
-            areas_factor = self.preloads.areas_factor
             skip_areas = self.preloads.skip_areas
 
         else:
 
-            areas_factor = 0.5
             skip_areas = False
 
         if not skip_areas:
@@ -445,7 +442,7 @@ class InterpolatorDelaunay(AbstractInterpolator):
                     jax_delaunay(
                         points=self.mesh_grid_xy,
                         query_points=self.data_grid.over_sampled,
-                        areas_factor=areas_factor,
+                        areas_factor=self.mesh.areas_factor,
                     )
                 )
 
@@ -455,7 +452,7 @@ class InterpolatorDelaunay(AbstractInterpolator):
                     scipy_delaunay(
                         points_np=self.mesh_grid_xy,
                         query_points_np=self.data_grid.over_sampled,
-                        areas_factor=areas_factor,
+                        areas_factor=self.mesh.areas_factor,
                     )
                 )
 

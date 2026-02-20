@@ -24,7 +24,6 @@ class Preloads:
         source_pixel_zeroed_indices: np.ndarray = None,
         image_plane_mesh_grid_list: np.ndarray = None,
         linear_light_profile_blurred_mapping_matrix=None,
-        areas_factor: float = 0.5,
         skip_areas: bool = False,
     ):
         """
@@ -81,8 +80,6 @@ class Preloads:
             inversion, with the other component being the pixelization's pixels. These are fixed when the lens light
             is fixed to the maximum likelihood solution, allowing the blurred mapping matrix to be preloaded, but
             the intensity values will still be solved for during the inversion.
-        areas_factor
-            Factor used to scale the Voronoi areas during split point computation. Default is 0.5.
         skip_areas
             Whether to skip Voronoi area calculations and split point computations during Delaunay triangulation.
             When True, the Delaunay interface returns only the minimal set of outputs (points, simplices, mappings)
@@ -128,5 +125,4 @@ class Preloads:
                 linear_light_profile_blurred_mapping_matrix
             )
 
-        self.areas_factor = areas_factor
         self.skip_areas = skip_areas
