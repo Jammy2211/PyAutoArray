@@ -502,6 +502,7 @@ class Kernel2D(AbstractArray2D):
             (x_max + pad_x // 2) - (x_min - pad_x // 2),
         )
 
+        full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.shape_native))
         fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
 
         return fft_shape
