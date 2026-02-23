@@ -125,11 +125,13 @@ def test__from_fits():
     )
 
     assert (dataset.data.native == np.ones((3, 3))).all()
-    assert dataset.psf.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
+    assert dataset.psf.kernel.native == pytest.approx(
+        (1.0 / 9.0) * np.ones((3, 3)), 1.0e-4
+    )
     assert (dataset.noise_map.native == 3.0 * np.ones((3, 3))).all()
 
     assert dataset.pixel_scales == (0.1, 0.1)
-    assert dataset.psf.mask.pixel_scales == (0.1, 0.1)
+    assert dataset.psf.kernel.mask.pixel_scales == (0.1, 0.1)
     assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
     dataset = aa.Imaging.from_fits(
@@ -143,11 +145,13 @@ def test__from_fits():
     )
 
     assert (dataset.data.native == np.ones((3, 3))).all()
-    assert dataset.psf.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
+    assert dataset.psf.kernel.native == pytest.approx(
+        (1.0 / 9.0) * np.ones((3, 3)), 1.0e-4
+    )
     assert (dataset.noise_map.native == 3.0 * np.ones((3, 3))).all()
 
     assert dataset.pixel_scales == (0.1, 0.1)
-    assert dataset.psf.mask.pixel_scales == (0.1, 0.1)
+    assert dataset.psf.kernel.mask.pixel_scales == (0.1, 0.1)
     assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
@@ -167,7 +171,7 @@ def test__output_to_fits(imaging_7x7, test_data_path):
     )
 
     assert (dataset.data.native == np.ones((7, 7))).all()
-    assert dataset.psf.native[1, 1] == pytest.approx(0.33333, 1.0e-4)
+    assert dataset.psf.kernel.native[1, 1] == pytest.approx(0.33333, 1.0e-4)
     assert (dataset.noise_map.native == 2.0 * np.ones((7, 7))).all()
     assert dataset.pixel_scales == (0.1, 0.1)
 
@@ -187,8 +191,8 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
         == 2.0 * np.ones((7, 7)) * np.invert(mask_2d_7x7)
     ).all()
 
-    assert masked_imaging_7x7.psf.slim == pytest.approx(
-        (1.0 / 3.0) * psf_3x3.slim.array, 1.0e-4
+    assert masked_imaging_7x7.psf.kernel.slim == pytest.approx(
+        (1.0 / 3.0) * psf_3x3.kernel.slim.array, 1.0e-4
     )
 
     assert type(masked_imaging_7x7.psf) == aa.Convolver
@@ -280,7 +284,7 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
 
     masked_dataset = dataset.apply_mask(mask=mask)
 
-    assert masked_dataset.psf.native == pytest.approx(
+    assert masked_dataset.psf.kernel.native == pytest.approx(
         (1.0 / 49.0) * np.ones((7, 7)), 1.0e-4
     )
     assert (masked_dataset.data == np.array([1.0])).all()
@@ -310,5 +314,7 @@ def test__psf_not_odd_x_odd_kernel__raises_error():
         psf = aa.Convolver(kernel=kernel)
 
         dataset = aa.Imaging(
-            data=image, noise_map=noise_map, psf=psf,
+            data=image,
+            noise_map=noise_map,
+            psf=psf,
         )

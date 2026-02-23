@@ -854,14 +854,9 @@ class Convolver:
                 "This may change the correctness of the PSF convolution."
             )
 
-        print(self.kernel)
-        print(image_native)
-
         convolve_native = scipy_convolve(
             image_native, self.kernel.native.array, mode="same", method="auto"
         )
-
-        print(convolve_native)
 
         convolved_array_1d = convolve_native[state.mask.slim_to_native_tuple]
 

@@ -112,14 +112,23 @@ class Imaging(AbstractDataset):
                     """
                 )
 
-        self.psf = psf
-
         if psf is not None:
+
+            if use_normalized_psf:
+
+                psf.kernel._array = np.divide(
+                    psf.kernel._array, np.sum(psf.kernel._array)
+                )
+
             if psf_setup_state:
 
                 state = ConvolverState(kernel=psf.kernel, mask=self.data.mask)
 
-                self.psf = Convolver(kernel=psf.kernel, state=state, normalize=use_normalized_psf)
+                psf = Convolver(
+                    kernel=psf.kernel, state=state, normalize=use_normalized_psf
+                )
+
+        self.psf = psf
 
         self.grids = GridsDataset(
             mask=self.data.mask,
@@ -546,7 +555,7 @@ class Imaging(AbstractDataset):
         self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
         if self.psf is not None and psf_path is not None:
-            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
+            self.psf.kernel.output_to_fits(file_path=psf_path, overwrite=overwrite)
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)

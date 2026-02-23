@@ -188,7 +188,9 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
-    kernel = aa.Array2D.no_mask([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0)
+    kernel = aa.Array2D.no_mask(
+        [[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
+    )
 
     psf = aa.Convolver(kernel=kernel, pixel_scales=1.0)
 
