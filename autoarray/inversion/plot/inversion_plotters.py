@@ -84,7 +84,8 @@ class InversionPlotter(AbstractPlotter):
                     array=self.inversion.mapped_reconstructed_operated_data,
                     visuals_2d=self.visuals_2d,
                     auto_labels=AutoLabels(
-                        title="Reconstructed Image", filename="reconstructed_operated_data"
+                        title="Reconstructed Image",
+                        filename="reconstructed_operated_data",
                     ),
                 )
             except AttributeError:

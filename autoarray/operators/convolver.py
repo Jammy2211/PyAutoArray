@@ -25,7 +25,7 @@ from autoarray import type as ty
 class ConvolverState:
     def __init__(
         self,
-        kernel,
+        kernel: Array2D,
         mask: Mask2D,
     ):
         """
@@ -77,7 +77,9 @@ class ConvolverState:
             (x_max + pad_x // 2) - (x_min - pad_x // 2),
         )
 
-        full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native))
+        full_shape = tuple(
+            s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native)
+        )
         fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
 
         self.fft_shape = fft_shape
@@ -89,11 +91,12 @@ class ConvolverState:
         self.fft_kernel = np.fft.rfft2(self.kernel.native.array, s=self.fft_shape)
         self.fft_kernel_mapping = np.expand_dims(self.fft_kernel, 2)
 
+
 class Convolver:
     def __init__(
         self,
-        kernel : Array2D,
-        state : Optional[ConvolverState] = None,
+        kernel: Array2D,
+        state: Optional[ConvolverState] = None,
         normalize: bool = False,
         use_fft: Optional[bool] = None,
         *args,
@@ -151,10 +154,15 @@ class Convolver:
         self.kernel = kernel
 
         if normalize:
-            self.kernel[:] = np.divide(self.kernel, np.sum(self.kernel))
+            self.kernel._array = np.divide(
+                self.kernel._array, np.sum(self.kernel._array)
+            )
 
         if not use_fft:
-            if self.kernel.shape_native[0] % 2 == 0 or self.kernel.shape_native[1] % 2 == 0:
+            if (
+                self.kernel.shape_native[0] % 2 == 0
+                or self.kernel.shape_native[1] % 2 == 0
+            ):
                 raise exc.KernelException("Convolver Convolver must be odd")
 
         self._use_fft = use_fft
@@ -162,7 +170,7 @@ class Convolver:
         self._state = state
 
     def state_from(self, mask):
-        
+
         if self._state is None:
             return ConvolverState(kernel=self.kernel, mask=mask)
 
@@ -176,7 +184,7 @@ class Convolver:
         return self._use_fft
 
     @classmethod
-    def no_blur(cls):
+    def no_blur(cls, pixel_scales):
         """
         Setup the Convolver as a kernel which does not convolve any signal, which is simply an array of shape (1, 1)
         with value 1.
@@ -188,7 +196,10 @@ class Convolver:
             it is converted to a (float, float).
         """
 
-        kernel = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        kernel = Array2D.no_mask(
+            values=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
+            pixel_scales=pixel_scales,
+        )
 
         return cls(kernel=kernel)
 
@@ -196,6 +207,7 @@ class Convolver:
     def from_gaussian(
         cls,
         shape_native: Tuple[int, int],
+        pixel_scales,
         sigma: float,
         centre: Tuple[float, float] = (0.0, 0.0),
         axis_ratio: float = 1.0,
@@ -252,6 +264,10 @@ class Convolver:
             np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
         )
 
+        gaussian = Array2D.no_mask(
+            values=gaussian, pixel_scales=pixel_scales, shape_native=shape_native
+        )
+
         return Convolver(
             kernel=gaussian,
             normalize=normalize,
@@ -286,17 +302,15 @@ class Convolver:
         """
 
         array = Array2D.from_fits(
-            file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
+            file_path=file_path,
+            hdu=hdu,
+            pixel_scales=pixel_scales,
+            origin=origin,
         )
 
-        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
-
         return Convolver(
-            kernel=array.native[:,:],
-            mask=array.mask,
+            kernel=array,
             normalize=normalize,
-            header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
     def mapping_matrix_native_from(
@@ -441,7 +455,7 @@ class Convolver:
         import jax
         import jax.numpy as jnp
         from autoarray.structures.arrays.uniform_2d import Array2D
-        
+
         state = self.state_from(mask=image.mask)
 
         # Build combined native image in the FFT dtype
@@ -462,7 +476,9 @@ class Convolver:
             )
 
         # FFT the combined image
-        fft_image_native = xp.fft.rfft2(image_both_native, s=state.fft_shape, axes=(0, 1))
+        fft_image_native = xp.fft.rfft2(
+            image_both_native, s=state.fft_shape, axes=(0, 1)
+        )
 
         # Multiply by PSF in Fourier space and invert
         blurred_image_full = xp.fft.irfft2(
@@ -815,19 +831,19 @@ class Convolver:
         """
 
         from scipy.signal import convolve as scipy_convolve
-        
+
         state = self.state_from(mask=image.mask)
 
         # start with native array padded with zeros
-        image_native = xp.zeros(state.image.mask.shape, dtype=image.array.dtype)
+        image_native = xp.zeros(state.mask.shape, dtype=image.array.dtype)
 
         # set image pixels
-        image_native[state.image.mask.slim_to_native_tuple] = image.array
+        image_native[state.mask.slim_to_native_tuple] = image.array
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native[state.blurring_image.mask.slim_to_native_tuple] = (
+            image_native[state.blurring_mask.slim_to_native_tuple] = (
                 blurring_image.array
             )
 
@@ -837,14 +853,16 @@ class Convolver:
                 "This may change the correctness of the PSF convolution."
             )
 
-        # perform real-space convolution
-        kernel = self.kernel.native.array
+        print(self.kernel)
+        print(image_native)
 
         convolve_native = scipy_convolve(
-            image_native, kernel, mode="same", method="auto"
+            image_native, self.kernel.native.array, mode="same", method="auto"
         )
 
-        convolved_array_1d = convolve_native[state.image.mask.slim_to_native_tuple]
+        print(convolve_native)
+
+        convolved_array_1d = convolve_native[state.mask.slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
@@ -895,15 +913,12 @@ class Convolver:
             blurring_mask=state.blurring_mask,
             xp=xp,
         )
-        # 6) Real-space convolution, broadcast kernel over source axis
-        kernel = self.kernel.native.array
 
         blurred_mapping_matrix_native = scipy_convolve(
             mapping_matrix_native,
-            kernel[..., None],
+            self.kernel.native.array[..., None],
             mode="same",
         )
 
         # return slim form
         return blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
-

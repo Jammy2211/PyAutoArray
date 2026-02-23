@@ -28,7 +28,7 @@ class Imaging(AbstractDataset):
         data: Array2D,
         noise_map: Optional[Array2D] = None,
         psf: Optional[Convolver] = None,
-        psf_setup_state : bool = False,
+        psf_setup_state: bool = False,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
@@ -121,10 +121,7 @@ class Imaging(AbstractDataset):
 
                 state = ConvolverState(kernel=psf.kernel, mask=self.data.mask)
 
-                self.psf = Convolver(
-                    kernel=psf.kernel,
-                    state=state
-                )
+                self.psf = Convolver(kernel=psf.kernel, state=state)
 
         self.grids = GridsDataset(
             mask=self.data.mask,

@@ -328,7 +328,9 @@ def background_noise_map_via_edges_from(image, no_edges):
     )
 
 
-def kernel_with_odd_dimensions_from(kernel, rescale_factor : float, normalize : bool = True):
+def kernel_with_odd_dimensions_from(
+    kernel, rescale_factor: float, normalize: bool = True
+):
     """
     If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
     dimensions (odd-sized dimensions are required for 2D convolution).

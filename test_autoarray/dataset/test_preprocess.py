@@ -493,7 +493,7 @@ def test__background_noise_map_via_edges_of_image_from_5():
 
 def test__rescaled_with_odd_dimensions_from__evens_to_odds():
     kernel = np.ones((6, 6))
-    
+
     kernel = aa.preprocess.kernel_with_odd_dimensions_from(
         kernel=kernel, rescale_factor=0.5, normalize=True
     )
@@ -528,9 +528,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
     )
     assert kernel == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
 
-    kernel = np.ones(
-        shape=(40, 40)
-    )
+    kernel = np.ones(shape=(40, 40))
     kernel = aa.preprocess.kernel_with_odd_dimensions_from(
         kernel=kernel, rescale_factor=0.1, normalize=True
     )
@@ -556,9 +554,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
 
     assert kernel == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
 
-    kernel = np.ones(
-        shape=(9, 12)
-    )
+    kernel = np.ones(shape=(9, 12))
     kernel = aa.preprocess.kernel_with_odd_dimensions_from(
         kernel=kernel, rescale_factor=0.33333333333, normalize=True
     )
@@ -572,9 +568,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
 
     assert kernel == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
 
-    kernel = np.ones(
-        shape=(12, 9)
-    )
+    kernel = np.ones(shape=(12, 9))
     kernel = aa.preprocess.kernel_with_odd_dimensions_from(
         kernel=kernel, rescale_factor=0.33333333333, normalize=True
     )
