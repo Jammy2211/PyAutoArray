@@ -27,6 +27,7 @@ class Imaging(AbstractDataset):
         data: Array2D,
         noise_map: Optional[Array2D] = None,
         psf: Optional[Convolver] = None,
+        psf_mask_setup : bool = False,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
@@ -112,24 +113,15 @@ class Imaging(AbstractDataset):
                     """
                 )
 
-        if psf is not None:
-
-            if not data.mask.is_all_false:
-
-                image_mask = data.mask
-
-            else:
-
-                image_mask = None
-
-            psf = Convolver.no_mask(
-                values=psf.native._array,
-                pixel_scales=psf.pixel_scales,
-                normalize=use_normalized_psf,
-                fft_mask=image_mask,
-            )
-
         self.psf = psf
+
+        if psf is not None:
+            if psf_mask_setup:
+
+                self.psf = Convolver(
+                    kernel=psf.kernel,
+                    mask=self.data.mask
+                )
 
         self.grids = GridsDataset(
             mask=self.data.mask,
@@ -210,15 +202,18 @@ class Imaging(AbstractDataset):
         )
 
         if psf_path is not None:
-            psf = Convolver.from_fits(
+            kernel = Array2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
-                normalize=False,
             )
 
         else:
-            psf = None
+            kernel = None
+
+        psf = Convolver(
+            kernel=kernel,
+        )
 
         return Imaging(
             data=data,
@@ -278,6 +273,7 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             psf=self.psf,
+            psf_mask_setup=True,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
