@@ -10,83 +10,27 @@ import autoarray as aa
 test_data_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
-def test__full():
-    kernel_2d = aa.Kernel2D.full(fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0)
-
-    assert kernel_2d.shape_native == (3, 3)
-    assert (kernel_2d.native == 3.0 * np.ones((3, 3))).all()
-    assert kernel_2d.pixel_scales == (1.0, 1.0)
-    assert kernel_2d.origin == (0.0, 0.0)
-
-
-def test__ones():
-    kernel_2d = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0, normalize=False)
-
-    assert kernel_2d.shape_native == (3, 3)
-    assert (kernel_2d.native == np.ones((3, 3))).all()
-    assert kernel_2d.pixel_scales == (1.0, 1.0)
-    assert kernel_2d.origin == (0.0, 0.0)
-
-
-def test__zeros():
-    kernel_2d = aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0)
-
-    assert kernel_2d.shape_native == (3, 3)
-    assert (kernel_2d.native == np.zeros((3, 3))).all()
-    assert kernel_2d.pixel_scales == (1.0, 1.0)
-    assert kernel_2d.origin == (0.0, 0.0)
-
-
-def test__from_fits():
-    kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
-    )
-
-    assert (kernel_2d.native == np.ones((3, 2))).all()
-
-    kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_path, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
-    )
-
-    assert (kernel_2d.native == 2.0 * np.ones((3, 2))).all()
-
-
-def test__from_fits__loads_and_stores_header_info():
-    kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
-    )
-
-    assert kernel_2d.header.header_sci_obj["BITPIX"] == -64
-    assert kernel_2d.header.header_hdu_obj["BITPIX"] == -64
-
-    kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_path, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
-    )
-
-    assert kernel_2d.header.header_sci_obj["BITPIX"] == -64
-    assert kernel_2d.header.header_hdu_obj["BITPIX"] == -64
-
-
 def test__no_blur():
-    kernel_2d = aa.Kernel2D.no_blur(pixel_scales=1.0)
+    convolver = aa.Convolver.no_blur()
 
     assert (
-        kernel_2d.native
+        convolver.kernel
         == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
     ).all()
-    assert kernel_2d.pixel_scales == (1.0, 1.0)
+    assert convolver.kernelpixel_scales == (1.0, 1.0)
 
-    kernel_2d = aa.Kernel2D.no_blur(pixel_scales=2.0)
+    convolver = aa.Convolver.no_blur(pixel_scales=2.0)
 
     assert (
-        kernel_2d.native
+        convolver.kernel
         == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
     ).all()
-    assert kernel_2d.pixel_scales == (2.0, 2.0)
+    assert convolver.kernelpixel_scales == (2.0, 2.0)
 
 
 def test__from_gaussian():
-    kernel_2d = aa.Kernel2D.from_gaussian(
+    
+    convolver = aa.Convolver.from_gaussian(
         shape_native=(3, 3),
         pixel_scales=1.0,
         centre=(0.1, 0.1),
@@ -96,7 +40,7 @@ def test__from_gaussian():
         normalize=True,
     )
 
-    assert kernel_2d.native == pytest.approx(
+    assert convolver.kernel == pytest.approx(
         np.array(
             [
                 [0.06281, 0.13647, 0.0970],
@@ -109,185 +53,37 @@ def test__from_gaussian():
 
 
 def test__manual__normalize():
+
     kernel_data = np.ones((3, 3)) / 9.0
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=kernel_data, pixel_scales=1.0, normalize=True
+    convolver = aa.Convolver(
+        kernel=kernel_data, normalize=True
     )
 
-    assert kernel_2d.native == pytest.approx(kernel_data, 1e-3)
+    assert convolver.kernel == pytest.approx(kernel_data, 1e-3)
 
     kernel_data = np.ones((3, 3))
 
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=kernel_data, pixel_scales=1.0, normalize=True
+    convolver = aa.Convolver(
+        kernel=kernel_data, normalize=True
     )
 
-    assert kernel_2d.native == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
+    assert convolver.kernel == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=kernel_data, pixel_scales=1.0, normalize=False
+    convolver = aa.Convolver(
+        kernel=kernel_data, normalize=False
     )
 
-    kernel_2d = kernel_2d.normalized
+    convolver = convolver.kernelnormalized
 
-    assert kernel_2d.native == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
+    assert convolver.kernel == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
     kernel_data = np.ones((3, 3))
 
-    kernel_2d = aa.Kernel2D.no_mask(
-        values=kernel_data, pixel_scales=1.0, normalize=False
+    convolver = aa.Convolver(
+        kernel=kernel_data, normalize=False
     )
 
-    assert kernel_2d.native == pytest.approx(np.ones((3, 3)), 1e-3)
-
-
-def test__rescaled_with_odd_dimensions_from__evens_to_odds():
-    array_2d = np.ones((6, 6))
-    kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.5, normalize=True
-    )
-    assert kernel_2d.pixel_scales == (2.0, 2.0)
-    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
-
-    array_2d = np.ones((9, 9))
-    kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.333333333333333, normalize=True
-    )
-    assert kernel_2d.pixel_scales == (3.0, 3.0)
-    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
-
-    array_2d = np.ones((18, 6))
-    kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.5, normalize=True
-    )
-    assert kernel_2d.pixel_scales == (2.0, 2.0)
-    assert kernel_2d.native == pytest.approx((1.0 / 27.0) * np.ones((9, 3)), 1.0e-4)
-
-    array_2d = np.ones((6, 18))
-    kernel_2d = aa.Kernel2D.no_mask(values=array_2d, pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.5, normalize=True
-    )
-    assert kernel_2d.pixel_scales == (2.0, 2.0)
-    assert kernel_2d.native == pytest.approx((1.0 / 27.0) * np.ones((3, 9)), 1.0e-4)
-
-
-def test__rescaled_with_odd_dimensions_from__different_scalings():
-    kernel_2d = aa.Kernel2D.ones(shape_native=(2, 2), pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=2.0, normalize=True
-    )
-    assert kernel_2d.pixel_scales == (0.4, 0.4)
-    assert kernel_2d.native == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(
-        shape_native=(40, 40), pixel_scales=1.0, normalize=False
-    )
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.1, normalize=True
-    )
-    assert kernel_2d.pixel_scales == (8.0, 8.0)
-    assert kernel_2d.native == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(shape_native=(2, 4), pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=2.0, normalize=True
-    )
-
-    assert kernel_2d.pixel_scales[0] == pytest.approx(0.4, 1.0e-4)
-    assert kernel_2d.pixel_scales[1] == pytest.approx(0.4444444, 1.0e-4)
-    assert kernel_2d.native == pytest.approx((1.0 / 45.0) * np.ones((5, 9)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(shape_native=(4, 2), pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=2.0, normalize=True
-    )
-    assert kernel_2d.pixel_scales[0] == pytest.approx(0.4444444, 1.0e-4)
-    assert kernel_2d.pixel_scales[1] == pytest.approx(0.4, 1.0e-4)
-    assert kernel_2d.native == pytest.approx((1.0 / 45.0) * np.ones((9, 5)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(shape_native=(6, 4), pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.5, normalize=True
-    )
-
-    assert kernel_2d.pixel_scales == pytest.approx((2.0, 1.3333333333), 1.0e-4)
-    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(
-        shape_native=(9, 12), pixel_scales=1.0, normalize=False
-    )
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.33333333333, normalize=True
-    )
-
-    assert kernel_2d.pixel_scales == pytest.approx((3.0, 2.4), 1.0e-4)
-    assert kernel_2d.native == pytest.approx((1.0 / 15.0) * np.ones((3, 5)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(shape_native=(4, 6), pixel_scales=1.0, normalize=False)
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.5, normalize=True
-    )
-
-    assert kernel_2d.pixel_scales == pytest.approx((1.33333333333, 2.0), 1.0e-4)
-    assert kernel_2d.native == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
-
-    kernel_2d = aa.Kernel2D.ones(
-        shape_native=(12, 9), pixel_scales=1.0, normalize=False
-    )
-    kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
-        rescale_factor=0.33333333333, normalize=True
-    )
-    assert kernel_2d.pixel_scales == pytest.approx((2.4, 3.0), 1.0e-4)
-    assert kernel_2d.native == pytest.approx((1.0 / 15.0) * np.ones((5, 3)), 1.0e-4)
-
-
-def test__from_as_gaussian_via_alma_fits_header_parameters__identical_to_astropy_gaussian_model():
-    pixel_scales = 0.1
-
-    x_stddev = (
-        1.0e-5
-        * (units.deg).to(units.arcsec)
-        / pixel_scales
-        / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-    )
-    y_stddev = (
-        2.0e-5
-        * (units.deg).to(units.arcsec)
-        / pixel_scales
-        / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-    )
-
-    theta_deg = 230.0
-    theta = Angle(theta_deg, "deg").radian
-
-    gaussian_astropy = functional_models.Gaussian2D(
-        amplitude=1.0,
-        x_mean=1.0,
-        y_mean=1.0,
-        x_stddev=x_stddev,
-        y_stddev=y_stddev,
-        theta=theta,
-    )
-
-    shape = (3, 3)
-    y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-    kernel_astropy = gaussian_astropy(x, y)
-    kernel_astropy /= np.sum(kernel_astropy)
-
-    kernel_2d = aa.Kernel2D.from_as_gaussian_via_alma_fits_header_parameters(
-        shape_native=shape,
-        pixel_scales=pixel_scales,
-        y_stddev=2.0e-5,
-        x_stddev=1.0e-5,
-        theta=theta_deg,
-        normalize=True,
-    )
-
-    assert kernel_astropy == pytest.approx(kernel_2d.native._array, abs=1e-4)
+    assert convolver.kernel == pytest.approx(np.ones((3, 3)), 1e-3)
 
 
 def test__convolved_image_from():
@@ -303,24 +99,24 @@ def test__convolved_image_from():
 
     blurred_image_via_scipy = scipy.signal.convolve2d(image, kernel, mode="same")
     blurred_image_via_scipy = aa.Array2D.no_mask(
-        values=blurred_image_via_scipy, pixel_scales=1.0
+        kernel=blurred_image_via_scipy
     )
     blurred_masked_image_via_scipy = aa.Array2D(
-        values=blurred_image_via_scipy.native, mask=mask
+        kernel=blurred_image_via_scipy.native, mask=mask
     )
 
     # Now reproduce this data using the convolved_image_from function
 
-    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
-    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
+    image = aa.Array2D.no_mask(kernel=np.arange(900).reshape(30, 30))
+    kernel = aa.Convolver(kernel=np.arange(49).reshape(7, 7))
 
-    masked_image = aa.Array2D(values=image.native, mask=mask)
+    masked_image = aa.Array2D(kernel=image.native, mask=mask)
 
     blurring_mask = mask.derive_mask.blurring_from(
         kernel_shape_native=kernel.shape_native
     )
 
-    blurring_image = aa.Array2D(values=image.native, mask=blurring_mask)
+    blurring_image = aa.Array2D(kernel=image.native, mask=blurring_mask)
 
     blurred_masked_im_1 = kernel.convolved_image_from(
         image=masked_image, blurring_image=blurring_image
@@ -348,18 +144,18 @@ def test__convolve_imaged_from__no_blurring():
         image * blurring_mask, kernel, mode="same"
     )
     blurred_image_via_scipy = aa.Array2D.no_mask(
-        values=blurred_image_via_scipy, pixel_scales=1.0
+        kernel=blurred_image_via_scipy
     )
     blurred_masked_image_via_scipy = aa.Array2D(
-        values=blurred_image_via_scipy.native, mask=mask
+        kernel=blurred_image_via_scipy.native, mask=mask
     )
 
     # Now reproduce this data using the frame convolver_image
 
-    kernel = aa.Kernel2D.no_mask(values=np.arange(49).reshape(7, 7), pixel_scales=1.0)
-    image = aa.Array2D.no_mask(values=np.arange(900).reshape(30, 30), pixel_scales=1.0)
+    kernel = aa.Convolver(kernel=np.arange(49).reshape(7, 7))
+    image = aa.Array2D.no_mask(kernel=np.arange(900).reshape(30, 30))
 
-    masked_image = aa.Array2D(values=image.native, mask=mask)
+    masked_image = aa.Array2D(kernel=image.native, mask=mask)
 
     blurred_masked_im_1 = kernel.convolved_image_from(
         image=masked_image, blurring_image=None
@@ -385,8 +181,8 @@ def test__convolved_mapping_matrix_from():
         pixel_scales=1.0,
     )
 
-    kernel = aa.Kernel2D.no_mask(
-        values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
+    kernel = aa.Convolver(
+        kernel=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]]
     )
 
     mapping = np.array(
@@ -443,8 +239,8 @@ def test__convolved_mapping_matrix_from():
         1.0e-4,
     )
 
-    kernel = aa.Kernel2D.no_mask(
-        values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
+    kernel = aa.Convolver(
+        kernel=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]]
     )
 
     mapping = np.array(
@@ -508,11 +304,11 @@ def test__convolve_imaged_from__via_fft__sizes_not_precomputed__compare_numerica
         shape_native=(20, 20), pixel_scales=(1.0, 1.0), radius=5.0
     )
 
-    image = aa.Array2D.no_mask(values=np.arange(400).reshape(20, 20), pixel_scales=1.0)
-    masked_image = aa.Array2D(values=image.native, mask=mask)
+    image = aa.Array2D.no_mask(kernel=np.arange(400).reshape(20, 20))
+    masked_image = aa.Array2D(kernel=image.native, mask=mask)
 
-    kernel_fft = aa.Kernel2D.no_mask(
-        values=np.arange(49).reshape(7, 7),
+    kernel_fft = aa.Convolver(
+        kernel=np.arange(49).reshape(7, 7),
         pixel_scales=1.0,
         use_fft=True,
         normalize=True,
@@ -521,7 +317,7 @@ def test__convolve_imaged_from__via_fft__sizes_not_precomputed__compare_numerica
     blurring_mask = mask.derive_mask.blurring_from(
         kernel_shape_native=kernel_fft.shape_native
     )
-    blurring_image = aa.Array2D(values=image.native, mask=blurring_mask)
+    blurring_image = aa.Array2D(kernel=image.native, mask=blurring_mask)
 
     blurred_fft = kernel_fft.convolved_image_from(
         image=masked_image, blurring_image=blurring_image

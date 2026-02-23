@@ -94,7 +94,7 @@ class Convolver:
         self,
         kernel : Array2D,
         state : Optional[ConvolverState] = None,
-        normalize: bool = True,
+        normalize: bool = False,
         use_fft: Optional[bool] = None,
         *args,
         **kwargs,
@@ -907,96 +907,3 @@ class Convolver:
         # return slim form
         return blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
 
-    def rescaled_with_odd_dimensions_from(
-        self, rescale_factor: float, normalize: bool = False
-    ) -> "Convolver":
-        """
-        Return a version of this kernel rescaled so both dimensions are odd-sized.
-
-        Odd-sized kernels are often required for real space convolution operations
-        (e.g. centered PSFs in imaging pipelines). If the kernel has one or two
-        even-sized dimensions, they are rescaled (via interpolation) and padded
-        so that both dimensions are odd.
-
-        The kernel can also be scaled larger or smaller by changing
-        ``rescale_factor``. Rescaling uses ``skimage.transform.rescale`` /
-        ``resize``, which interpolate pixel values and may introduce small
-        inaccuracies compared to native instrument PSFs. Where possible, users
-        should generate odd-sized PSFs directly from data reduction.
-
-        Parameters
-        ----------
-        rescale_factor
-            Factor by which the kernel is rescaled. If 1.0, only adjusts size to
-            nearest odd dimensions. Values > 1 enlarge, < 1 shrink the kernel.
-        normalize
-            If True, the returned kernel is normalized to sum to 1.0.
-
-        Returns
-        -------
-        Convolver
-            Rescaled kernel with odd-sized dimensions.
-        """
-
-        from skimage.transform import resize, rescale
-
-        try:
-            kernel_rescaled = rescale(
-                self.native.array,
-                rescale_factor,
-                anti_aliasing=False,
-                mode="constant",
-                channel_axis=None,
-            )
-        except TypeError:
-            kernel_rescaled = rescale(
-                self.native.array,
-                rescale_factor,
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
-            kernel_rescaled = resize(
-                kernel_rescaled,
-                output_shape=(
-                    kernel_rescaled.shape[0] + 1,
-                    kernel_rescaled.shape[1] + 1,
-                ),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        elif kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 != 0:
-            kernel_rescaled = resize(
-                kernel_rescaled,
-                output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1]),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        elif kernel_rescaled.shape[0] % 2 != 0 and kernel_rescaled.shape[1] % 2 == 0:
-            kernel_rescaled = resize(
-                kernel_rescaled,
-                output_shape=(kernel_rescaled.shape[0], kernel_rescaled.shape[1] + 1),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        if self.pixel_scales is not None:
-            pixel_scale_factors = (
-                self.mask.shape[0] / kernel_rescaled.shape[0],
-                self.mask.shape[1] / kernel_rescaled.shape[1],
-            )
-
-            pixel_scales = (
-                self.pixel_scales[0] * pixel_scale_factors[0],
-                self.pixel_scales[1] * pixel_scale_factors[1],
-            )
-
-        else:
-            pixel_scales = None
-
-        return Convolver.no_mask(
-            values=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
-        )

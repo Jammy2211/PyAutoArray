@@ -328,7 +328,7 @@ def background_noise_map_via_edges_from(image, no_edges):
     )
 
 
-def psf_with_odd_dimensions_from(psf):
+def kernel_with_odd_dimensions_from(kernel, rescale_factor : float, normalize : bool = True):
     """
     If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
     dimensions (odd-sized dimensions are required for 2D convolution).
@@ -336,6 +336,17 @@ def psf_with_odd_dimensions_from(psf):
     Kernels are rescaled using the scikit-image routine rescale, which performs rescaling via an interpolation
     routine. This may lead to loss of accuracy in the PSF kernel and it is advised that users, where possible,
     create their PSF on an odd-sized array using their data reduction pipelines that remove this approximation.
+
+    Odd-sized kernels are often required for real space convolution operations
+    (e.g. centered PSFs in imaging pipelines). If the kernel has one or two
+    even-sized dimensions, they are rescaled (via interpolation) and padded
+    so that both dimensions are odd.
+
+    The kernel can also be scaled larger or smaller by changing
+    ``rescale_factor``. Rescaling uses ``skimage.transform.rescale`` /
+    ``resize``, which interpolate pixel values and may introduce small
+    inaccuracies compared to native instrument PSFs. Where possible, users
+    should generate odd-sized PSFs directly from data reduction.
 
     Parameters
     ----------
@@ -345,7 +356,56 @@ def psf_with_odd_dimensions_from(psf):
     normalize
         Whether the PSF should be normalized after being rescaled.
     """
-    return psf.rescaled_with_odd_dimensions_from(rescale_factor=1.0)
+
+    from skimage.transform import resize, rescale
+
+    try:
+        kernel_rescaled = rescale(
+            kernel,
+            rescale_factor,
+            anti_aliasing=False,
+            mode="constant",
+            channel_axis=None,
+        )
+    except TypeError:
+        kernel_rescaled = rescale(
+            kernel,
+            rescale_factor,
+            anti_aliasing=False,
+            mode="constant",
+        )
+
+    if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
+        kernel_rescaled = resize(
+            kernel_rescaled,
+            output_shape=(
+                kernel_rescaled.shape[0] + 1,
+                kernel_rescaled.shape[1] + 1,
+            ),
+            anti_aliasing=False,
+            mode="constant",
+        )
+
+    elif kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 != 0:
+        kernel_rescaled = resize(
+            kernel_rescaled,
+            output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1]),
+            anti_aliasing=False,
+            mode="constant",
+        )
+
+    elif kernel_rescaled.shape[0] % 2 != 0 and kernel_rescaled.shape[1] % 2 == 0:
+        kernel_rescaled = resize(
+            kernel_rescaled,
+            output_shape=(kernel_rescaled.shape[0], kernel_rescaled.shape[1] + 1),
+            anti_aliasing=False,
+            mode="constant",
+        )
+
+    if normalize:
+        kernel_rescaled = np.divide(kernel_rescaled, np.sum(kernel_rescaled))
+
+    return kernel_rescaled
 
 
 def exposure_time_map_via_exposure_time_and_background_noise_map_from(

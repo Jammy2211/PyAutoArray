@@ -491,6 +491,96 @@ def test__background_noise_map_via_edges_of_image_from_5():
     )
 
 
+def test__rescaled_with_odd_dimensions_from__evens_to_odds():
+    kernel = np.ones((6, 6))
+    
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.5, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
+
+    kernel = np.ones((9, 9))
+
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.333333333333333, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
+
+    kernel = np.ones((18, 6))
+
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.5, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 27.0) * np.ones((9, 3)), 1.0e-4)
+
+    kernel = np.ones((6, 18))
+
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.5, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 27.0) * np.ones((3, 9)), 1.0e-4)
+
+
+def test__rescaled_with_odd_dimensions_from__different_scalings():
+    kernel = np.ones(shape=(2, 2))
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=2.0, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
+
+    kernel = np.ones(
+        shape=(40, 40)
+    )
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.1, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 25.0) * np.ones((5, 5)), 1.0e-4)
+
+    kernel = np.ones(shape=(2, 4))
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=2.0, normalize=True
+    )
+
+    assert kernel == pytest.approx((1.0 / 45.0) * np.ones((5, 9)), 1.0e-4)
+
+    kernel = np.ones(shape=(4, 2))
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=2.0, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 45.0) * np.ones((9, 5)), 1.0e-4)
+
+    kernel = np.ones(shape=(6, 4))
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.5, normalize=True
+    )
+
+    assert kernel == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
+
+    kernel = np.ones(
+        shape=(9, 12)
+    )
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.33333333333, normalize=True
+    )
+
+    assert kernel == pytest.approx((1.0 / 15.0) * np.ones((3, 5)), 1.0e-4)
+
+    kernel = np.ones(shape=(4, 6))
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.5, normalize=True
+    )
+
+    assert kernel == pytest.approx((1.0 / 9.0) * np.ones((3, 3)), 1.0e-4)
+
+    kernel = np.ones(
+        shape=(12, 9)
+    )
+    kernel = aa.preprocess.kernel_with_odd_dimensions_from(
+        kernel=kernel, rescale_factor=0.33333333333, normalize=True
+    )
+    assert kernel == pytest.approx((1.0 / 15.0) * np.ones((5, 3)), 1.0e-4)
+
+
 def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
     exposure_time = 6.0
 
