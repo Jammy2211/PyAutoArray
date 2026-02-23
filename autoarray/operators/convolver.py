@@ -30,40 +30,77 @@ class ConvolverState:
         mask: Mask2D,
     ):
         """
-        Compute the padded shapes required for FFT-based convolution with this kernel.
+        Compute and store the padded shapes and masks required for FFT-based convolution
+        of masked 2D data with a kernel.
 
-        FFT convolution requires the input image and kernel to be zero-padded so that
-        the convolution is equivalent to linear convolution (not circular) and to avoid
-        wrap-around artefacts.
+        FFT convolution operates on fully-sampled rectangular arrays, whereas scientific
+        imaging data are typically defined only on a subset of pixels via a mask. This
+        class determines how masked real-space data are embedded into a padded array,
+        transformed to Fourier space, convolved with a kernel, and transformed back such
+        that the result is equivalent to linear (not circular) convolution.
 
-        This method inspects the mask and the kernel shape to determines three key shapes:
+        The input mask defines which pixels contain valid data and therefore which
+        regions of the image must be retained when mapping to and from FFT space. The
+        kernel shape defines how far flux from unmasked pixels can spread into masked
+        regions during convolution.
 
-        - ``mask_shape``: the rectangular bounding-box region of the mask that encloses
-          all unmasked (False) pixels, padded by half the kernel size in each direction.
-          This is the minimal region that must be retained for convolution. This is
-          not used or computed outside thi sfunction with the two shapes below
-          used instead.
+        This initializer inspects the mask and kernel to compute three key array shapes:
 
-        - ``full_shape``: the "linear convolution shape", equal to
-          ``mask_shape + kernel_shape - 1``. This is the minimal padded size required
-          for an exact linear convolution. This is also not used or computed outside
-          this function.
+        ``mask_shape``
+            The minimal rectangular bounding box enclosing all unmasked (False) pixels
+            in the mask, expanded by half the kernel size in each direction. This is the
+            smallest region that must be retained to ensure that convolution does not
+            lose flux near the mask boundary.
 
-        - ``fft_shape``: the FFT-efficient padded shape, obtained by rounding each
-          dimension of ``full_shape`` up to the next fast length for real FFTs
-          (via ``scipy.fft.next_fast_len``). Using this ensures efficient FFT execution.
+        ``full_shape``
+            The minimal array shape required for exact linear convolution, defined as::
+
+                full_shape = mask_shape + kernel_shape - 1
+
+            Padding to this size guarantees that FFT-based convolution is mathematically
+            equivalent to direct spatial convolution, with no wrap-around artefacts.
+
+        ``fft_shape``
+            The FFT-efficient padded shape actually used for computation. Each dimension
+            of ``full_shape`` is independently rounded up to the next fast length for
+            real FFTs using ``scipy.fft.next_fast_len``. This shape defines the size of
+            all arrays sent to and returned from FFT space.
+
+            Note that even FFT sizes are currently incremented to odd sizes as a
+            workaround for kernel-centering issues with even-sized kernels. This is an
+            implementation detail and should be replaced by correct internal padding
+            and centering logic.
+
+        After determining ``fft_shape``, the input mask is padded accordingly and a
+        *blurring mask* is derived. The blurring mask identifies pixels that are outside
+        the original unmasked region but receive non-zero flux due to convolution with
+        the kernel. These pixels must be retained when mapping results back to the
+        masked domain to ensure correct convolution near mask boundaries.
 
         Parameters
         ----------
+        kernel
+            The 2D convolution kernel (e.g. a PSF). If a 1D kernel is provided, it is
+            internally promoted to a minimal 2D kernel.
         mask
-            A 2D mask where False indicates unmasked pixels (valid data) and True
-            indicates masked pixels. The bounding-box of the False region is used
-            to compute the convolution region.
+            A 2D boolean mask where False values indicate unmasked (valid) pixels and
+            True values indicate masked pixels. The spatial extent of False pixels
+            defines the region of the image that is embedded into FFT space.
 
-        Returns
-        -------
+        Attributes
+        ----------
         fft_shape
-            The FFT-friendly padded shape for efficient convolution.
+            The FFT-friendly padded shape used for all Fourier transforms.
+        mask
+            The input mask padded to ``fft_shape``, with masked pixels set to True.
+        blurring_mask
+            A derived mask identifying pixels that are masked in the original input
+            but receive flux due to convolution with the kernel.
+        fft_kernel
+            The real FFT of the padded kernel, used for efficient convolution in
+            Fourier space.
+        fft_kernel_mapping
+            A broadcast-ready view of ``fft_kernel`` for multi-channel convolution.
         """
         if len(kernel) == 1:
             kernel = kernel.resized_from(new_shape=(3, 3))
@@ -111,53 +148,66 @@ class Convolver:
         **kwargs,
     ):
         """
-        A 2D convolution kernel stored as an array of values paired to a uniform 2D mask.
+        A 2D convolution kernel paired with a mask, providing real-space and FFT-based
+        convolution of images or mapping matrices.
 
-        The ``Convolver`` is a subclass of ``Array2D`` with additional methods for performing
-        point spread function (PSF) convolution of images or mapping matrices. Each entry of
-        the kernel corresponds to a PSF value at the centre of a pixel in the unmasked grid.
+        The ``Convolver`` is a subclass of ``Array2D`` with additional methods for
+        performing point spread function (PSF) convolution. Each entry of the kernel
+        corresponds to the PSF value at the centre of a pixel on a uniform 2D grid.
 
         Two convolution modes are supported:
 
-        - **Real-space convolution**: performed directly via sliding-window summation or
-          ``jax.scipy.signal.convolve``. This is exact but can be slow for large kernels.
-        - **FFT convolution**: performed by transforming both the kernel and the input image
-          into Fourier space, multiplying, and transforming back. This is typically faster
-          for kernels larger than ~5×5, but requires careful zero-padding.
+        - **Real-space convolution**:
+          Performed directly via sliding-window summation or
+          ``jax.scipy.signal.convolve``. This mode is exact and requires no padding,
+          but becomes computationally expensive for large kernels.
 
-        When using FFT convolution, the input image and mask are automatically padded such
-        that the FFT avoids circular wrap-around artefacts. This padding is computed from the
-        kernel size via :meth:`fft_shape_from`. The padded shape is stored in ``fft_shape``.
-        If FFT convolution is attempted without precomputing and applying this padding,
-        an exception is raised to avoid silent shape mismatches.
+        - **FFT-based convolution**:
+          Performed by embedding the input image and kernel into padded arrays,
+          transforming them to Fourier space, multiplying, and transforming back.
+          This mode is typically faster for kernels larger than approximately 5×5,
+          but requires careful handling of padding, masking, and kernel centering.
+
+        All logic related to FFT padding, mask expansion, linear (non-circular)
+        convolution, and blurring-mask construction is handled by
+        ``ConvolverState``. See the ``ConvolverState`` docstring for a detailed
+        description of how masked real-space data are mapped to and from FFT space.
+
+        When FFT convolution is enabled, the ``Convolver`` expects a corresponding
+        ``ConvolverState`` defining the FFT geometry. The padded FFT shape is stored
+        in ``state.fft_shape`` and must be consistent with the shape of any arrays
+        passed for convolution. Attempting FFT convolution without a valid state
+        will raise an exception to avoid silent shape or alignment errors.
 
         Parameters
         ----------
         kernel
-            The raw 2D kernel values. Can be normalised to sum to unity if ``normalize=True``.
-        mask
-            The 2D mask associated with the kernel, defining the pixels each kernel value is
-            paired with.
-        header
-            Optional metadata (e.g. FITS header) associated with the kernel.
+            The raw 2D kernel values. These represent the PSF sampled at pixel
+            centres and may be normalised to sum to unity if ``normalize=True``.
+        state
+            Optional ``ConvolverState`` instance defining FFT padding, mask
+            expansion, and kernel Fourier transforms. Required when using FFT
+            convolution.
         normalize
-            If True, the kernel values are rescaled such that they sum to 1.0.
+            If True, the kernel values are rescaled such that their sum is unity.
         use_fft
-            If True, convolution is performed in Fourier space with zero-padding.
+            If True, convolution is performed in Fourier space using the provided
+            ``ConvolverState``.
             If False, convolution is performed in real space.
-            If None, the config file default is used.
+            If None, the default behaviour specified in the configuration is used.
         *args, **kwargs
             Passed to the ``Array2D`` constructor.
 
         Notes
         -----
-        - FFT padding can be disabled globally with ``disable_fft_pad=True`` when
-          constructing ``Imaging`` objects, in which case convolution will either
-          use real space or proceed without padding.
+        - When performing real-space convolution, the kernel must have odd dimensions
+          in both axes so that it has a well-defined central pixel.
+        - When performing FFT convolution, kernel centering, padding, and mask
+          expansion are handled by ``ConvolverState``.
         - Blurring masks ensure that PSF flux spilling outside the main image mask
           is included correctly. Omitting them may lead to underestimated PSF wings.
-        - For unit tests with tiny kernels, FFT and real-space convolution may differ
-          slightly due to edge and truncation effects.
+        - For very small kernels, FFT and real-space convolution may differ slightly
+          near mask boundaries due to padding and truncation effects.
         """
         self.kernel = kernel
 
