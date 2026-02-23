@@ -433,7 +433,7 @@ class Imaging(AbstractDataset):
             inversion_imaging_util.ImagingSparseOperator.from_noise_map_and_psf(
                 data=self.data,
                 noise_map=self.noise_map,
-                psf=self.psf.native,
+                psf=self.psf.kernel.native,
                 batch_size=batch_size,
             )
         )
@@ -491,7 +491,7 @@ class Imaging(AbstractDataset):
             lengths,
         ) = inversion_imaging_numba_util.psf_precision_operator_sparse_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            kernel_native=np.array(self.psf.kernel.native.array).astype("float64"),
             native_index_for_slim_index=np.array(
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),

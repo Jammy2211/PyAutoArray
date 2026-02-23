@@ -62,7 +62,7 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
         return inversion_imaging_numba_util.psf_weighted_data_from(
             image_native=np.array(self.data.native.array),
             noise_map_native=self.noise_map.native.array,
-            kernel_native=self.psf.native.array,
+            kernel_native=self.psf.kernel.native.array,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
         )
 
@@ -430,7 +430,7 @@ class InversionImagingSparseNumba(AbstractInversionImaging):
                     pix_pixels=mapper.params,
                     curvature_weights=np.array(data_linear_func_matrix),
                     mask=self.mask.array,
-                    psf_kernel=self.psf.native.array,
+                    psf_kernel=self.psf.kernel.native.array,
                 )
 
                 curvature_matrix[

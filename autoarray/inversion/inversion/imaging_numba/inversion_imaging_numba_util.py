@@ -873,7 +873,7 @@ class SparseLinAlgImagingNumba:
 
         return psf_precision_operator_from(
             noise_map_native=self.noise_map.native.array,
-            kernel_native=self.psf.native.array,
+            kernel_native=self.psf.kernel.native.array,
             native_index_for_slim_index=np.array(
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),

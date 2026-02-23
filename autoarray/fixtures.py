@@ -119,9 +119,9 @@ def make_image_7x7():
 
 
 def make_psf_3x3():
-    psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
+    psf = aa.Array2D.no_mask(values=[[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]], pixel_scales=(1.0, 1.0))
 
-    return aa.Convolver.no_mask(values=psf, pixel_scales=(1.0, 1.0))
+    return aa.Convolver(kernel=psf)
 
 
 def make_psf_3x3_no_blur():
