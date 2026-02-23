@@ -685,7 +685,7 @@ class Kernel2D(AbstractArray2D):
             fft_psf = jnp.asarray(self.fft_psf, dtype=jnp.complex128)
 
         # Build combined native image in the FFT dtype
-        image_both_native = xp.zeros(image.mask.shape, dtype=jnp.float64)
+        image_both_native = xp.zeros(fft_shape, dtype=jnp.float64)
 
         image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(
             jnp.asarray(image.array, dtype=jnp.float64)
@@ -719,7 +719,7 @@ class Kernel2D(AbstractArray2D):
         start_indices = (off_y, off_x)
 
         blurred_image_native = jax.lax.dynamic_slice(
-            blurred_image_full, start_indices, image.mask.shape
+            blurred_image_full, start_indices, fft_shape
         )
 
         # Return slim form; optionally cast for downstream stability
