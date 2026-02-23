@@ -22,11 +22,78 @@ from autoarray.structures.header import Header
 from autoarray import type as ty
 
 
+class ConvolverState:
+    def __init__(
+        self,
+        kernel,
+        mask: Mask2D,
+    ):
+        """
+        Compute the padded shapes required for FFT-based convolution with this kernel.
+
+        FFT convolution requires the input image and kernel to be zero-padded so that
+        the convolution is equivalent to linear convolution (not circular) and to avoid
+        wrap-around artefacts.
+
+        This method inspects the mask and the kernel shape to determines three key shapes:
+
+        - ``mask_shape``: the rectangular bounding-box region of the mask that encloses
+          all unmasked (False) pixels, padded by half the kernel size in each direction.
+          This is the minimal region that must be retained for convolution. This is
+          not used or computed outside thi sfunction with the two shapes below
+          used instead.
+
+        - ``full_shape``: the "linear convolution shape", equal to
+          ``mask_shape + kernel_shape - 1``. This is the minimal padded size required
+          for an exact linear convolution. This is also not used or computed outside
+          this function.
+
+        - ``fft_shape``: the FFT-efficient padded shape, obtained by rounding each
+          dimension of ``full_shape`` up to the next fast length for real FFTs
+          (via ``scipy.fft.next_fast_len``). Using this ensures efficient FFT execution.
+
+        Parameters
+        ----------
+        mask
+            A 2D mask where False indicates unmasked pixels (valid data) and True
+            indicates masked pixels. The bounding-box of the False region is used
+            to compute the convolution region.
+
+        Returns
+        -------
+        fft_shape
+            The FFT-friendly padded shape for efficient convolution.
+        """
+        self.kernel = kernel
+
+        ys, xs = np.where(~mask)
+        y_min, y_max = ys.min(), ys.max()
+        x_min, x_max = xs.min(), xs.max()
+
+        (pad_y, pad_x) = self.kernel.shape_native
+
+        mask_shape = (
+            (y_max + pad_y // 2) - (y_min - pad_y // 2),
+            (x_max + pad_x // 2) - (x_min - pad_x // 2),
+        )
+
+        full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native))
+        fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
+
+        self.fft_shape = fft_shape
+        self.mask = mask.resized_from(self.fft_shape, pad_value=1)
+        self.blurring_mask = self.mask.derive_mask.blurring_from(
+            kernel_shape_native=self.kernel.shape_native
+        )
+
+        self.fft_kernel = np.fft.rfft2(self.kernel.native.array, s=self.fft_shape)
+        self.fft_kernel_mapping = np.expand_dims(self.fft_kernel, 2)
+
 class Convolver:
     def __init__(
         self,
         kernel : Array2D,
-        mask : Optional[Mask2D] = None,
+        state : Optional[ConvolverState] = None,
         normalize: bool = True,
         use_fft: Optional[bool] = None,
         *args,
@@ -81,9 +148,7 @@ class Convolver:
         - For unit tests with tiny kernels, FFT and real-space convolution may differ
           slightly due to edge and truncation effects.
         """
-        
         self.kernel = kernel
-        self.mask = mask
 
         if normalize:
             self.kernel[:] = np.divide(self.kernel, np.sum(self.kernel))
@@ -94,81 +159,14 @@ class Convolver:
 
         self._use_fft = use_fft
 
-        self.mask = mask
+        self._state = state
 
-        self.blurring_mask = None
-        self.fft_shape = None
-        self.fft_kernel = None
-        self.fft_kernel_mapping = None
+    def state_from(self, mask):
+        
+        if self._state is None:
+            return ConvolverState(kernel=self.kernel, mask=mask)
 
-        if self.mask is not None:
-
-            self.fft_shape = self.fft_shape_from(mask=mask) if mask is not None else None
-
-            self.mask = mask.resized_from(self.fft_shape, pad_value=1)
-
-            self.blurrring_mask = self.mask.derive_mask.blurring_from(
-                kernel_shape_native=self.kernel.shape_native
-            )
-
-            self.fft_kernel = np.fft.rfft2(self.kernel.native.array, s=self.fft_shape)
-            self.fft_kernel_mapping = np.expand_dims(self.fft_kernel, 2)
-
-    def fft_shape_from(
-        self, mask: np.ndarray
-    ) -> Union[Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
-        """
-        Compute the padded shapes required for FFT-based convolution with this kernel.
-
-        FFT convolution requires the input image and kernel to be zero-padded so that
-        the convolution is equivalent to linear convolution (not circular) and to avoid
-        wrap-around artefacts.
-
-        This method inspects the mask and the kernel shape to determines three key shapes:
-
-        - ``mask_shape``: the rectangular bounding-box region of the mask that encloses
-          all unmasked (False) pixels, padded by half the kernel size in each direction.
-          This is the minimal region that must be retained for convolution. This is
-          not used or computed outside thi sfunction with the two shapes below
-          used instead.
-
-        - ``full_shape``: the "linear convolution shape", equal to
-          ``mask_shape + kernel_shape - 1``. This is the minimal padded size required
-          for an exact linear convolution. This is also not used or computed outside
-          this function.
-
-        - ``fft_shape``: the FFT-efficient padded shape, obtained by rounding each
-          dimension of ``full_shape`` up to the next fast length for real FFTs
-          (via ``scipy.fft.next_fast_len``). Using this ensures efficient FFT execution.
-
-        Parameters
-        ----------
-        mask
-            A 2D mask where False indicates unmasked pixels (valid data) and True
-            indicates masked pixels. The bounding-box of the False region is used
-            to compute the convolution region.
-
-        Returns
-        -------
-        fft_shape
-            The FFT-friendly padded shape for efficient convolution.
-        """
-
-        ys, xs = np.where(~mask)
-        y_min, y_max = ys.min(), ys.max()
-        x_min, x_max = xs.min(), xs.max()
-
-        (pad_y, pad_x) = self.kernel.shape_native
-
-        mask_shape = (
-            (y_max + pad_y // 2) - (y_min - pad_y // 2),
-            (x_max + pad_x // 2) - (x_min - pad_x // 2),
-        )
-
-        full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native))
-        fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
-
-        return fft_shape
+        return self._state
 
     @property
     def use_fft(self):
@@ -178,7 +176,7 @@ class Convolver:
         return self._use_fft
 
     @classmethod
-    def no_blur(cls, mask=None):
+    def no_blur(cls):
         """
         Setup the Convolver as a kernel which does not convolve any signal, which is simply an array of shape (1, 1)
         with value 1.
@@ -192,7 +190,7 @@ class Convolver:
 
         kernel = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls(kernel=kernel, mask=mask)
+        return cls(kernel=kernel)
 
     @classmethod
     def from_gaussian(
@@ -202,7 +200,6 @@ class Convolver:
         centre: Tuple[float, float] = (0.0, 0.0),
         axis_ratio: float = 1.0,
         angle: float = 0.0,
-        mask=None,
         normalize: bool = False,
     ) -> "Convolver":
         """
@@ -255,9 +252,8 @@ class Convolver:
             np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
         )
 
-        return cls.no_mask(
+        return Convolver(
             kernel=gaussian,
-            mask=mask,
             normalize=normalize,
         )
 
@@ -445,39 +441,19 @@ class Convolver:
         import jax
         import jax.numpy as jnp
         from autoarray.structures.arrays.uniform_2d import Array2D
-
-        if self.mask is None:
-
-            mask = image.mask
-            blurring_mask = image.mask.derive_mask.blurring_from(
-                kernel_shape_native=self.kernel.shape_native
-            )
-            fft_shape = self.fft_shape_from(mask=image.mask)
-            fft_kernel = xp.fft.rfft2(self.kernel.native.array, s=fft_shape, axes=(0, 1)).astype(
-                jnp.complex128
-            )
-
-        else:
-
-            mask = self.mask
-            blurring_mask = self.blurrring_mask
-            fft_shape = self.fft_shape
-            fft_kernel = jnp.asarray(self.fft_kernel, dtype=jnp.complex128)
-
-        print(fft_shape)
-        print(image.shape_native)
-        print(mask.slim_to_native_tuple)
+        
+        state = self.state_from(mask=image.mask)
 
         # Build combined native image in the FFT dtype
-        image_both_native = xp.zeros(fft_shape, dtype=jnp.float64)
+        image_both_native = xp.zeros(state.fft_shape, dtype=jnp.float64)
 
-        image_both_native = image_both_native.at[mask.slim_to_native_tuple].set(
+        image_both_native = image_both_native.at[state.mask.slim_to_native_tuple].set(
             jnp.asarray(image.array, dtype=jnp.float64)
         )
 
         if blurring_image is not None:
             image_both_native = image_both_native.at[
-                blurring_mask.slim_to_native_tuple
+                state.blurring_mask.slim_to_native_tuple
             ].set(jnp.asarray(blurring_image.array, dtype=jnp.float64))
         else:
             warnings.warn(
@@ -486,11 +462,11 @@ class Convolver:
             )
 
         # FFT the combined image
-        fft_image_native = xp.fft.rfft2(image_both_native, s=fft_shape, axes=(0, 1))
+        fft_image_native = xp.fft.rfft2(image_both_native, s=state.fft_shape, axes=(0, 1))
 
         # Multiply by PSF in Fourier space and invert
         blurred_image_full = xp.fft.irfft2(
-            fft_kernel * fft_image_native, s=fft_shape, axes=(0, 1)
+            state.fft_kernel * fft_image_native, s=state.fft_shape, axes=(0, 1)
         )
         ky, kx = self.kernel.shape_native  # (21, 21)
         off_y = (ky - 1) // 2
@@ -503,11 +479,11 @@ class Convolver:
         start_indices = (off_y, off_x)
 
         blurred_image_native = jax.lax.dynamic_slice(
-            blurred_image_full, start_indices, fft_shape
+            blurred_image_full, start_indices, state.fft_shape
         )
 
         # Return slim form; optionally cast for downstream stability
-        blurred_slim = blurred_image_native[mask.slim_to_native_tuple]
+        blurred_slim = blurred_image_native[state.mask.slim_to_native_tuple]
 
         blurred_image = Array2D(values=blurred_slim, mask=image.mask)
 
@@ -606,40 +582,21 @@ class Convolver:
         import jax
         import jax.numpy as jnp
 
-        if self.mask is None:
-
-            mask = image.mask
-            blurring_mask = image.mask.derive_mask.blurring_from(
-                kernel_shape_native=self.kernel.shape_native
-            )
-            fft_shape = self.fft_shape_from(mask=image.mask)
-            fft_kernel = xp.fft.rfft2(self.kernel.native.array, s=fft_shape, axes=(0, 1)).astype(
-                jnp.complex128
-            )
-            fft_kernel_mapping = xp.expand_dims(fft_kernel, 2)
-
-        else:
-
-            mask = self.mask
-            blurring_mask = self.blurrring_mask
-            fft_shape = self.fft_shape
-            fft_kernel = jnp.asarray(self.fft_kernel, dtype=jnp.complex128)
-            fft_kernel_mapping = self.fft_kernel_mapping
+        state = self.state_from(mask=mask)
 
         # -------------------------------------------------------------------------
         # Mixed precision handling
         # -------------------------------------------------------------------------
         fft_complex_dtype = jnp.complex64 if use_mixed_precision else jnp.complex128
-        fft_kernel_mapping = jnp.asarray(fft_kernel_mapping, dtype=fft_complex_dtype)
 
         # -------------------------------------------------------------------------
         # Build native cube on the *native mask grid*
         # -------------------------------------------------------------------------
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
-            mask=mask,
+            mask=state.mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
-            blurring_mask=blurring_mask,
+            blurring_mask=state.blurring_mask,
             use_mixed_precision=use_mixed_precision,
             xp=xp,
         )
@@ -649,12 +606,12 @@ class Convolver:
         # FFT convolution
         # -------------------------------------------------------------------------
         fft_mapping_matrix_native = xp.fft.rfft2(
-            mapping_matrix_native, s=fft_shape, axes=(0, 1)
+            mapping_matrix_native, s=state.fft_shape, axes=(0, 1)
         )
 
         blurred_mapping_matrix_full = xp.fft.irfft2(
-            fft_kernel_mapping * fft_mapping_matrix_native,
-            s=fft_shape,
+            state.fft_kernel_mapping * fft_mapping_matrix_native,
+            s=state.fft_shape,
             axes=(0, 1),
         )
 
@@ -674,10 +631,9 @@ class Convolver:
         # -------------------------------------------------------------------------
         # Extract native grid (same as image path)
         # -------------------------------------------------------------------------
-        native_shape = mask.shape
         start_indices = (off_y, off_x, 0)
 
-        out_shape = native_shape + (blurred_mapping_matrix_full.shape[2],)
+        out_shape = state.mask.shape_native + (blurred_mapping_matrix_full.shape[2],)
 
         blurred_mapping_matrix_native = jax.lax.dynamic_slice(
             blurred_mapping_matrix_full,
@@ -688,7 +644,7 @@ class Convolver:
         # -------------------------------------------------------------------------
         # Slim using ORIGINAL mask indices (same grid)
         # -------------------------------------------------------------------------
-        blurred_slim = blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        blurred_slim = blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
 
         return blurred_slim
 
@@ -732,31 +688,19 @@ class Convolver:
 
         import jax
 
-        if self.mask is None:
-
-            mask = image.mask
-            blurring_mask = image.mask.derive_mask.blurring_from(
-                kernel_shape_native=self.kernel.shape_native
-            )
-            fft_shape = self.fft_shape_from(mask=image.mask)
-
-        else:
-
-            mask = self.mask
-            blurring_mask = self.blurrring_mask
-            fft_shape = self.fft_shape
+        state = self.state_from(mask=image.mask)
 
         # start with native array padded with zeros
-        image_native = xp.zeros(fft_shape, dtype=image.array.dtype)
+        image_native = xp.zeros(state.fft_shape, dtype=image.array.dtype)
 
         # set image pixels
-        image_native = image_native.at[mask.slim_to_native_tuple].set(image.array)
+        image_native = image_native.at[state.mask.slim_to_native_tuple].set(image.array)
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
             image_native = image_native.at[
-                blurring_mask.slim_to_native_tuple
+                state.blurring_mask.slim_to_native_tuple
             ].set(blurring_image.array)
 
         else:
@@ -769,7 +713,7 @@ class Convolver:
             image_native, self.kernel.native.array, mode="same", method=jax_method
         )
 
-        convolved_array_1d = convolve_native[mask.slim_to_native_tuple]
+        convolved_array_1d = convolve_native[state.mask.slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
@@ -821,25 +765,13 @@ class Convolver:
 
         import jax
 
-        if self.mask is None:
-
-            mask = image.mask
-            blurring_mask = image.mask.derive_mask.blurring_from(
-                kernel_shape_native=self.kernel.shape_native
-            )
-            fft_shape = self.fft_shape_from(mask=image.mask)
-
-        else:
-
-            mask = self.mask
-            blurring_mask = self.blurrring_mask
-            fft_shape = self.fft_shape
+        state = self.state_from(mask=mask)
 
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
-            mask=mask,
+            mask=state.mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
-            blurring_mask=blurring_mask,
+            blurring_mask=state.blurring_mask,
             xp=xp,
         )
 
@@ -851,7 +783,7 @@ class Convolver:
         )
 
         # return slim form
-        return blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        return blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
 
     def convolved_image_via_real_space_np_from(
         self, image: np.ndarray, blurring_image: Optional[np.ndarray] = None, xp=np
@@ -883,17 +815,19 @@ class Convolver:
         """
 
         from scipy.signal import convolve as scipy_convolve
+        
+        state = self.state_from(mask=image.mask)
 
         # start with native array padded with zeros
-        image_native = xp.zeros(image.mask.shape, dtype=image.array.dtype)
+        image_native = xp.zeros(state.image.mask.shape, dtype=image.array.dtype)
 
         # set image pixels
-        image_native[image.mask.slim_to_native_tuple] = image.array
+        image_native[state.image.mask.slim_to_native_tuple] = image.array
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native[blurring_image.mask.slim_to_native_tuple] = (
+            image_native[state.blurring_image.mask.slim_to_native_tuple] = (
                 blurring_image.array
             )
 
@@ -904,13 +838,13 @@ class Convolver:
             )
 
         # perform real-space convolution
-        kernel = self.stored_native.array
+        kernel = self.kernel.native.array
 
         convolve_native = scipy_convolve(
             image_native, kernel, mode="same", method="auto"
         )
 
-        convolved_array_1d = convolve_native[image.mask.slim_to_native_tuple]
+        convolved_array_1d = convolve_native[state.image.mask.slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
@@ -952,15 +886,17 @@ class Convolver:
 
         from scipy.signal import convolve as scipy_convolve
 
+        state = self.state_from(mask=mask)
+
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
-            mask=mask,
+            mask=state.mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
-            blurring_mask=blurring_mask,
+            blurring_mask=state.blurring_mask,
             xp=xp,
         )
         # 6) Real-space convolution, broadcast kernel over source axis
-        kernel = self.stored_native.array
+        kernel = self.kernel.native.array
 
         blurred_mapping_matrix_native = scipy_convolve(
             mapping_matrix_native,
@@ -969,7 +905,7 @@ class Convolver:
         )
 
         # return slim form
-        return blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        return blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
 
     def rescaled_with_odd_dimensions_from(
         self, rescale_factor: float, normalize: bool = False

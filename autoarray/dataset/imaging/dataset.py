@@ -9,6 +9,7 @@ from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
     ImagingSparseOperator,
 )
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.operators.convolver import ConvolverState
 from autoarray.operators.convolver import Convolver
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -27,7 +28,7 @@ class Imaging(AbstractDataset):
         data: Array2D,
         noise_map: Optional[Array2D] = None,
         psf: Optional[Convolver] = None,
-        psf_mask_setup : bool = False,
+        psf_setup_state : bool = False,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
@@ -116,11 +117,13 @@ class Imaging(AbstractDataset):
         self.psf = psf
 
         if psf is not None:
-            if psf_mask_setup:
+            if psf_setup_state:
+
+                state = ConvolverState(kernel=psf.kernel, mask=self.data.mask)
 
                 self.psf = Convolver(
                     kernel=psf.kernel,
-                    mask=self.data.mask
+                    state=state
                 )
 
         self.grids = GridsDataset(
@@ -273,7 +276,7 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             psf=self.psf,
-            psf_mask_setup=True,
+            psf_setup_state=True,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
