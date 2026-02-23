@@ -173,7 +173,7 @@ def test__output_to_fits(imaging_7x7, test_data_path):
 
 
 def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7, disable_fft_pad=True)
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
 
     assert (masked_imaging_7x7.data.slim == np.ones(9)).all()
 
@@ -310,5 +310,5 @@ def test__psf_not_odd_x_odd_kernel__raises_error():
         psf = aa.Convolver(kernel=kernel)
 
         dataset = aa.Imaging(
-            data=image, noise_map=noise_map, psf=psf, disable_fft_pad=True
+            data=image, noise_map=noise_map, psf=psf,
         )

@@ -192,13 +192,12 @@ class SimulatorImaging:
             psf=self.psf,
             noise_map=noise_map,
             check_noise_map=False,
-            disable_fft_pad=True,
         )
 
         if over_sample_size is not None:
 
             dataset = dataset.apply_over_sampling(
-                over_sample_size_lp=over_sample_size.native, disable_fft_pad=True
+                over_sample_size_lp=over_sample_size.native,
             )
 
         return dataset
