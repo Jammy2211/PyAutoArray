@@ -214,13 +214,13 @@ class Imaging(AbstractDataset):
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
             )
+            psf = Convolver(
+                kernel=kernel,
+            )
 
         else:
             kernel = None
-
-        psf = Convolver(
-            kernel=kernel,
-        )
+            psf = None
 
         return Imaging(
             data=data,

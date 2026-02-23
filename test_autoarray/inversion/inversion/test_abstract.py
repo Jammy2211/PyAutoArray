@@ -192,7 +192,7 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
         [[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
     )
 
-    psf = aa.Convolver(kernel=kernel, pixel_scales=1.0)
+    psf = aa.Convolver(kernel=kernel)
 
     dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
