@@ -98,8 +98,6 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=over_sample_size_pixelization,
         )
 
-        self.use_normalized_psf = use_normalized_psf
-
         if self.noise_map.native is not None and check_noise_map:
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
                 zero_entries = np.argwhere(self.noise_map.native <= 0.0)
@@ -121,7 +119,7 @@ class Imaging(AbstractDataset):
 
                 state = ConvolverState(kernel=psf.kernel, mask=self.data.mask)
 
-                self.psf = Convolver(kernel=psf.kernel, state=state)
+                self.psf = Convolver(kernel=psf.kernel, state=state, normalize=use_normalized_psf)
 
         self.grids = GridsDataset(
             mask=self.data.mask,

@@ -192,7 +192,7 @@ def test__data_vector_via_weighted_data_two_methods_agree():
     noise_map = np.random.uniform(size=mask.shape_native)
     noise_map = aa.Array2D(values=noise_map, mask=mask)
 
-    kernel = aa.Kernel2D.from_gaussian(
+    kernel = aa.Convolver.from_gaussian(
         shape_native=(7, 7), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
     )
 
@@ -265,7 +265,7 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
     noise_map = np.random.uniform(size=mask.shape_native)
     noise_map = aa.Array2D(values=noise_map, mask=mask)
 
-    kernel = aa.Kernel2D.from_gaussian(
+    kernel = aa.Convolver.from_gaussian(
         shape_native=(7, 7), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
     )
 

@@ -191,7 +191,7 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
         (1.0 / 3.0) * psf_3x3.slim.array, 1.0e-4
     )
 
-    assert type(masked_imaging_7x7.psf) == aa.Kernel2D
+    assert type(masked_imaging_7x7.psf) == aa.Convolver
 
 
 def test__apply_noise_scaling(imaging_7x7, mask_2d_7x7):
@@ -260,7 +260,9 @@ def test__apply_mask__noise_covariance_matrix():
 
 
 def test__different_imaging_without_mock_objects__customize_constructor_inputs():
-    psf = aa.Kernel2D.ones(shape_native=(7, 7), pixel_scales=3.0)
+
+    kernel = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=3.0)
+    psf = aa.Convolver(kernel=kernel)
 
     dataset = aa.Imaging(
         data=aa.Array2D.ones(shape_native=(19, 19), pixel_scales=3.0),
@@ -304,7 +306,8 @@ def test__psf_not_odd_x_odd_kernel__raises_error():
     with pytest.raises(exc.KernelException):
         image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
         noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-        psf = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+        kernel = aa.Array2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+        psf = aa.Convolver(kernel=kernel)
 
         dataset = aa.Imaging(
             data=image, noise_map=noise_map, psf=psf, disable_fft_pad=True

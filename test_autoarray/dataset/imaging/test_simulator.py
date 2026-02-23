@@ -94,10 +94,11 @@ def test__via_image_from__psf_off__background_sky_on(image_central_delta_3x3):
 def test__via_image_from__psf_on__psf_blurs_image_with_edge_trimming(
     image_central_delta_3x3,
 ):
-    psf = aa.Kernel2D.no_mask(
+    kernel = aa.Array2D.no_mask(
         values=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )
+    psf = aa.Convolver(kernel=kernel)
 
     simulator = aa.SimulatorImaging(
         exposure_time=1.0,
@@ -118,10 +119,11 @@ def test__via_image_from__psf_on__psf_blurs_image_with_edge_trimming(
 def test__via_image_from__psf_on__disable_poisson_noise_in_data(
     image_central_delta_3x3,
 ):
-    psf = aa.Kernel2D.no_mask(
+    kernel = aa.Array2D.no_mask(
         values=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )
+    psf = aa.Convolver(kernel=kernel)
 
     simulator = aa.SimulatorImaging(
         exposure_time=20.0,
@@ -150,10 +152,11 @@ def test__via_image_from__psf_on__disable_poisson_noise_in_data(
 def test__via_image_from__psf_on__psf_and_noise_both_on(image_central_delta_3x3):
     image = image_central_delta_3x3 + 1.0
 
-    psf = aa.Kernel2D.no_mask(
+    kernel = aa.Array2D.no_mask(
         values=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )
+    psf = aa.Convolver(kernel=kernel)
 
     simulator = aa.SimulatorImaging(
         exposure_time=20.0,
