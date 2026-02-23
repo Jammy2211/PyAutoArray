@@ -33,7 +33,6 @@ class Kernel2D(AbstractArray2D):
         store_native: bool = False,
         image_mask=None,
         blurring_mask=None,
-        full_shape=None,
         fft_shape=None,
         use_fft: Optional[bool] = None,
         *args,
@@ -81,8 +80,6 @@ class Kernel2D(AbstractArray2D):
             Optional mask defining the "blurring region": pixels outside the image mask
             into which PSF flux can spread. Used to construct blurring images and
             blurring mapping matrices.
-        full_shape
-            The unpadded image + kernel shape (``image_shape + kernel_shape - 1``).
         fft_shape
             The padded shape used in FFT convolution, typically computed via
             ``scipy.fft.next_fast_len`` for efficiency. Must be precomputed before calling
@@ -120,12 +117,10 @@ class Kernel2D(AbstractArray2D):
 
         self.fft_shape = fft_shape
 
-        self.full_shape = None
         self.fft_psf = None
 
         if self.fft_shape is not None:
 
-            self.full_shape = full_shape
             self.fft_psf = np.fft.rfft2(self.native.array, s=self.fft_shape)
             self.fft_psf_mapping = np.expand_dims(self.fft_psf, 2)
 
@@ -149,7 +144,6 @@ class Kernel2D(AbstractArray2D):
         normalize: bool = False,
         image_mask=None,
         blurring_mask=None,
-        full_shape=None,
         fft_shape=None,
         use_fft: Optional[bool] = None,
     ):
@@ -186,7 +180,6 @@ class Kernel2D(AbstractArray2D):
             normalize=normalize,
             image_mask=image_mask,
             blurring_mask=blurring_mask,
-            full_shape=full_shape,
             fft_shape=fft_shape,
             use_fft=use_fft,
         )
@@ -468,7 +461,7 @@ class Kernel2D(AbstractArray2D):
         the convolution is equivalent to linear convolution (not circular) and to avoid
         wrap-around artefacts.
 
-        This method inspects the mask and the kernel shape to determine three key shapes:
+        This method inspects the mask and the kernel shape to determines three key shapes:
 
         - ``mask_shape``: the rectangular bounding-box region of the mask that encloses
           all unmasked (False) pixels, padded by half the kernel size in each direction.
@@ -478,7 +471,8 @@ class Kernel2D(AbstractArray2D):
 
         - ``full_shape``: the "linear convolution shape", equal to
           ``mask_shape + kernel_shape - 1``. This is the minimal padded size required
-          for an exact linear convolution.
+          for an exact linear convolution. This is also not used or computed outside
+          this function.
 
         - ``fft_shape``: the FFT-efficient padded shape, obtained by rounding each
           dimension of ``full_shape`` up to the next fast length for real FFTs
@@ -493,8 +487,6 @@ class Kernel2D(AbstractArray2D):
 
         Returns
         -------
-        full_shape
-            The unpadded linear convolution shape (mask region + kernel − 1).
         fft_shape
             The FFT-friendly padded shape for efficient convolution.
         """
@@ -510,10 +502,9 @@ class Kernel2D(AbstractArray2D):
             (x_max + pad_x // 2) - (x_min - pad_x // 2),
         )
 
-        full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.shape_native))
         fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
 
-        return full_shape, fft_shape
+        return fft_shape
 
     @property
     def normalized(self) -> "Kernel2D":
@@ -628,7 +619,7 @@ class Kernel2D(AbstractArray2D):
         and avoids wrap-around artefacts. The required padding is determined by
         ``fft_shape_from(mask)``. If no precomputed shapes exist, they are computed
         on the fly. For reproducible behaviour, precompute and set
-        ``fft_shape`` and ``full_shape``` on the kernel.
+        ``fft_shape` on the kernel.
 
         If ``use_fft=False``, convolution falls back to
         :meth:`Kernel2D.convolved_image_via_real_space_from`.
@@ -667,7 +658,7 @@ class Kernel2D(AbstractArray2D):
 
         if self.fft_shape is None:
             # Shapes computed on the fly
-            full_shape, fft_shape = self.fft_shape_from(mask=image.mask)
+            fft_shape = self.fft_shape_from(mask=image.mask)
 
             # Compute PSF FFT on the fly in the chosen precision
             psf_native = jnp.asarray(self.stored_native.array, dtype=jnp.float64)
@@ -686,7 +677,6 @@ class Kernel2D(AbstractArray2D):
         else:
             # Cached shapes/state
             fft_shape = self.fft_shape
-            full_shape = self.full_shape
 
             # Use cached PSF FFT but ensure it matches chosen precision.
             # IMPORTANT: casting here may create an extra buffer if self.fft_psf is complex128.

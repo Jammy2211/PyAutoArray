@@ -97,7 +97,7 @@ class Imaging(AbstractDataset):
 
         if psf is not None:
 
-            full_shape, fft_shape = psf.fft_shape_from(mask=data.mask)
+            fft_shape = psf.fft_shape_from(mask=data.mask)
 
         if psf is not None and not disable_fft_pad and data.mask.shape != fft_shape:
 
@@ -181,7 +181,6 @@ class Imaging(AbstractDataset):
                 normalize=use_normalized_psf,
                 image_mask=image_mask,
                 blurring_mask=blurring_mask,
-                full_shape=full_shape,
                 fft_shape=fft_shape,
             )
 
