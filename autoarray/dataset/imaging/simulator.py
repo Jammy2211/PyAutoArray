@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.arrays.kernel_2d import Kernel2D
+from autoarray.operators.convolver import Convolver
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
@@ -19,7 +19,7 @@ class SimulatorImaging:
         exposure_time: float,
         background_sky_level: float = 0.0,
         subtract_background_sky: bool = True,
-        psf: Kernel2D = None,
+        psf: Convolver = None,
         use_real_space_convolution: bool = True,
         normalize_psf: bool = True,
         add_poisson_noise_to_data: bool = True,
@@ -95,7 +95,7 @@ class SimulatorImaging:
                 psf = psf.normalized
             self.psf = psf
         else:
-            self.psf = Kernel2D.no_blur(pixel_scales=1.0)
+            self.psf = Convolver.no_blur(pixel_scales=1.0)
 
         self.use_real_space_convolution = use_real_space_convolution
         self.exposure_time = exposure_time
@@ -192,13 +192,12 @@ class SimulatorImaging:
             psf=self.psf,
             noise_map=noise_map,
             check_noise_map=False,
-            disable_fft_pad=True,
         )
 
         if over_sample_size is not None:
 
             dataset = dataset.apply_over_sampling(
-                over_sample_size_lp=over_sample_size.native, disable_fft_pad=True
+                over_sample_size_lp=over_sample_size.native,
             )
 
         return dataset

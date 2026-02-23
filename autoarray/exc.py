@@ -40,7 +40,7 @@ class VectorYXException(Exception):
 
 class KernelException(Exception):
     """
-    Raises exceptions associated with the `structures/arrays/kernel_2d.py` module and `Kernel2D` classes.
+    Raises exceptions associated with the `structures/arrays/kernel_2d.py` module and `Convolver` classes.
 
     For example if the kernel has an even-sized number of pixels.
     """

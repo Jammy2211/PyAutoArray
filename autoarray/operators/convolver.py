@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray import Mask2D
 
-
 import numpy as np
 from pathlib import Path
 import scipy
@@ -20,22 +19,93 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.header import Header
 
+from autoarray import exc
 from autoarray import type as ty
 
 
-class Kernel2D(AbstractArray2D):
+class ConvolverState:
     def __init__(
         self,
-        values,
-        mask,
-        header=None,
+        kernel: Array2D,
+        mask: Mask2D,
+    ):
+        """
+        Compute the padded shapes required for FFT-based convolution with this kernel.
+
+        FFT convolution requires the input image and kernel to be zero-padded so that
+        the convolution is equivalent to linear convolution (not circular) and to avoid
+        wrap-around artefacts.
+
+        This method inspects the mask and the kernel shape to determines three key shapes:
+
+        - ``mask_shape``: the rectangular bounding-box region of the mask that encloses
+          all unmasked (False) pixels, padded by half the kernel size in each direction.
+          This is the minimal region that must be retained for convolution. This is
+          not used or computed outside thi sfunction with the two shapes below
+          used instead.
+
+        - ``full_shape``: the "linear convolution shape", equal to
+          ``mask_shape + kernel_shape - 1``. This is the minimal padded size required
+          for an exact linear convolution. This is also not used or computed outside
+          this function.
+
+        - ``fft_shape``: the FFT-efficient padded shape, obtained by rounding each
+          dimension of ``full_shape`` up to the next fast length for real FFTs
+          (via ``scipy.fft.next_fast_len``). Using this ensures efficient FFT execution.
+
+        Parameters
+        ----------
+        mask
+            A 2D mask where False indicates unmasked pixels (valid data) and True
+            indicates masked pixels. The bounding-box of the False region is used
+            to compute the convolution region.
+
+        Returns
+        -------
+        fft_shape
+            The FFT-friendly padded shape for efficient convolution.
+        """
+        if len(kernel) == 1:
+            kernel = kernel.resized_from(new_shape=(3, 3))
+
+        self.kernel = kernel
+
+        ys, xs = np.where(~mask)
+        y_min, y_max = ys.min(), ys.max()
+        x_min, x_max = xs.min(), xs.max()
+
+        (pad_y, pad_x) = self.kernel.shape_native
+
+        mask_shape = (
+            (y_max + pad_y // 2) - (y_min - pad_y // 2),
+            (x_max + pad_x // 2) - (x_min - pad_x // 2),
+        )
+
+        full_shape = tuple(
+            s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native)
+        )
+        fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
+
+        # make fft_shape odd x odd to avoid wrap-around artefacts with even kernels
+        # TODO : Fix this so it pads corrrectly internally
+        fft_shape = tuple(s + 1 if s % 2 == 0 else s for s in fft_shape)
+
+        self.fft_shape = fft_shape
+        self.mask = mask.resized_from(self.fft_shape, pad_value=1)
+        self.blurring_mask = self.mask.derive_mask.blurring_from(
+            kernel_shape_native=self.kernel.shape_native
+        )
+
+        self.fft_kernel = np.fft.rfft2(self.kernel.native.array, s=self.fft_shape)
+        self.fft_kernel_mapping = np.expand_dims(self.fft_kernel, 2)
+
+
+class Convolver:
+    def __init__(
+        self,
+        kernel: Array2D,
+        state: Optional[ConvolverState] = None,
         normalize: bool = False,
-        store_native: bool = False,
-        image_mask=None,
-        blurring_mask=None,
-        mask_shape=None,
-        full_shape=None,
-        fft_shape=None,
         use_fft: Optional[bool] = None,
         *args,
         **kwargs,
@@ -43,7 +113,7 @@ class Kernel2D(AbstractArray2D):
         """
         A 2D convolution kernel stored as an array of values paired to a uniform 2D mask.
 
-        The ``Kernel2D`` is a subclass of ``Array2D`` with additional methods for performing
+        The ``Convolver`` is a subclass of ``Array2D`` with additional methods for performing
         point spread function (PSF) convolution of images or mapping matrices. Each entry of
         the kernel corresponds to a PSF value at the centre of a pixel in the unmasked grid.
 
@@ -63,7 +133,7 @@ class Kernel2D(AbstractArray2D):
 
         Parameters
         ----------
-        values
+        kernel
             The raw 2D kernel values. Can be normalised to sum to unity if ``normalize=True``.
         mask
             The 2D mask associated with the kernel, defining the pixels each kernel value is
@@ -72,30 +142,10 @@ class Kernel2D(AbstractArray2D):
             Optional metadata (e.g. FITS header) associated with the kernel.
         normalize
             If True, the kernel values are rescaled such that they sum to 1.0.
-        store_native
-            If True, the kernel is stored in its full native 2D form as an attribute
-            ``stored_native`` for re-use (e.g. when convolving repeatedly).
-        image_mask
-            Optional mask defining the unmasked image pixels when performing convolution.
-            If not provided, defaults to the supplied ``mask``.
-        blurring_mask
-            Optional mask defining the "blurring region": pixels outside the image mask
-            into which PSF flux can spread. Used to construct blurring images and
-            blurring mapping matrices.
-        mask_shape
-            The shape of the (unpadded) mask region. Used when cropping back results after
-            FFT convolution.
-        full_shape
-            The unpadded image + kernel shape (``image_shape + kernel_shape - 1``).
-        fft_shape
-            The padded shape used in FFT convolution, typically computed via
-            ``scipy.fft.next_fast_len`` for efficiency. Must be precomputed before calling
-            FFT convolution methods.
         use_fft
             If True, convolution is performed in Fourier space with zero-padding.
             If False, convolution is performed in real space.
-            If None, a default choice is made: real space for small kernels,
-            FFT for large kernels.
+            If None, the config file default is used.
         *args, **kwargs
             Passed to the ``Array2D`` constructor.
 
@@ -109,33 +159,36 @@ class Kernel2D(AbstractArray2D):
         - For unit tests with tiny kernels, FFT and real-space convolution may differ
           slightly due to edge and truncation effects.
         """
-
-        super().__init__(
-            values=values,
-            mask=mask,
-            header=header,
-            store_native=store_native,
-        )
+        self.kernel = kernel
 
         if normalize:
-            self._array = np.divide(self._array, np.sum(self._array))
-
-        self.stored_native = self.native
-
-        self.fft_shape = fft_shape
-
-        self.mask_shape = None
-        self.full_shape = None
-        self.fft_psf = None
-
-        if self.fft_shape is not None:
-
-            self.mask_shape = mask_shape
-            self.full_shape = full_shape
-            self.fft_psf = np.fft.rfft2(self.native.array, s=self.fft_shape)
-            self.fft_psf_mapping = np.expand_dims(self.fft_psf, 2)
+            self.kernel._array = np.divide(
+                self.kernel._array, np.sum(self.kernel._array)
+            )
 
         self._use_fft = use_fft
+
+        if not self._use_fft:
+            if (
+                self.kernel.shape_native[0] % 2 == 0
+                or self.kernel.shape_native[1] % 2 == 0
+            ):
+                raise exc.KernelException("Convolver Convolver must be odd")
+
+        self._state = state
+
+    def state_from(self, mask):
+
+        if (
+            mask.shape_native[0] != self.kernel.shape_native[0]
+            or mask.shape_native[1] != self.kernel.shape_native[1]
+        ):
+            return ConvolverState(kernel=self.kernel, mask=mask)
+
+        if self._state is None:
+            return ConvolverState(kernel=self.kernel, mask=mask)
+
+        return self._state
 
     @property
     def use_fft(self):
@@ -144,172 +197,17 @@ class Kernel2D(AbstractArray2D):
 
         return self._use_fft
 
-    @classmethod
-    def no_mask(
-        cls,
-        values: Union[np.ndarray, List],
-        pixel_scales: ty.PixelScales,
-        shape_native: Tuple[int, int] = None,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        header: Optional[Header] = None,
-        normalize: bool = False,
-        image_mask=None,
-        blurring_mask=None,
-        mask_shape=None,
-        full_shape=None,
-        fft_shape=None,
-        use_fft: Optional[bool] = None,
-    ):
+    @property
+    def normalized(self) -> "Kernel2D":
         """
-        Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
-        determining whether to use the 'manual_slim' or 'manual_native' methods.
-
-        See the manual_slim and manual_native methods for examples.
-        Parameters
-        ----------
-        values
-            The values of the array input as an ndarray of shape [total_unmasked_pixels] or a list of
-            lists.
-        shape_native
-            The 2D shape of the mask the array is paired with.
-        pixel_scales
-            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
-            it is converted to a (float, float).
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
+        Normalize the Kernel2D such that its data_vector values sum to unity.
         """
-        values = Array2D.no_mask(
-            values=values,
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
-        )
-        return Kernel2D(
-            values=values,
-            mask=values.mask,
-            header=header,
-            normalize=normalize,
-            image_mask=image_mask,
-            blurring_mask=blurring_mask,
-            mask_shape=mask_shape,
-            full_shape=full_shape,
-            fft_shape=fft_shape,
-            use_fft=use_fft,
-        )
-
-    @classmethod
-    def full(
-        cls,
-        fill_value: float,
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        normalize: bool = False,
-    ) -> "Kernel2D":
-        """
-        Create a Kernel2D (see *Kernel2D.__new__*) where all values are filled with an input fill value, analogous to
-        the method numpy ndarray.full.
-
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
-
-        Parameters
-        ----------
-        fill_value
-            The value all array elements are filled with.
-        shape_native
-            The 2D shape of the mask the array is paired with.
-        pixel_scales
-            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
-            it is converted to a (float, float).
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
-        """
-        return Kernel2D.no_mask(
-            values=np.full(fill_value=fill_value, shape=shape_native),
-            pixel_scales=pixel_scales,
-            origin=origin,
-            normalize=normalize,
-        )
-
-    @classmethod
-    def ones(
-        cls,
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        normalize: bool = False,
-    ):
-        """
-        Create an Kernel2D (see *Kernel2D.__new__*) where all values are filled with ones, analogous to the method numpy
-        ndarray.ones.
-
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape of the mask the array is paired with.
-        pixel_scales
-            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
-            it is converted to a (float, float).
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
-        """
-        return cls.full(
-            fill_value=1.0,
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
-            normalize=normalize,
-        )
-
-    @classmethod
-    def zeros(
-        cls,
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        normalize: bool = False,
-    ) -> "Kernel2D":
-        """
-        Create an Kernel2D (see *Kernel2D.__new__*) where all values are filled with zeros, analogous to the method numpy
-        ndarray.ones.
-
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape of the mask the array is paired with.
-        pixel_scales
-            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
-            it is converted to a (float, float).
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
-        """
-        return cls.full(
-            fill_value=0.0,
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
-            normalize=normalize,
-        )
+        return Convolver(kernel=self.kernel, state=self._state, normalize=True)
 
     @classmethod
     def no_blur(cls, pixel_scales):
         """
-        Setup the Kernel2D as a kernel which does not convolve any signal, which is simply an array of shape (1, 1)
+        Setup the Convolver as a kernel which does not convolve any signal, which is simply an array of shape (1, 1)
         with value 1.
 
         Parameters
@@ -319,23 +217,26 @@ class Kernel2D(AbstractArray2D):
             it is converted to a (float, float).
         """
 
-        array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        kernel = Array2D.no_mask(
+            values=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]],
+            pixel_scales=pixel_scales,
+        )
 
-        return cls.no_mask(values=array, pixel_scales=pixel_scales)
+        return cls(kernel=kernel)
 
     @classmethod
     def from_gaussian(
         cls,
         shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
+        pixel_scales,
         sigma: float,
         centre: Tuple[float, float] = (0.0, 0.0),
         axis_ratio: float = 1.0,
         angle: float = 0.0,
         normalize: bool = False,
-    ) -> "Kernel2D":
+    ) -> "Convolver":
         """
-        Setup the Kernel2D as a 2D symmetric elliptical Gaussian profile, according to the equation:
+        Setup the Convolver as a 2D symmetric elliptical Gaussian profile, according to the equation:
 
         (1.0 / (sigma * sqrt(2.0*pi))) * exp(-0.5 * (r/sigma)**2)
 
@@ -356,7 +257,7 @@ class Kernel2D(AbstractArray2D):
         angle
             The rotational angle of the Gaussian's ellipse defined counter clockwise from the positive x-axis.
         normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
+            If True, the Convolver's array values are normalized such that they sum to 1.0.
         """
 
         grid = Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
@@ -384,43 +285,12 @@ class Kernel2D(AbstractArray2D):
             np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
         )
 
-        return cls.no_mask(
-            values=gaussian,
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            normalize=normalize,
+        gaussian = Array2D.no_mask(
+            values=gaussian, pixel_scales=pixel_scales, shape_native=shape_native
         )
 
-    @classmethod
-    def from_as_gaussian_via_alma_fits_header_parameters(
-        cls,
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        y_stddev: float,
-        x_stddev: float,
-        theta: float,
-        centre: Tuple[float, float] = (0.0, 0.0),
-        normalize: bool = False,
-    ) -> "Kernel2D":
-
-        from astropy import units
-
-        x_stddev = (
-            x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-        )
-        y_stddev = (
-            y_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-        )
-
-        axis_ratio = x_stddev / y_stddev
-
-        return Kernel2D.from_gaussian(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            sigma=y_stddev,
-            axis_ratio=axis_ratio,
-            angle=90.0 - theta,
-            centre=centre,
+        return Convolver(
+            kernel=gaussian,
             normalize=normalize,
         )
 
@@ -432,9 +302,9 @@ class Kernel2D(AbstractArray2D):
         pixel_scales,
         origin=(0.0, 0.0),
         normalize: bool = False,
-    ) -> "Kernel2D":
+    ) -> "Convolver":
         """
-        Loads the Kernel2D from a .fits file.
+        Loads the Convolver from a .fits file.
 
         Parameters
         ----------
@@ -449,83 +319,20 @@ class Kernel2D(AbstractArray2D):
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
+            If True, the Convolver's array values are normalized such that they sum to 1.0.
         """
 
         array = Array2D.from_fits(
-            file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
+            file_path=file_path,
+            hdu=hdu,
+            pixel_scales=pixel_scales,
+            origin=origin,
         )
 
-        header_sci_obj = header_obj_from(file_path=file_path, hdu=0)
-        header_hdu_obj = header_obj_from(file_path=file_path, hdu=hdu)
-
-        return Kernel2D(
-            values=array[:],
-            mask=array.mask,
+        return Convolver(
+            kernel=array,
             normalize=normalize,
-            header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
-
-    def fft_shape_from(
-        self, mask: np.ndarray
-    ) -> Union[Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
-        """
-        Compute the padded shapes required for FFT-based convolution with this kernel.
-
-        FFT convolution requires the input image and kernel to be zero-padded so that
-        the convolution is equivalent to linear convolution (not circular) and to avoid
-        wrap-around artefacts. This method inspects the mask and the kernel shape to
-        determine three key shapes:
-
-        - ``mask_shape``: the rectangular bounding-box region of the mask that encloses
-          all unmasked (False) pixels, padded by half the kernel size in each direction.
-          This is the minimal region that must be retained for convolution.
-        - ``full_shape``: the "linear convolution shape", equal to
-          ``mask_shape + kernel_shape - 1``. This is the minimal padded size required
-          for an exact linear convolution.
-        - ``fft_shape``: the FFT-efficient padded shape, obtained by rounding each
-          dimension of ``full_shape`` up to the next fast length for real FFTs
-          (via ``scipy.fft.next_fast_len``). Using this ensures efficient FFT execution.
-
-        Parameters
-        ----------
-        mask
-            A 2D mask where False indicates unmasked pixels (valid data) and True
-            indicates masked pixels. The bounding-box of the False region is used
-            to compute the convolution region.
-
-        Returns
-        -------
-        full_shape
-            The unpadded linear convolution shape (mask region + kernel − 1).
-        fft_shape
-            The FFT-friendly padded shape for efficient convolution.
-        mask_shape
-            The rectangular mask region size including kernel padding.
-        """
-
-        ys, xs = np.where(~mask)
-        y_min, y_max = ys.min(), ys.max()
-        x_min, x_max = xs.min(), xs.max()
-
-        (pad_y, pad_x) = self.shape_native
-
-        mask_shape = (
-            (y_max + pad_y // 2) - (y_min - pad_y // 2),
-            (x_max + pad_x // 2) - (x_min - pad_x // 2),
-        )
-
-        full_shape = tuple(s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.shape_native))
-        fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
-
-        return full_shape, fft_shape, mask_shape
-
-    @property
-    def normalized(self) -> "Kernel2D":
-        """
-        Normalize the Kernel2D such that its data_vector values sum to unity.
-        """
-        return Kernel2D(values=self, mask=self.mask, normalize=True)
 
     def mapping_matrix_native_from(
         self,
@@ -620,7 +427,7 @@ class Kernel2D(AbstractArray2D):
 
         This method chooses between an FFT-based convolution (default if
         ``self.use_fft=True``) or a direct real-space convolution, depending on
-        how the Kernel2D was configured.
+        how the Convolver was configured.
 
         In the FFT branch:
         - The input image (and optional blurring image) are resized / padded to
@@ -633,10 +440,10 @@ class Kernel2D(AbstractArray2D):
         and avoids wrap-around artefacts. The required padding is determined by
         ``fft_shape_from(mask)``. If no precomputed shapes exist, they are computed
         on the fly. For reproducible behaviour, precompute and set
-        ``fft_shape``, ``full_shape``, and ``mask_shape`` on the kernel.
+        ``fft_shape` on the kernel.
 
         If ``use_fft=False``, convolution falls back to
-        :meth:`Kernel2D.convolved_image_via_real_space_from`.
+        :meth:`Convolver.convolved_image_via_real_space_from`.
 
         Parameters
         ----------
@@ -670,45 +477,18 @@ class Kernel2D(AbstractArray2D):
         import jax.numpy as jnp
         from autoarray.structures.arrays.uniform_2d import Array2D
 
-        if self.fft_shape is None:
-            # Shapes computed on the fly
-            full_shape, fft_shape, mask_shape = self.fft_shape_from(mask=image.mask)
-
-            # Compute PSF FFT on the fly in the chosen precision
-            psf_native = jnp.asarray(self.stored_native.array, dtype=jnp.float64)
-            fft_psf = xp.fft.rfft2(psf_native, s=fft_shape, axes=(0, 1)).astype(
-                jnp.complex128
-            )
-
-            image_shape_original = image.shape_native
-
-            # Resize/pad the images as before
-            image = image.resized_from(new_shape=fft_shape, mask_pad_value=1)
-            if blurring_image is not None:
-                blurring_image = blurring_image.resized_from(
-                    new_shape=fft_shape, mask_pad_value=1
-                )
-        else:
-            # Cached shapes/state
-            fft_shape = self.fft_shape
-            full_shape = self.full_shape
-            mask_shape = self.mask_shape
-
-            # Use cached PSF FFT but ensure it matches chosen precision.
-            # IMPORTANT: casting here may create an extra buffer if self.fft_psf is complex128.
-            # Best practice is to cache a complex64 version on the object when MP is enabled.
-            fft_psf = jnp.asarray(self.fft_psf, dtype=jnp.complex128)
+        state = self.state_from(mask=image.mask)
 
         # Build combined native image in the FFT dtype
-        image_both_native = xp.zeros(image.mask.shape, dtype=jnp.float64)
+        image_both_native = xp.zeros(state.fft_shape, dtype=jnp.float64)
 
-        image_both_native = image_both_native.at[image.mask.slim_to_native_tuple].set(
+        image_both_native = image_both_native.at[state.mask.slim_to_native_tuple].set(
             jnp.asarray(image.array, dtype=jnp.float64)
         )
 
         if blurring_image is not None:
             image_both_native = image_both_native.at[
-                blurring_image.mask.slim_to_native_tuple
+                state.blurring_mask.slim_to_native_tuple
             ].set(jnp.asarray(blurring_image.array, dtype=jnp.float64))
         else:
             warnings.warn(
@@ -717,13 +497,15 @@ class Kernel2D(AbstractArray2D):
             )
 
         # FFT the combined image
-        fft_image_native = xp.fft.rfft2(image_both_native, s=fft_shape, axes=(0, 1))
+        fft_image_native = xp.fft.rfft2(
+            image_both_native, s=state.fft_shape, axes=(0, 1)
+        )
 
         # Multiply by PSF in Fourier space and invert
         blurred_image_full = xp.fft.irfft2(
-            fft_psf * fft_image_native, s=fft_shape, axes=(0, 1)
+            state.fft_kernel * fft_image_native, s=state.fft_shape, axes=(0, 1)
         )
-        ky, kx = self.native.array.shape  # (21, 21)
+        ky, kx = self.kernel.shape_native  # (21, 21)
         off_y = (ky - 1) // 2
         off_x = (kx - 1) // 2
 
@@ -734,18 +516,13 @@ class Kernel2D(AbstractArray2D):
         start_indices = (off_y, off_x)
 
         blurred_image_native = jax.lax.dynamic_slice(
-            blurred_image_full, start_indices, image.mask.shape
+            blurred_image_full, start_indices, state.fft_shape
         )
 
         # Return slim form; optionally cast for downstream stability
-        blurred_slim = blurred_image_native[image.mask.slim_to_native_tuple]
+        blurred_slim = blurred_image_native[state.mask.slim_to_native_tuple]
 
         blurred_image = Array2D(values=blurred_slim, mask=image.mask)
-
-        if self.fft_shape is None:
-            blurred_image = blurred_image.resized_from(
-                new_shape=image_shape_original, mask_pad_value=0
-            )
 
         if use_mixed_precision:
             blurred_image = blurred_image.astype(jnp.float32)
@@ -778,7 +555,7 @@ class Kernel2D(AbstractArray2D):
         - The slim (masked 1D) representation is returned.
 
         If ``use_fft=False``, convolution falls back to
-        :meth:`Kernel2D.convolved_mapping_matrix_via_real_space_from`.
+        :meth:`Convolver.convolved_mapping_matrix_via_real_space_from`.
 
         Notes
         -----
@@ -842,31 +619,21 @@ class Kernel2D(AbstractArray2D):
         import jax
         import jax.numpy as jnp
 
-        # -------------------------------------------------------------------------
-        # Cached FFT shapes/state (REQUIRED)
-        # -------------------------------------------------------------------------
-        if self.fft_shape is None:
-            raise ValueError(
-                "FFT convolution requires precomputed FFT shapes on the PSF."
-            )
-
-        fft_shape = self.fft_shape
-        fft_psf_mapping = self.fft_psf_mapping
+        state = self.state_from(mask=mask)
 
         # -------------------------------------------------------------------------
         # Mixed precision handling
         # -------------------------------------------------------------------------
         fft_complex_dtype = jnp.complex64 if use_mixed_precision else jnp.complex128
-        fft_psf_mapping = jnp.asarray(fft_psf_mapping, dtype=fft_complex_dtype)
 
         # -------------------------------------------------------------------------
         # Build native cube on the *native mask grid*
         # -------------------------------------------------------------------------
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
-            mask=mask,
+            mask=state.mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
-            blurring_mask=blurring_mask,
+            blurring_mask=state.blurring_mask,
             use_mixed_precision=use_mixed_precision,
             xp=xp,
         )
@@ -876,19 +643,19 @@ class Kernel2D(AbstractArray2D):
         # FFT convolution
         # -------------------------------------------------------------------------
         fft_mapping_matrix_native = xp.fft.rfft2(
-            mapping_matrix_native, s=fft_shape, axes=(0, 1)
+            mapping_matrix_native, s=state.fft_shape, axes=(0, 1)
         )
 
         blurred_mapping_matrix_full = xp.fft.irfft2(
-            fft_psf_mapping * fft_mapping_matrix_native,
-            s=fft_shape,
+            state.fft_kernel_mapping * fft_mapping_matrix_native,
+            s=state.fft_shape,
             axes=(0, 1),
         )
 
         # -------------------------------------------------------------------------
         # APPLY SAME FIX AS convolved_image_from
         # -------------------------------------------------------------------------
-        ky, kx = self.native.array.shape
+        ky, kx = self.kernel.shape_native
         off_y = (ky - 1) // 2
         off_x = (kx - 1) // 2
 
@@ -901,10 +668,9 @@ class Kernel2D(AbstractArray2D):
         # -------------------------------------------------------------------------
         # Extract native grid (same as image path)
         # -------------------------------------------------------------------------
-        native_shape = mask.shape
         start_indices = (off_y, off_x, 0)
 
-        out_shape = native_shape + (blurred_mapping_matrix_full.shape[2],)
+        out_shape = state.mask.shape_native + (blurred_mapping_matrix_full.shape[2],)
 
         blurred_mapping_matrix_native = jax.lax.dynamic_slice(
             blurred_mapping_matrix_full,
@@ -915,103 +681,9 @@ class Kernel2D(AbstractArray2D):
         # -------------------------------------------------------------------------
         # Slim using ORIGINAL mask indices (same grid)
         # -------------------------------------------------------------------------
-        blurred_slim = blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        blurred_slim = blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
 
         return blurred_slim
-
-    def rescaled_with_odd_dimensions_from(
-        self, rescale_factor: float, normalize: bool = False
-    ) -> "Kernel2D":
-        """
-        Return a version of this kernel rescaled so both dimensions are odd-sized.
-
-        Odd-sized kernels are often required for real space convolution operations
-        (e.g. centered PSFs in imaging pipelines). If the kernel has one or two
-        even-sized dimensions, they are rescaled (via interpolation) and padded
-        so that both dimensions are odd.
-
-        The kernel can also be scaled larger or smaller by changing
-        ``rescale_factor``. Rescaling uses ``skimage.transform.rescale`` /
-        ``resize``, which interpolate pixel values and may introduce small
-        inaccuracies compared to native instrument PSFs. Where possible, users
-        should generate odd-sized PSFs directly from data reduction.
-
-        Parameters
-        ----------
-        rescale_factor
-            Factor by which the kernel is rescaled. If 1.0, only adjusts size to
-            nearest odd dimensions. Values > 1 enlarge, < 1 shrink the kernel.
-        normalize
-            If True, the returned kernel is normalized to sum to 1.0.
-
-        Returns
-        -------
-        Kernel2D
-            Rescaled kernel with odd-sized dimensions.
-        """
-
-        from skimage.transform import resize, rescale
-
-        try:
-            kernel_rescaled = rescale(
-                self.native.array,
-                rescale_factor,
-                anti_aliasing=False,
-                mode="constant",
-                channel_axis=None,
-            )
-        except TypeError:
-            kernel_rescaled = rescale(
-                self.native.array,
-                rescale_factor,
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
-            kernel_rescaled = resize(
-                kernel_rescaled,
-                output_shape=(
-                    kernel_rescaled.shape[0] + 1,
-                    kernel_rescaled.shape[1] + 1,
-                ),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        elif kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 != 0:
-            kernel_rescaled = resize(
-                kernel_rescaled,
-                output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1]),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        elif kernel_rescaled.shape[0] % 2 != 0 and kernel_rescaled.shape[1] % 2 == 0:
-            kernel_rescaled = resize(
-                kernel_rescaled,
-                output_shape=(kernel_rescaled.shape[0], kernel_rescaled.shape[1] + 1),
-                anti_aliasing=False,
-                mode="constant",
-            )
-
-        if self.pixel_scales is not None:
-            pixel_scale_factors = (
-                self.mask.shape[0] / kernel_rescaled.shape[0],
-                self.mask.shape[1] / kernel_rescaled.shape[1],
-            )
-
-            pixel_scales = (
-                self.pixel_scales[0] * pixel_scale_factors[0],
-                self.pixel_scales[1] * pixel_scale_factors[1],
-            )
-
-        else:
-            pixel_scales = None
-
-        return Kernel2D.no_mask(
-            values=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
-        )
 
     def convolved_image_via_real_space_from(
         self,
@@ -1053,17 +725,19 @@ class Kernel2D(AbstractArray2D):
 
         import jax
 
+        state = self.state_from(mask=image.mask)
+
         # start with native array padded with zeros
-        image_native = xp.zeros(image.mask.shape, dtype=image.array.dtype)
+        image_native = xp.zeros(state.fft_shape, dtype=image.array.dtype)
 
         # set image pixels
-        image_native = image_native.at[image.mask.slim_to_native_tuple].set(image.array)
+        image_native = image_native.at[state.mask.slim_to_native_tuple].set(image.array)
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
             image_native = image_native.at[
-                blurring_image.mask.slim_to_native_tuple
+                state.blurring_mask.slim_to_native_tuple
             ].set(blurring_image.array)
 
         else:
@@ -1072,14 +746,11 @@ class Kernel2D(AbstractArray2D):
                 "This may change the correctness of the PSF convolution."
             )
 
-        # perform real-space convolution
-        kernel = self.stored_native.array
-
         convolve_native = jax.scipy.signal.convolve(
-            image_native, kernel, mode="same", method=jax_method
+            image_native, self.kernel.native.array, mode="same", method=jax_method
         )
 
-        convolved_array_1d = convolve_native[image.mask.slim_to_native_tuple]
+        convolved_array_1d = convolve_native[state.mask.slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
@@ -1131,26 +802,25 @@ class Kernel2D(AbstractArray2D):
 
         import jax
 
+        state = self.state_from(mask=mask)
+
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
-            mask=mask,
+            mask=state.mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
-            blurring_mask=blurring_mask,
+            blurring_mask=state.blurring_mask,
             xp=xp,
         )
 
-        # 6) Real-space convolution, broadcast kernel over source axis
-        kernel = self.stored_native.array
-
         blurred_mapping_matrix_native = jax.scipy.signal.convolve(
             mapping_matrix_native,
-            kernel[..., None],
+            self.kernel.native.array[..., None],
             mode="same",
             method=jax_method,
         )
 
         # return slim form
-        return blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        return blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]
 
     def convolved_image_via_real_space_np_from(
         self, image: np.ndarray, blurring_image: Optional[np.ndarray] = None, xp=np
@@ -1183,16 +853,18 @@ class Kernel2D(AbstractArray2D):
 
         from scipy.signal import convolve as scipy_convolve
 
+        state = self.state_from(mask=image.mask)
+
         # start with native array padded with zeros
-        image_native = xp.zeros(image.mask.shape, dtype=image.array.dtype)
+        image_native = xp.zeros(state.fft_shape)
 
         # set image pixels
-        image_native[image.mask.slim_to_native_tuple] = image.array
+        image_native[state.mask.slim_to_native_tuple] = image.array
 
         # add blurring contribution if provided
         if blurring_image is not None:
 
-            image_native[blurring_image.mask.slim_to_native_tuple] = (
+            image_native[state.blurring_mask.slim_to_native_tuple] = (
                 blurring_image.array
             )
 
@@ -1202,14 +874,11 @@ class Kernel2D(AbstractArray2D):
                 "This may change the correctness of the PSF convolution."
             )
 
-        # perform real-space convolution
-        kernel = self.stored_native.array
-
         convolve_native = scipy_convolve(
-            image_native, kernel, mode="same", method="auto"
+            image_native, self.kernel.native.array, mode="same", method="auto"
         )
 
-        convolved_array_1d = convolve_native[image.mask.slim_to_native_tuple]
+        convolved_array_1d = convolve_native[state.mask.slim_to_native_tuple]
 
         return Array2D(values=convolved_array_1d, mask=image.mask)
 
@@ -1251,21 +920,21 @@ class Kernel2D(AbstractArray2D):
 
         from scipy.signal import convolve as scipy_convolve
 
+        state = self.state_from(mask=mask)
+
         mapping_matrix_native = self.mapping_matrix_native_from(
             mapping_matrix=mapping_matrix,
-            mask=mask,
+            mask=state.mask,
             blurring_mapping_matrix=blurring_mapping_matrix,
-            blurring_mask=blurring_mask,
+            blurring_mask=state.blurring_mask,
             xp=xp,
         )
-        # 6) Real-space convolution, broadcast kernel over source axis
-        kernel = self.stored_native.array
 
         blurred_mapping_matrix_native = scipy_convolve(
             mapping_matrix_native,
-            kernel[..., None],
+            self.kernel.native.array[..., None],
             mode="same",
         )
 
         # return slim form
-        return blurred_mapping_matrix_native[mask.slim_to_native_tuple]
+        return blurred_mapping_matrix_native[state.mask.slim_to_native_tuple]

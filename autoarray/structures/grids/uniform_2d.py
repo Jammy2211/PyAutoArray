@@ -1086,7 +1086,7 @@ class Grid2D(Structure):
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         if kernel_shape_native[0] % 2 == 0 or kernel_shape_native[1] % 2 == 0:
-            raise exc.KernelException("Kernel2D Kernel2D must be odd")
+            raise exc.KernelException("Convolver Convolver must be odd")
 
         shape = self.mask.shape
 

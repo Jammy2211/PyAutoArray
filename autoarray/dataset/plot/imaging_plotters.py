@@ -93,7 +93,7 @@ class ImagingPlotterMeta(AbstractPlotter):
 
         if psf:
             self.mat_plot_2d.plot_array(
-                array=self.dataset.psf,
+                array=self.dataset.psf.kernel,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title=title_str or f"Point Spread Function",

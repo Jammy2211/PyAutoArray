@@ -9,7 +9,8 @@ from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
     ImagingSparseOperator,
 )
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.arrays.kernel_2d import Kernel2D
+from autoarray.operators.convolver import ConvolverState
+from autoarray.operators.convolver import Convolver
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
 
@@ -26,11 +27,11 @@ class Imaging(AbstractDataset):
         self,
         data: Array2D,
         noise_map: Optional[Array2D] = None,
-        psf: Optional[Kernel2D] = None,
+        psf: Optional[Convolver] = None,
+        psf_setup_state: bool = False,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
-        disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
         sparse_operator: Optional[ImagingSparseOperator] = None,
@@ -78,10 +79,6 @@ class Imaging(AbstractDataset):
         over_sample_size_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
-        disable_fft_pad
-            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming, which places the fewest zeros
-            around the image. If this is set to `True`, this optimal padding is not performed and the image is used
-            as-is.
         use_normalized_psf
             If `True`, the PSF kernel values are rescaled such that they sum to 1.0. This can be important for ensuring
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
@@ -93,50 +90,6 @@ class Imaging(AbstractDataset):
             enable this linear algebra formalism for pixelized reconstructions.
         """
 
-        self.disable_fft_pad = disable_fft_pad
-
-        if psf is not None:
-
-            full_shape, fft_shape, mask_shape = psf.fft_shape_from(mask=data.mask)
-
-        if psf is not None and not disable_fft_pad and data.mask.shape != fft_shape:
-
-            # If using real-space convolution instead of FFT, enforce odd-odd shapes
-            if not psf.use_fft:
-                fft_shape = tuple(s + 1 if s % 2 == 0 else s for s in fft_shape)
-
-            logger.info(
-                f"Imaging data has been trimmed or padded for FFT convolution.\n"
-                f"  - Original shape : {data.mask.shape}\n"
-                f"  - FFT shape    : {fft_shape}\n"
-                f"Padding ensures accurate PSF convolution in Fourier space. "
-                f"Set `disable_fft_pad=True` in Imaging object to turn off automatic padding."
-            )
-
-            over_sample_size_lp = (
-                over_sample_util.over_sample_size_convert_to_array_2d_from(
-                    over_sample_size=over_sample_size_lp, mask=data.mask
-                )
-            )
-            over_sample_size_lp = over_sample_size_lp.resized_from(
-                new_shape=fft_shape, mask_pad_value=1
-            )
-
-            over_sample_size_pixelization = (
-                over_sample_util.over_sample_size_convert_to_array_2d_from(
-                    over_sample_size=over_sample_size_pixelization, mask=data.mask
-                )
-            )
-            over_sample_size_pixelization = over_sample_size_pixelization.resized_from(
-                new_shape=fft_shape, mask_pad_value=1
-            )
-
-            data = data.resized_from(new_shape=fft_shape, mask_pad_value=1)
-            if noise_map is not None:
-                noise_map = noise_map.resized_from(
-                    new_shape=fft_shape, mask_pad_value=1
-                )
-
         super().__init__(
             data=data,
             noise_map=noise_map,
@@ -144,8 +97,6 @@ class Imaging(AbstractDataset):
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
         )
-
-        self.use_normalized_psf = use_normalized_psf
 
         if self.noise_map.native is not None and check_noise_map:
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
@@ -163,35 +114,21 @@ class Imaging(AbstractDataset):
 
         if psf is not None:
 
-            if not data.mask.is_all_false:
+            if use_normalized_psf:
 
-                image_mask = data.mask
-                blurring_mask = data.mask.derive_mask.blurring_from(
-                    kernel_shape_native=psf.shape_native
+                psf.kernel._array = np.divide(
+                    psf.kernel._array, np.sum(psf.kernel._array)
                 )
 
-            else:
+            if psf_setup_state:
 
-                image_mask = None
-                blurring_mask = None
+                state = ConvolverState(kernel=psf.kernel, mask=self.data.mask)
 
-            psf = Kernel2D.no_mask(
-                values=psf.native._array,
-                pixel_scales=psf.pixel_scales,
-                normalize=use_normalized_psf,
-                image_mask=image_mask,
-                blurring_mask=blurring_mask,
-                mask_shape=mask_shape,
-                full_shape=full_shape,
-                fft_shape=fft_shape,
-            )
+                psf = Convolver(
+                    kernel=psf.kernel, state=state, normalize=use_normalized_psf
+                )
 
         self.psf = psf
-
-        if psf is not None:
-            if not psf.use_fft:
-                if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
-                    raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
         self.grids = GridsDataset(
             mask=self.data.mask,
@@ -272,14 +209,17 @@ class Imaging(AbstractDataset):
         )
 
         if psf_path is not None:
-            psf = Kernel2D.from_fits(
+            kernel = Array2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
-                normalize=False,
+            )
+            psf = Convolver(
+                kernel=kernel,
             )
 
         else:
+            kernel = None
             psf = None
 
         return Imaging(
@@ -292,7 +232,7 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=over_sample_size_pixelization,
         )
 
-    def apply_mask(self, mask: Mask2D, disable_fft_pad: bool = False) -> "Imaging":
+    def apply_mask(self, mask: Mask2D) -> "Imaging":
         """
         Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
         quantities one-by-one.
@@ -340,10 +280,10 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             psf=self.psf,
+            psf_setup_state=True,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
         )
 
         logger.info(
@@ -356,7 +296,6 @@ class Imaging(AbstractDataset):
         self,
         mask: Mask2D,
         noise_value: float = 1e8,
-        disable_fft_pad: bool = False,
         signal_to_noise_value: Optional[float] = None,
         should_zero_data: bool = True,
     ) -> "Imaging":
@@ -423,7 +362,6 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
         )
 
@@ -437,7 +375,6 @@ class Imaging(AbstractDataset):
         self,
         over_sample_size_lp: Union[int, Array2D] = None,
         over_sample_size_pixelization: Union[int, Array2D] = None,
-        disable_fft_pad: bool = False,
     ) -> "AbstractDataset":
         """
         Apply new over sampling objects to the grid and grid pixelization of the dataset.
@@ -467,7 +404,6 @@ class Imaging(AbstractDataset):
             over_sample_size_lp=over_sample_size_lp or self.over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization
             or self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
         )
 
@@ -476,7 +412,6 @@ class Imaging(AbstractDataset):
     def apply_sparse_operator(
         self,
         batch_size: int = 128,
-        disable_fft_pad: bool = False,
     ):
         """
         The sparse linear algebra formalism precomputes the convolution of every pair of masked
@@ -493,11 +428,6 @@ class Imaging(AbstractDataset):
         batch_size
             The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
             which can be reduced to produce lower memory usage at the cost of speed
-        disable_fft_pad
-            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
-            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
-            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
-            padded.
         use_jax
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
@@ -510,7 +440,7 @@ class Imaging(AbstractDataset):
             inversion_imaging_util.ImagingSparseOperator.from_noise_map_and_psf(
                 data=self.data,
                 noise_map=self.noise_map,
-                psf=self.psf.native,
+                psf=self.psf.kernel.native,
                 batch_size=batch_size,
             )
         )
@@ -522,14 +452,12 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
             sparse_operator=sparse_operator,
         )
 
     def apply_sparse_operator_cpu(
         self,
-        disable_fft_pad: bool = False,
     ):
         """
         The sparse linear algebra formalism precomputes the convolution of every pair of masked
@@ -545,12 +473,7 @@ class Imaging(AbstractDataset):
         -------
         batch_size
             The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
-            which can be reduced to produce lower memory usage at the cost of speed
-        disable_fft_pad
-            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
-            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
-            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
-            padded.
+            which can be reduced to produce lower memory usage at the cost of speed.
         use_jax
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
@@ -575,7 +498,7 @@ class Imaging(AbstractDataset):
             lengths,
         ) = inversion_imaging_numba_util.psf_precision_operator_sparse_from(
             noise_map_native=np.array(self.noise_map.native.array).astype("float64"),
-            kernel_native=np.array(self.psf.native.array).astype("float64"),
+            kernel_native=np.array(self.psf.kernel.native.array).astype("float64"),
             native_index_for_slim_index=np.array(
                 self.mask.derive_indexes.native_for_slim
             ).astype("int"),
@@ -597,7 +520,6 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
             sparse_operator=sparse_operator,
         )
@@ -633,7 +555,7 @@ class Imaging(AbstractDataset):
         self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
         if self.psf is not None and psf_path is not None:
-            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
+            self.psf.kernel.output_to_fits(file_path=psf_path, overwrite=overwrite)
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)

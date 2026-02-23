@@ -229,7 +229,7 @@ class AbstractInversionImaging(AbstractInversion):
             data_linear_func_matrix = (
                 inversion_imaging_util.data_linear_func_matrix_from(
                     curvature_weights_matrix=curvature_weights,
-                    kernel_native=self.psf.native,
+                    kernel_native=self.psf.kernel.native,
                     mask=self.mask,
                 )
             )

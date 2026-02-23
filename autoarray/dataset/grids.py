@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.arrays.kernel_2d import Kernel2D
+from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.inversion.mesh.border_relocator import BorderRelocator
@@ -16,7 +16,7 @@ class GridsDataset:
         mask: Mask2D,
         over_sample_size_lp: Union[int, Array2D],
         over_sample_size_pixelization: Union[int, Array2D],
-        psf: Optional[Kernel2D] = None,
+        psf: Optional[Convolver] = None,
     ):
         """
         Contains grids of (y,x) Cartesian coordinates at the centre of every pixel in the dataset's image and
@@ -99,12 +99,10 @@ class GridsDataset:
         if self.psf is None:
             self._blurring = None
         else:
-            try:
-                self._blurring = self.lp.blurring_grid_via_kernel_shape_from(
-                    kernel_shape_native=self.psf.shape_native,
-                )
-            except exc.MaskException:
-                self._blurring = None
+            self._blurring = Grid2D.from_mask(
+                mask=self.psf._state.blurring_mask,
+                over_sample_size=1,
+            )
 
         return self._blurring
 
