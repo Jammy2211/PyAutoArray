@@ -274,7 +274,7 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
     sparse_operator = aa.ImagingSparseOperator.from_noise_map_and_psf(
         data=noise_map,
         noise_map=noise_map,
-        psf=psf.native,
+        psf=psf.kernel.native,
     )
 
     mesh = aa.mesh.RectangularAdaptDensity(shape=(20, 20))
