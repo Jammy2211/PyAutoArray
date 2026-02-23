@@ -19,6 +19,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.header import Header
 
+from autoarray import exc
 from autoarray import type as ty
 
 
