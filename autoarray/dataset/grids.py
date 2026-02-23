@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.arrays.kernel_2d import Convolver
+from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.inversion.mesh.border_relocator import BorderRelocator

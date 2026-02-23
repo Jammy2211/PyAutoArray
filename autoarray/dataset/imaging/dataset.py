@@ -9,7 +9,7 @@ from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
     ImagingSparseOperator,
 )
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.arrays.kernel_2d import Convolver
+from autoarray.operators.convolver import Convolver
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
 
