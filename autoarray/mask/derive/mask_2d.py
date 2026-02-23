@@ -171,7 +171,7 @@ class DeriveMask2D:
         Parameters
         ----------
         kernel_shape_native
-           The 2D shape of the 2D convolution ``Kernel2D`` which defines the blurring region.
+           The 2D shape of the 2D convolution ``Convolver`` which defines the blurring region.
 
         Examples
         --------

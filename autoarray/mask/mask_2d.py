@@ -696,7 +696,7 @@ class Mask2D(Mask):
 
         Parameters
         ----------
-        psf : aa.Kernel2D
+        psf : aa.Convolver
             The PSF of the image used for convolution.
         unmasked_image_1d
             The 1D unmasked image which is blurred.

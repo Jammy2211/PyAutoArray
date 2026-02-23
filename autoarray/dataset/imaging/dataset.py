@@ -9,7 +9,7 @@ from autoarray.inversion.inversion.imaging.inversion_imaging_util import (
     ImagingSparseOperator,
 )
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.arrays.kernel_2d import Kernel2D
+from autoarray.structures.arrays.kernel_2d import Convolver
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
 
@@ -26,7 +26,7 @@ class Imaging(AbstractDataset):
         self,
         data: Array2D,
         noise_map: Optional[Array2D] = None,
-        psf: Optional[Kernel2D] = None,
+        psf: Optional[Convolver] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
@@ -95,48 +95,6 @@ class Imaging(AbstractDataset):
 
         self.disable_fft_pad = disable_fft_pad
 
-        if psf is not None:
-
-            fft_shape = psf.fft_shape_from(mask=data.mask)
-
-        if psf is not None and not disable_fft_pad and data.mask.shape != fft_shape:
-
-            # If using real-space convolution instead of FFT, enforce odd-odd shapes
-            if not psf.use_fft:
-                fft_shape = tuple(s + 1 if s % 2 == 0 else s for s in fft_shape)
-
-            logger.info(
-                f"Imaging data has been trimmed or padded for FFT convolution.\n"
-                f"  - Original shape : {data.mask.shape}\n"
-                f"  - FFT shape    : {fft_shape}\n"
-                f"Padding ensures accurate PSF convolution in Fourier space. "
-                f"Set `disable_fft_pad=True` in Imaging object to turn off automatic padding."
-            )
-
-            over_sample_size_lp = (
-                over_sample_util.over_sample_size_convert_to_array_2d_from(
-                    over_sample_size=over_sample_size_lp, mask=data.mask
-                )
-            )
-            over_sample_size_lp = over_sample_size_lp.resized_from(
-                new_shape=fft_shape, mask_pad_value=1
-            )
-
-            over_sample_size_pixelization = (
-                over_sample_util.over_sample_size_convert_to_array_2d_from(
-                    over_sample_size=over_sample_size_pixelization, mask=data.mask
-                )
-            )
-            over_sample_size_pixelization = over_sample_size_pixelization.resized_from(
-                new_shape=fft_shape, mask_pad_value=1
-            )
-
-            data = data.resized_from(new_shape=fft_shape, mask_pad_value=1)
-            if noise_map is not None:
-                noise_map = noise_map.resized_from(
-                    new_shape=fft_shape, mask_pad_value=1
-                )
-
         super().__init__(
             data=data,
             noise_map=noise_map,
@@ -166,30 +124,19 @@ class Imaging(AbstractDataset):
             if not data.mask.is_all_false:
 
                 image_mask = data.mask
-                blurring_mask = data.mask.derive_mask.blurring_from(
-                    kernel_shape_native=psf.shape_native
-                )
 
             else:
 
                 image_mask = None
-                blurring_mask = None
 
-            psf = Kernel2D.no_mask(
+            psf = Convolver.no_mask(
                 values=psf.native._array,
                 pixel_scales=psf.pixel_scales,
                 normalize=use_normalized_psf,
-                image_mask=image_mask,
-                blurring_mask=blurring_mask,
-                fft_shape=fft_shape,
+                fft_mask=image_mask,
             )
 
         self.psf = psf
-
-        if psf is not None:
-            if not psf.use_fft:
-                if psf.mask.shape[0] % 2 == 0 or psf.mask.shape[1] % 2 == 0:
-                    raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
         self.grids = GridsDataset(
             mask=self.data.mask,
@@ -270,7 +217,7 @@ class Imaging(AbstractDataset):
         )
 
         if psf_path is not None:
-            psf = Kernel2D.from_fits(
+            psf = Convolver.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,

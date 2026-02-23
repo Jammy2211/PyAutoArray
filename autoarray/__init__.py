@@ -77,7 +77,7 @@ from .inversion.mesh.mesh_geometry.rectangular import MeshGeometryRectangular
 from .inversion.mesh.mesh_geometry.delaunay import MeshGeometryDelaunay
 from .inversion.mesh.interpolator.rectangular import InterpolatorRectangular
 from .inversion.mesh.interpolator.delaunay import InterpolatorDelaunay
-from .structures.arrays.kernel_2d import Kernel2D
+from .structures.arrays.kernel_2d import Convolver
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
 from .structures.triangles.abstract import AbstractTriangles
