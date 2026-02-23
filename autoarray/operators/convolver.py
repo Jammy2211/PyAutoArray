@@ -25,8 +25,8 @@ from autoarray import type as ty
 class Convolver:
     def __init__(
         self,
-        kernel,
-        mask=None,
+        kernel : Array2D,
+        mask : Optional[Mask2D] = None,
         normalize: bool = False,
         use_fft: Optional[bool] = None,
         *args,
@@ -84,7 +84,6 @@ class Convolver:
         
         self.kernel = kernel
         self.mask = mask
-        self.header = header
 
         if normalize:
             self.kernel = np.divide(self.kernel, np.sum(self.kernel))

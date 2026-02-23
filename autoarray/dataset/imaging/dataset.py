@@ -30,7 +30,6 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample_size_lp: Union[int, Array2D] = 4,
         over_sample_size_pixelization: Union[int, Array2D] = 4,
-        disable_fft_pad: bool = True,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
         sparse_operator: Optional[ImagingSparseOperator] = None,
@@ -78,10 +77,6 @@ class Imaging(AbstractDataset):
         over_sample_size_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
-        disable_fft_pad
-            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming, which places the fewest zeros
-            around the image. If this is set to `True`, this optimal padding is not performed and the image is used
-            as-is.
         use_normalized_psf
             If `True`, the PSF kernel values are rescaled such that they sum to 1.0. This can be important for ensuring
             the PSF kernel does not change the overall normalization of the image when it is convolved with it.
@@ -92,8 +87,6 @@ class Imaging(AbstractDataset):
             noise-map values given the PSF (see `inversion.inversion_util`). Pass the `ImagingSparseOperator` object here to
             enable this linear algebra formalism for pixelized reconstructions.
         """
-
-        self.disable_fft_pad = disable_fft_pad
 
         super().__init__(
             data=data,
@@ -237,7 +230,7 @@ class Imaging(AbstractDataset):
             over_sample_size_pixelization=over_sample_size_pixelization,
         )
 
-    def apply_mask(self, mask: Mask2D, disable_fft_pad: bool = False) -> "Imaging":
+    def apply_mask(self, mask: Mask2D) -> "Imaging":
         """
         Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
         quantities one-by-one.
@@ -288,7 +281,6 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=noise_covariance_matrix,
             over_sample_size_lp=over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
         )
 
         logger.info(
@@ -301,7 +293,6 @@ class Imaging(AbstractDataset):
         self,
         mask: Mask2D,
         noise_value: float = 1e8,
-        disable_fft_pad: bool = False,
         signal_to_noise_value: Optional[float] = None,
         should_zero_data: bool = True,
     ) -> "Imaging":
@@ -368,7 +359,6 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
         )
 
@@ -382,7 +372,6 @@ class Imaging(AbstractDataset):
         self,
         over_sample_size_lp: Union[int, Array2D] = None,
         over_sample_size_pixelization: Union[int, Array2D] = None,
-        disable_fft_pad: bool = False,
     ) -> "AbstractDataset":
         """
         Apply new over sampling objects to the grid and grid pixelization of the dataset.
@@ -412,7 +401,6 @@ class Imaging(AbstractDataset):
             over_sample_size_lp=over_sample_size_lp or self.over_sample_size_lp,
             over_sample_size_pixelization=over_sample_size_pixelization
             or self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
         )
 
@@ -421,7 +409,6 @@ class Imaging(AbstractDataset):
     def apply_sparse_operator(
         self,
         batch_size: int = 128,
-        disable_fft_pad: bool = False,
     ):
         """
         The sparse linear algebra formalism precomputes the convolution of every pair of masked
@@ -438,11 +425,6 @@ class Imaging(AbstractDataset):
         batch_size
             The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
             which can be reduced to produce lower memory usage at the cost of speed
-        disable_fft_pad
-            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
-            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
-            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
-            padded.
         use_jax
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
@@ -467,14 +449,12 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
             sparse_operator=sparse_operator,
         )
 
     def apply_sparse_operator_cpu(
         self,
-        disable_fft_pad: bool = False,
     ):
         """
         The sparse linear algebra formalism precomputes the convolution of every pair of masked
@@ -490,12 +470,7 @@ class Imaging(AbstractDataset):
         -------
         batch_size
             The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
-            which can be reduced to produce lower memory usage at the cost of speed
-        disable_fft_pad
-            The FFT PSF convolution is optimal for a certain 2D FFT padding or trimming,
-            which places the fewest zeros around the image. If this is set to `True`, this optimal padding is not
-            performed and the image is used as-is. This is normally used to avoid repadding data that has already been
-            padded.
+            which can be reduced to produce lower memory usage at the cost of speed.
         use_jax
             Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
         """
@@ -542,7 +517,6 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=self.noise_covariance_matrix,
             over_sample_size_lp=self.over_sample_size_lp,
             over_sample_size_pixelization=self.over_sample_size_pixelization,
-            disable_fft_pad=disable_fft_pad,
             check_noise_map=False,
             sparse_operator=sparse_operator,
         )
