@@ -65,6 +65,9 @@ class ConvolverState:
         fft_shape
             The FFT-friendly padded shape for efficient convolution.
         """
+        if len(kernel) == 1:
+            kernel = kernel.resized_from(new_shape=(3, 3))
+
         self.kernel = kernel
 
         ys, xs = np.where(~mask)
@@ -82,6 +85,10 @@ class ConvolverState:
             s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native)
         )
         fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
+
+        # make fft_shape odd x odd to avoid wrap-around artefacts with even kernels
+        # TODO : Fix this so it pads corrrectly internally
+        fft_shape = tuple(s + 1 if s % 2 == 0 else s for s in fft_shape)
 
         self.fft_shape = fft_shape
         self.mask = mask.resized_from(self.fft_shape, pad_value=1)
@@ -159,18 +166,24 @@ class Convolver:
                 self.kernel._array, np.sum(self.kernel._array)
             )
 
-        if not use_fft:
+        self._use_fft = use_fft
+
+        if not self._use_fft:
             if (
                 self.kernel.shape_native[0] % 2 == 0
                 or self.kernel.shape_native[1] % 2 == 0
             ):
                 raise exc.KernelException("Convolver Convolver must be odd")
 
-        self._use_fft = use_fft
-
         self._state = state
 
     def state_from(self, mask):
+
+        if (
+            mask.shape_native[0] != self.kernel.shape_native[0]
+            or mask.shape_native[1] != self.kernel.shape_native[1]
+        ):
+            return ConvolverState(kernel=self.kernel, mask=mask)
 
         if self._state is None:
             return ConvolverState(kernel=self.kernel, mask=mask)
@@ -183,6 +196,13 @@ class Convolver:
             return conf.instance["general"]["psf"]["use_fft_default"]
 
         return self._use_fft
+
+    @property
+    def normalized(self) -> "Kernel2D":
+        """
+        Normalize the Kernel2D such that its data_vector values sum to unity.
+        """
+        return Convolver(kernel=self.kernel, state=self._state, normalize=True)
 
     @classmethod
     def no_blur(cls, pixel_scales):
@@ -836,7 +856,7 @@ class Convolver:
         state = self.state_from(mask=image.mask)
 
         # start with native array padded with zeros
-        image_native = xp.zeros(state.mask.shape, dtype=image.array.dtype)
+        image_native = xp.zeros(state.fft_shape)
 
         # set image pixels
         image_native[state.mask.slim_to_native_tuple] = image.array
