@@ -382,14 +382,10 @@ def rectangular_edge_pixel_list_from(
     # Right column (excluding corners)
     right = (np.arange(1, rows - 1) + 1) * cols - 1
 
-    # All edge pixels in forward indexing
     edge_pixel_indices = np.concatenate([top, left, right, bottom])
 
-    # Convert to negative indices from the right
-    # -1 corresponds to the last element
-    negative_edge_indices = -(edge_pixel_indices + 1)
+    return np.sort(edge_pixel_indices).tolist()
 
-    return np.sort(negative_edge_indices).tolist()
 
 def adaptive_rectangular_areas_from(
     source_grid_shape, data_grid, mesh_weight_map=None, xp=np

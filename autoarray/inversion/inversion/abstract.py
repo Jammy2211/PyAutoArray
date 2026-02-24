@@ -398,12 +398,12 @@ class AbstractInversion:
 
         if self.settings.use_positive_only_solver:
 
-            mapper_list = self.cls_list_from(cls=Mapper)
+            if self.settings.use_edge_zeroed_pixels and self.has(cls=Mapper):
 
-            if self.settings.use_edge_zeroed_pixels:
+                mapper_list = self.cls_list_from(cls=Mapper)
 
                 # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
-                ids_to_keep = mapper_list[0].mesh.source_pixel_zeroed_indices_to_keep
+                ids_to_keep = mapper_list[0].mesh.zeroed_pixels_to_keep
 
                 # Use advanced indexing to select rows/columns
                 data_vector = self.data_vector[ids_to_keep]

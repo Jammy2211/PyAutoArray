@@ -1,3 +1,5 @@
+from typing import Optional
+
 from autoarray.inversion.mesh.mesh.delaunay import Delaunay
 
 
@@ -5,10 +7,12 @@ class KNearestNeighbor(Delaunay):
 
     def __init__(
         self,
+        pixels: int,
         k_neighbors=10,
         radius_scale=1.5,
         areas_factor=0.5,
         split_neighbor_division=2,
+        zeroed_pixels: Optional[int] = 0,
     ):
 
         self.k_neighbors = k_neighbors
@@ -16,7 +20,7 @@ class KNearestNeighbor(Delaunay):
         self.areas_factor = areas_factor
         self.split_neighbor_division = split_neighbor_division
 
-        super().__init__()
+        super().__init__(pixels=pixels, zeroed_pixels=zeroed_pixels)
 
     @property
     def skip_areas(self):

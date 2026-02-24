@@ -12,7 +12,7 @@ class Settings:
         self,
         use_mixed_precision: bool = False,
         use_positive_only_solver: Optional[bool] = None,
-        use_edge_zeroed_pixels : Optional[bool] = None,
+        use_edge_zeroed_pixels: Optional[bool] = None,
         use_border_relocator: Optional[bool] = None,
         no_regularization_add_to_curvature_diag_value: float = None,
     ):

@@ -111,6 +111,10 @@ class Mapper(LinearObj):
         return self.source_plane_data_grid.mask
 
     @property
+    def mesh(self):
+        return self.interpolator.mesh
+
+    @property
     def mesh_geometry(self):
         return self.interpolator.mesh_geometry
 

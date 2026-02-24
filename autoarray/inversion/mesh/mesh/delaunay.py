@@ -8,7 +8,9 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
 class Delaunay(AbstractMesh):
-    def __init__(self, areas_factor: float = 0.5):
+    def __init__(
+        self, pixels: int, areas_factor: float = 0.5, zeroed_pixels: Optional[int] = 0
+    ):
         """
         An irregular mesh of Delaunay triangle pixels, which using linear barycentric interpolation are paired with
         a 2D grid of (y,x) coordinates.
@@ -32,8 +34,18 @@ class Delaunay(AbstractMesh):
         Coordinates on the ``source_plane_data_grid`` are therefore given higher weights when paired with Delaunay
         triangle corners they are a closer distance to.
         """
+
+        pixels = int(pixels) + zeroed_pixels
+
         super().__init__()
         self.areas_factor = areas_factor
+        self.zeroed_pixels = zeroed_pixels
+
+    def zeroed_pixels(self):
+        if not self.zeroed_pixels:
+            return []
+
+        return -np.arange(1, self.zeroed_pixels + 1).tolist()
 
     @property
     def skip_areas(self):
