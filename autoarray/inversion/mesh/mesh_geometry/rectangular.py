@@ -515,7 +515,7 @@ class MeshGeometryRectangular(AbstractMeshGeometry):
         edges_reshaped = self._xp.stack([edges_y, edges_x]).T
 
         return adaptive_rectangular_transformed_grid_from(
-            data_grid=self.data_grid.over_sampled,
+            data_grid=self.data_grid.array,
             grid=edges_reshaped,
             mesh_weight_map=self.mesh_weight_map,
             xp=self._xp,
