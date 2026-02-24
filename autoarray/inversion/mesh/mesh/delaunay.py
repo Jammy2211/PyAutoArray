@@ -60,7 +60,6 @@ class Delaunay(AbstractMesh):
         source_plane_mesh_grid: Grid2DIrregular,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        preloads=None,
         xp=np,
     ):
         """
@@ -120,6 +119,5 @@ class Delaunay(AbstractMesh):
             data_grid=relocated_grid,
             mesh_grid=relocated_mesh_grid,
             adapt_data=adapt_data,
-            preloads=preloads,
             xp=xp,
         )

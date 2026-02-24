@@ -101,6 +101,26 @@ class RectangularAdaptDensity(AbstractMesh):
         super().__init__()
 
     @property
+    def source_pixel_zeroed_indices(self):
+
+        from autoarray.inversion.mesh.mesh_geometry.rectangular import rectangular_edge_pixel_list_from
+
+        return rectangular_edge_pixel_list_from(
+            shape_native=mesh_shape,
+        )
+
+    @property
+    def source_pixel_zeroed_indices_to_keep(self):
+
+        ids_zeros = np.array(self.source_pixel_zeroed_indices, dtype=int)
+
+        values_to_solve = np.ones(np.max(mapper_indices) + 1, dtype=bool)
+        values_to_solve[ids_zeros] = False
+
+        return np.where(values_to_solve)[0]
+
+
+    @property
     def interpolator_cls(self):
         from autoarray.inversion.mesh.interpolator.rectangular import (
             InterpolatorRectangular,
@@ -127,7 +147,6 @@ class RectangularAdaptDensity(AbstractMesh):
         source_plane_mesh_grid: Grid2DIrregular,
         border_relocator: Optional[BorderRelocator] = None,
         adapt_data: np.ndarray = None,
-        preloads=None,
         xp=np,
     ):
         """
@@ -181,6 +200,5 @@ class RectangularAdaptDensity(AbstractMesh):
             mesh_grid=Grid2DIrregular(mesh_grid),
             mesh_weight_map=mesh_weight_map,
             adapt_data=adapt_data,
-            preloads=preloads,
             xp=xp,
         )

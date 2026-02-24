@@ -217,7 +217,6 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
             mesh=self.mesh,
             mesh_grid=self.mesh_grid,
             data_grid=split_points,
-            preloads=self.preloads,
             xp=self._xp,
         )
 

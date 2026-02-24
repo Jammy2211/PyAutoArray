@@ -23,7 +23,6 @@ class Mapper(LinearObj):
         regularization: Optional[AbstractRegularization] = None,
         settings: Settings = None,
         image_plane_mesh_grid=None,
-        preloads=None,
         xp=np,
     ):
         """
@@ -96,7 +95,7 @@ class Mapper(LinearObj):
         self.interpolator = interpolator
 
         self.image_plane_mesh_grid = image_plane_mesh_grid
-        self.preloads = preloads
+
         self.settings = settings or Settings()
 
     @property

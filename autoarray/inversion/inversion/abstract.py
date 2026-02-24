@@ -12,7 +12,6 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.settings import Settings
-from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
@@ -27,7 +26,6 @@ class AbstractInversion:
         dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: Settings = None,
-        preloads: Preloads = None,
         xp=np,
     ):
         """
@@ -73,8 +71,6 @@ class AbstractInversion:
         self.linear_obj_list = linear_obj_list
 
         self.settings = settings or Settings()
-
-        self.preloads = preloads or Preloads()
 
         self.use_jax = xp is not np
 
@@ -233,9 +229,6 @@ class AbstractInversion:
 
     @property
     def mapper_indices(self) -> np.ndarray:
-
-        if self.preloads.mapper_indices is not None:
-            return self.preloads.mapper_indices
 
         mapper_indices = []
 
@@ -405,10 +398,12 @@ class AbstractInversion:
 
         if self.settings.use_positive_only_solver:
 
-            if self.preloads.source_pixel_zeroed_indices is not None:
+            mapper_list = self.cls_list_from(cls=Mapper)
+
+            if self.settings.use_edge_zeroed_pixels:
 
                 # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
-                ids_to_keep = self.preloads.source_pixel_zeroed_indices_to_keep
+                ids_to_keep = mapper_list[0].mesh.source_pixel_zeroed_indices_to_keep
 
                 # Use advanced indexing to select rows/columns
                 data_vector = self.data_vector[ids_to_keep]
