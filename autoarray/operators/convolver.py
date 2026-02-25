@@ -244,8 +244,13 @@ class Convolver:
     def normalized(self) -> "Convolver":
         """
         Normalize the Convolver such that its data_vector values sum to unity.
+
+        A copy of the kernel is used to avoid mutating the original kernel instance,
+        and no existing state is reused so that any cached FFTs are recomputed for
+        the normalized kernel.
         """
-        return Convolver(kernel=self.kernel, state=self._state, normalize=True)
+        kernel_copy = self.kernel.copy()
+        return Convolver(kernel=kernel_copy, state=None, normalize=True)
 
     @classmethod
     def no_blur(cls, pixel_scales):
