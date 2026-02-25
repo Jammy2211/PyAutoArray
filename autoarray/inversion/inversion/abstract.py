@@ -439,40 +439,44 @@ class AbstractInversion:
             A 1D array of **positive global indices**, sorted in ascending order,
             corresponding to linear parameters that should be kept in the inversion.
         """
-        xp = self._xp
 
         mapper_list = self.cls_list_from(cls=Mapper)
 
         n_total = int(self.total_params)
+
         pixels_per_mapper = [int(m.mesh.pixels) for m in mapper_list]
         total_pixels = int(sum(pixels_per_mapper))
 
-        # Global start index of the concatenated pixel block
+        # Global start index of concatenated pixel block
         pixel_start = n_total - total_pixels
 
-        # Build global indices to zero across all mappers
+        # Total number of zeroed pixels across all mappers (Python int => static)
+        total_zeroed = int(sum(len(m.mesh.zeroed_pixels) for m in mapper_list))
+        n_keep = int(n_total - total_zeroed)
+
+        # Build global indices-to-zero across all mappers
         zeros_global_list = []
         offset = 0
-        for mapper, n_pix in zip(mapper_list, pixels_per_mapper):
-            zeros_local = xp.asarray(mapper.mesh.zeroed_pixels, dtype=xp.int32)
+        for m, n_pix in zip(mapper_list, pixels_per_mapper):
+            zeros_local = self._xp.asarray(m.mesh.zeroed_pixels, dtype=self._xp.int32)
             zeros_global_list.append(pixel_start + offset + zeros_local)
             offset += n_pix
 
         zeros_global = (
-            xp.concatenate(zeros_global_list) if len(zeros_global_list) > 0 else xp.asarray([], dtype=xp.int32)
+            self._xp.concatenate(zeros_global_list)
+            if len(zeros_global_list) > 0
+            else self._xp.asarray([], dtype=self._xp.int32)
         )
 
-        keep = xp.ones((n_total,), dtype=bool)
+        keep = self._xp.ones((n_total,), dtype=bool)
 
-        if hasattr(keep, "at"):
-            # JAX path
-            keep = keep.at[zeros_global].set(False)
-            keep_ids = xp.nonzero(keep, size=n_total)[0]
-            keep_ids = keep_ids[: keep.sum()]
-        else:
-            # NumPy path
+        if self._xp is np:
             keep[zeros_global] = False
-            keep_ids = xp.nonzero(keep)[0]
+            keep_ids = self._xp.nonzero(keep)[0]
+            
+        else:
+            keep = keep.at[zeros_global].set(False)
+            keep_ids = self._xp.nonzero(keep, size=n_keep)[0]
 
         return keep_ids
 
