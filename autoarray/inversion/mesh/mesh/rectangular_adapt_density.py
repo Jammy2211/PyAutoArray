@@ -216,7 +216,7 @@ class RectangularAdaptDensity(AbstractMesh):
 
         mesh_grid = overlay_grid_from(
             shape_native=self.shape,
-            grid=Grid2DIrregular(relocated_grid.over_sampled),
+            grid=relocated_grid.over_sampled,
             xp=xp,
         )
 
