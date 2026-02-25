@@ -33,6 +33,18 @@ class Delaunay(AbstractMesh):
 
         Coordinates on the ``source_plane_data_grid`` are therefore given higher weights when paired with Delaunay
         triangle corners they are a closer distance to.
+
+        Parameters
+        ----------
+        pixels : int
+            The number of Delaunay pixels to use before accounting for any zeroed pixels. The total number of
+            pixels in the mesh is ``pixels + zeroed_pixels``.
+        areas_factor : float, optional
+            A scaling factor used when computing pixel areas for the mesh. Defaults to ``0.5``.
+        zeroed_pixels : int, optional
+            The number of additional pixels to allocate that are treated as zeroed / inactive when using the mesh.
+            These pixels increase the total mesh size to ``pixels + zeroed_pixels`` but are not expected to
+            contribute to the reconstructed signal. Defaults to ``0``.
         """
 
         pixels = int(pixels) + zeroed_pixels
