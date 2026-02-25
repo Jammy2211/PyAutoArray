@@ -99,8 +99,13 @@ class GridsDataset:
         if self.psf is None:
             self._blurring = None
         else:
+
+            blurring_mask = self.mask.derive_mask.blurring_from(
+                kernel_shape_native=self.psf.kernel.shape_native
+            )
+
             self._blurring = Grid2D.from_mask(
-                mask=self.psf._state.blurring_mask,
+                mask=blurring_mask,
                 over_sample_size=1,
             )
 
