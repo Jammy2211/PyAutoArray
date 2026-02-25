@@ -236,7 +236,6 @@ class InterpolatorRectangular(AbstractInterpolator):
         data_grid,
         mesh_weight_map,
         adapt_data: np.ndarray = None,
-        preloads=None,
         xp=np,
     ):
         """
@@ -271,7 +270,6 @@ class InterpolatorRectangular(AbstractInterpolator):
             mesh_grid=mesh_grid,
             data_grid=data_grid,
             adapt_data=adapt_data,
-            preloads=preloads,
             xp=xp,
         )
         self.mesh_weight_map = mesh_weight_map

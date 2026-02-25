@@ -353,7 +353,7 @@ def rectangular_edges_from(shape_native, pixel_scales, xp=np):
 
 
 def rectangular_edge_pixel_list_from(
-    shape_native: Tuple[int, int], total_linear_light_profiles: int = 0
+    shape_native: Tuple[int, int],
 ) -> List[int]:
     """
     Returns a list of the 1D indices of all pixels on the edge of a rectangular pixelization,
@@ -382,12 +382,8 @@ def rectangular_edge_pixel_list_from(
     # Right column (excluding corners)
     right = (np.arange(1, rows - 1) + 1) * cols - 1
 
-    # Concatenate all edge indices
-    edge_pixel_indices = total_linear_light_profiles + np.concatenate(
-        [top, left, right, bottom]
-    )
+    edge_pixel_indices = np.concatenate([top, left, right, bottom])
 
-    # Sort and return
     return np.sort(edge_pixel_indices).tolist()
 
 

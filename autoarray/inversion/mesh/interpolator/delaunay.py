@@ -368,7 +368,6 @@ class InterpolatorDelaunay(AbstractInterpolator):
         mesh_grid,
         data_grid,
         adapt_data: np.ndarray = None,
-        preloads=None,
         xp=np,
     ):
         """
@@ -403,7 +402,6 @@ class InterpolatorDelaunay(AbstractInterpolator):
             mesh_grid=mesh_grid,
             data_grid=data_grid,
             adapt_data=adapt_data,
-            preloads=preloads,
             xp=xp,
         )
 
