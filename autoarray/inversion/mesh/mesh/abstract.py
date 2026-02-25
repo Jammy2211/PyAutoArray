@@ -52,39 +52,6 @@ class AbstractMesh:
             xp=xp,
         )
 
-    @property
-    def zeroed_pixels_to_keep(self):
-        """
-        Return the positive indices of pixels that should be kept (solved for),
-        accounting for zeroed pixels specified using Python-style negative indexing.
-
-        This property assumes that `self.zeroed_pixels` contains **negative indices**
-        referring to entries counted from the right-hand side of the parameter array
-        (e.g. -1 is the last entry, -2 the second-to-last, etc.).
-
-        These negative indices are converted to their corresponding positive indices
-        before constructing a boolean mask over the full set of mapper indices.
-
-        Returns
-        -------
-        np.ndarray
-            A 1D array of positive indices corresponding to pixels that are *not*
-            zeroed and should therefore be included in the solve.
-        """
-        # Negative indices from the right (e.g. [-1, -2, ...])
-        ids_zeros_neg = np.array(self.zeroed_pixels, dtype=int)
-
-        # Total number of values being solved for
-        n_values = self.pixels
-
-        # Convert negative indices to positive
-        ids_zeros_pos = n_values + ids_zeros_neg
-
-        values_to_solve = np.ones(n_values, dtype=bool)
-        values_to_solve[ids_zeros_pos] = False
-
-        return np.where(values_to_solve)[0]
-
     def relocated_mesh_grid_from(
         self,
         border_relocator: Optional[BorderRelocator],

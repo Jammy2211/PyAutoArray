@@ -102,16 +102,29 @@ class RectangularAdaptDensity(AbstractMesh):
 
     @property
     def zeroed_pixels(self):
+        """
+        Return the **positive** 1D pixel indices of the edge pixels in a rectangular mesh.
 
+        Indices are in row-major (C-order) flattened form for the rectangular pixel grid:
+            - 0 corresponds to the top-left pixel (row=0, col=0)
+            - indices increase across rows
+
+        These indices are defined purely within the rectangular mesh's pixel indexing
+        scheme (size = rows * cols) and are intended to be shifted / mapped to the full
+        inversion indexing inside the inversion logic.
+
+        Returns
+        -------
+        np.ndarray
+            A 1D array of positive indices corresponding to edge pixels.
+        """
         from autoarray.inversion.mesh.mesh_geometry.rectangular import (
             rectangular_edge_pixel_list_from,
         )
 
-        edge_pixe_list = rectangular_edge_pixel_list_from(
-            shape_native=self.shape,
-        )
+        edge_pixel_list = rectangular_edge_pixel_list_from(shape_native=self.shape)
 
-        return -(np.array(edge_pixe_list) + 1)
+        return np.array(edge_pixel_list, dtype=int)
 
     @property
     def interpolator_cls(self):

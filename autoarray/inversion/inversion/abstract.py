@@ -380,6 +380,60 @@ class AbstractInversion:
         return self.curvature_reg_matrix[ids_to_keep][:, ids_to_keep]
 
     @cached_property
+    def zeroed_ids_to_keep(self):
+        """
+        Return the **positive global indices** of linear objects to keep in the inversion,
+        given **mesh-local positive pixel indices** to zero.
+
+        Assumes the full linear system parameter vector is laid out as:
+
+            [ non-pixel linear objects ][ pixel block ]
+
+        where:
+          - the pixel block occupies the final `mesh.pixels` entries of the full vector
+          - `mesh.zeroed_pixels` contains **positive** indices in the pixel block's own
+            indexing (0 is top-left for rectangular meshes, increasing row-major)
+          - all non-pixel linear objects are always kept
+
+        This implementation is backend-friendly (NumPy / JAX via `self._xp`) and returns
+        indices suitable for advanced indexing of `data_vector` and curvature matrices.
+
+        Returns
+        -------
+        array-like
+            1D array of **positive** indices to keep, sorted ascending.
+        """
+        xp = self._xp
+
+        mapper_list = self.cls_list_from(cls=Mapper)
+        mesh = mapper_list[0].mesh
+
+        n_total = int(self.total_params)
+        n_pixels = int(mesh.pixels)
+
+        # Pixel block starts at this global index
+        pixel_start = n_total - n_pixels
+
+        # Mesh-local positive pixel indices to zero (e.g. [0, 1, 2, ...] for edges)
+        zeros_local = xp.asarray(mesh.zeroed_pixels)
+
+        # Convert to global positive indices
+        zeros_global = pixel_start + zeros_local
+
+        # Keep mask over full parameter vector
+        keep = xp.ones((n_total,), dtype=bool)
+
+        if hasattr(keep, "at"):
+            keep = keep.at[zeros_global].set(False)
+            keep_ids = xp.nonzero(keep, size=n_total)[0]
+            keep_ids = keep_ids[: keep.sum()]
+        else:
+            keep[zeros_global] = False
+            keep_ids = xp.nonzero(keep)[0]
+
+        return keep_ids
+
+    @cached_property
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -400,16 +454,11 @@ class AbstractInversion:
 
             if self.settings.use_edge_zeroed_pixels and self.has(cls=Mapper):
 
-                mapper_list = self.cls_list_from(cls=Mapper)
-
-                # ids of values which are not zeroed and therefore kept in soluiton, which is computed in preloads.
-                ids_to_keep = mapper_list[0].mesh.zeroed_pixels_to_keep
-
                 # Use advanced indexing to select rows/columns
-                data_vector = self.data_vector[ids_to_keep]
-                curvature_reg_matrix = self.curvature_reg_matrix[ids_to_keep][
-                    :, ids_to_keep
-                ]
+                data_vector = self.data_vector[self.zeroed_ids_to_keep]
+                curvature_reg_matrix = self.curvature_reg_matrix[
+                    self.zeroed_ids_to_keep
+                ][:, self.zeroed_ids_to_keep]
 
                 # Perform reconstruction via fnnls
                 reconstruction_partial = (
@@ -426,11 +475,11 @@ class AbstractInversion:
 
                 # Scatter the partial solution back to the full shape
                 if self._xp.__name__.startswith("jax"):
-                    reconstruction = reconstruction.at[ids_to_keep].set(
+                    reconstruction = reconstruction.at[self.zeroed_ids_to_keep].set(
                         reconstruction_partial
                     )
                 else:
-                    reconstruction[ids_to_keep] = reconstruction_partial
+                    reconstruction[self.zeroed_ids_to_keep] = reconstruction_partial
 
                 return reconstruction
 

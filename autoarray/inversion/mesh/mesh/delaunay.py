@@ -38,14 +38,30 @@ class Delaunay(AbstractMesh):
         pixels = int(pixels) + zeroed_pixels
 
         super().__init__()
+        self.pixels = pixels
         self.areas_factor = areas_factor
-        self.zeroed_pixels = zeroed_pixels
+        self._zeroed_pixels = zeroed_pixels
 
+    @property
     def zeroed_pixels(self):
-        if not self.zeroed_pixels:
-            return []
+        """
+        Return the **positive** mesh-local pixel indices to zero for a Delaunay mesh.
 
-        return -np.arange(1, self.zeroed_pixels + 1).tolist()
+        For Delaunay meshes, `self.zeroed_pixels` is interpreted as a *count* of pixels
+        to be zeroed at the end of the pixel block. For example:
+            self.pixels = 780, self.zeroed_pixels = 30
+        returns indices 750..779.
+
+        Returns
+        -------
+        np.ndarray
+            1D array of positive pixel indices to zero.
+        """
+        if self._zeroed_pixels <= 0:
+            return np.array([], dtype=int)
+
+        start = self.pixels - self._zeroed_pixels
+        return np.arange(start, self.pixels, dtype=int)
 
     @property
     def skip_areas(self):
