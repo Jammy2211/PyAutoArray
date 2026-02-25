@@ -473,7 +473,7 @@ class AbstractInversion:
         if self._xp is np:
             keep[zeros_global] = False
             keep_ids = self._xp.nonzero(keep)[0]
-            
+
         else:
             keep = keep.at[zeros_global].set(False)
             keep_ids = self._xp.nonzero(keep, size=n_keep)[0]
