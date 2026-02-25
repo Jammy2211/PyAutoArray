@@ -46,13 +46,13 @@ class Delaunay(AbstractMesh):
         pixels : int
             The number of active mesh vertices (linear parameters) used to represent
             the source reconstruction.
-        zeroed_pixels : int, optional
-            The number of edge mesh vertices to exclude from the inversion. These
-            are appended to the end of the mesh and fixed to zero.
         areas_factor : float, optional
             The barycentric area of Delaunay triangles is used to weight the regularization matrix.
             This factor scales these areas, allowing for tuning of the regularization strength
             based on triangle size.
+        zeroed_pixels : int, optional
+            The number of edge mesh vertices to exclude from the inversion. These
+            are appended to the end of the mesh and fixed to zero.
         """
 
         pixels = int(pixels) + zeroed_pixels
