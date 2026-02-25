@@ -460,7 +460,10 @@ def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     # Return the minimum distance to both edges
     return min(top_dist, bottom_dist), min(left_dist, right_dist)
 
-def blurring_mask_2d_from(mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]) -> np.ndarray:
+
+def blurring_mask_2d_from(
+    mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
+) -> np.ndarray:
     """
     Return the blurring mask for a 2D mask and kernel footprint.
 
@@ -474,7 +477,9 @@ def blurring_mask_2d_from(mask_2d: np.ndarray, kernel_shape_native: Tuple[int, i
 
     ky, kx = kernel_shape_native
     if ky <= 0 or kx <= 0:
-        raise ValueError(f"kernel_shape_native must be positive, got {kernel_shape_native}.")
+        raise ValueError(
+            f"kernel_shape_native must be positive, got {kernel_shape_native}."
+        )
 
     # Keep your existing guard (optional)
     y_distance, x_distance = min_false_distance_to_edge(mask_2d)
@@ -510,8 +515,8 @@ def blurring_mask_2d_from(mask_2d: np.ndarray, kernel_shape_native: Tuple[int, i
     blurring_region = mask_2d & near_unmasked  # True on the ring (in region-space)
 
     # Convert region -> mask semantics: ring should be unmasked (False)
-    blurring_mask = np.ones_like(mask_2d, dtype=bool)   # start fully masked
-    blurring_mask[blurring_region] = False              # unmask the ring
+    blurring_mask = np.ones_like(mask_2d, dtype=bool)  # start fully masked
+    blurring_mask[blurring_region] = False  # unmask the ring
 
     return blurring_mask
 

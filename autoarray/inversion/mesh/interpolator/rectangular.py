@@ -296,7 +296,7 @@ class InterpolatorRectangular(AbstractInterpolator):
             adaptive_rectangular_mappings_weights_via_interpolation_from(
                 source_grid_size=self.mesh.shape[0],
                 data_grid=self.data_grid.array,
-                data_grid_over_sampled=self.data_grid.over_sampled,
+                data_grid_over_sampled=self.data_grid.over_sampled.array,
                 mesh_weight_map=self.mesh_weight_map,
                 xp=self._xp,
             )
