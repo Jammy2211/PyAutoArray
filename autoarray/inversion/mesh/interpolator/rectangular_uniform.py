@@ -167,7 +167,7 @@ class InterpolatorRectangularUniform(AbstractInterpolator):
         mappings, weights = rectangular_mappings_weights_via_interpolation_from(
             shape_native=self.mesh.shape,
             mesh_grid=self.mesh_grid.array,
-            data_grid=self.data_grid.over_sampled,
+            data_grid=self.data_grid.over_sampled.array,
             xp=self._xp,
         )
 

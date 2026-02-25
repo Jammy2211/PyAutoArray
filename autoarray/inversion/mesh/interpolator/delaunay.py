@@ -567,7 +567,7 @@ class InterpolatorDelaunay(AbstractInterpolator):
         sizes = self.delaunay.sizes.astype("int")
 
         weights = pixel_weights_delaunay_from(
-            data_grid=self.data_grid.over_sampled,
+            data_grid=self.data_grid.over_sampled.array,
             mesh_grid=self.mesh_grid.array,
             pix_indexes_for_sub_slim_index=mappings,
             xp=self._xp,
