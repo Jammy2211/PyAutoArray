@@ -8,16 +8,14 @@ if TYPE_CHECKING:
 import numpy as np
 from pathlib import Path
 import scipy
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 import warnings
 
 from autoconf import conf
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.header import Header
 
 from autoarray import exc
-from autoarray import type as ty
 
 
 class ConvolverState:
