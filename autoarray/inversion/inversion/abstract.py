@@ -382,52 +382,95 @@ class AbstractInversion:
     @cached_property
     def zeroed_ids_to_keep(self):
         """
-        Return the **positive global indices** of linear objects to keep in the inversion,
-        given **mesh-local positive pixel indices** to zero.
+        Return the **positive global indices** of linear parameters that should be
+        kept (solved for) in the inversion, accounting for **zeroed pixel indices**
+        from one or more mappers.
 
-        Assumes the full linear system parameter vector is laid out as:
+        ---------------------------------------------------------------------------
+        Parameter vector layout
+        ---------------------------------------------------------------------------
+        This method assumes the full linear parameter vector is ordered as:
 
-            [ non-pixel linear objects ][ pixel block ]
+            [ non-pixel linear objects ][ mapper_0 pixels ][ mapper_1 pixels ] ... [ mapper_M pixels ]
 
         where:
-          - the pixel block occupies the final `mesh.pixels` entries of the full vector
-          - `mesh.zeroed_pixels` contains **positive** indices in the pixel block's own
-            indexing (0 is top-left for rectangular meshes, increasing row-major)
-          - all non-pixel linear objects are always kept
 
-        This implementation is backend-friendly (NumPy / JAX via `self._xp`) and returns
-        indices suitable for advanced indexing of `data_vector` and curvature matrices.
+        - *Non-pixel linear objects* include quantities such as analytic light
+          profiles, regularization amplitudes, etc.
+        - Each mapper contributes a contiguous block of pixel-based linear parameters.
+        - The concatenated pixel blocks occupy the **final** entries of the parameter
+          vector, with total length:
+
+              total_pixels = sum(mapper.mesh.pixels for mapper in mappers)
+
+        ---------------------------------------------------------------------------
+        Zeroed pixel convention
+        ---------------------------------------------------------------------------
+        For each mapper:
+
+        - `mapper.mesh.zeroed_pixels` must be a 1D array of **positive, mesh-local**
+          pixel indices in the range `[0, mapper.mesh.pixels - 1]`.
+        - These indices identify pixels that should be **excluded** from the linear
+          solve (e.g. edge pixels, masked regions, or padding pixels).
+        - Indexing is defined purely within the mapper’s own pixelization (e.g.
+          row-major flattening for rectangular meshes).
+
+        This method converts all mesh-local zeroed pixel indices into **global
+        parameter indices**, correctly offsetting for:
+          - the presence of non-pixel linear objects at the start of the vector
+          - the cumulative pixel counts of preceding mappers
+
+        ---------------------------------------------------------------------------
+        Backend and implementation details
+        ---------------------------------------------------------------------------
+        - The implementation is backend-agnostic and supports both NumPy and JAX via
+          `self._xp`.
+        - The returned indices are **positive global indices**, suitable for advanced
+          indexing of:
+              - `self.data_vector`
+              - `self.curvature_reg_matrix`
+        - When using JAX, this method avoids backend-incompatible operations and
+          preserves JIT compatibility under the same constraints as the rest of the
+          inversion pipeline.
 
         Returns
         -------
         array-like
-            1D array of **positive** indices to keep, sorted ascending.
+            A 1D array of **positive global indices**, sorted in ascending order,
+            corresponding to linear parameters that should be kept in the inversion.
         """
         xp = self._xp
 
         mapper_list = self.cls_list_from(cls=Mapper)
-        mesh = mapper_list[0].mesh
 
         n_total = int(self.total_params)
-        n_pixels = int(mesh.pixels)
+        pixels_per_mapper = [int(m.mesh.pixels) for m in mapper_list]
+        total_pixels = int(sum(pixels_per_mapper))
 
-        # Pixel block starts at this global index
-        pixel_start = n_total - n_pixels
+        # Global start index of the concatenated pixel block
+        pixel_start = n_total - total_pixels
 
-        # Mesh-local positive pixel indices to zero (e.g. [0, 1, 2, ...] for edges)
-        zeros_local = xp.asarray(mesh.zeroed_pixels)
+        # Build global indices to zero across all mappers
+        zeros_global_list = []
+        offset = 0
+        for mapper, n_pix in zip(mapper_list, pixels_per_mapper):
+            zeros_local = xp.asarray(mapper.mesh.zeroed_pixels, dtype=xp.int32)
+            zeros_global_list.append(pixel_start + offset + zeros_local)
+            offset += n_pix
 
-        # Convert to global positive indices
-        zeros_global = pixel_start + zeros_local
+        zeros_global = (
+            xp.concatenate(zeros_global_list) if len(zeros_global_list) > 0 else xp.asarray([], dtype=xp.int32)
+        )
 
-        # Keep mask over full parameter vector
         keep = xp.ones((n_total,), dtype=bool)
 
         if hasattr(keep, "at"):
+            # JAX path
             keep = keep.at[zeros_global].set(False)
             keep_ids = xp.nonzero(keep, size=n_total)[0]
             keep_ids = keep_ids[: keep.sum()]
         else:
+            # NumPy path
             keep[zeros_global] = False
             keep_ids = xp.nonzero(keep)[0]
 
