@@ -623,6 +623,7 @@ def blurring_mask_2d_from(
 
     return blurring_mask
 
+
 def mask_slim_indexes_from(
     mask_2d: np.ndarray, return_masked_indexes: bool = True
 ) -> np.ndarray:
