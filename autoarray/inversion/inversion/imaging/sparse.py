@@ -54,7 +54,7 @@ class InversionImagingSparse(AbstractInversionImaging):
     def psf_weighted_data(self):
         return inversion_imaging_util.psf_weighted_data_from(
             weight_map_native=self.dataset.sparse_operator.weight_map.array,
-            kernel_native=self.psf.stored_native,
+            kernel_native=self.psf.kernel.native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
             xp=self._xp,
         )
