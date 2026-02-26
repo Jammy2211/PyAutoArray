@@ -149,7 +149,10 @@ class InterpolatorKNearestNeighbor(InterpolatorDelaunay):
         try:
             query_points = self.data_grid.over_sampled.array
         except AttributeError:
-            query_points = self.data_grid.array
+            try:
+                query_points = self.data_grid.array
+            except AttributeError:
+                query_points = self.data_grid
 
         mappings, weights, _ = get_interpolation_weights(
             points=self.mesh_grid_xy,

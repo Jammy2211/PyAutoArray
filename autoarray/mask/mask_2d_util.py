@@ -461,17 +461,35 @@ def min_false_distance_to_edge(mask: np.ndarray) -> Tuple[int, int]:
     return min(top_dist, bottom_dist), min(left_dist, right_dist)
 
 
-def blurring_mask_2d_from(
-    mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
-) -> np.ndarray:
+import warnings
+from typing import Tuple
+
+import numpy as np
+from scipy.ndimage import binary_dilation
+
+
+def required_shape_for_kernel(
+    mask_2d: np.ndarray,
+    kernel_shape_native: Tuple[int, int],
+) -> Tuple[int, int]:
     """
-    Return the blurring mask for a 2D mask and kernel footprint.
+    Return the minimal shape the mask must be padded to so that a kernel with the given
+    footprint can be applied without sampling beyond the array edge, while preserving
+    parity (odd->odd, even->even) in each dimension.
 
-    Convention (as used by PyAutoLens / PyAutoArray masks):
-    - False = unmasked (included)
-    - True  = masked   (excluded)
+    Parameters
+    ----------
+    mask_2d
+        2D boolean array where False is unmasked and True is masked.
+    kernel_shape_native
+        (ky, kx) footprint of the convolution kernel.
 
-    The returned *blurring mask* is a mask where the blurring-region pixels are unmasked (False).
+    Returns
+    -------
+    required_shape
+        The minimal (ny, nx) shape such that the minimum distance from any unmasked
+        pixel to the array edge is at least (ky//2, kx//2), and each dimension keeps
+        the same parity as the input mask.
     """
     mask_2d = np.asarray(mask_2d, dtype=bool)
 
@@ -481,22 +499,107 @@ def blurring_mask_2d_from(
             f"kernel_shape_native must be positive, got {kernel_shape_native}."
         )
 
-    # Keep your existing guard (optional)
+    pad_y, pad_x = ky // 2, kx // 2
     y_distance, x_distance = min_false_distance_to_edge(mask_2d)
-    if (y_distance < ky // 2) or (x_distance < kx // 2):
-        raise exc.MaskException(
-            "The input mask is too small for the kernel shape. "
-            "Please pad the mask before computing the blurring mask."
+
+    extra_y = max(0, pad_y - y_distance)
+    extra_x = max(0, pad_x - x_distance)
+
+    new_y = mask_2d.shape[0] + 2 * extra_y
+    new_x = mask_2d.shape[1] + 2 * extra_x
+
+    # Preserve parity per axis: odd->odd, even->even
+    if (new_y % 2) != (mask_2d.shape[0] % 2):
+        new_y += 1
+    if (new_x % 2) != (mask_2d.shape[1] % 2):
+        new_x += 1
+
+    return new_y, new_x
+
+
+def blurring_mask_2d_from(
+    mask_2d: np.ndarray,
+    kernel_shape_native: Tuple[int, int],
+    allow_padding: bool = False,
+) -> np.ndarray:
+    """
+    Return the blurring mask for a 2D mask and kernel footprint.
+
+    Convention (as used by PyAutoLens / PyAutoArray masks):
+    - False = unmasked (included)
+    - True  = masked   (excluded)
+
+    The returned blurring mask is a *mask* where the blurring-region pixels are
+    unmasked (False) and all other pixels are masked (True).
+
+    If the input mask is too small for the kernel footprint:
+    - allow_padding=False (default): raises an exception.
+    - allow_padding=True: pads the mask symmetrically with masked pixels (True) to the
+      minimal required shape (with parity preserved) and emits a warning.
+
+    Parameters
+    ----------
+    mask_2d
+        2D boolean mask.
+    kernel_shape_native
+        (ky, kx) kernel footprint.
+    allow_padding
+        If False, raise if padding is required. If True, pad and warn.
+
+    Returns
+    -------
+    blurring_mask
+        Boolean mask of the same shape as the (possibly padded) input.
+    """
+    mask_2d = np.asarray(mask_2d, dtype=bool)
+
+    required_shape = required_shape_for_kernel(mask_2d, kernel_shape_native)
+
+    if required_shape != mask_2d.shape:
+        if not allow_padding:
+            raise exc.MaskException(
+                "The input mask is too small for the kernel shape. "
+                f"Current shape: {mask_2d.shape}, required shape: {required_shape}. "
+                "Set allow_padding=True to pad automatically."
+            )
+
+        warnings.warn(
+            f"Mask padded from {mask_2d.shape} to {required_shape} "
+            f"(parity preserved) to support kernel footprint {kernel_shape_native}.",
+            UserWarning,
         )
 
-    # Kernel footprint (support only)
+        dy = required_shape[0] - mask_2d.shape[0]
+        dx = required_shape[1] - mask_2d.shape[1]
+
+        pad_top = dy // 2
+        pad_bottom = dy - pad_top
+        pad_left = dx // 2
+        pad_right = dx - pad_left
+
+        mask_2d = np.pad(
+            mask_2d,
+            pad_width=((pad_top, pad_bottom), (pad_left, pad_right)),
+            mode="constant",
+            constant_values=True,  # outside is masked
+        )
+
+    # (Optional) hard invariant: parity preserved after any padding
+    if (mask_2d.shape[0] % 2) != (required_shape[0] % 2) or (mask_2d.shape[1] % 2) != (
+        required_shape[1] % 2
+    ):
+        raise RuntimeError(
+            f"Parity invariant violated: got {mask_2d.shape}, expected parity of {required_shape}."
+        )
+
+    ky, kx = kernel_shape_native
+    pad_y, pad_x = ky // 2, kx // 2
     structure = np.ones((ky, kx), dtype=bool)
 
     # Unmasked region (True where unmasked)
     unmasked = ~mask_2d
 
-    # Explicit padding: outside-of-array is masked => outside is NOT unmasked (False)
-    pad_y, pad_x = ky // 2, kx // 2
+    # Explicit padding so outside behaves as masked => outside is NOT unmasked
     unmasked_padded = np.pad(
         unmasked,
         pad_width=((pad_y, pad_y), (pad_x, pad_x)),
@@ -511,15 +614,14 @@ def blurring_mask_2d_from(
         pad_x : pad_x + mask_2d.shape[1],
     ]
 
-    # Blurring REGION: masked pixels that are near unmasked pixels
-    blurring_region = mask_2d & near_unmasked  # True on the ring (in region-space)
+    # Blurring region: masked pixels near unmasked pixels
+    blurring_region = mask_2d & near_unmasked
 
-    # Convert region -> mask semantics: ring should be unmasked (False)
-    blurring_mask = np.ones_like(mask_2d, dtype=bool)  # start fully masked
-    blurring_mask[blurring_region] = False  # unmask the ring
+    # Return as a mask: blurring region is unmasked (False), everything else masked (True)
+    blurring_mask = np.ones_like(mask_2d, dtype=bool)
+    blurring_mask[blurring_region] = False
 
     return blurring_mask
-
 
 def mask_slim_indexes_from(
     mask_2d: np.ndarray, return_masked_indexes: bool = True
