@@ -30,11 +30,11 @@ class Mapper(LinearObj):
         the four grids are explained (`image_plane_data_grid`, `source_plane_data_grid`,
         `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
-        If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
+        If you are unfamiliar with the above objects, read through the docstrings of the `pixelization`, `mesh` and
         `image_mesh` packages.
 
         A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
-        `source_plane_data_grid`) and the pxelization's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
+        `source_plane_data_grid`) and the pixelization's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
         change the indexing, such that `source_plane_data_grid[0]` corresponds to the transformed value
@@ -66,28 +66,25 @@ class Mapper(LinearObj):
         pixelization's 6th pixel (index 5).
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
-        unmasked data pixel annd the pixels of a pixelization. This matrix is the basis of performing an `Inversion`,
+        unmasked data pixel and the pixels of a pixelization. This matrix is the basis of performing an `Inversion`,
         which reconstructs the data using the `source_plane_mesh_grid`.
 
         Parameters
         ----------
-        source_plane_data_grid
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_plane_mesh_grid
-            The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
-        image_plane_mesh_grid
-            The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_plane_mesh_grid`.
-        adapt_data
-            An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
-            pixels of the Delaunay grid to the data it discretizes.
-        mesh_weight_map
-            The weight map used to weight the creation of the rectangular mesh grid, which is used for the
-            `RectangularBrightness` mesh which adapts the size of its pixels to where the source is reconstructed.
+        interpolator
+            The interpolator which computes the mappings between image-plane data pixels and source-plane mesh pixels,
+            including the `source_plane_data_grid`, `source_plane_mesh_grid`, interpolation weights, and
+            `adapt_data`.
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
+        settings
+            Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
+        image_plane_mesh_grid
+            The sparse set of (y,x) coordinates computed from the unmasked data in the image frame. This is
+            transformed to create the `source_plane_mesh_grid` accessed via `self.source_plane_mesh_grid`.
+        xp
+            The array module to use (`numpy` by default; pass `jax.numpy` for JAX support).
         """
 
         super().__init__(regularization=regularization, xp=xp)

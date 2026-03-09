@@ -92,10 +92,20 @@ def curvature_matrix_via_mapping_matrix_from(
     Parameters
     ----------
     mapping_matrix
-        The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
+        The matrix representing the mappings (these could be blurred or transformed) between sub-grid pixels and
         pixelization pixels.
     noise_map
         Flattened 1D array of the noise-map used by the inversion during the fit.
+    add_to_curvature_diag
+        If `True`, adds a small numerical value to the diagonal entries of the curvature matrix at the indices
+        specified by `no_regularization_index_list`, to ensure the matrix is positive-definite.
+    no_regularization_index_list
+        A list of parameter indices which have no regularization applied. A small value is added to their diagonal
+        entries if `add_to_curvature_diag` is `True`.
+    settings
+        Settings controlling how the inversion is performed, for example whether mixed precision is used.
+    xp
+        The array module to use (`numpy` by default; pass `jax.numpy` for JAX support).
     """
     # NumPy path: keep it simple + stable
     if xp is np:

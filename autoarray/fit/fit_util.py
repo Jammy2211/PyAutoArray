@@ -404,11 +404,12 @@ def log_evidence_from(
     noise_normalization: float,
 ) -> float:
     """
-    Returns the log evidence of an inversion's fit to a dataset, where the log evidence includes a number of terms which
-    quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
+    Returns the log Bayesian evidence of an inversion's fit to a dataset, which extends the log likelihood by
+    including penalty terms that quantify the complexity of the inversion's reconstruction:
 
-    Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
-                           Log(Regularization_Matrix_Term) + Noise_Term]
+    Log Evidence = -0.5 * [χ² + s^T H s + ln(det(F + H)) - ln(det(H)) + Σ ln(2π σ²)]
+
+    This is described in Warren & Dye 2003 (https://arxiv.org/pdf/astro-ph/0302587.pdf).
 
     Parameters
     ----------

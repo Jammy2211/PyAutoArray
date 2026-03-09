@@ -14,7 +14,7 @@ class LinearObj:
 
         The values of linear object are computed via a regularized linear matrix inversion, which infers a solution
         which best fits the data given its noise-map (by minimizing a chi-squared term) whilst accounting for smoothing
-        due to regularizaiton.
+        due to regularization.
 
         For example, in `PyAutoGalaxy` and `PyAutoLens` the light of galaxies is represented using `LightProfile`
         objects, which describe the surface brightness of a galaxy as a function. This function can either be assigned
@@ -46,7 +46,7 @@ class LinearObj:
         For example for the following linear objects:
 
         - `AbstractLinearObjFuncList` the number of analytic functions.
-        - `Mapper` the number of piels in the mesh used to reconstruct the data.
+        - `Mapper` the number of pixels in the mesh used to reconstruct the data.
 
         Returns
         -------

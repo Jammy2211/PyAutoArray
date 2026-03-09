@@ -36,16 +36,10 @@ class DatasetInterface:
             An array describing the RMS standard deviation error in each pixel used for computing quantities like the
             chi-squared in a fit (in PyAutoGalaxy and PyAutoLens the recommended units are electrons per second).
         grids
-            The grids of (y,x) Cartesian coordinates that the image data is paired with, which are used for evaluting
+            The grids of (y,x) Cartesian coordinates that the image data is paired with, which are used for evaluating
             light profiles and calculations associated with a pixelization.
-        over_sampler
-            Performs over-sampling whereby the masked image pixels are split into sub-pixels, which are all
-            mapped via the mapper with sub-fractional values of flux.
-        border_relocator
-           The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
-           edge.
         psf
-            Perform 2D convolution of the imaigng data's PSF when computing the operated mapping matrix.
+            Perform 2D convolution of the imaging data's PSF when computing the operated mapping matrix.
         transformer
             Performs a Fourier transform of the image-data from real-space to visibilities when computing the
             operated mapping matrix.

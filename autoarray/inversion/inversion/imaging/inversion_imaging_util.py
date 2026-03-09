@@ -154,7 +154,7 @@ def data_linear_func_matrix_from(
         The operated values of each linear function divided by the noise-map squared, in a matrix of shape
         [data_pixels, total_fixed_linear_functions].
     kernel_native
-        The 2D PSf kernel.
+        The 2D PSF kernel.
 
     Returns
     -------
