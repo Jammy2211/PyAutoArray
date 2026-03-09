@@ -145,7 +145,7 @@ class FitDataset(AbstractFit):
         noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
         log_likelihood
-            The overall log likelihood of the model's fit to the dataset, summed over evey data point.
+            The overall log likelihood of the model's fit to the dataset, summed over every data point.
         """
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
@@ -162,6 +162,12 @@ class FitDataset(AbstractFit):
 
     @property
     def _xp(self):
+        """
+        Returns the array module in use: `numpy` if JAX is disabled or `jax.numpy` if JAX is enabled.
+
+        This is controlled by the `use_jax` flag set during initialisation and is the single point of control
+        for switching between NumPy and JAX computation paths throughout the fit.
+        """
         if self.use_jax:
             import jax.numpy as jnp
 
@@ -170,10 +176,19 @@ class FitDataset(AbstractFit):
 
     @property
     def mask(self) -> Mask2D:
+        """
+        The 2D mask of the dataset being fitted, where `False` entries are unmasked and included in the fit
+        and `True` entries are masked and excluded.
+        """
         return self.dataset.mask
 
     @property
     def grids(self) -> GridsInterface:
+        """
+        The grids of (y,x) coordinates associated with the dataset, adjusted by any `grid_offset` specified in
+        the `dataset_model`. Each grid (`lp`, `pixelization`, `blurring`) has the offset subtracted from it
+        before being returned.
+        """
 
         def subtracted_from(grid, offset):
             if grid is None:
@@ -200,10 +215,16 @@ class FitDataset(AbstractFit):
 
     @property
     def data(self) -> ty.DataLike:
+        """
+        The data of the dataset being fitted.
+        """
         return self.dataset.data
 
     @property
     def noise_map(self) -> ty.DataLike:
+        """
+        The noise-map of the dataset being fitted, representing the RMS noise in each pixel.
+        """
         return self.dataset.noise_map
 
     @property
@@ -310,19 +331,7 @@ class FitDataset(AbstractFit):
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]
 
-        Parameters
-        ----------
-        chi_squared
-            The chi-squared term of the inversion's fit to the data.
-        regularization_term
-            The regularization term of the inversion, which is the sum of the difference between reconstructed \
-            flux of every pixel multiplied by the regularization coefficient.
-        log_curvature_regularization_term
-            The log of the determinant of the sum of the curvature and regularization matrices.
-        log_regularization_term
-            The log of the determinant o the regularization matrix.
-        noise_normalization
-            The normalization noise_map-term for the data's noise-map.
+        Returns `None` if no inversion is present, in which case `log_likelihood` is used as the figure of merit.
         """
         if self.inversion is not None:
             return fit_util.log_evidence_from(
@@ -335,6 +344,11 @@ class FitDataset(AbstractFit):
 
     @property
     def figure_of_merit(self) -> float:
+        """
+        The overall goodness-of-fit of the model to the dataset.
+
+        If the fit uses an inversion, this is the `log_evidence`; otherwise it is the `log_likelihood`.
+        """
         if self.inversion is not None:
             return self.log_evidence
 
@@ -371,4 +385,11 @@ class FitDataset(AbstractFit):
 
     @property
     def reduced_chi_squared(self) -> float:
+        """
+        The reduced chi-squared of the model's fit to the dataset, defined as:
+
+        Reduced_Chi_Squared = Chi_Squared / N_unmasked
+
+        where `N_unmasked` is the number of unmasked (i.e. `False`) pixels in the mask.
+        """
         return self.chi_squared / int(np.size(self.mask) - np.sum(self.mask))

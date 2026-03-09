@@ -24,15 +24,10 @@ class FitInterferometer(FitDataset):
 
         Parameters
         ----------
-        dataset : MaskedInterferometer
-            The masked interferometer dataset that is fitted.
+        dataset
+            The interferometer dataset that is fitted, containing the observed visibilities and noise-map.
         dataset_model
             Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
-        model_data : Visibilities
-            The model visibilities the masked imaging is fitted with.
-        inversion : Inversion
-            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
-            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
             `dataset` will have been processed to remove masked points, for example the `slim` representation).
@@ -51,7 +46,7 @@ class FitInterferometer(FitDataset):
         noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
         log_likelihood
-            The overall log likelihood of the model's fit to the dataset, summed over evey data point.
+            The overall log likelihood of the model's fit to the dataset, summed over every data point.
         """
 
         super().__init__(
@@ -63,10 +58,22 @@ class FitInterferometer(FitDataset):
 
     @property
     def mask(self) -> np.ndarray:
+        """
+        The mask of the interferometer fit, returned as an all-`False` array matching the shape of the visibility data.
+
+        Interferometer data is not spatially masked in the same way as imaging data — all visibility measurements
+        are included in the fit — so this always returns an unmasked array.
+        """
         return np.full(shape=self.data.shape, fill_value=False)
 
     @property
     def transformer(self) -> ty.Transformer:
+        """
+        The Fourier transformer used to map between image space and visibility (uv-plane) space.
+
+        This is taken directly from the interferometer dataset and is used internally to compute the
+        `dirty_*` image-space representations of the fit quantities.
+        """
         return self.dataset.transformer
 
     @property
@@ -135,19 +142,9 @@ class FitInterferometer(FitDataset):
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]
 
-        Parameters
-        ----------
-        chi_squared
-            The chi-squared term of the inversion's fit to the data.
-        regularization_term
-            The regularization term of the inversion, which is the sum of the difference between reconstructed \
-            flux of every pixel multiplied by the regularization coefficient.
-        log_curvature_regularization_term
-            The log of the determinant of the sum of the curvature and regularization matrices.
-        log_regularization_term
-            The log of the determinant o the regularization matrix.
-        noise_normalization
-            The normalization noise_map-term for the data's noise-map.
+        For interferometer fits the chi-squared uses the fast inversion chi-squared (`inversion.fast_chi_squared`).
+
+        Returns `None` if no inversion is present, in which case `log_likelihood` is used as the figure of merit.
         """
         if self.inversion is not None:
             return fit_util.log_evidence_from(
@@ -160,28 +157,56 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_image(self) -> Array2D:
+        """
+        The dirty image of the observed visibility data, computed by applying the inverse Fourier transform to the
+        data visibilities. This is the image-space representation of the observed data before any deconvolution.
+        """
         return self.transformer.image_from(visibilities=self.data)
 
     @property
     def dirty_noise_map(self) -> Array2D:
+        """
+        The dirty noise-map, computed by applying the inverse Fourier transform to the noise-map visibilities.
+        This gives an image-space representation of the noise level across the field of view.
+        """
         return self.transformer.image_from(visibilities=self.noise_map)
 
     @property
     def dirty_signal_to_noise_map(self) -> Array2D:
+        """
+        The dirty signal-to-noise map, computed by applying the inverse Fourier transform to the signal-to-noise
+        visibilities. This gives an image-space representation of the signal-to-noise ratio across the field of view.
+        """
         return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
     def dirty_model_image(self) -> Array2D:
+        """
+        The dirty model image, computed by applying the inverse Fourier transform to the model data visibilities.
+        This is the image-space representation of the model before any deconvolution.
+        """
         return self.transformer.image_from(visibilities=self.model_data)
 
     @property
     def dirty_residual_map(self) -> Array2D:
+        """
+        The dirty residual map, computed by applying the inverse Fourier transform to the residual-map visibilities
+        (data - model_data). This is the image-space representation of the residuals.
+        """
         return self.transformer.image_from(visibilities=self.residual_map)
 
     @property
     def dirty_normalized_residual_map(self) -> Array2D:
+        """
+        The dirty normalized residual map, computed by applying the inverse Fourier transform to the
+        normalized residual-map visibilities ((data - model_data) / noise_map).
+        """
         return self.transformer.image_from(visibilities=self.normalized_residual_map)
 
     @property
     def dirty_chi_squared_map(self) -> Array2D:
+        """
+        The dirty chi-squared map, computed by applying the inverse Fourier transform to the chi-squared-map
+        visibilities (((data - model_data) / noise_map) ** 2.0).
+        """
         return self.transformer.image_from(visibilities=self.chi_squared_map)
