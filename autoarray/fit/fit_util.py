@@ -7,6 +7,14 @@ from autoarray import type as ty
 
 
 def to_new_array(func):
+    """
+    Decorator that wraps the return value of a fit utility function in the same data structure as its first argument.
+
+    After computing the result, it calls `.with_new_array(result)` on the first keyword argument. If the first
+    argument does not have a `with_new_array` method (e.g. it is a plain ndarray), the raw result is returned
+    instead.
+    """
+
     @wraps(func)
     def wrapper(**kwargs):
         result = func(**kwargs)
@@ -28,8 +36,6 @@ def residual_map_from(*, data: ty.DataLike, model_data: ty.DataLike) -> ty.DataL
     ----------
     data
         The data that is fitted.
-    mask
-        The mask applied to the dataset, where `False` entries are included in the calculation.
     model_data
         The model data used to fit the data.
     """
@@ -50,8 +56,6 @@ def normalized_residual_map_from(
         The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
-    mask
-        The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
     return residual_map / noise_map
 
@@ -129,7 +133,7 @@ def chi_squared_map_complex_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
     """
-    Returnss the chi-squared-map of the fit of complex model-data to a dataset, where:
+    Returns the chi-squared-map of the fit of complex model-data to a dataset, where:
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
@@ -229,7 +233,7 @@ def chi_squared_map_with_mask_from(
     *, residual_map: ty.DataLike, noise_map: ty.DataLike, mask: Mask, xp=np
 ) -> ty.DataLike:
     """
-    Returnss the chi-squared-map of the fit of model-data to a masked dataset, where:
+    Returns the chi-squared-map of the fit of model-data to a masked dataset, where:
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
@@ -289,10 +293,14 @@ def chi_squared_with_mask_fast_from(
 
     Parameters
     ----------
-    chi_squared_map
-        The chi-squared-map of values of the model-data fit to the dataset.
+    data
+        The data that is fitted.
     mask
-        The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
+        The mask applied to the dataset, where `False` entries are included in the calculation.
+    model_data
+        The model data used to fit the data.
+    noise_map
+        The noise-map of the dataset.
     """
     return float(
         xp.sum(
@@ -412,7 +420,7 @@ def log_evidence_from(
     log_curvature_regularization_term
         The log of the determinant of the sum of the curvature and regularization matrices.
     log_regularization_term
-        The log of the determinant o the regularization matrix.
+        The log of the determinant of the regularization matrix.
     noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
@@ -447,7 +455,7 @@ def residual_flux_fraction_map_with_mask_from(
     *, residual_map: np.ndarray, data: np.ndarray, mask: Mask, xp=np
 ) -> np.ndarray:
     """
-    Returnss the residual flux fraction map of the fit of model-data to a masked dataset, where:
+    Returns the residual flux fraction map of the fit of model-data to a masked dataset, where:
 
     Residual_Flux_Fraction = Residuals / Data = (Data - Model)/Data
 

@@ -43,7 +43,7 @@ class FitImaging(FitDataset):
         noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
         log_likelihood
-            The overall log likelihood of the model's fit to the dataset, summed over evey data point.
+            The overall log likelihood of the model's fit to the dataset, summed over every data point.
         """
 
         super().__init__(
@@ -55,8 +55,20 @@ class FitImaging(FitDataset):
 
     @property
     def data(self) -> ty.DataLike:
+        """
+        The imaging data being fitted, with any background sky level subtracted.
+
+        The background sky is taken from `dataset_model.background_sky_level`, which defaults to 0.0 if not
+        set, meaning this property is equivalent to `dataset.data` in the common case.
+        """
         return self.dataset.data - self.dataset_model.background_sky_level
 
     @property
     def blurred_image(self) -> Array2D:
+        """
+        The PSF-convolved (blurred) model image of the fit, as a 2D `Array2D`.
+
+        This is the model image after it has been convolved with the dataset's PSF. It must be implemented by
+        child classes (e.g. a tracer fit) that produce a blurred model image as part of their fitting procedure.
+        """
         raise NotImplementedError
