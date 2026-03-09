@@ -7,7 +7,7 @@ def array_with_new_shape(array, new_shape):
     """Resize an input array around its centre to a new input shape.
 
     If a new_shape dimension is smaller than the array's current dimension, the data at the edges is trimmed and
-    removedd. If it is larger, the data is padded with zeros.
+    removed. If it is larger, the data is padded with zeros.
 
     If the array has even sized dimensions, the central pixel around which data is trimmed / padded is chosen as
     the top-left pixel of the central quadrant of pixels.
@@ -44,7 +44,7 @@ def array_eps_to_counts(array_eps, exposure_time_map):
 
 def array_counts_to_eps(array_counts, exposure_time_map):
     """
-    Convert an array in units of electrons per second to counts, using an exposure time map containing the exposure
+    Convert an array in units of counts to electrons per second, using an exposure time map containing the exposure
     time at every point in the array.
 
     The conversion from counts to electrons per second is:

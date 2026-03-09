@@ -33,8 +33,8 @@ class SimulatorImaging:
 
         The simulation of an `Imaging` dataset uses the following steps:
 
-        1) Receive as input a raw image of what the data looks like before any simulaiton process is applied.
-        2) Include dirrection due to the telescope optics by convolve the image with an input Point Spread
+        1) Receive as input a raw image of what the data looks like before any simulation process is applied.
+        2) Include diffraction due to the telescope optics by convolving the image with an input Point Spread
            Function (PSF).
         3) Use input values of the background sky level in every pixel of the image to add the background sky to
            the PSF convolved image.
@@ -121,7 +121,18 @@ class SimulatorImaging:
         Parameters
         ----------
         image
-            The 2D image from which the Imaging dataset is simulated.
+            The 2D image from which the Imaging dataset is simulated (e.g. a model galaxy image
+            before any telescope effects are applied). Must be an `Array2D`.
+        over_sample_size
+            If provided, the returned dataset has its over-sampling updated via `apply_over_sampling`.
+            Should be an `Array2D` of integer sub-grid sizes with the same shape as the image.
+        xp
+            The array module to use for PSF convolution (default `np` for NumPy, or `jnp` for JAX).
+
+        Returns
+        -------
+        Imaging
+            The simulated imaging dataset with PSF convolution, noise and background sky applied.
         """
 
         exposure_time_map = Array2D.full(
