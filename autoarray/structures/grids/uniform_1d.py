@@ -76,7 +76,8 @@ class Grid1D(Structure):
 
         __native__
 
-        The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape [total_x_coordinates].
+        The ``Grid1D`` in its ``native`` format is stored as an ndarray of shape [total_x_coordinates], where
+        masked entries have a value of 0.0.
 
         All masked entries on the grid has (y,x) values of (0.0, 0.0).
 
@@ -111,10 +112,13 @@ class Grid1D(Structure):
         Parameters
         ----------
         values
-            The (y,x) coordinates of the grid.
+            The (x,) coordinates of the grid, input as an ndarray of shape [total_unmasked_pixels] or
+            [total_pixels] (native format).
         mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
+            The 1D mask associated with the grid, defining which pixels each grid coordinate is paired with.
+        store_native
+            If True, the ndarray is stored in its native format [total_pixels]. This avoids mapping large data
+            arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
 
         values = grid_1d_util.convert_grid_1d(
@@ -138,28 +142,28 @@ class Grid1D(Structure):
         Parameters
         ----------
         values
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixels, 2]
-            or a list of lists.
+            The (x,) coordinates of the grid, input as an ndarray of shape [total_unmasked_pixels]
+            or a list of values.
         pixel_scales
-            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
-            it is converted to a (float, float).
+            The (x,) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a ``float``,
+            it is converted to a (float,) tuple.
         origin
-            The origin of the grid's mask.
+            The (x,) origin of the grid's coordinate system.
 
         Examples
         --------
 
         .. code-block:: python
 
-            import autogrid as aa
+            import autoarray as aa
 
-            # Make Grid1D from input np.ndgrid.
+            # Make Grid1D from input ndarray.
 
-            grid_1d = aa.Grid1D.no_mask(grid=np.grid([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+            grid_1d = aa.Grid1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
-            # Make Grid2D from input list.
+            # Make Grid1D from input list.
 
-            grid_1d = aa.Grid1D.no_mask(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+            grid_1d = aa.Grid1D.no_mask(values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
             # Print grid's slim (masked 1D data representation) and
             # native (masked 1D data representation)

@@ -13,7 +13,14 @@ from autoarray import type as ty
 
 
 def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
+    """
+    Convert the input grid to a NumPy ``ndarray`` if it is a list, or unwrap it if it is an autoarray object.
 
+    Parameters
+    ----------
+    grid
+        The grid which may be a list, ndarray, or autoarray object.
+    """
     try:
         grid = grid.array
     except AttributeError:
@@ -26,6 +33,20 @@ def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
 
 
 def check_grid_slim(grid, shape_native):
+    """
+    Validate that a grid is not in slim format without an accompanying ``shape_native``, and that ``shape_native``
+    is a valid 2-tuple of ints.
+
+    Raises ``GridException`` if the grid is 2D (slim) but no ``shape_native`` was provided, or if
+    ``shape_native`` is not a (int, int) tuple.
+
+    Parameters
+    ----------
+    grid
+        The input grid to validate.
+    shape_native
+        The expected native shape of the grid, required when the input is in slim format.
+    """
     if shape_native is None:
         raise exc.GridException(
             f"""
@@ -47,6 +68,16 @@ def check_grid_slim(grid, shape_native):
 
 
 def check_grid_2d(grid_2d: np.ndarray):
+    """
+    Validate that a grid has a final dimension of 2 (for (y,x) coordinate pairs) and is either 2D or 3D.
+
+    Raises ``GridException`` if either condition is violated.
+
+    Parameters
+    ----------
+    grid_2d
+        The grid ndarray to validate.
+    """
     if grid_2d.shape[-1] != 2:
         raise exc.GridException(
             "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
@@ -57,6 +88,19 @@ def check_grid_2d(grid_2d: np.ndarray):
 
 
 def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
+    """
+    Validate that a grid and mask are compatible, i.e. that the grid's shape is consistent with the number of
+    unmasked pixels (for slim format) or the mask's native shape (for native format).
+
+    Raises ``GridException`` if the shapes are inconsistent.
+
+    Parameters
+    ----------
+    grid_2d
+        The grid ndarray to validate, either slim [total_unmasked_pixels, 2] or native [y, x, 2].
+    mask_2d
+        The mask to compare against.
+    """
     if len(grid_2d.shape) == 2:
         if grid_2d.shape[0] != mask_2d.pixels_in_mask:
             raise exc.GridException(
@@ -129,18 +173,18 @@ def convert_grid_2d_to_slim(
     grid_2d: Union[np.ndarray, List], mask_2d: Mask2D, xp=np
 ) -> np.ndarray:
     """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
+    The ``manual`` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
 
-    This function checks the dimensions of the input `grid_2d` and maps it to its `slim` representation.
+    This function checks the dimensions of the input ``grid_2d`` and maps it to its ``slim`` representation.
 
-    For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2].
+    For a Grid2D, ``slim`` refers to a 2D NumPy array of shape [total_coordinates, 2].
 
     Parameters
     ----------
     grid_2d
-        The input (y,x) grid of coordinates which is converted to its silm representation.
+        The input (y,x) grid of coordinates which is converted to its slim representation.
     mask_2d
-        The mask of the output Array2D.
+        The mask of the output Grid2D.
     """
     if len(grid_2d.shape) == 2:
         return grid_2d
@@ -152,18 +196,18 @@ def convert_grid_2d_to_native(
     mask_2d: Mask2D,
 ) -> np.ndarray:
     """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
+    The ``manual`` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
 
-    This function checks the dimensions of the input `grid_2d` and maps it to its `native` representation.
+    This function checks the dimensions of the input ``grid_2d`` and maps it to its ``native`` representation.
 
-    For a Grid2D, `native` refers to a 2D NumPy array of shape [total_y_coordinates, total_x_coordinates, 2].
+    For a Grid2D, ``native`` refers to a 3D NumPy array of shape [total_y_coordinates, total_x_coordinates, 2].
 
     Parameters
     ----------
     grid_2d
         The input (y,x) grid of coordinates which is converted to its native representation.
     mask_2d
-        The mask of the output Array2D.
+        The mask of the output Grid2D.
     """
     if len(grid_2d.shape) == 3:
         return grid_2d
@@ -417,7 +461,7 @@ def _radial_projected_shape_slim_from(
     ----------
     extent
         The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
-    centre : (float, flloat)
+    centre : (float, float)
         The (y,x) central coordinate which the radial grid is traced outwards from.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
@@ -498,7 +542,7 @@ def grid_scaled_2d_slim_radial_projected_from(
     ----------
     extent
         The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
-    centre : (float, flloat)
+    centre : (float, float)
         The (y,x) central coordinate which the radial grid is traced outwards from.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
@@ -570,7 +614,7 @@ def grid_2d_slim_from(
     ----------
     grid_2d_native : ndarray
         The native grid of (y,x) values which are mapped to the slimmed grid.
-    mask_2d
+    mask
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
 
     Returns

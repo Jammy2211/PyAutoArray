@@ -191,7 +191,7 @@ class Visibilities(AbstractVisibilities):
             The path the file is loaded from, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         hdu
-            The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
+            The Header-Data Unit of the .fits file the visibility data is loaded from.
         """
         visibilities_1d = ndarray_via_fits_from(file_path=file_path, hdu=hdu)
         return cls(visibilities=visibilities_1d)

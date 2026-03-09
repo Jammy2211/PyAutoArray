@@ -75,6 +75,9 @@ class Grid2DIrregular(AbstractNDArray):
 
     @property
     def values(self):
+        """
+        The raw underlying ndarray of (y,x) coordinate pairs, with shape [total_coordinates, 2].
+        """
         return self._array
 
     @property
@@ -106,10 +109,18 @@ class Grid2DIrregular(AbstractNDArray):
 
     @property
     def slim(self) -> "Grid2DIrregular":
+        """
+        Returns the grid in its ``slim`` representation. For an irregular grid there is no 2D native format,
+        so this returns the grid as-is.
+        """
         return self
 
     @property
     def native(self) -> "Grid2DIrregular":
+        """
+        Returns the grid in its ``native`` representation. For an irregular grid there is no 2D native format,
+        so this returns the grid as-is.
+        """
         return self
 
     @property
@@ -177,7 +188,7 @@ class Grid2DIrregular(AbstractNDArray):
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ) -> ArrayIrregular:
         """
-        Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
+        Returns the squared distance of every (y,x) coordinate in this ``Grid2DIrregular`` instance from an input
         coordinate.
 
         Parameters
@@ -194,7 +205,7 @@ class Grid2DIrregular(AbstractNDArray):
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ) -> ArrayIrregular:
         """
-        Returns the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
+        Returns the distance of every (y,x) coordinate in this ``Grid2DIrregular`` instance from an input coordinate.
 
         Parameters
         ----------

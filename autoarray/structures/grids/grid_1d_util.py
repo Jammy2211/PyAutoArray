@@ -16,26 +16,28 @@ def convert_grid_1d(
     grid_1d: Union[np.ndarray, List], mask_1d: Mask1D, store_native: bool = False, xp=np
 ) -> np.ndarray:
     """
-    The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
+    The ``manual`` classmethods in the ``Grid1D`` object take as input a list or ndarray which is returned as a ``Grid1D``.
 
-    This function performs the following and checks and conversions on the input:
+    This function performs the following checks and conversions on the input:
 
-    1: If the input is a list, convert it to an ndarray.
-    2: Check that the number of pixels in the array is identical to that of the mask.
-    3) Map the input ndarray to its `slim` representation.
+    1. If the input is a list, convert it to an ndarray.
+    2. Check that the number of pixels in the array is identical to that of the mask.
+    3. Map the input ndarray to its ``slim`` representation.
 
-    For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
-    shape [total_y_coordinates, total_x_coordinates, 2]
+    For a ``Grid1D``, ``slim`` refers to a 1D NumPy array of shape [total_unmasked_pixels] and ``native`` a 1D
+    NumPy array of shape [total_pixels].
 
     Parameters
     ----------
-    grid_2d
-        The input (y,x) grid of coordinates which is converted to an ndarray if it is a list.
-    mask_2d
-        The mask of the output Array2D.
+    grid_1d
+        The input (x,) grid of coordinates which is converted to an ndarray if it is a list.
+    mask_1d
+        The mask of the output ``Grid1D``.
     store_native
-        If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
-        mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
+        If True, the ndarray is stored in its native format [total_pixels]. This avoids mapping large data arrays
+        to and from the slim / native formats, which can be a computational bottleneck.
+    xp
+        The array module to use (default ``numpy``; pass ``jax.numpy`` for JAX support).
     """
 
     grid_1d = grid_2d_util.convert_grid(grid=grid_1d)
@@ -114,20 +116,20 @@ def grid_1d_slim_via_mask_from(
         A 1D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         grid.
     pixel_scales
-        The (x) scaled units to pixel units conversion factor of the 2D mask array.
+        The (x,) scaled units to pixel units conversion factor of the 1D mask array.
     origin
-        The (x) origin of the 2D array, which the grid is shifted around.
+        The (x,) origin of the 1D array, which the grid is shifted around.
 
     Returns
     -------
     ndarray
-        A grid of (x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        A grid of (x) scaled coordinates at the centre of every unmasked pixel in the 1D mask
         array. The grid array has dimensions (total_unmasked_pixels, ).
 
     Examples
     --------
     mask = np.array([True, False, True, False, False, False])
-    grid_slim = grid_1d_via_mask_from(mask_1d=mask_1d, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    grid_slim = grid_1d_slim_via_mask_from(mask_1d=mask, pixel_scales=(0.5,), origin=(0.0,))
     """
     centres_scaled = geometry_util.central_scaled_coordinate_1d_from(
         shape_slim=mask_1d.shape, pixel_scales=pixel_scales, origin=origin

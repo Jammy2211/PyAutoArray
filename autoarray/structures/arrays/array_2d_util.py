@@ -12,7 +12,7 @@ from autoarray import exc
 
 def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     """
-    If the input array input a convert is of type list, convert it to type NumPy array.
+    Convert the input array to a NumPy ``ndarray`` if it is a list, or unwrap it if it is an autoarray object.
 
     Parameters
     ----------
@@ -32,6 +32,16 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
 
 
 def check_array_2d(array_2d: np.ndarray):
+    """
+    Check that an array intended for use as an ``Array2D`` slim representation has exactly 1 dimension.
+
+    Raises ``ArrayException`` if the array is not 1D.
+
+    Parameters
+    ----------
+    array_2d
+        The array to check, which must have shape [total_unmasked_pixels].
+    """
     if len(array_2d.shape) != 1:
         raise exc.ArrayException(
             "An array input into the Array2D.__new__ method is not of shape 1."
@@ -281,9 +291,9 @@ def resized_array_2d_from(
     resized_shape
         The (y,x) new pixel dimension of the trimmed array.
     origin
-        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+        The origin of the resized array, e.g. the central pixel around which the array is extracted.
     pad_value
-        If the reszied array is bigger in size than the input array, the value the padded edge values are filled in
+        If the resized array is bigger in size than the input array, the value the padded edge values are filled in
         using.
 
     Returns
@@ -405,7 +415,7 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
     Examples
     --------
     indexes_2d = np.array([[0,0], [1,0], [2,0], [2,2]])
-    indexes_flat = index_flat_for_index_2d_from(indexes_2d=indexes_2d, shape=(3,3))
+    indexes_slim = index_slim_for_index_2d_from(indexes_2d=indexes_2d, shape_native=(3,3))
     """
     # Calculate 1D indexes as row_index * number_of_columns + col_index
     index_slim_for_index_native_2d = (
@@ -434,11 +444,9 @@ def array_2d_slim_from(
     Parameters
     ----------
     array_2d_native
-        A 2D array of values on the dimensions of the grid.
+        A 2D array of values on the dimensions of the grid, with shape [total_y_pixels, total_x_pixels].
     mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    array_2d_native
-        The 2D array of values which are mapped to a 1D array.
 
     Returns
     -------
