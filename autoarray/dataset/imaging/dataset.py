@@ -68,6 +68,10 @@ class Imaging(AbstractDataset):
         psf
             The Point Spread Function kernel of the image which accounts for diffraction due to the telescope optics
             via 2D convolution.
+        psf_setup_state
+            If `True`, a `ConvolverState` is precomputed from the PSF kernel and mask, storing the
+            convolution pair indices required for efficient 2D convolution. This is set automatically
+            to `True` when a mask is applied via `apply_mask()` and should not normally be set by hand.
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
@@ -236,13 +240,25 @@ class Imaging(AbstractDataset):
         Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
         quantities one-by-one.
 
-        The `apply_mask` function cannot be called multiple times, if it is a mask may remove data, therefore
-        an exception is raised. If you wish to apply a new mask, reload the dataset from .fits files.
+        The mask is applied to the `data`, `noise_map`, `over_sample_size_lp` and
+        `over_sample_size_pixelization` arrays. If a `noise_covariance_matrix` is present, the rows
+        and columns corresponding to masked pixels are removed so it stays consistent with the
+        remaining unmasked pixels. The PSF `ConvolverState` is recomputed for the new mask.
+
+        The `apply_mask` function cannot be called multiple times — a new mask cannot expand the
+        unmasked region beyond what was already unmasked, as the underlying data has already been
+        trimmed. An exception is raised if this is attempted. If you wish to apply a different mask,
+        reload the dataset from .fits files.
 
         Parameters
         ----------
         mask
             The 2D mask that is applied to the image.
+
+        Returns
+        -------
+        Imaging
+            A new `Imaging` dataset with the mask applied to all arrays.
         """
         invalid = np.logical_and(self.data.mask, np.logical_not(mask))
 
@@ -413,22 +429,27 @@ class Imaging(AbstractDataset):
         batch_size: int = 128,
     ):
         """
+        Precompute the PSF precision operator for efficient pixelized source reconstruction.
+
         The sparse linear algebra formalism precomputes the convolution of every pair of masked
-        noise-map values given the PSF (see `inversion.inversion_util`).
+        noise-map values given the PSF (see `inversion.inversion_util`). This is the imaging
+        equivalent of the interferometer NUFFT precision matrix.
 
-        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
-        per analysis.
+        The `ImagingSparseOperator` stores these precomputed values in the imaging dataset ensuring
+        they are only computed once per analysis, enabling fast repeated likelihood evaluations during
+        model fitting.
 
-        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
-        ensuring efficient set up of the `Imaging` class.
+        Parameters
+        ----------
+        batch_size
+            The number of image pixels processed per batch when computing the sparse operator via
+            FFT-based convolution. Reducing this lowers peak memory usage at the cost of speed.
 
         Returns
         -------
-        batch_size
-            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
-            which can be reduced to produce lower memory usage at the cost of speed
-        use_jax
-            Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
+        Imaging
+            A new `Imaging` dataset with the precomputed `ImagingSparseOperator` attached, enabling
+            efficient pixelized source reconstruction via the sparse linear algebra formalism.
         """
 
         logger.info(
@@ -459,22 +480,20 @@ class Imaging(AbstractDataset):
         self,
     ):
         """
-        The sparse linear algebra formalism precomputes the convolution of every pair of masked
-        noise-map values given the PSF (see `inversion.inversion_util`).
+        Precompute the PSF precision operator using a CPU-only Numba implementation.
 
-        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
-        per analysis.
+        This is the CPU alternative to `apply_sparse_operator()`, using Numba JIT compilation
+        for the convolution loop rather than JAX. It requires `numba` to be installed; an
+        `InversionException` is raised if it is not available.
 
-        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
-        ensuring efficient set up of the `Imaging` class.
+        The resulting `SparseLinAlgImagingNumba` operator is stored on the returned `Imaging`
+        dataset and used by `FitImaging` when performing pixelized source reconstructions.
 
         Returns
         -------
-        batch_size
-            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
-            which can be reduced to produce lower memory usage at the cost of speed.
-        use_jax
-            Whether to use JAX to compute W-Tilde. This requires JAX to be installed.
+        Imaging
+            A new `Imaging` dataset with a precomputed Numba-based sparse operator attached,
+            enabling efficient pixelized source reconstruction on CPU hardware.
         """
         try:
             import numba

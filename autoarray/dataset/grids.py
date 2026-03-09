@@ -44,6 +44,9 @@ class GridsDataset:
 
         Parameters
         ----------
+        mask
+            The 2D mask defining which pixels are included in the dataset. All grids are constructed
+            to align with the centres of the unmasked pixels in this mask.
         over_sample_size_lp
             The over sampling scheme size, which divides the grid into a sub grid of smaller pixels when computing
             values (e.g. images) from the grid to approximate the 2D line integral of the amount of light that falls
@@ -53,7 +56,8 @@ class GridsDataset:
             passed into the calculations performed in the `inversion` module.
         psf
             The Point Spread Function kernel of the image which accounts for diffraction due to the telescope optics
-            via 2D convolution.
+            via 2D convolution. Required to compute the blurring grid; if `None` the blurring grid
+            is not constructed.
         """
         self.mask = mask
         self.over_sample_size_lp = over_sample_size_lp
@@ -67,7 +71,17 @@ class GridsDataset:
 
     @property
     def lp(self):
+        """
+        The light-profile grid: a `Grid2D` of (y,x) Cartesian coordinates at the centre of every
+        unmasked image pixel, used for evaluating light profiles and other spatial calculations
+        during model fitting.
 
+        The grid uses `over_sample_size_lp` to perform over-sampled sub-pixel integration,
+        approximating the 2D line integral of the light profile within each pixel. This grid is
+        what most model-fitting calculations use (e.g. computing galaxy images).
+
+        This property is lazily evaluated and cached on first access.
+        """
         if self._lp is not None:
             return self._lp
 
@@ -80,6 +94,16 @@ class GridsDataset:
 
     @property
     def pixelization(self):
+        """
+        The pixelization grid: a `Grid2D` of (y,x) Cartesian coordinates at the centre of every
+        unmasked image pixel, dedicated to pixelized source reconstructions via the `inversion` module.
+
+        This grid uses `over_sample_size_pixelization` which can differ from `over_sample_size_lp`,
+        allowing the pixelization to benefit from a different (e.g. lower) over-sampling resolution
+        than the light-profile grid.
+
+        This property is lazily evaluated and cached on first access.
+        """
         if self._pixelization is not None:
             return self._pixelization
 
@@ -92,7 +116,18 @@ class GridsDataset:
 
     @property
     def blurring(self):
+        """
+        The blurring grid: a `Grid2D` of (y,x) coordinates for pixels that lie just outside the
+        mask but whose light can be scattered into the unmasked region by the PSF.
 
+        When convolving a model image with the PSF, pixels neighbouring the mask boundary can
+        contribute flux to unmasked pixels. The blurring grid provides the coordinates of these
+        border pixels so their light profile values can be evaluated and included in the convolution.
+
+        Returns `None` if no PSF was supplied (i.e. no blurring is performed).
+
+        This property is lazily evaluated and cached on first access.
+        """
         if self._blurring is not None:
             return self._blurring
 
@@ -113,7 +148,16 @@ class GridsDataset:
 
     @property
     def border_relocator(self) -> BorderRelocator:
+        """
+        The border relocator for the pixelization grid.
 
+        During pixelized source reconstruction, source-plane coordinates that map outside the
+        border of the pixelization mesh can cause numerical problems. The `BorderRelocator`
+        detects these coordinates and relocates them to the border of the mesh, preventing
+        ill-conditioned inversions.
+
+        This property is lazily evaluated and cached on first access.
+        """
         if self._border_relocator is not None:
             return self._border_relocator
 
@@ -133,6 +177,26 @@ class GridsInterface:
         blurring=None,
         border_relocator=None,
     ):
+        """
+        A lightweight plain-data container for pre-constructed dataset grids.
+
+        Unlike `GridsDataset`, this class performs no computation — it simply holds grids that have
+        already been created elsewhere. It is used in test fixtures and mock datasets where a full
+        `GridsDataset` is not needed, but code that accesses `dataset.grids.lp` or
+        `dataset.grids.pixelization` still needs to work.
+
+        Parameters
+        ----------
+        lp
+            The light-profile `Grid2D` used for evaluating light profiles during model fitting.
+        pixelization
+            The pixelization `Grid2D` used for source reconstruction via the inversion module.
+        blurring
+            The blurring `Grid2D` for pixels outside the mask that contribute flux via PSF convolution.
+        border_relocator
+            The `BorderRelocator` used to remap out-of-bounds source-plane coordinates to the
+            pixelization mesh border.
+        """
         self.lp = lp
         self.pixelization = pixelization
         self.blurring = blurring

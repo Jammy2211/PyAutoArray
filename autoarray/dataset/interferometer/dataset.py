@@ -79,6 +79,14 @@ class Interferometer(AbstractDataset):
         transformer_class
             The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
             the uv-plane.
+        sparse_operator
+            A precomputed `InterferometerSparseOperator` containing the NUFFT precision matrix for efficient
+            pixelized source reconstruction. This is computed via `apply_sparse_operator()` and can be passed
+            here directly to avoid recomputing it (e.g. when loading a cached result from disk).
+        raise_error_dft_visibilities_limit
+            If `True`, an exception is raised if the dataset has more than 10,000 visibilities and
+            `transformer_class=TransformerDFT`. The DFT is too slow for large datasets and `TransformerNUFFT`
+            should be used instead. Set to `False` to suppress this check.
         """
         self.real_space_mask = real_space_mask
 
@@ -133,11 +141,46 @@ class Interferometer(AbstractDataset):
         transformer_class=TransformerNUFFT,
     ):
         """
-        Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
-        noise-map, exposure-time map, etc. from the interferometer-data_type.
+        Load an interferometer dataset from multiple .fits files.
 
-        This factory also includes a number of routines for converting the interferometer-data_type from unit_label
-        not supported by PyAutoLens (e.g. adus, electrons) to electrons per second.
+        The visibilities (complex-valued Fourier-space data), noise map and uv_wavelengths (baseline
+        coordinates) are each loaded from separate .fits files. A real-space mask defining the sky
+        region used for Fourier transforms must be supplied separately.
+
+        The visibilities are assumed to be stored as a 2D array of shape (total_visibilities, 2) where
+        column 0 is the real component and column 1 is the imaginary component. The noise map has the
+        same shape. The uv_wavelengths are a 2D array of shape (total_visibilities, 2) with columns
+        corresponding to the (u, v) baseline coordinates in units of wavelengths.
+
+        Parameters
+        ----------
+        data_path
+            The path to the .fits file containing the visibility data
+            (e.g. '/path/to/visibilities.fits').
+        noise_map_path
+            The path to the .fits file containing the visibility noise map
+            (e.g. '/path/to/noise_map.fits').
+        uv_wavelengths_path
+            The path to the .fits file containing the (u, v) baseline coordinates in units of
+            wavelengths (e.g. '/path/to/uv_wavelengths.fits').
+        real_space_mask
+            A `Mask2D` defining the real-space region of the sky that contains signal. This mask
+            determines the pixel grid used by the Fourier transformer and the coordinate grids
+            associated with the dataset.
+        visibilities_hdu
+            The HDU index in the visibilities .fits file from which data is loaded.
+        noise_map_hdu
+            The HDU index in the noise map .fits file from which data is loaded.
+        uv_wavelengths_hdu
+            The HDU index in the uv_wavelengths .fits file from which data is loaded.
+        transformer_class
+            The class of the Fourier Transform which maps images from real space to Fourier space
+            visibilities. Defaults to `TransformerNUFFT` for efficiency with large datasets.
+
+        Returns
+        -------
+        Interferometer
+            The interferometer dataset loaded from the .fits files.
         """
 
         visibilities = Visibilities.from_fits(file_path=data_path, hdu=visibilities_hdu)
@@ -168,28 +211,44 @@ class Interferometer(AbstractDataset):
         use_jax: bool = False,
     ):
         """
-        The sparse linear algebra equations precomputes the Fourier Transform of all the visibilities
-        given the `uv_wavelengths` (see `inversion.inversion_util`).
+        Precompute the NUFFT precision operator for efficient pixelized source reconstruction.
 
-        The `WTilde` object stores these precomputed values in the interferometer dataset ensuring they are only
-        computed once per analysis.
+        The sparse linear algebra formalism precomputes the Fourier Transform response matrix for all
+        visibility baselines, enabling fast repeated evaluation during model fitting. This avoids
+        recomputing the full NUFFT on every likelihood call.
 
-        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
-        ensuring efficient set up of the `Interferometer` class.
+        The resulting `InterferometerSparseOperator` is stored on the returned `Interferometer` dataset
+        and is used automatically by `FitInterferometer` when performing pixelized reconstructions via
+        the inversion module.
+
+        Computing the NUFFT precision matrix from scratch can be very slow (runtime scales with both
+        the number of visibilities and the real-space mask resolution — potentially hours for large
+        datasets). The result can be cached to disk and reloaded to avoid recomputation.
 
         Parameters
         ----------
         nufft_precision_operator
-            An already computed curvature preload matrix for this dataset (e.g. loaded from hard-disk), to prevent
-            long recalculations of this matrix for large datasets.
+            An already computed NUFFT precision matrix for this dataset (e.g. loaded from disk via
+            `np.load`) to avoid an expensive recomputation. If `None` it is computed from scratch
+            by calling `psf_precision_operator_from()`.
         batch_size
-            The size of batches used to compute the w-tilde curvature matrix via FFT-based convolution,
-            which can be reduced to produce lower memory usage at the cost of speed.
+            The number of real-space pixels processed per batch when building the sparse operator.
+            Reducing this lowers peak memory usage at the cost of speed.
+        chunk_k
+            The number of visibilities processed per chunk when computing the NUFFT precision matrix
+            inside `psf_precision_operator_from()`. Reducing this lowers peak memory usage.
+        show_progress
+            If `True`, a progress bar is displayed while computing the NUFFT precision matrix.
+        show_memory
+            If `True`, memory usage statistics are printed while computing the NUFFT precision matrix.
+        use_jax
+            If `True`, JAX is used to accelerate the NUFFT precision matrix computation.
 
         Returns
         -------
-        WTildeInterferometer
-            Precomputed values used for the w tilde formalism of linear algebra calculations.
+        Interferometer
+            A new `Interferometer` dataset with the precomputed `InterferometerSparseOperator` attached,
+            enabling efficient pixelized source reconstruction via the sparse linear algebra formalism.
         """
 
         if nufft_precision_operator is None:
@@ -233,6 +292,37 @@ class Interferometer(AbstractDataset):
         show_memory: bool = False,
         use_jax: bool = False,
     ):
+        """
+        Compute the NUFFT precision matrix for this interferometer dataset.
+
+        The precision matrix encodes the response of every real-space pixel to every visibility
+        baseline, weighted by the noise map. It is the core precomputed quantity required for
+        efficient pixelized source reconstruction via the sparse linear algebra formalism.
+
+        This computation can be very slow for large datasets (runtime scales with the number of
+        visibilities multiplied by the number of unmasked real-space pixels). For datasets with
+        tens of thousands of visibilities and high-resolution masks, computation can take hours
+        on a CPU. The result should be saved to disk and reloaded rather than recomputed on each
+        run. Use `apply_sparse_operator(nufft_precision_operator=...)` to attach a cached result.
+
+        Parameters
+        ----------
+        chunk_k
+            The number of visibilities processed per chunk. Reducing this lowers peak memory
+            usage during computation at the cost of speed.
+        show_progress
+            If `True`, a progress bar is shown during computation.
+        show_memory
+            If `True`, memory usage statistics are printed during computation.
+        use_jax
+            If `True`, JAX is used to accelerate the computation.
+
+        Returns
+        -------
+        np.ndarray
+            The NUFFT precision matrix of shape (total_pixels, total_pixels) where total_pixels
+            is the number of unmasked real-space pixels.
+        """
         return inversion_interferometer_util.nufft_precision_operator_from(
             noise_map_real=self.noise_map.array.real,
             uv_wavelengths=self.uv_wavelengths,
@@ -246,36 +336,81 @@ class Interferometer(AbstractDataset):
 
     @property
     def mask(self):
+        """
+        The real-space mask of the interferometer dataset.
+
+        For an interferometer, this is the `real_space_mask` which defines the region of sky that
+        contains signal. It is used as the spatial domain for the Fourier transform, determining
+        the pixel grid size and coordinate grids.
+        """
         return self.real_space_mask
 
     @property
     def amplitudes(self):
+        """
+        The amplitudes of the complex visibilities, defined as the absolute value of each visibility:
+        amplitude = sqrt(real^2 + imag^2).
+        """
         return self.data.amplitudes
 
     @property
     def phases(self):
+        """
+        The phases of the complex visibilities in radians, defined as arctan(imag / real) for
+        each visibility.
+        """
         return self.data.phases
 
     @property
     def uv_distances(self):
+        """
+        The radial distance of each visibility baseline from the origin of the UV-plane, in units
+        of wavelengths. Computed as sqrt(u^2 + v^2) for each (u, v) baseline pair.
+        """
         return np.sqrt(
             np.square(self.uv_wavelengths[:, 0]) + np.square(self.uv_wavelengths[:, 1])
         )
 
     @property
     def dirty_image(self):
+        """
+        The dirty image, computed as the inverse Fourier transform of the observed visibilities.
+
+        This is the raw image obtained by back-projecting the visibilities without any deconvolution.
+        It provides a quick visual representation of the data but is convolved with the synthesized
+        beam (the Fourier transform of the UV-plane sampling function).
+        """
         return self.transformer.image_from(visibilities=self.data)
 
     @property
     def dirty_noise_map(self):
+        """
+        The dirty noise map, computed as the inverse Fourier transform of the noise map visibilities.
+
+        Provides a real-space representation of the noise levels in the dirty image.
+        """
         return self.transformer.image_from(visibilities=self.noise_map)
 
     @property
     def dirty_signal_to_noise_map(self):
+        """
+        The dirty signal-to-noise map, computed as the inverse Fourier transform of the
+        complex signal-to-noise visibility map.
+        """
         return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
     def signal_to_noise_map(self):
+        """
+        The complex signal-to-noise map of the visibilities.
+
+        Computed separately for the real and imaginary components as data / noise_map. Values
+        below zero are clamped to zero, as negative signal-to-noise is not physically meaningful.
+
+        Unlike the base class implementation (which operates on real-valued data), this override
+        handles the complex nature of interferometric visibilities by treating the real and
+        imaginary parts independently.
+        """
         signal_to_noise_map_real = np.divide(
             np.real(self.data.array), np.real(self.noise_map.array)
         )
@@ -296,6 +431,27 @@ class Interferometer(AbstractDataset):
         uv_wavelengths_path=None,
         overwrite=False,
     ):
+        """
+        Output the interferometer dataset to multiple .fits files.
+
+        Each component (visibilities, noise map, uv_wavelengths) is saved to its own .fits file.
+        Any path set to `None` means that component is not saved.
+
+        Parameters
+        ----------
+        data_path
+            The path where the visibility data is saved (e.g. '/path/to/visibilities.fits').
+            If `None`, the visibilities are not saved.
+        noise_map_path
+            The path where the noise map is saved (e.g. '/path/to/noise_map.fits').
+            If `None`, the noise map is not saved.
+        uv_wavelengths_path
+            The path where the uv_wavelengths array is saved (e.g. '/path/to/uv_wavelengths.fits').
+            If `None`, the uv_wavelengths are not saved.
+        overwrite
+            If `True`, existing .fits files are overwritten. If `False`, an exception is raised
+            if a file already exists at the given path.
+        """
         if data_path is not None:
             self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
@@ -311,4 +467,11 @@ class Interferometer(AbstractDataset):
 
     @property
     def psf(self):
+        """
+        Returns `None` for interferometer datasets.
+
+        Interferometers do not have a Point Spread Function in the same sense as imaging datasets.
+        The equivalent quantity is the synthesized beam, which is determined by the UV-plane coverage
+        and is not stored explicitly. This property exists to satisfy the `AbstractDataset` interface.
+        """
         return None

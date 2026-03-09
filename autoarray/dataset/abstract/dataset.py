@@ -134,34 +134,62 @@ class AbstractDataset:
 
     @property
     def grid(self):
+        """
+        The primary coordinate grid of the dataset, equivalent to `grids.lp`.
+
+        Returns the light-profile `Grid2D` aligned with the centres of all unmasked image pixels.
+        This is the grid used for the majority of model calculations (e.g. evaluating galaxy light
+        profiles).
+        """
         return self.grids.lp
 
     @property
     def shape_native(self):
+        """
+        The 2D shape of the dataset image in its native (unmasked) dimensions, e.g. (rows, columns).
+        """
         return self.mask.shape_native
 
     @property
     def shape_slim(self):
+        """
+        The 1D size of the dataset data array after masking, i.e. the number of unmasked pixels.
+        """
         return self.data.shape_slim
 
     @property
     def pixel_scales(self):
+        """
+        The (y, x) arcsecond-to-pixel conversion factor of the dataset, as a (float, float) tuple.
+        """
         return self.mask.pixel_scales
 
     @property
     def mask(self) -> Union[Mask1D, Mask2D]:
+        """
+        The mask of the dataset, derived from the mask of the `data` array.
+        """
         return self.data.mask
 
     def apply_over_sampling(self):
+        """
+        Apply new over-sampling sizes to the dataset grids.
+
+        Subclasses must implement this method to rebuild the `GridsDataset` with updated
+        `over_sample_size_lp` and `over_sample_size_pixelization` values.
+        """
         raise NotImplementedError
 
     @property
     def signal_to_noise_map(self) -> Structure:
         """
-        The estimated signal-to-noise_maps mappers of the image.
+        The signal-to-noise map of the dataset, computed as `data / noise_map`.
 
-        Warnings arise when masked native noise-maps are used, whose masked entries are given values of 0.0. We
-        use the warnings module to suppress these RunTimeWarnings.
+        Values below zero are clamped to zero, as negative signal-to-noise is not physically
+        meaningful (it indicates the data is below zero due to noise, not a real negative signal).
+
+        RuntimeWarnings from dividing by zero in masked pixels (where the noise map is 0.0) are
+        suppressed, as these masked values are never used in downstream calculations.
         """
         warnings.filterwarnings("ignore")
 
@@ -172,7 +200,7 @@ class AbstractDataset:
     @property
     def signal_to_noise_max(self) -> float:
         """
-        The maximum value of signal-to-noise_maps in an image pixel in the image's signal-to-noise_maps mappers.
+        The maximum signal-to-noise value across all unmasked pixels in the dataset.
         """
         return np.max(self.signal_to_noise_map)
 
@@ -185,6 +213,27 @@ class AbstractDataset:
         return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
+        """
+        Return a copy of the dataset with all arrays trimmed to remove the border pixels affected
+        by PSF convolution edge effects.
+
+        When a model image is convolved with a PSF kernel, the pixels at the border of the image
+        cannot be correctly convolved because they lack sufficient neighbouring pixels. These border
+        pixels have unreliable values after convolution. This method trims the `data`, `noise_map`,
+        `over_sample_size_lp` and `over_sample_size_pixelization` arrays by the kernel half-width
+        on each side, so that only pixels with a complete convolution kernel neighbourhood remain.
+
+        Parameters
+        ----------
+        kernel_shape
+            The (rows, cols) shape of the PSF convolution kernel. The dataset arrays are trimmed
+            by `kernel_shape // 2` pixels on each side in each dimension.
+
+        Returns
+        -------
+        AbstractDataset
+            A shallow copy of the dataset with all arrays trimmed to the post-convolution shape.
+        """
         dataset = copy.copy(self)
 
         dataset.data = dataset.data.trimmed_after_convolution_from(

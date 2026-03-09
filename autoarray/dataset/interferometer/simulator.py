@@ -18,21 +18,47 @@ class SimulatorInterferometer:
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
     ):
-        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
-        psf, exposure time, etc.
+        """
+        Simulates observations of `Interferometer` data, including transforming a real-space image to
+        complex-valued visibilities in Fourier space and optionally adding complex Gaussian noise.
+
+        The simulation of an `Interferometer` dataset uses the following steps:
+
+        1) Receive as input a real-space image (e.g. a model galaxy or lens system) and a set of UV-plane
+           baselines (uv_wavelengths) describing the interferometer configuration.
+        2) Fourier transform the real-space image to the UV-plane using the configured transformer class
+           (DFT or NUFFT) to produce model visibilities.
+        3) Optionally add complex Gaussian noise to the visibilities, with the noise level controlled by
+           `noise_sigma`. The noise is added independently to the real and imaginary parts.
+        4) Create a constant noise map with value `noise_sigma` for every visibility. If noise is not
+           added (`noise_sigma=None`), the noise map is filled with `noise_if_add_noise_false` instead.
+
+        The returned `Interferometer` dataset contains the simulated visibilities, noise map,
+        uv_wavelengths and real-space mask, and can be used directly with `FitInterferometer`.
 
         Parameters
         ----------
-        real_space_shape_native
-            The shape of the observation. Note that we do not simulator a full Imaging array (e.g. 2000 x 2000 pixels for \
-            Hubble imaging), but instead just a cut-out around the strong lens.
-        real_space_pixel_scales
-            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
-            it is converted to a (float, float).
-        psf : PSF
-            An arrays describing the PSF kernel of the image.
-        exposure_time_map
-            The exposure time of an observation using this data_type.
+        uv_wavelengths
+            The (u, v) baseline coordinates of the interferometer in units of wavelengths. This is a
+            2D array of shape (total_visibilities, 2) where each row is a (u, v) baseline pair. These
+            define the Fourier-space sampling of the observation.
+        exposure_time
+            The exposure time of the simulated interferometer observation in seconds.
+        transformer_class
+            The class used to perform the Fourier transform between real space and the UV-plane. The
+            default `TransformerDFT` is suitable for small datasets (fewer than ~10,000 visibilities).
+            For larger datasets use `TransformerNUFFT` for efficiency.
+        noise_sigma
+            The standard deviation of the complex Gaussian noise added to each visibility. Noise is
+            added independently to the real and imaginary components. If `None`, no noise is added to
+            the visibilities but a noise map is still created using `noise_if_add_noise_false`.
+        noise_if_add_noise_false
+            The noise value assigned to every visibility in the noise map when `noise_sigma=None`
+            (i.e. when no noise is added to the data). This gives the noise map a non-zero value
+            so that downstream fits remain well-defined.
+        noise_seed
+            The random seed used for noise generation. A value of -1 uses a different random seed
+            on every run, producing different noise realisations each time.
         """
 
         self.uv_wavelengths = uv_wavelengths
@@ -44,23 +70,25 @@ class SimulatorInterferometer:
 
     def via_image_from(self, image):
         """
-        Returns a realistic simulated image by applying effects to a plain simulated image.
+        Simulate an `Interferometer` dataset from an input real-space image.
+
+        The steps of the simulation process are described in the `SimulatorInterferometer` `__init__`
+        docstring. In brief: the image is Fourier transformed to visibilities using the configured
+        transformer class and the uv_wavelengths baselines, then complex Gaussian noise is optionally
+        added and a constant noise map is created.
 
         Parameters
         ----------
-        real_space_image
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
-        real_space_pixel_scales
-            The scale of each pixel in scaled units
-        exposure_time_map
-            An array representing the effective exposure time of each pixel.
-        psf: PSF
-            An array describing the PSF the simulated image is blurred with.
-        add_poisson_noise_to_data: Bool
-            If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
-            pixel
-        noise_seed: int
-            A seed for random noise_maps generation
+        image
+            The 2D real-space image from which the interferometer dataset is simulated (e.g. the
+            surface brightness of a galaxy or lens system). Must be an `Array2D` with an associated
+            mask that defines the real-space region used for the Fourier transform.
+
+        Returns
+        -------
+        Interferometer
+            The simulated interferometer dataset containing visibilities, noise map, uv_wavelengths
+            and the real-space mask derived from the input image.
         """
 
         transformer = self.transformer_class(
