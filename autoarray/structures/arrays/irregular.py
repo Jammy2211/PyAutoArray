@@ -45,6 +45,9 @@ class ArrayIrregular(Structure):
 
     @property
     def values(self):
+        """
+        The raw underlying 1D ndarray of values, with shape [total_values].
+        """
         return self.array
 
     @property
@@ -56,6 +59,10 @@ class ArrayIrregular(Structure):
 
     @property
     def native(self) -> Structure:
+        """
+        The ``ArrayIrregular`` in its ``native`` representation. For an irregular array there is no 2D native
+        format, so this returns the array as-is.
+        """
         return self
 
     @property

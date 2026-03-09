@@ -187,9 +187,15 @@ class AbstractArray2D(Structure):
         mask
             The 2D mask associated with the array, defining the pixels each array value in its ``slim`` representation
             is paired with.
+        header
+            Optional metadata header (e.g. from a FITS file) associated with the array.
         store_native
             If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
+        skip_mask
+            If True, masking is skipped and values are stored as-is without zeroing masked entries.
+        xp
+            The array module to use (default ``numpy``; pass ``jax.numpy`` for JAX support).
 
         Examples
         --------
@@ -334,22 +340,39 @@ class AbstractArray2D(Structure):
 
     @property
     def in_counts(self) -> "Array2D":
+        """
+        The array converted from electrons-per-second (eps) to total counts, using the exposure time stored
+        in the associated ``Header``.
+        """
         return self.header.array_eps_to_counts(array_eps=self)
 
     @property
     def in_counts_per_second(self) -> "Array2D":
+        """
+        The array converted from electrons-per-second (eps) to counts-per-second, via an intermediate
+        conversion to total counts using the ``Header`` exposure time.
+        """
         return self.header.array_counts_to_counts_per_second(
             array_counts=self.in_counts
         )
 
     @property
     def original_orientation(self) -> Union[np.ndarray, "Array2D"]:
+        """
+        The array rotated back to its original CCD read-out orientation, using the read-out-electronics (ROE)
+        corner stored in the associated ``Header``.
+        """
         return layout_util.rotate_array_via_roe_corner_from(
             array=self, roe_corner=self.header.original_roe_corner
         )
 
     @property
     def readout_offsets(self) -> Tuple[int, int]:
+        """
+        The (y,x) pixel offsets of the read-out electronics corner, taken from the associated ``Header``.
+
+        Returns ``(0, 0)`` if no header is present or no readout offsets are stored in the header.
+        """
         if self.header is not None:
             if self.header.readout_offsets is not None:
                 return self.header.readout_offsets
@@ -438,10 +461,10 @@ class AbstractArray2D(Structure):
 
         For example, if the input region is `region=(-0.15, 0.25, 0.35, 0.55)` the code finds all pixels inside of
         this region in scaled units, finds the brightest pixel of those pixels, and then on a 3x3 grid surrounding
-        this pixel determines the locaiton of the brightest sub pixel using a weighted centre calculation.
+        this pixel determines the location of the brightest sub pixel using a weighted centre calculation.
 
-        The centre of the brightest pixel is returned, the function `brightest_sub_pixel_coordinate_in_region_from`
-        performs a sub pixel calculation to return the brightest sub pixel coordinate.
+        Unlike ``brightest_coordinate_in_region_from``, which returns the centre of the brightest pixel, this
+        function performs a weighted-centroid sub-pixel calculation to return a more precise coordinate.
 
         Parameters
         ----------
@@ -621,9 +644,9 @@ class Array2D(AbstractArray2D):
             # Make Array2D from input list, native format
             # (This array has shape_native=(2,2)).
 
-            array_2d = aa.Array2D.manual(
-                array=np.array([[1.0, 2.0], [3.0, 4.0]]),
-                pixel_scales=1.0.
+            array_2d = aa.Array2D.no_mask(
+                values=np.array([[1.0, 2.0], [3.0, 4.0]]),
+                pixel_scales=1.0,
             )
         """
 

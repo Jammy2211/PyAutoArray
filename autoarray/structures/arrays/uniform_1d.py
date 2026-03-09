@@ -25,6 +25,29 @@ class Array1D(Structure):
         store_native: bool = False,
         xp=np,
     ):
+        """
+        A uniform 1D array of values, paired with a 1D mask of pixels.
+
+        Each entry of an ``Array1D`` corresponds to a value at the centre of a pixel in its corresponding ``Mask1D``.
+        It is ordered such that pixels begin from the left of the corresponding mask and go right.
+
+        Like ``Array2D``, the ``Array1D`` supports ``slim`` (1D, unmasked only) and ``native`` (1D, full length)
+        data representations.
+
+        Parameters
+        ----------
+        values
+            The values of the array, input in the ``slim`` or ``native`` format.
+        mask
+            The 1D mask associated with the array, defining which pixels each array value is paired with.
+        header
+            Optional metadata header associated with the array (e.g. from a FITS file).
+        store_native
+            If True, the ndarray is stored in its native format [total_pixels]. This avoids mapping large data
+            arrays to and from the slim / native formats, which can be a computational bottleneck.
+        xp
+            The array module to use (default ``numpy``; pass ``jax.numpy`` for JAX support).
+        """
 
         values = array_1d_util.convert_array_1d(
             array_1d=values, mask_1d=mask, store_native=store_native, xp=xp
@@ -66,7 +89,7 @@ class Array1D(Structure):
 
             array_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
-            # Make Array2D from input list.
+            # Make Array1D from input list.
 
             array_1d = aa.Array1D.no_mask(values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
