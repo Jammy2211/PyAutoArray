@@ -199,6 +199,12 @@ class Mask2D(Mask):
             it is converted to a (float, float) structure.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
+        invert
+            If `True`, the `bool`'s of the input `mask` are inverted, so `False` entries become `True`
+            and vice versa.
+        xp
+            The array module to use (default `numpy`; pass `jax.numpy` for JAX support). Controls
+            whether internal index arrays are computed on CPU or GPU.
         """
 
         if type(mask) is list:
@@ -224,6 +230,13 @@ class Mask2D(Mask):
 
     @property
     def native_for_slim(self):
+        """
+        A 2D array of shape [total_unmasked_pixels, 2] that maps every unmasked pixel's slim index to its
+        (y, x) native 2D index.
+
+        For example, if ``slim_to_native[3] = [2, 5]``, the 4th unmasked pixel (slim index 3) is located at
+        row 2, column 5 in the native 2D array.
+        """
         return self.derive_indexes.native_for_slim
 
     __no_flatten__ = ("derive_indexes",)
@@ -252,18 +265,34 @@ class Mask2D(Mask):
 
     @property
     def derive_indexes(self) -> DeriveIndexes2D:
+        """
+        Returns the ``DeriveIndexes2D`` object associated with the mask, which contains derived index arrays
+        used to map data between ``slim`` (1D unmasked) and ``native`` (2D full-shape) representations.
+        """
         return DeriveIndexes2D(mask=self, xp=self._xp)
 
     @property
     def derive_mask(self) -> DeriveMask2D:
+        """
+        Returns the ``DeriveMask2D`` object associated with the mask, which computes derived masks such as
+        the edge mask, border mask, and blurring mask.
+        """
         return DeriveMask2D(mask=self)
 
     @property
     def derive_grid(self) -> DeriveGrid2D:
+        """
+        Returns the ``DeriveGrid2D`` object associated with the mask, which computes derived grids of (y,x)
+        coordinates such as the unmasked pixel grid, edge grid, and border grid.
+        """
         return DeriveGrid2D(mask=self)
 
     @property
     def zoom(self) -> Zoom2D:
+        """
+        Returns the ``Zoom2D`` object associated with the mask, which computes the zoomed region of the mask
+        around its unmasked pixels for use in visualization.
+        """
         return Zoom2D(mask=self)
 
     @classmethod
@@ -586,18 +615,29 @@ class Mask2D(Mask):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Loads the image from a .fits file.
+        Load a ``Mask2D`` from a 2D boolean array stored in a ``.fits`` file.
 
         Parameters
         ----------
         file_path
-            The full path of the fits file.
+            The full path of the ``.fits`` file, including the file name and extension.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a
+            `float`, it is converted to a (float, float) structure.
         hdu
-            The HDU number in the fits file containing the image image.
-        pixel_scales or (float, float)
-            The scaled units to pixel units conversion factor of each pixel.
+            The HDU number in the ``.fits`` file containing the mask array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
+        resized_mask_shape
+            If provided, the loaded mask is resized to this (y,x) shape after loading.
+        invert
+            If `True`, the `bool`'s of the loaded mask are inverted, so `False` entries become `True`
+            and vice versa.
+
+        Returns
+        -------
+        Mask2D
+            The mask loaded from the ``.fits`` file.
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
@@ -619,6 +659,9 @@ class Mask2D(Mask):
 
     @property
     def shape_native(self) -> Tuple[int, ...]:
+        """
+        The 2D shape of the mask in its native representation, equal to the shape of the underlying boolean ndarray.
+        """
         return self.shape
 
     @cached_property
@@ -689,17 +732,24 @@ class Mask2D(Mask):
 
     def unmasked_blurred_array_from(self, padded_array, psf, image_shape) -> Array2D:
         """
-        For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
+        Convolve a padded array with the PSF and trim it back to the original image shape.
 
-        This relies on using the lens dataset's padded-grid, which is a grid of (y,x) coordinates which extends over
-        the entire image as opposed to just the masked region.
+        This relies on a padded array whose shape extends beyond the masked region, so that PSF convolution
+        does not suffer from edge effects. The result is trimmed back to ``image_shape`` after convolution.
 
         Parameters
         ----------
-        psf : aa.Convolver
-            The PSF of the image used for convolution.
-        unmasked_image_1d
-            The 1D unmasked image which is blurred.
+        padded_array
+            The padded ``Array2D`` (or slim 1D representation) of values to be convolved with the PSF.
+        psf
+            The PSF convolver used to blur the padded array.
+        image_shape
+            The (y,x) shape of the original (unpadded) image, used to trim the blurred result.
+
+        Returns
+        -------
+        Array2D
+            The blurred and trimmed ``Array2D`` of shape ``image_shape``.
         """
 
         blurred_image = psf.convolved_image_from(
@@ -732,6 +782,15 @@ class Mask2D(Mask):
 
     @property
     def mask_centre(self) -> Tuple[float, float]:
+        """
+        The (y,x) scaled coordinate centre of the unmasked pixels in the mask.
+
+        This is computed as the mean of the (y,x) scaled coordinates of all unmasked pixels.
+
+        Returns
+        -------
+        The (y,x) centre of the unmasked region of the mask in scaled units.
+        """
         grid = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self,
             pixel_scales=self.pixel_scales,
@@ -812,7 +871,7 @@ class Mask2D(Mask):
 
     def resized_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
         """
-        Returns the ``Mask2D`` resized to a small or bigger ``ndarraay``, but with the same distribution of
+        Returns the ``Mask2D`` resized to a small or bigger ``ndarray``, but with the same distribution of
          ``False`` and ``True`` entries.
 
         Resizing which increases the ``Mask2D`` shape pads it with values on its edge.

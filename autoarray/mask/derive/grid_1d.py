@@ -23,18 +23,18 @@ class DeriveGrid1D:
         omitted (for a full description see
         the :meth:`Mask1D class API documentation <autoarray.mask.mask_1d.Mask1D.__new__>`).
 
-        From a ``Mask1D``,``Grid1D``s can be derived, which represent the (y,x) Cartesian coordinates of a subset of
+        From a ``Mask1D``, ``Grid1D``s can be derived, which represent the (x,) Cartesian coordinates of a subset of
         pixels with significance.
 
         For example:
 
-        - An ``all_false`` ``Grid1D``: the same shape as the original ``Mask1D`` but has unmasked ``False`` values
-          everywhere.
+        - An ``all_false`` ``Grid1D``: the (x,) coordinates of every pixel in the ``Mask1D`` regardless of whether
+          each pixel is masked or unmasked.
 
         Parameters
         ----------
         mask
-            The ``Mask2D`` from which new ``Grid2D`` objects are derived.
+            The ``Mask1D`` from which new ``Grid1D`` objects are derived.
 
         Examples
         --------
@@ -43,20 +43,14 @@ class DeriveGrid1D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D(
-                mask=[
-                    [True,  True,  True,  True, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True,  True,  True,  True, True],
-                ],
+            mask_1d = aa.Mask1D(
+                mask=[True, False, False, False, True],
                 pixel_scales=1.0,
             )
 
-            derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
+            derive_grid_1d = aa.DeriveGrid1D(mask=mask_1d)
 
-            print(derive_grid_2d.border)
+            print(derive_grid_1d.all_false)
         """
         self.mask = mask
 
@@ -64,21 +58,21 @@ class DeriveGrid1D:
     def all_false(self) -> Grid1D:
         """
         Returns a ``Grid1D`` which uses the ``Mask1D``
-        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
-        irrespective of whether pixels are masked or unmasked (given by ``True`` or``False``).
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and includes every pixel in the ``Mask1D``,
+        irrespective of whether pixels are masked or unmasked (given by ``True`` or ``False``).
 
-        For example, for the following ``Mask2D``:
+        For example, for the following ``Mask1D``:
 
         ::
-            mask_2d = aa.Mask1D(
-                mask=[False, False, True,  True]
+            mask_1d = aa.Mask1D(
+                mask=[False, False, True,  True],
                 pixel_scales=1.0,
             )
 
         The ``all_false`` ``Grid1D`` (given via ``mask_1d.derive_grid.all_false``) is:
 
         ::
-            [-2.0, -1.0, 1.0, 2.0]
+            [-1.5, -0.5, 0.5, 1.5]
 
         Examples
         --------
@@ -87,7 +81,7 @@ class DeriveGrid1D:
 
             import autoarray as aa
 
-            mask_1d = aa.Mask2D(
+            mask_1d = aa.Mask1D(
                 mask=[False, False, True,  True],
                 pixel_scales=1.0,
             )

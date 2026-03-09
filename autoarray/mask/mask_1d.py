@@ -53,7 +53,13 @@ class Mask1D(Mask):
         pixel_scales
              The scaled units to pixel units conversion factor of each pixel.
         origin
-            The x origin of the mask's coordinate system in scaled units.
+            The (x,) origin of the mask's coordinate system in scaled units.
+        invert
+            If `True`, the `bool`'s of the input `mask` are inverted, so `False` entries become `True`
+            and vice versa.
+        xp
+            The array module to use (default `numpy`; pass `jax.numpy` for JAX support). Controls
+            whether internal index arrays are computed on CPU or GPU.
         """
 
         if type(mask) is list:
@@ -102,10 +108,18 @@ class Mask1D(Mask):
 
     @property
     def derive_mask(self) -> DeriveMask1D:
+        """
+        Returns the ``DeriveMask1D`` object associated with the mask, which computes derived masks such as
+        the edge mask.
+        """
         return DeriveMask1D(mask=self)
 
     @property
     def derive_grid(self) -> DeriveGrid1D:
+        """
+        Returns the ``DeriveGrid1D`` object associated with the mask, which computes derived grids of (x,)
+        coordinates such as the unmasked pixel grid.
+        """
         return DeriveGrid1D(mask=self)
 
     @classmethod
@@ -122,9 +136,14 @@ class Mask1D(Mask):
         Parameters
         ----------
         shape_slim
-            The (y,x) shape of the mask in units of pixels.
+            The 1D shape of the mask in units of pixels.
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
+        origin
+            The (x,) scaled units origin of the mask's coordinate system.
+        invert
+            If `True`, the `bool`'s of the input `mask` are inverted, so `False` entries become `True`
+            and vice versa.
         """
         return cls(
             mask=np.full(shape=shape_slim, fill_value=False),
@@ -149,9 +168,16 @@ class Mask1D(Mask):
         file_path
             The full path of the fits file.
         hdu
-            The HDU number in the fits file containing the image image.
+            The HDU number in the ``.fits`` file containing the mask array.
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
+        origin
+            The (x,) scaled units origin of the mask's coordinate system.
+
+        Returns
+        -------
+        Mask1D
+            The mask loaded from the ``.fits`` file.
         """
 
         return cls(
@@ -164,10 +190,17 @@ class Mask1D(Mask):
 
     @property
     def shape_native(self) -> Tuple[int]:
+        """
+        The 1D shape of the mask in its native representation, equal to the shape of the underlying boolean ndarray.
+        """
         return self.shape
 
     @property
     def shape_slim(self) -> Tuple[int]:
+        """
+        The 1D shape of the mask in its slim representation. For a 1D mask this is the same as ``shape_native``
+        since there is no native/slim distinction — every pixel is on the same 1D line.
+        """
         return self.shape
 
     @property
@@ -175,8 +208,7 @@ class Mask1D(Mask):
         """
         Returns the pixel scales of the mask as a header dictionary, which can be written to a .fits file.
 
-        A 2D mask has different pixel scale variables for each dimension, the header therefore contain both pixel
-        scales as separate y and x entries.
+        A 1D mask has a single pixel scale, so the header contains one pixel scale entry alongside the origin.
 
         Returns
         -------

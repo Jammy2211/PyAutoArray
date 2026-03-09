@@ -174,6 +174,9 @@ class DeriveMask2D:
         ----------
         kernel_shape_native
            The 2D shape of the 2D convolution ``Convolver`` which defines the blurring region.
+        allow_padding
+            If ``True``, blurring pixels that extend beyond the mask boundary are allowed. If ``False`` (default),
+            an exception is raised if the blurring region extends beyond the mask boundary.
 
         Examples
         --------
@@ -277,7 +280,7 @@ class DeriveMask2D:
         """
         Returns a buffed edge ``Mask2D``, representing all unmasked pixels (given by ``False``) which neighbor any
         masked value (give by ``True``) and therefore are on the edge of the 2D mask, but with a buffer of 1 pixel
-        applied such that everu pixel 1 pixel further out are included.
+        applied such that every pixel 1 pixel further out is included.
 
         For example, for the following ``Mask2D``:
 
