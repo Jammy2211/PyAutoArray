@@ -49,6 +49,9 @@ class Mask(AbstractNDArray, ABC):
             converted to a (float, float) structure.
         origin
             The origin of the mask's coordinate system in scaled units.
+        xp
+            The array module to use (default `numpy`; pass `jax.numpy` for JAX support). Controls
+            whether internal index arrays are computed on CPU or GPU.
         """
 
         # noinspection PyArgumentList
@@ -62,6 +65,10 @@ class Mask(AbstractNDArray, ABC):
 
     @property
     def _xp(self):
+        """
+        Returns the array module in use (`numpy` or `jax.numpy`), determined by whether the mask was
+        constructed with `xp=jnp`.
+        """
         if self.use_jax:
             import jax.numpy as jnp
 
@@ -70,6 +77,10 @@ class Mask(AbstractNDArray, ABC):
 
     @property
     def mask(self):
+        """
+        The boolean ndarray of the mask, where `False` entries are unmasked (used in calculations)
+        and `True` entries are masked (excluded from calculations).
+        """
         return self._array
 
     def __array_finalize__(self, obj):
@@ -82,8 +93,10 @@ class Mask(AbstractNDArray, ABC):
     @property
     def pixel_scale(self) -> float:
         """
-        For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
-        single value as a float.
+        The pixel scale of the mask as a single float value.
+
+        For masks with two or more dimensions this assumes all pixel scales are equal and returns
+        the first entry of ``pixel_scales``.
         """
         return self.pixel_scales[0]
 
@@ -102,6 +115,9 @@ class Mask(AbstractNDArray, ABC):
 
     @property
     def dimensions(self) -> int:
+        """
+        The number of dimensions of the mask (e.g. 1 for a 1D mask, 2 for a 2D mask).
+        """
         return len(self.shape)
 
     def output_to_fits(self, file_path, overwrite=False):
@@ -154,7 +170,7 @@ class Mask(AbstractNDArray, ABC):
     @property
     def is_all_false(self) -> bool:
         """
-        Returns `False` if all pixels in a mask are `False`, else returns `True`.
+        Returns `True` if all pixels in a mask are `False` (i.e. every pixel is unmasked), else returns `False`.
         """
         return self.pixels_in_mask == np.size(self._array)
 

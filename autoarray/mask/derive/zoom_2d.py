@@ -22,7 +22,8 @@ class Zoom2D:
         omitted (for a full description see the :meth:`Mask2D` class API
         documentation <autoarray.mask.mask_2d.Mask2D.__new__>`).
 
-        The `Zoom2D` object calculations many different zoomed in qu
+        The ``Zoom2D`` object computes the zoomed region around the unmasked pixels, including its centre,
+        pixel offsets, scaled offsets, and extracted sub-arrays for visualization.
 
         Parameters
         ----------
@@ -90,15 +91,14 @@ class Zoom2D:
     @property
     def offset_pixels(self) -> Tuple[float, float]:
         """
-        Returns the offset of the centred of the zoomed in region from the centre of the `Mask2D` object in pixel
-        units.
+        Returns the (y,x) pixel offset of the centre of the zoomed region from the centre of the ``Mask2D``.
 
-        This is computed by subtracting the pixel coordinates of the `Mask2D` object from the pixel coordinates of
-        the zoomed in region.
+        This is the difference between the pixel coordinates of the zoomed region's centre and the pixel
+        coordinates of the full mask's central pixel.
 
         Returns
         -------
-        The offset of the zoomed in region from the centre of the `Mask2D` object in pixel units.
+        The (y,x) offset of the zoomed region centre from the mask centre in pixel units.
         """
         if self.mask.pixel_scales is None:
             return self.mask.geometry.central_pixel_coordinates
@@ -111,15 +111,13 @@ class Zoom2D:
     @property
     def offset_scaled(self) -> Tuple[float, float]:
         """
-        Returns the offset of the centred of the zoomed in region from the centre of the `Mask2D` object in scaled
-        units.
+        Returns the (y,x) scaled offset of the centre of the zoomed region from the centre of the ``Mask2D``.
 
-        This is computed by subtracting the pixel coordinates of the `Mask2D` object from the pixel coordinates of
-        the zoomed in region.
+        This converts ``offset_pixels`` to scaled units using the mask's ``pixel_scales``.
 
         Returns
         -------
-        The offset of the zoomed in region from the centre of the `Mask2D` object in scaled units.
+        The (y,x) offset of the zoomed region centre from the mask centre in scaled units.
         """
         return (
             -self.mask.pixel_scales[0] * self.offset_pixels[0],
@@ -173,17 +171,19 @@ class Zoom2D:
 
     def extent_from(self, buffer: int = 1) -> np.ndarray:
         """
-        For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
-        coordinates.
+        Compute the extent of the zoomed region in scaled coordinates, including an optional pixel buffer.
 
-        The extent of the grid in scaled units returned as an ``ndarray`` of the form [x_min, x_max, y_min, y_max].
-
-        This is used visualize zoomed and extracted arrays via the imshow() method.
+        The extent is returned as a tuple of the form ``(x_min, x_max, y_min, y_max)`` which matches the
+        ``extent`` format expected by ``matplotlib.imshow``.
 
         Parameters
         ----------
         buffer
-            The number pixels around the extracted array used as a buffer.
+            The number of pixels around the unmasked region used as a buffer when computing the extent.
+
+        Returns
+        -------
+        The extent of the zoomed region as ``(x_min, x_max, y_min, y_max)`` in scaled units.
         """
         from autoarray.mask.mask_2d import Mask2D
 

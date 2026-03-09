@@ -103,7 +103,7 @@ class DeriveMask1D:
         ::
            [True, False, False, False, True]
 
-        The corresponding ``Mask2D`` (given via ``mask_1d.derive_mask.to_mask_1d``) is:
+        The corresponding ``Mask2D`` (given via ``mask_1d.derive_mask.to_mask_2d``) is:
 
         ::
            [[False, False, False, False, False]]

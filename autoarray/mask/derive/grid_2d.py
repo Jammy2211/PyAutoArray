@@ -263,7 +263,7 @@ class DeriveGrid2D:
                 pixel_scales=1.0,
             )
 
-        The ``edge`` grid (given via ``mask_2d.derive_grid.edge``) is given by:
+        The ``border`` grid (given via ``mask_2d.derive_grid.border``) is given by:
 
         ::
             [[3.0, -3.0],  [3.0, -2.0],  [3.0, -1.0],  [3.0, 0.0],  [3.0, 1.0],  [3.0, 2.0],  [ 3.0, 3.0],
