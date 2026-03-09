@@ -11,18 +11,25 @@ class Geometry2DIrregular(AbstractGeometry2D):
         scaled_minima: Tuple[float, float],
     ):
         """
-        A 2D geometry, representing an irregular grid of (y,x) coordinates.
+        A 2D geometry for an irregular (non-uniform) grid of (y,x) coordinates.
 
-        This class is used for defining the extent of the irregular grid when visualizing it.
+        Unlike `Geometry2D` which is derived from a regular pixel grid with a fixed `shape_native`
+        and `pixel_scales`, this class stores pre-computed extent information directly. It is used
+        by `Grid2DIrregular` and similar structures to define their bounding box for visualization
+        and coordinate-space calculations.
+
+        Because the coordinates are irregular there is no uniform pixel scale, so the geometry
+        is defined purely by the scaled extent (minima, maxima) of the point distribution.
 
         Parameters
         ----------
         shape_native_scaled
-            The 2D scaled shape of the geometry defining the full extent of this object.
+            The (y, x) extent of the geometry in scaled units, i.e.
+            (scaled_maxima[0] - scaled_minima[0], scaled_maxima[1] - scaled_minima[1]).
         scaled_maxima
-            The maximum (y,x) scaled coordinates of the 2D geometry.
+            The maximum (y,x) scaled coordinates of the irregular grid.
         scaled_minima
-            The minimum (y,x) scaled coordinates of the 2D geometry.
+            The minimum (y,x) scaled coordinates of the irregular grid.
         """
         self.shape_native_scaled = shape_native_scaled
         self.scaled_maxima = scaled_maxima

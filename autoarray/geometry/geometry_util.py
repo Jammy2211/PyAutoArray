@@ -6,21 +6,21 @@ from autoarray import type as ty
 
 def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
     """
-    Converts an input `shape_native` of type int to a tuple (int,). If the input is already a (int, ) tuple it
-    is unchanged
+    Convert an input `shape_native` of type `int` to a tuple `(int,)`. If the input is already a
+    `(int,)` tuple it is returned unchanged.
 
-    This enables users to input `shape_native` as a single value and have the type automatically converted to type
-    (int,) which is used internally for data structures.
+    This enables users to input `shape_native` as a single integer value and have the type
+    automatically normalised to `(int,)` which is used internally by 1D data structures.
 
     Parameters
     ----------
-    pixel_scales
-        The input pixel
+    shape_native
+        The 1D shape to convert, either as a plain `int` or a 1-element tuple `(int,)`.
 
     Returns
     -------
-    pixel_scales
-        The `shape_native` as a tuple of format (int,).
+    Tuple[int]
+        The shape as a 1-element tuple `(int,)`.
     """
 
     if type(shape_native) is int:
@@ -31,21 +31,21 @@ def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
 
 def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
     """
-    Converts an input pixel-scale of type float to a tuple (float,). If the input is already a (float, ) it is
-    unchanged
+    Convert an input pixel scale of type `float` to a tuple `(float,)`. If the input is already a
+    `(float,)` tuple it is returned unchanged.
 
-    This enables users to input the pixel scale as a single value and have the type automatically converted to type
-    (float, float) which is used for rectangular grids.
+    This enables users to input the pixel scale as a single float and have the type automatically
+    normalised to `(float,)` which is used internally by 1D data structures.
 
     Parameters
     ----------
     pixel_scales
-        The input pixel
+        The pixel scale to convert, either as a plain `float` or a 1-element tuple `(float,)`.
 
     Returns
     -------
-    pixel_scales
-        The pixel_scales as a tuple of format (float,).
+    Tuple[float]
+        The pixel scale as a 1-element tuple `(float,)`.
     """
 
     if type(pixel_scales) is float:
@@ -56,26 +56,22 @@ def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
 
 def central_pixel_coordinates_1d_from(
     shape_slim: Tuple[int],
-) -> Union[Tuple[float], Tuple[float]]:
+) -> Tuple[float]:
     """
-    Returns the central pixel coordinates of a data structure of any dimension (e.g. in 1D a `Line`, 1d an `Array2D`,
-    1d a `Frame2D`, etc.) from the shape of that data structure.
+    Return the central pixel coordinate of a 1D data structure from its shape.
 
-    Examples of the central pixels are as follows:
-
-    - For a 3x3 image, the central pixel is pixel [1, 1].
-    - For a 4x4 image, the central pixel is [1.5, 1.5].
+    For an odd-length array the centre is the middle element (e.g. length 3 → 1.0). For an
+    even-length array the centre falls between two pixels (e.g. length 4 → 1.5).
 
     Parameters
     ----------
-    shape_slim : tuple(int)
-        The dimensions of the data structure, which can be in 1D, 1d or higher dimensions.
+    shape_slim
+        The 1D shape of the data structure as a 1-element tuple `(int,)`.
 
     Returns
     -------
-    central_pixel_coordinates : tuple(float)
-        The central pixel coordinates of the data structure.
-
+    Tuple[float]
+        The central pixel coordinate as a 1-element tuple `(float,)`.
     """
 
     return (float(shape_slim[0] - 1) / 2,)
@@ -87,26 +83,24 @@ def central_scaled_coordinate_1d_from(
     origin: Tuple[float] = (0.0, 0.0),
 ):
     """
-    Returns the central coordinates of a 1d data structure (e.g. a`Grid1D`) in scaled units.
+    Return the central coordinate of a 1D data structure (e.g. a `Grid1D`) in scaled units.
 
-    This is computed by using the data structure's shape and converting it to scaled units using an input
-    pixel-coordinates to scaled-coordinate conversion factor `pixel_scales`.
-
-    The origin of the scaled grid can also be input and moved from (0.0,).
+    This is computed from the structure's shape and pixel scale, shifted by the origin.
 
     Parameters
     ----------
     shape_slim
-        The 1d shape of the data structure whose central scaled coordinates are computed.
+        The 1D shape of the data structure whose central scaled coordinate is computed.
     pixel_scales
-        The (y,x) scaled units to pixel units conversion factor of the 1d data structure.
+        The (x,) scaled units to pixel units conversion factor of the 1D data structure.
     origin
-        The (y,x) scaled units origin of the coordinate system the central scaled coordinate is computed on.
+        The (x,) scaled units origin of the coordinate system. The central coordinate is
+        shifted by this origin.
 
     Returns
     -------
-    central_scaled_coordinates_1d
-        The central coordinates of the 1d data structure in scaled units.
+    Tuple[float]
+        The central coordinate of the 1D data structure in scaled units as a 1-element tuple.
     """
 
     central_pixel_coordinates = central_pixel_coordinates_1d_from(shape_slim=shape_slim)
@@ -121,7 +115,29 @@ def pixel_coordinates_1d_from(
     shape_slim: Tuple[int],
     pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
-) -> Union[Tuple[float], Tuple[float]]:
+) -> Tuple[int]:
+    """
+    Convert a 1D (x,) scaled coordinate to a 1D (x,) integer pixel coordinate.
+
+    The pixel index is 0-based from the left of the 1D array. The scaled coordinate origin is
+    applied before the conversion.
+
+    Parameters
+    ----------
+    scaled_coordinates_1d
+        The 1D (x,) coordinate in scaled units to convert.
+    shape_slim
+        The 1D shape of the array as a 1-element tuple `(int,)`.
+    pixel_scales
+        The (x,) scaled units to pixel units conversion factor.
+    origins
+        The (x,) scaled units origin of the coordinate system.
+
+    Returns
+    -------
+    Tuple[int]
+        The 1D (x,) integer pixel coordinate.
+    """
     central_pixel_coordinates = central_pixel_coordinates_1d_from(shape_slim=shape_slim)
 
     x_pixel = int(
@@ -138,7 +154,28 @@ def scaled_coordinates_1d_from(
     shape_slim: Tuple[int],
     pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
-) -> Union[Tuple[float], Tuple[float]]:
+) -> Tuple[float]:
+    """
+    Convert a 1D (x,) pixel coordinate to a 1D (x,) scaled coordinate.
+
+    The scaled coordinate origin is applied after the conversion.
+
+    Parameters
+    ----------
+    pixel_coordinates_1d
+        The 1D (x,) pixel coordinate to convert to scaled units.
+    shape_slim
+        The 1D shape of the array as a 1-element tuple `(int,)`.
+    pixel_scales
+        The (x,) scaled units to pixel units conversion factor.
+    origins
+        The (x,) scaled units origin of the coordinate system.
+
+    Returns
+    -------
+    Tuple[float]
+        The 1D (x,) coordinate in scaled units.
+    """
     central_scaled_coordinates = central_scaled_coordinate_1d_from(
         shape_slim=shape_slim, pixel_scales=pixel_scales, origin=origins
     )
@@ -152,21 +189,22 @@ def scaled_coordinates_1d_from(
 
 def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]:
     """
-    Converts an input pixel-scale of type float to a pixel-scale of tuple (float, float). If the input is already
-    type (float, float) it is unchanged
+    Convert an input pixel scale of type `float` to a tuple `(float, float)`. If the input is
+    already type `(float, float)` it is returned unchanged.
 
-    This enables users to input the pixel scale as a single value and have the type automatically converted to type
-    (float, float) which is used for rectangular grids.
+    This enables users to input the pixel scale as a single float and have the type automatically
+    normalised to `(float, float)` which is used internally for rectangular 2D grids (where
+    both axes share the same pixel scale).
 
     Parameters
     ----------
-    pixel_scales or (float, float)
-        The input pixel
+    pixel_scales
+        The pixel scale to convert, either as a plain `float` or a 2-element tuple `(float, float)`.
 
     Returns
     -------
-    pixel_scales
-        The pixel_scales of type (float, float).
+    Tuple[float, float]
+        The pixel scale as a 2-element tuple `(float, float)`.
     """
 
     if type(pixel_scales) is float:
@@ -249,7 +287,7 @@ def pixel_coordinates_2d_from(
 
     The conversion is performed according to a 2D geometry on a uniform grid, where the pixel coordinate origin is at
     the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled coordinate
-    and lowest (most negative) x scaled coordinate on the gird.
+    and lowest (most negative) x scaled coordinate on the grid.
 
     The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
     1D grid pixel coordinate values.
@@ -307,41 +345,29 @@ def scaled_coordinates_2d_from(
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Tuple[float, float]:
     """
-    Convert a 2D (y,x) pixel coordinates to a 2D (y,x) scaled values.
+    Convert a 2D (y,x) pixel coordinate to a 2D (y,x) scaled coordinate.
 
-    The conversion is performed according to a 2D geometry on a uniform grid, where the pixel coordinate origin is at
-    the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled coordinate
-    and lowest (most negative) x scaled coordinate on the gird.
+    The conversion is performed on a uniform grid where the pixel coordinate origin is at the
+    top-left corner, such that pixel [0,0] corresponds to the highest (most positive) y scaled
+    coordinate and lowest (most negative) x scaled coordinate on the grid.
 
-    The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
-    1D grid pixel coordinate values.
+    The geometry origin is applied so that the returned scaled coordinate is correctly shifted.
 
     Parameters
     ----------
-    scaled_coordinates_2d
-        The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+    pixel_coordinates_2d
+        The 2D (y,x) pixel coordinates to convert to scaled units.
     shape_native
-        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+        The (y,x) shape of the original 2D array.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
-    origin
-        The (y,x) origin of the grid, which the scaled grid is shifted to.
+    origins
+        The (y,x) origin of the grid in scaled units.
 
     Returns
     -------
-    A 2D (y,x) pixel-value coordinate.
-
-    Examples
-    --------
-
-    scaled_coordinates_2d = (1.0, 1.0)
-
-    grid_pixels_2d_slim = pixel_coordinates_2d_from(
-        scaled_coordinates_2d=scaled_coordinates_2d,
-        shape=(2,2),
-        pixel_scales=(0.5, 0.5),
-        origin=(0.0, 0.0)
-    )
+    Tuple[float, float]
+        The 2D (y,x) coordinates in scaled units.
     """
     central_scaled_coordinates = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origins
@@ -412,17 +438,31 @@ def transform_grid_2d_to_reference_frame(
     grid_2d: np.ndarray, centre: Tuple[float, float], angle: float, xp=np
 ) -> np.ndarray:
     """
-    Transform a 2D grid of (y,x) coordinates to a new reference frame.
+    Transform a 2D grid of (y,x) coordinates to a new reference frame defined by a centre and angle.
 
-    This transformation includes:
+    This is used to evaluate light profiles and other functions in their own reference frame. The
+    transformation includes:
 
-     1) A translation to a new (y,x) centre value, by subtracting the centre from every coordinate on the grid.
-     2) A rotation of the grid around this new centre, which is performed clockwise from an input angle.
+    1) Translate all coordinates so that `centre` becomes the origin (subtract `centre` from every
+       coordinate on the grid).
+    2) Rotate the translated coordinates clockwise by `angle` degrees around the new origin.
 
     Parameters
     ----------
-    grid
-        The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
+    grid_2d
+        The 2D grid of (y,x) coordinates of shape (N, 2) to transform.
+    centre
+        The (y,x) centre of the new reference frame. All coordinates are shifted to place this
+        point at the origin before rotation.
+    angle
+        The clockwise rotation angle in degrees applied to the translated grid.
+    xp
+        The array module to use (default `numpy`; pass `jax.numpy` for JAX support).
+
+    Returns
+    -------
+    np.ndarray
+        The transformed 2D grid of (y,x) coordinates of shape (N, 2) in the new reference frame.
     """
 
     shifted_grid_2d = grid_2d - xp.array(centre)
@@ -444,18 +484,30 @@ def transform_grid_2d_from_reference_frame(
     grid_2d: np.ndarray, centre: Tuple[float, float], angle: float, xp=np
 ) -> np.ndarray:
     """
-    Transform a 2D grid of (y,x) coordinates to a new reference frame, which is the reverse frame computed via the
-    method `transform_grid_2d_to_reference_frame`.
+    Transform a 2D grid of (y,x) coordinates back from a reference frame to the original frame.
 
-    This transformation includes:
+    This is the inverse of `transform_grid_2d_to_reference_frame`. The transformation includes:
 
-     1) A translation to a new (y,x) centre value, by adding the centre to every coordinate on the grid.
-     2) A rotation of the grid around this new centre, which is performed counter-clockwise from an input angle.
+    1) Rotate the grid counter-clockwise by `angle` degrees around the origin.
+    2) Translate all coordinates by adding `centre`, restoring the original coordinate system.
 
     Parameters
     ----------
-    grid
-        The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
+    grid_2d
+        The 2D grid of (y,x) coordinates of shape (N, 2) in the rotated/translated reference frame.
+    centre
+        The (y,x) centre that was used in the forward transform. Added back to all coordinates
+        after the inverse rotation to restore the original coordinate system.
+    angle
+        The clockwise rotation angle in degrees that was used in the forward transform. The inverse
+        (counter-clockwise) rotation is applied here.
+    xp
+        The array module to use (default `numpy`; pass `jax.numpy` for JAX support).
+
+    Returns
+    -------
+    np.ndarray
+        The back-transformed 2D grid of (y,x) coordinates of shape (N, 2) in the original frame.
     """
     cos_angle = xp.cos(xp.radians(angle))
     sin_angle = xp.sin(xp.radians(angle))
@@ -491,7 +543,7 @@ def grid_pixels_2d_slim_from(
     The input and output grids are both slimmed and therefore shape (total_pixels, 2).
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the grid.
 
     The scaled grid is defined by an origin and coordinates are shifted to this origin before computing their
     1D grid pixel coordinate values.
@@ -539,7 +591,7 @@ def grid_pixel_centres_2d_slim_from(
     The input and output grids are both slimmed and therefore shape (total_pixels, 2).
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the grid.
 
     The scaled coordinate grid is defined by the class attribute origin, and coordinates are shifted to this
     origin before computing their 1D grid pixel indexes.
@@ -647,7 +699,7 @@ def grid_scaled_2d_slim_from(
     The input and output grids are both slimmed and therefore shape (total_pixels, 2).
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the grid.
 
     The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
     origin after computing their values from the 1D grid pixel indexes.
@@ -696,7 +748,7 @@ def grid_pixel_centres_2d_from(
     The input and output grids are both native resolution and therefore have shape (y_pixels, x_pixels, 2).
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the grid.
 
     The scaled coordinate grid is defined by the class attribute origin, and coordinates are shifted to this
     origin before computing their 1D grid pixel indexes.
@@ -740,7 +792,7 @@ def extent_symmetric_from(
     Given an input extent of the form (x_min, x_max, y_min, y_max), this function returns an extent which is
     symmetric about the origin.
 
-    For example, if the sepration from x_min to x_max is 2.0 and the separation from y_min to y_max is 1.0, the
+    For example, if the separation from x_min to x_max is 2.0 and the separation from y_min to y_max is 1.0, the
     returned extent expands the y-axis to also have a separation of 2.0.
 
     Parameters

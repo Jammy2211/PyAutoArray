@@ -121,8 +121,15 @@ class Geometry2D(AbstractGeometry2D):
     @property
     def central_scaled_coordinates(self) -> Tuple[float, float]:
         """
-        Returns the central scaled coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
-        from the shape of that data structure.
+        The central (y,x) coordinates of the 2D geometry in scaled units.
+
+        Computed from the shape and pixel scales of the geometry, shifted by the origin. This is
+        the scaled-unit coordinate that sits at the geometric centre of the grid.
+
+        Returns
+        -------
+        Tuple[float, float]
+            The (y,x) scaled coordinates of the geometric centre.
         """
         return geometry_util.central_scaled_coordinate_2d_from(
             shape_native=self.shape_native,
@@ -134,24 +141,25 @@ class Geometry2D(AbstractGeometry2D):
         self, scaled_coordinates_2d: Tuple[float, float]
     ) -> Tuple[int, int]:
         """
-        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as integers such that
-        they do not include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
+        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, returned as integers that
+        identify the pixel containing the scaled coordinate (without sub-pixel decimal offsets).
 
-        The conversion is performed according to the 2D geometry on a uniform grid, where the pixel coordinate origin
-        is at the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled
-        coordinate and lowest (most negative) x scaled coordinate on the gird.
+        The conversion is performed according to the 2D geometry on a uniform grid, where the pixel
+        coordinate origin is at the top-left corner, such that pixel [0,0] corresponds to the highest
+        (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the grid.
 
-        The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
-        1D grid pixel coordinate values.
+        The geometry's origin is applied so that scaled coordinates are correctly shifted before the
+        pixel index calculation.
 
         Parameters
         ----------
         scaled_coordinates_2d
-            The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+            The 2D (y,x) coordinates in scaled units to convert to pixel coordinates.
 
         Returns
         -------
-        A 2D (y,x) pixel-value coordinate.
+        Tuple[int, int]
+            The 2D (y,x) integer pixel coordinates.
         """
         return geometry_util.pixel_coordinates_2d_from(
             scaled_coordinates_2d=scaled_coordinates_2d,
@@ -164,23 +172,24 @@ class Geometry2D(AbstractGeometry2D):
         self, pixel_coordinates_2d: Tuple[float, float]
     ) -> Tuple[float, float]:
         """
-        Convert a 2D (y,x) pixel coordinates to a 2D (y,x) scaled values.
+        Convert a 2D (y,x) pixel coordinate to a 2D (y,x) scaled coordinate.
 
-        The conversion is performed according to a 2D geometry on a uniform grid, where the pixel coordinate origin is at
-        the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled coordinate
-        and lowest (most negative) x scaled coordinate on the gird.
+        The conversion is performed according to the 2D geometry on a uniform grid, where the pixel
+        coordinate origin is at the top-left corner, such that pixel [0,0] corresponds to the highest
+        (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the grid.
 
-        The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
-        1D grid pixel coordinate values.
+        The geometry's origin is applied so that the returned scaled coordinate is correctly shifted
+        relative to the coordinate system's centre.
 
         Parameters
         ----------
-        scaled_coordinates_2d
-            The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+        pixel_coordinates_2d
+            The 2D (y,x) pixel coordinates to convert to scaled units.
 
         Returns
         -------
-        A 2D (y,x) pixel-value coordinate.
+        Tuple[float, float]
+            The 2D (y,x) coordinates in scaled units.
         """
 
         return geometry_util.scaled_coordinates_2d_from(
@@ -266,6 +275,11 @@ class Geometry2D(AbstractGeometry2D):
         ----------
         grid_scaled_2d
             A grid of (y,x) coordinates in scaled units.
+
+        Returns
+        -------
+        Grid2D
+            A grid of (y,x) pixel-value coordinates as floats including the sub-pixel decimal offset.
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -283,7 +297,7 @@ class Geometry2D(AbstractGeometry2D):
         returned as integers such that they map directly to the pixel they are contained within.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-        higher y scaled coordinate value and lowest x scaled coordinate.
+        highest y scaled coordinate value and lowest x scaled coordinate.
 
         The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
         origin before computing their 1D grid pixel indexes.
@@ -292,6 +306,12 @@ class Geometry2D(AbstractGeometry2D):
         ----------
         grid_scaled_2d
             The grid of (y,x) coordinates in scaled units.
+
+        Returns
+        -------
+        Grid2D
+            A grid of (y,x) integer pixel coordinates identifying which pixel each scaled coordinate
+            falls within.
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -309,7 +329,7 @@ class Geometry2D(AbstractGeometry2D):
         Convert a grid of (y,x) scaled coordinates to an array of pixel 1D indexes, which are returned as integers.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-        higher y scaled coordinate value and lowest x scaled coordinate.
+        highest y scaled coordinate value and lowest x scaled coordinate.
 
         For example:
 
@@ -324,6 +344,12 @@ class Geometry2D(AbstractGeometry2D):
         ----------
         grid_scaled_2d
             The grid of (y,x) coordinates in scaled units.
+
+        Returns
+        -------
+        Array2D
+            A 1D array of flat pixel indexes, where each value is the integer index of the pixel
+            (counting left-to-right, top-to-bottom) that the corresponding scaled coordinate falls in.
         """
 
         from autoarray.structures.arrays.uniform_2d import Array2D
@@ -342,7 +368,7 @@ class Geometry2D(AbstractGeometry2D):
         Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-        higher y scaled coordinate value and lowest x scaled coordinate.
+        highest y scaled coordinate value and lowest x scaled coordinate.
 
         The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
         origin before computing their 1D grid pixel indexes.
@@ -351,6 +377,11 @@ class Geometry2D(AbstractGeometry2D):
         ----------
         grid_pixels_2d
             The grid of (y,x) coordinates in pixels.
+
+        Returns
+        -------
+        Grid2D
+            A grid of (y,x) coordinates in scaled units.
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
