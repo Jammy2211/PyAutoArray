@@ -55,15 +55,16 @@ class AbstractInversion:
 
         Parameters
         ----------
-        data
-            The data of the dataset (e.g. the `image` of `Imaging` data) which may have been changed.
-        noise_map
-            The noise_map of the noise_mapset (e.g. the `noise_map` of `Imaging` noise_map) which may have been changed.
+        dataset
+            The dataset being reconstructed (e.g. an `Imaging` or `Interferometer` dataset, or a `DatasetInterface`
+            whose attributes like `data` and `noise_map` may have been modified before being passed in).
         linear_obj_list
             The list of linear objects (e.g. analytic functions, a mapper with a pixelized grid) which reconstruct the
             input dataset's data and whose values are solved for via the inversion.
         settings
-            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+            Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
+        xp
+            The array module to use (`numpy` by default; pass `jax.numpy` for JAX support).
         """
 
         self.dataset = dataset
@@ -96,11 +97,8 @@ class AbstractInversion:
 
         Parameters
         ----------
-        dict_values
-            A class dictionary of values which instances of the input `cls` are checked to see if it has an instance
-            of that class.
         cls
-            The type of class that is checked if the object has an instance of.
+            The type of class whose presence is checked among the linear objects and regularizations in this inversion.
         """
         return misc_util.has(
             values=self.linear_obj_list + self.regularization_list, cls=cls

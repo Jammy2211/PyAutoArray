@@ -20,10 +20,10 @@ def data_vector_via_transformed_mapping_matrix_from(
     ----------
     transformed_mapping_matrix
         The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
-    image
-        Flattened 1D array of the observed image the inversion is fitting.
+    visibilities
+        The complex 1D array of observed visibilities the inversion is fitting, with real and imaginary components.
     noise_map
-        Flattened 1D array of the noise-map used by the inversion during the fit.
+        The complex 1D array of the noise-map used by the inversion during the fit.
     """
     # Extract components
     vis_real = visibilities.real

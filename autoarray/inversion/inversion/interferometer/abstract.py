@@ -31,14 +31,16 @@ class AbstractInversionInterferometer(AbstractInversion):
 
         Parameters
         ----------
-        noise_map
-            The noise-map of the observed interferometer data which values are solved for.
-        transformer
-            The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
-            with the interferometer data's transformer.
+        dataset
+            The interferometer dataset being reconstructed (e.g. an `Interferometer` dataset or a `DatasetInterface`
+            whose attributes like `data`, `noise_map`, and `transformer` may have been modified).
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
+        settings
+            Settings controlling how an inversion is fitted, for example which linear algebra formalism is used.
+        xp
+            The array module to use (`numpy` by default; pass `jax.numpy` for JAX support).
         """
 
         super().__init__(
@@ -124,7 +126,19 @@ class AbstractInversionInterferometer(AbstractInversion):
 
     @property
     def fast_chi_squared(self):
+        """
+        Returns the chi-squared of the interferometer inversion without needing to form the full residual visibilities.
 
+        This is computed directly from the reconstruction and the matrices of the inversion:
+
+        chi_squared = s^T F s - 2 s^T D + sum(d_r^2/sigma_r^2) + sum(d_i^2/sigma_i^2)
+
+        where `s` is the reconstruction vector, `F` is the curvature matrix, `D` is the data vector,
+        and `d_r`/`d_i` are the real/imaginary parts of the observed visibilities.
+
+        This avoids computing the full mapped reconstructed visibilities and is faster than computing
+        `chi_squared` via the residual visibilities when many source pixels are used.
+        """
         xp = self._xp
 
         chi_squared_term_1 = xp.linalg.multi_dot(
