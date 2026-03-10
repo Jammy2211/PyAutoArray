@@ -5,7 +5,7 @@ import pytest
 np.set_printoptions(threshold=np.inf)
 
 
-def test__regularization_matrix():
+def test__regularization_matrix_from__6_pixel_mesh_coefficient_2__diagonal_value_approximately_8():
 
     reg = aa.reg.Constant(coefficient=2.0)
 

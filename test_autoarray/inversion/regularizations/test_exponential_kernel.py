@@ -6,7 +6,7 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 
-def test__regularization_matrix():
+def test__regularization_matrix_from__6_pixel_mesh_coefficient_1_scale_2__correct_diagonal_value():
     reg = aa.reg.ExponentialKernel(coefficient=1.0, scale=2.0)
 
     source_plane_mesh_grid = aa.Grid2D.no_mask(

@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 
-def test__weight_list__matches_util():
+def test__regularization_weights_from__3_pixel_signals_inner_10_outer_15__matches_util():
     reg = aa.reg.Adapt(inner_coefficient=10.0, outer_coefficient=15.0)
 
     pixel_signals = np.array([0.21, 0.586, 0.45])
@@ -19,7 +19,7 @@ def test__weight_list__matches_util():
     assert (weight_list == weight_list_util).all()
 
 
-def test__regularization_matrix__matches_util():
+def test__regularization_matrix_from__9_pixel_grid_inner_1_outer_2__diagonal_value_approximately_18():
     reg = aa.reg.Adapt(inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0)
 
     pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
