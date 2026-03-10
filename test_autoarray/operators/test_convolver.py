@@ -10,25 +10,26 @@ import autoarray as aa
 test_data_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
-def test__no_blur():
-    convolver = aa.Convolver.no_blur(pixel_scales=1.0)
+@pytest.mark.parametrize(
+    "pixel_scales, expected_pixel_scales",
+    [
+        (1.0, (1.0, 1.0)),
+        (2.0, (2.0, 2.0)),
+    ],
+)
+def test__no_blur__identity_kernel_with_correct_pixel_scales(
+    pixel_scales, expected_pixel_scales
+):
+    convolver = aa.Convolver.no_blur(pixel_scales=pixel_scales)
 
     assert (
         convolver.kernel.native
         == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
     ).all()
-    assert convolver.kernel.pixel_scales == (1.0, 1.0)
-
-    convolver = aa.Convolver.no_blur(pixel_scales=2.0)
-
-    assert (
-        convolver.kernel.native
-        == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
-    ).all()
-    assert convolver.kernel.pixel_scales == (2.0, 2.0)
+    assert convolver.kernel.pixel_scales == expected_pixel_scales
 
 
-def test__from_gaussian():
+def test__from_gaussian__normalized__kernel_values_match_expected():
 
     convolver = aa.Convolver.from_gaussian(
         shape_native=(3, 3),
@@ -52,7 +53,7 @@ def test__from_gaussian():
     )
 
 
-def test__normalize():
+def test__normalize__ones_kernel__each_element_equals_one_ninth():
 
     kernel_data = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
@@ -61,7 +62,7 @@ def test__normalize():
     assert convolver.kernel.native == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
 
-def test__convolved_image_from():
+def test__convolved_image_from__matches_scipy_convolve2d():
 
     mask = aa.Mask2D.circular(
         shape_native=(30, 30), pixel_scales=(1.0, 1.0), radius=4.0
@@ -108,7 +109,7 @@ def test__convolved_image_from():
     )
 
 
-def test__convolve_imaged_from__no_blurring():
+def test__convolve_imaged_from__no_blurring__matches_scipy_convolve2d_with_blurring_mask_zeroed():
     # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
 
     mask = aa.Mask2D.circular(
@@ -153,7 +154,7 @@ def test__convolve_imaged_from__no_blurring():
     )
 
 
-def test__convolved_mapping_matrix_from():
+def test__convolved_mapping_matrix_from__single_source_pixel__blurred_values_match_expected():
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -202,32 +203,52 @@ def test__convolved_mapping_matrix_from():
 
     blurred_mapping = convolver.convolved_mapping_matrix_from(mapping, mask)
 
-    assert (
-        blurred_mapping
-        == pytest.approx(
-            np.array(
-                [
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0, 0],
-                    [0, 0.4, 0],
-                    [0, 0.2, 0],
-                    [0.4, 0, 0],
-                    [0.2, 0, 0.4],
-                    [0.3, 0, 0.2],
-                    [0, 0.1, 0.3],
-                    [0, 0, 0],
-                    [0.1, 0, 0],
-                    [0, 0, 0.1],
-                    [0, 0, 0],
-                ]
-            )
+    assert blurred_mapping == pytest.approx(
+        np.array(
+            [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0.4, 0],
+                [0, 0.2, 0],
+                [0.4, 0, 0],
+                [0.2, 0, 0.4],
+                [0.3, 0, 0.2],
+                [0, 0.1, 0.3],
+                [0, 0, 0],
+                [0.1, 0, 0],
+                [0, 0, 0.1],
+                [0, 0, 0],
+            ]
         ),
-        1.0e-4,
+        rel=1.0e-4,
     )
+
+
+def test__convolved_mapping_matrix_from__multiple_source_pixels__blurred_values_match_expected():
+    mask = aa.Mask2D(
+        mask=np.array(
+            [
+                [True, True, True, True, True, True],
+                [True, False, False, False, False, True],
+                [True, False, False, False, False, True],
+                [True, False, False, False, False, True],
+                [True, False, False, False, False, True],
+                [True, True, True, True, True, True],
+            ]
+        ),
+        pixel_scales=1.0,
+    )
+
+    kernel = aa.Array2D.no_mask(
+        values=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]],
+        pixel_scales=mask.pixel_scales,
+    )
+
+    convolver = aa.Convolver(kernel=kernel)
 
     mapping = np.array(
         [

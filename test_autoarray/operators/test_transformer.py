@@ -4,7 +4,9 @@ import numpy as np
 import pytest
 
 
-def test__dft__visibilities_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
+def test__dft__visibilities_from__image_with_mixed_values__first_three_visibilities_match_expected(
+    visibilities_7, uv_wavelengths_7x2, mask_2d_7x7
+):
 
     transformer = aa.TransformerDFT(
         uv_wavelengths=uv_wavelengths_7x2,
@@ -38,7 +40,9 @@ def test__dft__visibilities_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7
     )
 
 
-def test__dft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
+def test__dft__image_from__visibilities_7__first_three_image_pixels_match_expected(
+    visibilities_7, uv_wavelengths_7x2, mask_2d_7x7
+):
 
     transformer = aa.TransformerDFT(
         uv_wavelengths=uv_wavelengths_7x2,
@@ -50,7 +54,7 @@ def test__dft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
     assert image[0:3] == pytest.approx([-1.49022481, -0.22395855, -0.45588535], 1.0e-4)
 
 
-def test__nufft__visibilities_from():
+def test__nufft__visibilities_from__all_ones_image__first_visibility_matches_expected():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
     real_space_mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.005)
@@ -69,7 +73,9 @@ def test__nufft__visibilities_from():
     assert visibilities_nufft[0] == pytest.approx(25.02317617953263 + 0.0j, 1.0e-7)
 
 
-def test__nufft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
+def test__nufft__image_from__visibilities_7__first_three_image_pixels_match_expected(
+    visibilities_7, uv_wavelengths_7x2, mask_2d_7x7
+):
 
     transformer = aa.TransformerNUFFT(
         uv_wavelengths=uv_wavelengths_7x2,
@@ -81,7 +87,7 @@ def test__nufft__image_from(visibilities_7, uv_wavelengths_7x2, mask_2d_7x7):
     assert image[0:3] == pytest.approx([0.00726546, 0.01149121, 0.01421022], 1.0e-4)
 
 
-def test__nufft__transform_mapping_matrix():
+def test__nufft__transform_mapping_matrix__ones_mapping_matrix__first_element_matches_expected():
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
     mapping_matrix = np.ones(shape=(25, 3))

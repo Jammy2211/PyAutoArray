@@ -14,7 +14,7 @@ test_data_path = path.join(
 )
 
 
-def test__dirty_properties(
+def test__dirty_image__shape_native_matches_real_space_mask(
     visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7x2,
@@ -28,11 +28,38 @@ def test__dirty_properties(
     )
 
     assert dataset.dirty_image.shape_native == (7, 7)
-
     assert (dataset.transformer.image_from(visibilities=dataset.data)).all()
+
+
+def test__dirty_noise_map__shape_native_matches_real_space_mask(
+    visibilities_7,
+    visibilities_noise_map_7,
+    uv_wavelengths_7x2,
+    mask_2d_7x7,
+):
+    dataset = aa.Interferometer(
+        data=visibilities_7,
+        noise_map=visibilities_noise_map_7,
+        uv_wavelengths=uv_wavelengths_7x2,
+        real_space_mask=mask_2d_7x7,
+    )
 
     assert dataset.dirty_noise_map.shape_native == (7, 7)
     assert (dataset.transformer.image_from(visibilities=dataset.noise_map)).all()
+
+
+def test__dirty_signal_to_noise_map__shape_native_matches_real_space_mask(
+    visibilities_7,
+    visibilities_noise_map_7,
+    uv_wavelengths_7x2,
+    mask_2d_7x7,
+):
+    dataset = aa.Interferometer(
+        data=visibilities_7,
+        noise_map=visibilities_noise_map_7,
+        uv_wavelengths=uv_wavelengths_7x2,
+        real_space_mask=mask_2d_7x7,
+    )
 
     assert dataset.dirty_signal_to_noise_map.shape_native == (7, 7)
     assert (
@@ -102,7 +129,7 @@ def test__output_all_arrays(mask_2d_7x7):
     assert (dataset.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
 
 
-def test__transformer(
+def test__transformer__dft_class__returns_transformer_dft_instance(
     visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7x2,
@@ -118,6 +145,13 @@ def test__transformer(
 
     assert type(interferometer_7.transformer) == transformer.TransformerDFT
 
+
+def test__transformer__nufft_class__returns_transformer_nufft_instance(
+    visibilities_7,
+    visibilities_noise_map_7,
+    uv_wavelengths_7x2,
+    mask_2d_7x7,
+):
     interferometer_7 = aa.Interferometer(
         data=visibilities_7,
         noise_map=visibilities_noise_map_7,
