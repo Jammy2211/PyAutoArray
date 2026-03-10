@@ -2,6 +2,7 @@ from astropy.io import fits
 from os import path
 import os
 import numpy as np
+import pytest
 import shutil
 
 import autoarray as aa
@@ -39,7 +40,7 @@ def clean_fits(fits_path):
         shutil.rmtree(fits_path)
 
 
-def test__constructor():
+def test__constructor__with_partial_mask__masked_pixels_set_to_zero_in_native():
     mask = aa.Mask1D(
         mask=[True, False, False, True, False, False],
         pixel_scales=1.0,
@@ -55,7 +56,7 @@ def test__constructor():
     assert array_1d.origin == (0.0,)
 
 
-def test__no_mask():
+def test__no_mask__4_element_array__native_slim_and_grid_radial_correct():
     array_1d = aa.Array1D.no_mask(values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
     assert type(array_1d) == aa.Array1D
@@ -67,7 +68,7 @@ def test__no_mask():
     assert array_1d.origin == (0.0,)
 
 
-def test__full():
+def test__full__fill_value_1_shape_4__all_elements_equal_fill_value():
     array_1d = aa.Array1D.full(
         fill_value=1.0, shape_native=4, pixel_scales=1.0, origin=(4.0,)
     )
@@ -80,7 +81,7 @@ def test__full():
     assert array_1d.origin == (4.0,)
 
 
-def test__ones():
+def test__ones__shape_3_pixel_scale_3__all_native_elements_are_one():
     array_1d = aa.Array1D.ones(shape_native=3, pixel_scales=3.0, origin=(4.0,))
 
     assert type(array_1d) == aa.Array1D
@@ -91,7 +92,7 @@ def test__ones():
     assert array_1d.origin == (4.0,)
 
 
-def test__zeros():
+def test__zeros__shape_3_pixel_scale_3__all_native_elements_are_zero():
     array_1d = aa.Array1D.zeros(shape_native=3, pixel_scales=3.0, origin=(4.0,))
 
     assert type(array_1d) == aa.Array1D
@@ -102,7 +103,7 @@ def test__zeros():
     assert array_1d.origin == (4.0,)
 
 
-def test__from_fits():
+def test__from_fits__3_element_fits__native_and_slim_are_ones():
     create_fits(fits_path=fits_path)
 
     arr = aa.Array1D.from_fits(
@@ -112,6 +113,12 @@ def test__from_fits():
     assert type(arr) == aa.Array1D
     assert (arr.native == np.ones((3,))).all()
     assert (arr.slim == np.ones(3)).all()
+
+    clean_fits(fits_path=fits_path)
+
+
+def test__from_fits__4_element_fits__native_slim_and_array_are_ones():
+    create_fits(fits_path=fits_path)
 
     arr = aa.Array1D.from_fits(
         file_path=path.join(fits_path, "4_ones.fits"), hdu=0, pixel_scales=1.0
@@ -125,7 +132,7 @@ def test__from_fits():
     clean_fits(fits_path=fits_path)
 
 
-def test__from_fits__loads_and_stores_header_info():
+def test__from_fits__3_element_fits__header_bitpix_is_minus_64():
     create_fits(fits_path=fits_path)
 
     arr = aa.Array1D.from_fits(
@@ -134,6 +141,12 @@ def test__from_fits__loads_and_stores_header_info():
 
     assert arr.header.header_sci_obj["BITPIX"] == -64
     assert arr.header.header_hdu_obj["BITPIX"] == -64
+
+    clean_fits(fits_path=fits_path)
+
+
+def test__from_fits__4_element_fits__header_bitpix_is_minus_64():
+    create_fits(fits_path=fits_path)
 
     arr = aa.Array1D.from_fits(
         file_path=path.join(fits_path, "4_ones.fits"), hdu=0, pixel_scales=1.0
@@ -145,7 +158,7 @@ def test__from_fits__loads_and_stores_header_info():
     clean_fits(fits_path=fits_path)
 
 
-def test__output_to_fits():
+def test__output_to_fits__ones_array__fits_file_has_correct_values_and_header():
     arr = aa.Array1D.ones(shape_native=(3,), pixel_scales=1.0)
 
     if path.exists(test_data_path):
@@ -169,12 +182,14 @@ def test__output_to_fits():
     assert header_load["ORIGIN"] == 0.0
 
 
-def test__recursive_shape_storage():
+def test__recursive_shape_storage__no_mask__native_slim_native_roundtrip_correct():
     array_1d = aa.Array1D.no_mask(values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
     assert (array_1d.native.slim.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (array_1d.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
+
+def test__recursive_shape_storage__with_partial_mask__native_slim_native_roundtrip_correct():
     mask = aa.Mask1D(
         mask=[True, False, False, True, False, False],
         pixel_scales=1.0,

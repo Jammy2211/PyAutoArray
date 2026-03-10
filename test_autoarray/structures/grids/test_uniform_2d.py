@@ -9,7 +9,7 @@ from autoarray import exc
 test_grid_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
-def test__constructor():
+def test__constructor__2x2_all_false_mask__native_slim_and_pixel_scales_correct():
     mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
     grid_2d = aa.Grid2D(
         values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
@@ -32,17 +32,19 @@ def test__constructor__exception_raised_if_input_grid_is_2d_and_not_shape_of_mas
         aa.Grid2D(values=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
 
 
-def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_pixels():
+def test__constructor__1d_values_too_many_for_masked_pixels__raises_grid_exception():
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D(mask=[[False, False], [True, False]], pixel_scales=1.0)
         aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask)
 
+
+def test__constructor__1d_values_too_few_for_masked_pixels__raises_grid_exception():
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D(mask=[[False, False], [True, False]], pixel_scales=1.0)
         aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
 
 
-def test__no_mask():
+def test__no_mask__2x2_native_values__native_slim_pixel_scales_and_origin_correct():
     grid_2d = aa.Grid2D.no_mask(
         values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
@@ -60,6 +62,8 @@ def test__no_mask():
     assert grid_2d.pixel_scales == (1.0, 1.0)
     assert grid_2d.origin == (0.0, 0.0)
 
+
+def test__no_mask__with_origin__origin_stored_and_accessible():
     grid_2d = aa.Grid2D.no_mask(
         values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         shape_native=(4, 2),
@@ -79,7 +83,7 @@ def test__no_mask():
     assert grid_2d.origin == (0.0, 1.0)
 
 
-def test__from_yx_2d():
+def test__from_yx_2d__2x1_grid__correct_native_slim_and_pixel_scales():
     grid_2d = aa.Grid2D.from_yx_2d(
         y=[[1.0], [3.0]], x=[[2.0], [4.0]], pixel_scales=(2.0, 3.0)
     )
@@ -157,7 +161,7 @@ def test__from_extent():
     assert grid_2d.origin == (0.0, 0.0)
 
 
-def test__uniform():
+def test__uniform__2x2_pixel_scale_2__native_coordinates_correct():
     grid_2d = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
 
     assert type(grid_2d) == aa.Grid2D
@@ -171,6 +175,8 @@ def test__uniform():
     assert grid_2d.pixel_scales == (2.0, 2.0)
     assert grid_2d.origin == (0.0, 0.0)
 
+
+def test__uniform__2x2_with_origin__coordinates_offset_by_origin():
     grid_2d = aa.Grid2D.uniform(
         shape_native=(2, 2), pixel_scales=2.0, origin=(1.0, 1.0)
     )
@@ -186,6 +192,8 @@ def test__uniform():
     assert grid_2d.pixel_scales == (2.0, 2.0)
     assert grid_2d.origin == (1.0, 1.0)
 
+
+def test__uniform__4x2_non_square__all_native_coordinates_correct():
     grid_2d = aa.Grid2D.uniform(shape_native=(4, 2), pixel_scales=0.5)
 
     assert type(grid_2d) == aa.Grid2D
@@ -219,7 +227,7 @@ def test__uniform():
     assert grid_2d.origin == (0.0, 0.0)
 
 
-def test__bounding_box():
+def test__bounding_box__square_bounding_box_3x3__slim_coordinates_and_pixel_scales_correct():
     grid_2d = aa.Grid2D.bounding_box(
         bounding_box=[-2.0, 2.0, -2.0, 2.0],
         shape_native=(3, 3),
@@ -246,6 +254,8 @@ def test__bounding_box():
     assert grid_2d.pixel_scales == pytest.approx((1.33333, 1.3333), 1.0e-4)
     assert grid_2d.origin == (0.0, 0.0)
 
+
+def test__bounding_box__rectangular_bounding_box_2x3__slim_coordinates_and_pixel_scales_correct():
     grid_2d = aa.Grid2D.bounding_box(
         bounding_box=[-2.0, 2.0, -2.0, 2.0],
         shape_native=(2, 3),
@@ -269,7 +279,7 @@ def test__bounding_box():
     assert grid_2d.origin == (0.0, 0.0)
 
 
-def test__bounding_box__buffer_around_corners():
+def test__bounding_box__buffer_around_corners_2x3__coordinates_at_exact_corners():
     grid_2d = aa.Grid2D.bounding_box(
         bounding_box=[-2.0, 2.0, -2.0, 2.0],
         shape_native=(2, 3),
@@ -292,6 +302,8 @@ def test__bounding_box__buffer_around_corners():
     assert grid_2d.pixel_scales == (4.0, 2.0)
     assert grid_2d.origin == (0.0, 0.0)
 
+
+def test__bounding_box__buffer_around_corners_3x3_offset_box__coordinates_and_origin_correct():
     grid_2d = aa.Grid2D.bounding_box(
         bounding_box=[8.0, 10.0, -2.0, 3.0],
         shape_native=(3, 3),
@@ -334,7 +346,7 @@ def test__bounding_box__buffer_around_corners():
     assert grid_2d.origin == (9.0, 0.5)
 
 
-def test__grid_2d_via_deflection_grid_from():
+def test__grid_2d_via_deflection_grid_from__grid_deflected_by_itself__all_zero_coordinates():
     grid_2d = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
 
     grid_deflected = grid_2d.grid_2d_via_deflection_grid_from(deflection_grid=grid_2d)
