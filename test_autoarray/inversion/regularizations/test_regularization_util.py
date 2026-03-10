@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-def test__zeroth_regularization_matrix_from():
+def test__zeroth_regularization_matrix_from__coefficient_1_pixels_3__identity_diagonal_matrix():
     regularization_matrix = aa.util.regularization.zeroth_regularization_matrix_from(
         coefficient=1.0, pixels=3
     )
@@ -15,6 +15,8 @@ def test__zeroth_regularization_matrix_from():
     ).all()
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
+
+def test__zeroth_regularization_matrix_from__coefficient_2_pixels_2__scaled_identity_matrix():
     regularization_matrix = aa.util.regularization.zeroth_regularization_matrix_from(
         coefficient=2.0, pixels=2
     )
@@ -23,13 +25,7 @@ def test__zeroth_regularization_matrix_from():
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-def test__constant_regularization_matrix_from():
-    # Here, we define the neighbors first here and make the B matrices based on them.
-
-    # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we
-    # don't have to have as many B matrices as we do the pix pixel with the most  vertices. We can combine
-    # the rows of each B matrix wherever we like ;0.
-
+def test__constant_regularization_matrix_from__3_pixel_chain__matches_b_matrix_computation():
     neighbors = np.array([[1, 2, -1], [0, -1, -1], [0, -1, -1]])
 
     neighbors_sizes = np.array([2, 1, 1])
@@ -47,6 +43,8 @@ def test__constant_regularization_matrix_from():
     assert (regularization_matrix == test_regularization_matrix).all()
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
+
+def test__constant_regularization_matrix_from__4_pixel_ring_coefficient_1__matches_b_matrix_computation():
     b_matrix = np.array([[-1, 1, 0, 0], [0, -1, 1, 0], [0, 0, -1, 1], [1, 0, 0, -1]])
 
     test_regularization_matrix = np.matmul(b_matrix.T, b_matrix) + 1e-8 * np.identity(4)
@@ -64,6 +62,8 @@ def test__constant_regularization_matrix_from():
     assert (regularization_matrix == test_regularization_matrix).all()
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
+
+def test__constant_regularization_matrix_from__4_pixel_ring_coefficient_2__scaled_regularization_matrix():
     neighbors = np.array(
         [[1, 3, -1, -1], [0, 2, -1, -1], [1, 3, -1, -1], [0, 2, -1, -1]]
     )
@@ -83,6 +83,8 @@ def test__constant_regularization_matrix_from():
     assert (regularization_matrix == test_regularization_matrix).all()
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
+
+def test__constant_regularization_matrix_from__9_pixel_grid__matches_b_matrix_computation():
     neighbors = np.array(
         [
             [1, 3, -1, -1],
@@ -164,7 +166,7 @@ def test__constant_zeroth_regularization_matrix_from():
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-def test__adapt_regularization_weights_from():
+def test__adapt_regularization_weights_from__uniform_signals_equal_inner_outer__all_weights_one():
     pixel_signals = np.array([1.0, 1.0, 1.0])
 
     weight_list = aa.util.regularization.adapt_regularization_weights_from(
@@ -173,6 +175,8 @@ def test__adapt_regularization_weights_from():
 
     assert (weight_list == np.array([1.0, 1.0, 1.0])).all()
 
+
+def test__adapt_regularization_weights_from__non_uniform_signals_equal_inner_outer__all_weights_one():
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
     weight_list = aa.util.regularization.adapt_regularization_weights_from(
@@ -181,6 +185,8 @@ def test__adapt_regularization_weights_from():
 
     assert (weight_list == np.array([1.0, 1.0, 1.0])).all()
 
+
+def test__adapt_regularization_weights_from__non_uniform_signals_outer_zero__weights_scale_with_signal():
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
     weight_list = aa.util.regularization.adapt_regularization_weights_from(
@@ -189,6 +195,8 @@ def test__adapt_regularization_weights_from():
 
     assert (weight_list == np.array([0.25**2.0, 0.5**2.0, 0.75**2.0])).all()
 
+
+def test__adapt_regularization_weights_from__non_uniform_signals_inner_zero__weights_scale_inversely():
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
     weight_list = aa.util.regularization.adapt_regularization_weights_from(
@@ -198,7 +206,7 @@ def test__adapt_regularization_weights_from():
     assert (weight_list == np.array([0.75**2.0, 0.5**2.0, 0.25**2.0])).all()
 
 
-def test__brightness_zeroth_regularization_weights_from():
+def test__brightness_zeroth_regularization_weights_from__uniform_max_signals__all_zero_weights():
     pixel_signals = np.array([1.0, 1.0, 1.0])
 
     weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
@@ -207,6 +215,8 @@ def test__brightness_zeroth_regularization_weights_from():
 
     assert (weight_list == np.array([0.0, 0.0, 0.0])).all()
 
+
+def test__brightness_zeroth_regularization_weights_from__non_uniform_signals_coefficient_1__complement_weights():
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
     weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
@@ -215,6 +225,8 @@ def test__brightness_zeroth_regularization_weights_from():
 
     assert (weight_list == np.array([0.75, 0.5, 0.25])).all()
 
+
+def test__brightness_zeroth_regularization_weights_from__non_uniform_signals_coefficient_2__scaled_complement_weights():
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
     weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
@@ -224,7 +236,7 @@ def test__brightness_zeroth_regularization_weights_from():
     assert (weight_list == np.array([1.5, 1.0, 0.5])).all()
 
 
-def test__weighted_regularization_matrix_from():
+def test__weighted_regularization_matrix_from__4_pixel_cycle_uniform_weights__matches_b_matrix():
     neighbors = np.array([[2], [3], [0], [1]])
 
     b_matrix = np.array([[-1, 0, 1, 0], [0, -1, 0, 1], [1, 0, -1, 0], [0, 1, 0, -1]])
@@ -240,6 +252,8 @@ def test__weighted_regularization_matrix_from():
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
+
+def test__weighted_regularization_matrix_from__3_pixel_chain_uniform_weights__matches_b_matrix():
     # Here, we define the neighbors first here and make the B matrices based on them.
 
     # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we
@@ -271,6 +285,8 @@ def test__weighted_regularization_matrix_from():
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
+
+def test__weighted_regularization_matrix_from__4_pixel_ring_uniform_weights__matches_combined_b_matrix():
     b_matrix_1 = np.array([[-1, 1, 0, 0], [0, -1, 1, 0], [0, 0, -1, 1], [1, 0, 0, -1]])
 
     test_regularization_matrix_1 = np.matmul(b_matrix_1.T, b_matrix_1)
@@ -294,6 +310,8 @@ def test__weighted_regularization_matrix_from():
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
+
+def test__weighted_regularization_matrix_from__6_pixel_graph_uniform_weights__matches_b_matrix():
     # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a
     # lot less Stressful.
 
@@ -378,6 +396,8 @@ def test__weighted_regularization_matrix_from():
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
+
+def test__weighted_regularization_matrix_from__4_pixel_non_uniform_weights__matches_weighted_b_matrix():
     # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
     # This means our B matrix is:
@@ -412,6 +432,8 @@ def test__weighted_regularization_matrix_from():
 
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
+
+def test__weighted_regularization_matrix_from__6_pixel_non_uniform_weights__matches_weighted_b_matrix():
     neighbors = np.array(
         [
             [1, 4, -1, -1],
@@ -494,7 +516,7 @@ def test__weighted_regularization_matrix_from():
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
 
-def test__brightness_zeroth_regularization_matrix_from():
+def test__brightness_zeroth_regularization_matrix_from__uniform_weights__identity_diagonal_matrix():
     regularization_weights = np.ones(shape=(3,))
 
     regularization_matrix = (
@@ -507,6 +529,8 @@ def test__brightness_zeroth_regularization_matrix_from():
         np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]), 1.0e-4
     )
 
+
+def test__brightness_zeroth_regularization_matrix_from__non_uniform_weights__squared_weights_on_diagonal():
     regularization_weights = np.array([1.0, 2.0, 3.0])
 
     regularization_matrix = (
@@ -578,7 +602,7 @@ def splitted_data():
     return splitted_mappings, splitted_sizes, splitted_weights
 
 
-def test__reg_split_from(splitted_data):
+def test__reg_split_from__splitted_mapping_data__produces_correct_mappings_sizes_and_weights(splitted_data):
 
     splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 
@@ -649,7 +673,7 @@ def test__reg_split_from(splitted_data):
     assert splitted_weights == pytest.approx(expected_weights, abs=1.0e-4)
 
 
-def test__constant_pixel_splitted_regularization_matrix(splitted_data):
+def test__pixel_splitted_regularization_matrix_from__uniform_weights__correct_regularization_matrix(splitted_data):
 
     splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 
@@ -675,6 +699,11 @@ def test__constant_pixel_splitted_regularization_matrix(splitted_data):
     )
 
     assert pytest.approx(regularization_matrix, 1e-4) == np.array(expected_reg_matrix)
+
+
+def test__pixel_splitted_regularization_matrix_from__non_uniform_weights__correct_regularization_matrix(splitted_data):
+
+    splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 
     regularization_weights = np.array([2.0, 4.0, 2.0, 2.0, 2.0])
 
