@@ -7,20 +7,22 @@ import autoarray as aa
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__has():
+def test__has__linear_obj_with_regularization__returns_true():
     reg = aa.m.MockRegularization()
     linear_obj = aa.m.MockLinearObj(regularization=reg)
     inversion = aa.m.MockInversion(linear_obj_list=[linear_obj])
 
     assert inversion.has(cls=aa.AbstractRegularization) is True
 
+
+def test__has__linear_obj_without_regularization__returns_false():
     linear_obj = aa.m.MockLinearObj(regularization=None)
     inversion = aa.m.MockInversion(linear_obj_list=[linear_obj])
 
     assert inversion.has(cls=aa.AbstractRegularization) is False
 
 
-def test__total_regularizations():
+def test__total_regularizations__one_regularized_one_unregularized__returns_one():
     reg = aa.m.MockRegularization()
 
     linear_obj_0 = aa.m.MockLinearObj(regularization=reg)
@@ -30,16 +32,26 @@ def test__total_regularizations():
 
     assert inversion.total_regularizations == 1
 
+
+def test__total_regularizations__both_regularized__returns_two():
+    reg = aa.m.MockRegularization()
+
+    linear_obj_0 = aa.m.MockLinearObj(regularization=reg)
+
     inversion = aa.m.MockInversion(linear_obj_list=[linear_obj_0, linear_obj_0])
 
     assert inversion.total_regularizations == 2
+
+
+def test__total_regularizations__none_regularized__returns_zero():
+    linear_obj_1 = aa.m.MockLinearObj(regularization=None)
 
     inversion = aa.m.MockInversion(linear_obj_list=[linear_obj_1, linear_obj_1])
 
     assert inversion.total_regularizations == 0
 
 
-def test__index_range_list_from():
+def test__param_range_list_from__linear_obj_and_mapper__correct_ranges_per_class():
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockLinearObj(parameters=2, regularization=None),
@@ -51,7 +63,7 @@ def test__index_range_list_from():
     assert inversion.param_range_list_from(cls=aa.Mapper) == [[2, 3]]
 
 
-def test__no_regularization_index_list():
+def test__no_regularization_index_list__all_unregularized__returns_all_parameter_indices():
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockLinearObj(parameters=2, regularization=None),
@@ -61,6 +73,8 @@ def test__no_regularization_index_list():
 
     assert inversion.no_regularization_index_list == [0, 1, 2]
 
+
+def test__no_regularization_index_list__mixed_regularized_and_unregularized__returns_only_unregularized_indices():
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockMapper(parameters=10, regularization=aa.m.MockRegularization()),
@@ -73,7 +87,7 @@ def test__no_regularization_index_list():
     assert inversion.no_regularization_index_list == [10, 11, 12, 33, 34, 35, 36]
 
 
-def test__mapping_matrix():
+def test__mapping_matrix__two_mappers__concatenates_mapping_matrices_horizontally():
     mapper_0 = aa.m.MockMapper(mapping_matrix=np.ones((2, 2)))
     mapper_1 = aa.m.MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
 
@@ -215,7 +229,7 @@ def test__curvature_matrix_via_sparse_operator__includes_source_interpolation__i
     )
 
 
-def test__curvature_reg_matrix_reduced():
+def test__curvature_reg_matrix_reduced__regularized_and_unregularized__removes_unregularized_rows_cols():
     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
     linear_obj_list = [
@@ -232,7 +246,7 @@ def test__curvature_reg_matrix_reduced():
     ).all()
 
 
-def test__regularization_matrix():
+def test__regularization_matrix__two_regularized_mappers__assembles_block_diagonal_matrix():
     reg_0 = aa.m.MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = aa.m.MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
 
@@ -256,7 +270,7 @@ def test__regularization_matrix():
     assert inversion.regularization_matrix == pytest.approx(regularization_matrix)
 
 
-def test__reconstruction_reduced():
+def test__reconstruction_reduced__regularized_and_unregularized__returns_only_regularized_parameters():
     linear_obj_list = [
         aa.m.MockMapper(parameters=2, regularization=aa.m.MockRegularization()),
         aa.m.MockLinearObj(parameters=1, regularization=None),
@@ -269,7 +283,7 @@ def test__reconstruction_reduced():
     assert (inversion.reconstruction_reduced == np.array([1.0, 2.0])).all()
 
 
-def test__reconstruction_dict():
+def test__reconstruction_dict__single_linear_obj_and_mapper__splits_reconstruction_correctly():
     reconstruction = np.array([0.0, 1.0, 1.0, 1.0])
 
     linear_obj = aa.m.MockLinearObj(parameters=1)
@@ -282,6 +296,8 @@ def test__reconstruction_dict():
     assert (inversion.reconstruction_dict[linear_obj] == np.zeros(1)).all()
     assert (inversion.reconstruction_dict[mapper] == np.ones(3)).all()
 
+
+def test__reconstruction_dict__multiple_linear_objs_and_mappers__splits_reconstruction_correctly():
     reconstruction = np.array([0.0, 1.0, 1.0, 2.0, 2.0, 2.0])
 
     linear_obj = aa.m.MockLinearObj(parameters=1)
@@ -297,7 +313,7 @@ def test__reconstruction_dict():
     assert (inversion.reconstruction_dict[mapper_1] == 2.0 * np.ones(3)).all()
 
 
-def test__mapped_reconstructed_data_dict():
+def test__mapped_reconstructed_data_dict__single_linear_obj__returns_correct_data_and_sum():
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_data_dict = {linear_obj_0: np.ones(3)}
@@ -312,6 +328,9 @@ def test__mapped_reconstructed_data_dict():
     assert (inversion.mapped_reconstructed_data_dict[linear_obj_0] == np.ones(3)).all()
     assert (inversion.mapped_reconstructed_data == np.ones(3)).all()
 
+
+def test__mapped_reconstructed_data_dict__two_linear_objs__sums_contributions_correctly():
+    linear_obj_0 = aa.m.MockLinearObj()
     linear_obj_1 = aa.m.MockLinearObj()
 
     mapped_reconstructed_data_dict = {
@@ -333,7 +352,7 @@ def test__mapped_reconstructed_data_dict():
     assert (inversion.mapped_reconstructed_data == 3.0 * np.ones(2)).all()
 
 
-def test__mapped_reconstructed_operated_data_dict():
+def test__mapped_reconstructed_operated_data_dict__single_linear_obj__returns_correct_data_and_sum():
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_operated_data_dict = {linear_obj_0: np.ones(3)}
@@ -350,6 +369,9 @@ def test__mapped_reconstructed_operated_data_dict():
     ).all()
     assert (inversion.mapped_reconstructed_operated_data == np.ones(3)).all()
 
+
+def test__mapped_reconstructed_operated_data_dict__two_linear_objs__sums_contributions_correctly():
+    linear_obj_0 = aa.m.MockLinearObj()
     linear_obj_1 = aa.m.MockLinearObj()
 
     mapped_reconstructed_operated_data_dict = {
@@ -374,7 +396,7 @@ def test__mapped_reconstructed_operated_data_dict():
     assert (inversion.mapped_reconstructed_operated_data == 3.0 * np.ones(2)).all()
 
 
-def test__mapped_reconstructed_operated_data():
+def test__mapped_reconstructed_operated_data__single_linear_obj__returns_correct_operated_data():
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_operated_data_dict = {linear_obj_0: np.ones(3)}
@@ -391,6 +413,9 @@ def test__mapped_reconstructed_operated_data():
     ).all()
     assert (inversion.mapped_reconstructed_operated_data == np.ones(3)).all()
 
+
+def test__mapped_reconstructed_operated_data__two_linear_objs__sums_operated_data_correctly():
+    linear_obj_0 = aa.m.MockLinearObj()
     linear_obj_1 = aa.m.MockLinearObj()
 
     mapped_reconstructed_operated_data_dict = {
@@ -415,7 +440,7 @@ def test__mapped_reconstructed_operated_data():
     assert (inversion.mapped_reconstructed_operated_data == 3.0 * np.ones(2)).all()
 
 
-def test__data_subtracted_dict():
+def test__data_subtracted_dict__single_linear_obj__subtracts_other_contributions_from_data():
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_operated_data_dict = {linear_obj_0: np.ones(3)}
@@ -429,6 +454,9 @@ def test__data_subtracted_dict():
 
     assert (inversion.data_subtracted_dict[linear_obj_0] == 3.0 * np.ones(3)).all()
 
+
+def test__data_subtracted_dict__two_linear_objs__subtracts_other_contributions_from_data():
+    linear_obj_0 = aa.m.MockLinearObj()
     linear_obj_1 = aa.m.MockLinearObj()
 
     mapped_reconstructed_operated_data_dict = {
@@ -447,7 +475,7 @@ def test__data_subtracted_dict():
     assert (inversion.data_subtracted_dict[linear_obj_1] == 2.0 * np.ones(3)).all()
 
 
-def test__regularization_term():
+def test__regularization_term__identity_matrix__computes_sum_of_squared_reconstruction():
     reconstruction = np.array([1.0, 1.0, 1.0])
 
     regularization_matrix = np.array(
@@ -478,6 +506,8 @@ def test__regularization_term():
 
     assert inversion.regularization_term == 3.0
 
+
+def test__regularization_term__tridiagonal_matrix__computes_weighted_regularization_term():
     reconstruction = np.array([2.0, 3.0, 5.0])
 
     regularization_matrix = np.array(
@@ -509,7 +539,7 @@ def test__regularization_term():
     assert inversion.regularization_term == 34.0
 
 
-def test__determinant_of_positive_definite_matrix_via_cholesky():
+def test__determinant_of_positive_definite_matrix_via_cholesky__identity_matrix__matches_numpy_log_det():
     matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
     inversion = aa.m.MockInversion(
@@ -523,6 +553,8 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
         inversion.log_det_curvature_reg_matrix_term, 1e-4
     )
 
+
+def test__determinant_of_positive_definite_matrix_via_cholesky__tridiagonal_matrix__matches_numpy_log_det():
     matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
 
     inversion = aa.m.MockInversion(
@@ -537,7 +569,7 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
     )
 
 
-def test__reconstruction_noise_map():
+def test__reconstruction_noise_map__asymmetric_curvature_reg_matrix__correct_diagonal_noise_values():
     curvature_reg_matrix = np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]])
 
     inversion = aa.m.MockInversion(curvature_reg_matrix=curvature_reg_matrix)
@@ -550,7 +582,7 @@ def test__reconstruction_noise_map():
     )
 
 
-def test__max_pixel_list_from_and_centre():
+def test__max_pixel_list_from_and_centre__returns_top_pixels_and_brightest_centre():
 
     source_plane_mesh_grid = aa.Grid2DIrregular(
         [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
@@ -581,7 +613,7 @@ def test__max_pixel_list_from_and_centre():
     assert inversion.max_pixel_centre().in_list == [(5.0, 6.0)]
 
 
-def test__max_pixel_list_from__filter_neighbors():
+def test__max_pixel_list_from__filter_neighbors__excludes_adjacent_pixels_from_top_list():
     source_plane_mesh_grid = aa.Grid2DIrregular(
         [
             [1.0, 1.0],

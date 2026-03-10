@@ -10,7 +10,7 @@ from autoarray.inversion.mesh.interpolator.rectangular_uniform import (
 import pytest
 
 
-def test__pix_indexes_for_sub_slim_index__matches_util():
+def test__pix_indexes_for_sub_slim_index__rectangular_uniform_mesh__matches_util():
     grid = aa.Grid2D.no_mask(
         values=[
             [1.5, -1.0],
@@ -51,7 +51,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     assert mapper.pix_weights_for_sub_slim_index == pytest.approx(weights, 1.0e-4)
 
 
-def test__pixel_signals_from__matches_util(grid_2d_sub_1_7x7, image_7x7):
+def test__pixel_signals_from__rectangular_adapt_density_mesh__matches_util(grid_2d_sub_1_7x7, image_7x7):
 
     mesh_grid = overlay_grid_from(
         shape_native=(3, 3), grid=grid_2d_sub_1_7x7.over_sampled, buffer=1e-8
