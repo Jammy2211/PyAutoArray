@@ -94,6 +94,8 @@ def plot_yx(
             x, y, yerr=y_errors, xerr=x_errors,
             fmt="-o", color=color, label=label, markersize=3,
         )
+    elif plot_axis_type == "scatter":
+        ax.scatter(x, y, s=2, c=color, label=label)
     elif plot_axis_type in ("log", "semilogy"):
         ax.semilogy(x, y, color=color, linestyle=linestyle, label=label)
     elif plot_axis_type == "loglog":

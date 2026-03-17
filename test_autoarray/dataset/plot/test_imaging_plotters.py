@@ -17,11 +17,9 @@ def make_plot_path_setup():
 def test__individual_attributes_are_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-    visuals = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
-
     dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
-        visuals_2d=visuals,
+        positions=grid_2d_irregular_7x7_list,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 

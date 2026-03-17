@@ -20,6 +20,7 @@ def plot_grid(
     # --- overlays ---------------------------------------------------------------
     lines: Optional[Iterable[np.ndarray]] = None,
     color_array: Optional[np.ndarray] = None,
+    indexes: Optional[List] = None,
     # --- cosmetics --------------------------------------------------------------
     title: str = "",
     xlabel: str = 'x (")',
@@ -138,6 +139,14 @@ def plot_grid(
             y_vals = grid[:, 0]
             x_vals = grid[:, 1]
             extent = [x_vals.min(), x_vals.max(), y_vals.min(), y_vals.max()]
+
+    if indexes is not None:
+        colors = ["r", "g", "b", "m", "c", "y"]
+        for i, idx_list in enumerate(indexes):
+            ax.scatter(
+                grid[idx_list, 1], grid[idx_list, 0],
+                s=10, c=colors[i % len(colors)], zorder=5,
+            )
 
     if force_symmetric_extent and extent is not None:
         x_abs = max(abs(extent[0]), abs(extent[1]))

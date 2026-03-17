@@ -16,8 +16,6 @@ def make_plot_path_setup():
 
 
 def test__plot_yx_line(plot_path, plot_patch):
-    visuals_1d = aplt.Visuals1D(vertical_line=1.0)
-
     mat_plot_1d = aplt.MatPlot1D(
         yx_plot=aplt.YXPlot(plot_axis_type="loglog", c="k"),
         vertical_line_axvline=aplt.AXVLine(c="k"),
@@ -28,7 +26,7 @@ def test__plot_yx_line(plot_path, plot_patch):
         y=aa.Array1D.no_mask([1.0, 2.0, 3.0], pixel_scales=1.0),
         x=aa.Array1D.no_mask([0.5, 1.0, 1.5], pixel_scales=0.5),
         mat_plot_1d=mat_plot_1d,
-        visuals_1d=visuals_1d,
+        vertical_line=1.0,
     )
 
     yx_1d_plotter.figure_1d()
@@ -66,19 +64,13 @@ def test__array(
 
     assert path.join(plot_path, "array2.png") in plot_patch.paths
 
-    visuals_2d = aplt.Visuals2D(
+    array_plotter = aplt.Array2DPlotter(
+        array=array_2d_7x7,
         origin=grid_2d_irregular_7x7_list,
-        mask=mask_2d_7x7,
         border=mask_2d_7x7.derive_grid.border,
         grid=grid_2d_7x7,
         positions=grid_2d_irregular_7x7_list,
-        #       lines=grid_2d_irregular_7x7_list,
         array_overlay=array_2d_7x7,
-    )
-
-    array_plotter = aplt.Array2DPlotter(
-        array=array_2d_7x7,
-        visuals_2d=visuals_2d,
         mat_plot_2d=aplt.MatPlot2D(
             output=aplt.Output(path=plot_path, filename="array3", format="png")
         ),
@@ -119,7 +111,7 @@ def test__grid(
 ):
     grid_2d_plotter = aplt.Grid2DPlotter(
         grid=grid_2d_7x7,
-        visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
+        indexes=[0, 1, 2],
         mat_plot_2d=aplt.MatPlot2D(
             output=aplt.Output(path=plot_path, filename="grid1", format="png")
         ),
@@ -133,7 +125,7 @@ def test__grid(
 
     grid_2d_plotter = aplt.Grid2DPlotter(
         grid=grid_2d_7x7,
-        visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
+        indexes=[0, 1, 2],
         mat_plot_2d=aplt.MatPlot2D(
             output=aplt.Output(path=plot_path, filename="grid2", format="png")
         ),
@@ -143,23 +135,14 @@ def test__grid(
 
     assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
-    visuals_2d = aplt.Visuals2D(
-        origin=grid_2d_irregular_7x7_list,
-        mask=mask_2d_7x7,
-        border=mask_2d_7x7.derive_grid.border,
-        grid=grid_2d_7x7,
-        positions=grid_2d_irregular_7x7_list,
-        lines=grid_2d_irregular_7x7_list,
-        array_overlay=array_2d_7x7,
-        indexes=[0, 1, 2],
-    )
-
     grid_2d_plotter = aplt.Grid2DPlotter(
         grid=grid_2d_7x7,
+        lines=grid_2d_irregular_7x7_list,
+        positions=grid_2d_irregular_7x7_list,
+        indexes=[0, 1, 2],
         mat_plot_2d=aplt.MatPlot2D(
             output=aplt.Output(path=plot_path, filename="grid3", format="png")
         ),
-        visuals_2d=visuals_2d,
     )
 
     grid_2d_plotter.figure_2d(color_array=color_array)

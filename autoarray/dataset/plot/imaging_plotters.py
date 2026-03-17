@@ -1,17 +1,16 @@
 import copy
 import numpy as np
-from typing import Callable, Optional
+from typing import Optional
 
-from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.plots.array import plot_array
 from autoarray.structures.plot.structure_plotters import (
-    _lines_from_visuals,
-    _positions_from_visuals,
-    _mask_edge_from,
-    _grid_from_visuals,
+    _auto_mask_edge,
+    _numpy_lines,
+    _numpy_grid,
+    _numpy_positions,
     _output_for_mat_plot,
     _zoom_array,
 )
@@ -23,17 +22,21 @@ class ImagingPlotterMeta(AbstractPlotter):
         self,
         dataset: Imaging,
         mat_plot_2d: MatPlot2D = None,
-        visuals_2d: Visuals2D = None,
+        grid=None,
+        positions=None,
+        lines=None,
     ):
-        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
+        super().__init__(mat_plot_2d=mat_plot_2d)
         self.dataset = dataset
+        self.grid = grid
+        self.positions = positions
+        self.lines = lines
 
     @property
     def imaging(self):
         return self.dataset
 
     def _plot_array(self, array, auto_filename: str, title: str, ax=None):
-        """Internal helper: plot an Array2D via plot_array()."""
         if array is None:
             return
 
@@ -58,10 +61,10 @@ class ImagingPlotterMeta(AbstractPlotter):
             array=arr,
             ax=ax,
             extent=extent,
-            mask=_mask_edge_from(array if hasattr(array, "mask") else None, self.visuals_2d),
-            grid=_grid_from_visuals(self.visuals_2d),
-            positions=_positions_from_visuals(self.visuals_2d),
-            lines=_lines_from_visuals(self.visuals_2d),
+            mask=_auto_mask_edge(array) if hasattr(array, "mask") else None,
+            grid=_numpy_grid(self.grid),
+            positions=_numpy_positions(self.positions),
+            lines=_numpy_lines(self.lines),
             title=title,
             colormap=self.mat_plot_2d.cmap.cmap,
             use_log10=self.mat_plot_2d.use_log10,
@@ -87,14 +90,12 @@ class ImagingPlotterMeta(AbstractPlotter):
                 auto_filename="data",
                 title=title_str or "Data",
             )
-
         if noise_map:
             self._plot_array(
                 array=self.dataset.noise_map,
                 auto_filename="noise_map",
                 title=title_str or "Noise-Map",
             )
-
         if psf:
             if self.dataset.psf is not None:
                 self._plot_array(
@@ -102,21 +103,18 @@ class ImagingPlotterMeta(AbstractPlotter):
                     auto_filename="psf",
                     title=title_str or "Point Spread Function",
                 )
-
         if signal_to_noise_map:
             self._plot_array(
                 array=self.dataset.signal_to_noise_map,
                 auto_filename="signal_to_noise_map",
                 title=title_str or "Signal-To-Noise Map",
             )
-
         if over_sample_size_lp:
             self._plot_array(
                 array=self.dataset.grids.over_sample_size_lp,
                 auto_filename="over_sample_size_lp",
                 title=title_str or "Over Sample Size (Light Profiles)",
             )
-
         if over_sample_size_pixelization:
             self._plot_array(
                 array=self.dataset.grids.over_sample_size_pixelization,
@@ -148,11 +146,9 @@ class ImagingPlotterMeta(AbstractPlotter):
         use_log10_original = self.mat_plot_2d.use_log10
 
         self.open_subplot_figure(number_subplots=9)
-
         self.figures_2d(data=True)
 
         contour_original = copy.copy(self.mat_plot_2d.contour)
-
         self.mat_plot_2d.use_log10 = True
         self.mat_plot_2d.contour = False
         self.figures_2d(data=True)
@@ -181,16 +177,19 @@ class ImagingPlotter(AbstractPlotter):
         self,
         dataset: Imaging,
         mat_plot_2d: MatPlot2D = None,
-        visuals_2d: Visuals2D = None,
+        grid=None,
+        positions=None,
+        lines=None,
     ):
-        super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
-
+        super().__init__(mat_plot_2d=mat_plot_2d)
         self.dataset = dataset
 
         self._imaging_meta_plotter = ImagingPlotterMeta(
             dataset=self.dataset,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
+            grid=grid,
+            positions=positions,
+            lines=lines,
         )
 
         self.figures_2d = self._imaging_meta_plotter.figures_2d

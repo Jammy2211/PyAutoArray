@@ -1,9 +1,5 @@
 """
 Standalone function for plotting a 2D array (image) directly with matplotlib.
-
-This replaces the ``MatPlot2D.plot_array`` / ``MatWrap`` system with a plain
-function whose defaults are ordinary Python parameter defaults rather than
-values loaded from YAML config files.
 """
 import os
 from typing import List, Optional, Tuple
@@ -22,11 +18,16 @@ def plot_array(
     extent: Optional[Tuple[float, float, float, float]] = None,
     # --- overlays ---------------------------------------------------------------
     mask: Optional[np.ndarray] = None,
+    border: Optional[np.ndarray] = None,
+    origin=None,
     grid: Optional[np.ndarray] = None,
+    mesh_grid: Optional[np.ndarray] = None,
     positions: Optional[List[np.ndarray]] = None,
     lines: Optional[List[np.ndarray]] = None,
     vector_yx: Optional[np.ndarray] = None,
     array_overlay: Optional[np.ndarray] = None,
+    patches: Optional[List] = None,
+    fill_region: Optional[List] = None,
     # --- cosmetics --------------------------------------------------------------
     title: str = "",
     xlabel: str = 'x (")',
@@ -36,7 +37,7 @@ def plot_array(
     vmax: Optional[float] = None,
     use_log10: bool = False,
     aspect: str = "auto",
-    origin: str = "upper",
+    origin_imshow: str = "upper",
     # --- figure control (used only when ax is None) -----------------------------
     figsize: Optional[Tuple[int, int]] = None,
     output_path: Optional[str] = None,
@@ -47,8 +48,6 @@ def plot_array(
     """
     Plot a 2D array (image) using ``plt.imshow``.
 
-    This is the direct-matplotlib replacement for ``MatPlot2D.plot_array``.
-
     Parameters
     ----------
     array
@@ -58,23 +57,29 @@ def plot_array(
         is created and saved / shown according to *output_path*.
     extent
         ``[xmin, xmax, ymin, ymax]`` spatial extent in data coordinates.
-        When ``None`` the array pixel indices are used by matplotlib.
     mask
         Array of shape ``(N, 2)`` with ``(y, x)`` coordinates of masked
-        pixels to overlay as black dots.
+        pixels to overlay as black dots (auto-derived from array.mask by caller).
+    border
+        Array of shape ``(N, 2)`` with ``(y, x)`` border pixel coordinates.
+    origin
+        ``(y, x)`` origin coordinate(s) to scatter as a marker.
     grid
         Array of shape ``(N, 2)`` with ``(y, x)`` coordinates to scatter.
+    mesh_grid
+        Array of shape ``(N, 2)`` mesh grid coordinates to scatter.
     positions
-        List of ``(N, 2)`` arrays; each is scattered as a distinct group
-        of lensed image positions.
+        List of ``(N, 2)`` arrays; each is scattered as a distinct group.
     lines
-        List of ``(N, 2)`` arrays with ``(y, x)`` columns to plot as lines
-        (e.g. critical curves, caustics).
+        List of ``(N, 2)`` arrays with ``(y, x)`` columns to plot as lines.
     vector_yx
-        Array of shape ``(N, 4)`` — ``(y, x, vy, vx)`` — plotted as quiver
-        arrows.
+        Array of shape ``(N, 4)`` — ``(y, x, vy, vx)`` — plotted as quiver.
     array_overlay
         A second 2D array rendered on top of *array* with partial alpha.
+    patches
+        List of matplotlib ``Patch`` objects to draw over the image.
+    fill_region
+        List of two arrays ``[y1_arr, y2_arr]`` passed to ``ax.fill_between``.
     title
         Figure title string.
     xlabel, ylabel
@@ -82,16 +87,15 @@ def plot_array(
     colormap
         Matplotlib colormap name.
     vmin, vmax
-        Explicit color scale limits.  When ``None`` the data range is used.
+        Explicit color scale limits.
     use_log10
         When ``True`` a ``LogNorm`` is applied.
     aspect
         Passed directly to ``imshow``.
-    origin
+    origin_imshow
         Passed directly to ``imshow`` (``"upper"`` or ``"lower"``).
     figsize
-        Figure size in inches ``(width, height)``.  Falls back to the value
-        in ``visualize/general.yaml`` when ``None``.
+        Figure size in inches.
     output_path
         Directory to save the figure.  When empty / ``None`` ``plt.show()``
         is called instead.
@@ -112,15 +116,11 @@ def plot_array(
 
     # --- colour normalisation --------------------------------------------------
     if use_log10:
-        from autoconf import conf as _conf
-
         try:
-            log10_min = _conf.instance["visualize"]["general"]["general"][
-                "log10_min_value"
-            ]
+            from autoconf import conf as _conf
+            log10_min = _conf.instance["visualize"]["general"]["general"]["log10_min_value"]
         except Exception:
             log10_min = 1.0e-4
-
         clipped = np.clip(array, log10_min, None)
         norm = LogNorm(vmin=vmin or log10_min, vmax=vmax or clipped.max())
     elif vmin is not None or vmax is not None:
@@ -134,7 +134,7 @@ def plot_array(
         norm=norm,
         extent=extent,
         aspect=aspect,
-        origin=origin,
+        origin=origin_imshow,
     )
 
     plt.colorbar(im, ax=ax)
@@ -147,14 +147,26 @@ def plot_array(
             alpha=0.5,
             extent=extent,
             aspect=aspect,
-            origin=origin,
+            origin=origin_imshow,
         )
 
     if mask is not None:
         ax.scatter(mask[:, 1], mask[:, 0], s=1, c="k")
 
+    if border is not None:
+        ax.scatter(border[:, 1], border[:, 0], s=1, c="b")
+
+    if origin is not None:
+        origin_arr = np.asarray(origin)
+        if origin_arr.ndim == 1:
+            origin_arr = origin_arr[np.newaxis, :]
+        ax.scatter(origin_arr[:, 1], origin_arr[:, 0], s=20, c="r", marker="x", zorder=6)
+
     if grid is not None:
         ax.scatter(grid[:, 1], grid[:, 0], s=1, c="k")
+
+    if mesh_grid is not None:
+        ax.scatter(mesh_grid[:, 1], mesh_grid[:, 0], s=1, c="w", alpha=0.5)
 
     if positions is not None:
         colors = ["r", "g", "b", "m", "c", "y"]
@@ -173,6 +185,16 @@ def plot_array(
             vector_yx[:, 3],
             vector_yx[:, 2],
         )
+
+    if patches is not None:
+        for patch in patches:
+            import copy
+            ax.add_patch(copy.copy(patch))
+
+    if fill_region is not None:
+        y1, y2 = fill_region[0], fill_region[1]
+        x_fill = np.arange(len(y1))
+        ax.fill_between(x_fill, y1, y2, alpha=0.3)
 
     # --- labels / ticks --------------------------------------------------------
     ax.set_title(title, fontsize=16)

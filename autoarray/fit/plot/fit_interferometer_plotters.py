@@ -1,61 +1,94 @@
 import numpy as np
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
-from autoarray.plot.visuals.one_d import Visuals1D
-from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
+from autoarray.plot.plots.array import plot_array
+from autoarray.plot.plots.grid import plot_grid
+from autoarray.plot.plots.yx import plot_yx
 from autoarray.fit.fit_interferometer import FitInterferometer
+from autoarray.structures.plot.structure_plotters import (
+    _auto_mask_edge,
+    _output_for_mat_plot,
+    _zoom_array,
+)
 
 
 class FitInterferometerPlotterMeta(AbstractPlotter):
     def __init__(
         self,
         fit,
-        mat_plot_1d: MatPlot1D,
-        visuals_1d: Visuals1D,
+        mat_plot_1d: MatPlot1D = None,
         mat_plot_2d: MatPlot2D = None,
-        visuals_2d: Visuals2D = None,
         residuals_symmetric_cmap: bool = True,
     ):
-        """
-        Plots the attributes of `FitInterferometer` objects using the matplotlib method `imshow()` and many
-        other matplotlib functions which customize the plot's appearance.
-
-        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
-        the settings passed to every matplotlib function called are those specified in
-        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2d` to
-        customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `FitInterferometer` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        fit
-            The fit to an interferometer dataset the plotter plots.
-        mat_plot_1d
-            Contains objects which wrap the matplotlib function calls that make 1D plots.
-        visuals_1d
-            Contains 1D visuals that can be overlaid on 1D plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
-        residuals_symmetric_cmap
-            If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
-            that `abs(vmin) = abs(vmax)`.
-        """
-        super().__init__(
-            mat_plot_1d=mat_plot_1d,
-            visuals_1d=visuals_1d,
-            mat_plot_2d=mat_plot_2d,
-            visuals_2d=visuals_2d,
-        )
-
+        super().__init__(mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d)
         self.fit = fit
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
+
+    def _plot_array(self, array, auto_filename: str, title: str):
+        is_sub = self.mat_plot_2d.is_for_subplot
+        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d, is_sub, auto_filename
+        )
+        array = _zoom_array(array)
+        try:
+            arr = array.native.array
+            extent = array.geometry.extent
+        except AttributeError:
+            arr = np.asarray(array)
+            extent = None
+        plot_array(
+            array=arr,
+            ax=ax,
+            extent=extent,
+            mask=_auto_mask_edge(array) if hasattr(array, "mask") else None,
+            title=title,
+            colormap=self.mat_plot_2d.cmap.cmap,
+            use_log10=self.mat_plot_2d.use_log10,
+            output_path=output_path,
+            output_filename=filename,
+            output_format=fmt,
+            structure=array,
+        )
+
+    def _plot_grid(self, grid, auto_filename: str, title: str, color_array=None):
+        is_sub = self.mat_plot_2d.is_for_subplot
+        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d, is_sub, auto_filename
+        )
+        plot_grid(
+            grid=np.array(grid.array),
+            ax=ax,
+            color_array=color_array,
+            title=title,
+            output_path=output_path,
+            output_filename=filename,
+            output_format=fmt,
+        )
+
+    def _plot_yx(self, y, x, auto_filename: str, title: str, ylabel: str = "",
+                 xlabel: str = "", plot_axis_type: str = "linear"):
+        is_sub = self.mat_plot_1d.is_for_subplot
+        ax = self.mat_plot_1d.setup_subplot() if is_sub else None
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_1d, is_sub, auto_filename
+        )
+        plot_yx(
+            y=np.asarray(y),
+            x=np.asarray(x) if x is not None else None,
+            ax=ax,
+            title=title,
+            ylabel=ylabel,
+            xlabel=xlabel,
+            plot_axis_type=plot_axis_type,
+            output_path=output_path,
+            output_filename=filename,
+            output_format=fmt,
+        )
 
     def figures_2d(
         self,
@@ -78,246 +111,152 @@ class FitInterferometerPlotterMeta(AbstractPlotter):
         dirty_normalized_residual_map: bool = False,
         dirty_chi_squared_map: bool = False,
     ):
-        """
-        Plots the individual attributes of the plotter's `FitInterferometer` object in 1D and 2D.
-
-        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
-        bool of the function, which if switched to `True` means that it is plotted.
-
-        Parameters
-        ----------
-        data
-            Whether to make a 2D plot (via `scatter`) of the visibility data.
-        noise_map
-            Whether to make a 2D plot (via `scatter`) of the noise-map.
-        signal_to_noise_map
-            Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
-        model_data
-            Whether to make a 2D plot (via `scatter`) of the model visibility data.
-        residual_map_real
-            Whether to make a 1D plot (via `plot`) of the real component of the residual map.
-        residual_map_imag
-            Whether to make a 1D plot (via `plot`) of the imaginary component of the residual map.
-        normalized_residual_map_real
-            Whether to make a 1D plot (via `plot`) of the real component of the normalized residual map.
-        normalized_residual_map_imag
-            Whether to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
-        chi_squared_map_real
-            Whether to make a 1D plot (via `plot`) of the real component of the chi-squared map.
-        chi_squared_map_imag
-            Whether to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
-        dirty_image
-            Whether to make a 2D plot (via `imshow`) of the dirty image.
-        dirty_noise_map
-            Whether to make a 2D plot (via `imshow`) of the dirty noise map.
-        dirty_model_image
-            Whether to make a 2D plot (via `imshow`) of the dirty model image.
-        dirty_residual_map
-            Whether to make a 2D plot (via `imshow`) of the dirty residual map.
-        dirty_normalized_residual_map
-            Whether to make a 2D plot (via `imshow`) of the dirty normalized residual map.
-        dirty_chi_squared_map
-            Whether to make a 2D plot (via `imshow`) of the dirty chi-squared map.
-        """
-
         if data:
-            self.mat_plot_2d.plot_grid(
+            self._plot_grid(
                 grid=self.fit.data.in_grid,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(title="Visibilities", filename="data"),
+                auto_filename="data",
+                title="Visibilities",
                 color_array=np.real(self.fit.noise_map),
             )
-
         if noise_map:
-            self.mat_plot_2d.plot_grid(
+            self._plot_grid(
                 grid=self.fit.data.in_grid,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
+                auto_filename="noise_map",
+                title="Noise-Map",
                 color_array=np.real(self.fit.noise_map),
             )
-
         if signal_to_noise_map:
-            self.mat_plot_2d.plot_grid(
+            self._plot_grid(
                 grid=self.fit.data.in_grid,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Signal-To-Noise Map", filename="signal_to_noise_map"
-                ),
+                auto_filename="signal_to_noise_map",
+                title="Signal-To-Noise Map",
                 color_array=np.real(self.fit.signal_to_noise_map),
             )
-
         if amplitudes_vs_uv_distances:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=self.fit.dataset.amplitudes,
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Amplitudes vs UV-distances",
-                    filename="amplitudes_vs_uv_distances",
-                    yunit="Jy",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="amplitudes_vs_uv_distances",
+                title="Amplitudes vs UV-distances",
+                ylabel="Jy",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
-
         if model_data:
-            self.mat_plot_2d.plot_grid(
+            self._plot_grid(
                 grid=self.fit.data.in_grid,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Model Visibilities", filename="model_data"
-                ),
+                auto_filename="model_data",
+                title="Model Visibilities",
                 color_array=np.real(self.fit.model_data.array),
             )
-
         if residual_map_real:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Residual vs UV-Distance (real)",
-                    filename="real_residual_map_vs_uv_distances",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="real_residual_map_vs_uv_distances",
+                title="Residual vs UV-Distance (real)",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
         if residual_map_imag:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Residual vs UV-Distance (imag)",
-                    filename="imag_residual_map_vs_uv_distances",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="imag_residual_map_vs_uv_distances",
+                title="Residual vs UV-Distance (imag)",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
-
         if normalized_residual_map_real:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=np.real(self.fit.normalized_residual_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Norm Residual vs UV-Distance (real)",
-                    filename="real_normalized_residual_map_vs_uv_distances",
-                    yunit="$\sigma$",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="real_normalized_residual_map_vs_uv_distances",
+                title="Norm Residual vs UV-Distance (real)",
+                ylabel="$\\sigma$",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
         if normalized_residual_map_imag:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=np.imag(self.fit.normalized_residual_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Norm Residual vs UV-Distance (imag)",
-                    filename="imag_normalized_residual_map_vs_uv_distances",
-                    yunit="$\sigma$",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="imag_normalized_residual_map_vs_uv_distances",
+                title="Norm Residual vs UV-Distance (imag)",
+                ylabel="$\\sigma$",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
-
         if chi_squared_map_real:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=np.real(self.fit.chi_squared_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Chi-Squared vs UV-Distance (real)",
-                    filename="real_chi_squared_map_vs_uv_distances",
-                    yunit="$\chi^2$",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="real_chi_squared_map_vs_uv_distances",
+                title="Chi-Squared vs UV-Distance (real)",
+                ylabel="$\\chi^2$",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
         if chi_squared_map_imag:
-            self.mat_plot_1d.plot_yx(
+            self._plot_yx(
                 y=np.imag(self.fit.chi_squared_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
-                visuals_1d=self.visuals_1d,
-                auto_labels=AutoLabels(
-                    title="Chi-Squared vs UV-Distance (imag)",
-                    filename="imag_chi_squared_map_vs_uv_distances",
-                    yunit="$\chi^2$",
-                    xunit="k$\lambda$",
-                ),
-                plot_axis_type_override="scatter",
+                auto_filename="imag_chi_squared_map_vs_uv_distances",
+                title="Chi-Squared vs UV-Distance (imag)",
+                ylabel="$\\chi^2$",
+                xlabel="k$\\lambda$",
+                plot_axis_type="scatter",
             )
-
         if dirty_image:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_image,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image"),
+                auto_filename="dirty_image",
+                title="Dirty Image",
             )
-
         if dirty_noise_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_noise_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Dirty Noise Map", filename="dirty_noise_map"
-                ),
+                auto_filename="dirty_noise_map",
+                title="Dirty Noise Map",
             )
-
         if dirty_signal_to_noise_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_signal_to_noise_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Dirty Signal-To-Noise Map",
-                    filename="dirty_signal_to_noise_map",
-                ),
+                auto_filename="dirty_signal_to_noise_map",
+                title="Dirty Signal-To-Noise Map",
             )
-
         if dirty_model_image:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_model_image,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Dirty Model Image", filename="dirty_model_image_2d"
-                ),
+                auto_filename="dirty_model_image_2d",
+                title="Dirty Model Image",
             )
 
         cmap_original = self.mat_plot_2d.cmap
-
         if self.residuals_symmetric_cmap:
             self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric_cmap_from()
 
         if dirty_residual_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_residual_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Dirty Residual Map", filename="dirty_residual_map_2d"
-                ),
+                auto_filename="dirty_residual_map_2d",
+                title="Dirty Residual Map",
             )
-
         if dirty_normalized_residual_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_normalized_residual_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Dirty Normalized Residual Map",
-                    filename="dirty_normalized_residual_map_2d",
-                ),
+                auto_filename="dirty_normalized_residual_map_2d",
+                title="Dirty Normalized Residual Map",
             )
 
         if self.residuals_symmetric_cmap:
             self.mat_plot_2d.cmap = cmap_original
 
         if dirty_chi_squared_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.fit.dirty_chi_squared_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Dirty Chi-Squared Map", filename="dirty_chi_squared_map_2d"
-                ),
+                auto_filename="dirty_chi_squared_map_2d",
+                title="Dirty Chi-Squared Map",
             )
 
     def subplot(
@@ -341,50 +280,6 @@ class FitInterferometerPlotterMeta(AbstractPlotter):
         dirty_chi_squared_map: bool = False,
         auto_filename: str = "subplot_fit",
     ):
-        """
-        Plots the individual attributes of the plotter's `FitInterferometer` object in 1D and 2D on a subplot.
-
-        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
-        bool of the function, which if switched to `True` means that it is included on the subplot.
-
-        Parameters
-        ----------
-        data
-            Whether to make a 2D plot (via `scatter`) of the visibility data.
-        noise_map
-            Whether to make a 2D plot (via `scatter`) of the noise-map.
-        signal_to_noise_map
-            Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
-        model_data
-            Whether to make a 2D plot (via `scatter`) of the model visibility data.
-        residual_map_real
-            Whether to make a 1D plot (via `plot`) of the real component of the residual map.
-        residual_map_imag
-            Whether to make a 1D plot (via `plot`) of the imaginary component of the residual map.
-        normalized_residual_map_real
-            Whether to make a 1D plot (via `plot`) of the real component of the normalized residual map.
-        normalized_residual_map_imag
-            Whether to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
-        chi_squared_map_real
-            Whether to make a 1D plot (via `plot`) of the real component of the chi-squared map.
-        chi_squared_map_imag
-            Whether to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
-        dirty_image
-            Whether to make a 2D plot (via `imshow`) of the dirty image.
-        dirty_noise_map
-            Whether to make a 2D plot (via `imshow`) of the dirty noise map.
-        dirty_model_image
-            Whether to make a 2D plot (via `imshow`) of the dirty model image.
-        dirty_residual_map
-            Whether to make a 2D plot (via `imshow`) of the dirty residual map.
-        dirty_normalized_residual_map
-            Whether to make a 2D plot (via `imshow`) of the dirty normalized residual map.
-        dirty_chi_squared_map
-            Whether to make a 2D plot (via `imshow`) of the dirty chi-squared map.
-        auto_filename
-            The default filename of the output subplot if written to hard-disk.
-        """
-
         self._subplot_custom_plot(
             visibilities=data,
             noise_map=noise_map,
@@ -407,9 +302,6 @@ class FitInterferometerPlotterMeta(AbstractPlotter):
         )
 
     def subplot_fit(self):
-        """
-        Standard subplot of the attributes of the plotter's `FitInterferometer` object.
-        """
         return self.subplot(
             residual_map_real=True,
             normalized_residual_map_real=True,
@@ -421,9 +313,6 @@ class FitInterferometerPlotterMeta(AbstractPlotter):
         )
 
     def subplot_fit_dirty_images(self):
-        """
-        Standard subplot of the dirty attributes of the plotter's `FitInterferometer` object.
-        """
         return self.subplot(
             dirty_image=True,
             dirty_signal_to_noise_map=True,
@@ -440,45 +329,15 @@ class FitInterferometerPlotter(AbstractPlotter):
         self,
         fit: FitInterferometer,
         mat_plot_1d: MatPlot1D = None,
-        visuals_1d: Visuals1D = None,
         mat_plot_2d: MatPlot2D = None,
-        visuals_2d: Visuals2D = None,
     ):
-        """
-        Plots the attributes of `FitInterferometer` objects using the matplotlib method `imshow()` and many other
-        matplotlib functions which customize the plot's appearance.
-
-        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
-        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
-        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `FitInterferometer` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        fit
-            The fit to an interferometer dataset the plotter plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make the plot.
-        visuals_2d
-            Contains visuals that can be overlaid on the plot.
-        """
-        super().__init__(
-            mat_plot_1d=mat_plot_1d,
-            visuals_1d=visuals_1d,
-            mat_plot_2d=mat_plot_2d,
-            visuals_2d=visuals_2d,
-        )
-
+        super().__init__(mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d)
         self.fit = fit
 
         self._fit_interferometer_meta_plotter = FitInterferometerPlotterMeta(
             fit=self.fit,
             mat_plot_1d=self.mat_plot_1d,
-            visuals_1d=self.visuals_1d,
             mat_plot_2d=self.mat_plot_2d,
-            visuals_2d=self.visuals_2d,
         )
 
         self.figures_2d = self._fit_interferometer_meta_plotter.figures_2d

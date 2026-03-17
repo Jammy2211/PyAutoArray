@@ -24,7 +24,6 @@ def test__individual_attributes_are_output_for_all_mappers(
 ):
     inversion_plotter = aplt.InversionPlotter(
         inversion=rectangular_inversion_7x7_3x3,
-        visuals_2d=aplt.Visuals2D(indexes=[0]),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
@@ -54,7 +53,6 @@ def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
 ):
     inversion_plotter = aplt.InversionPlotter(
         inversion=rectangular_inversion_7x7_3x3,
-        visuals_2d=aplt.Visuals2D(indexes=[0]),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
