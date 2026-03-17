@@ -1,12 +1,20 @@
 import numpy as np
+import logging
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
+from autoarray.plot.plots.inversion import plot_inversion_reconstruction
+from autoarray.plot.plots.array import plot_array
 from autoarray.structures.arrays.uniform_2d import Array2D
-
-import logging
+from autoarray.structures.plot.structure_plotters import (
+    _lines_from_visuals,
+    _positions_from_visuals,
+    _mask_edge_from,
+    _grid_from_visuals,
+    _output_for_mat_plot,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,80 +26,70 @@ class MapperPlotter(AbstractPlotter):
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
     ):
-        """
-        Plots the attributes of `Mapper` objects using the matplotlib method `imshow()` and many other matplotlib
-        functions which customize the plot's appearance.
-
-        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
-        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
-        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Mapper` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        mapper
-            The mapper the plotter plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
-        """
         super().__init__(visuals_2d=visuals_2d, mat_plot_2d=mat_plot_2d)
-
         self.mapper = mapper
 
-    def figure_2d(self, solution_vector: bool = None):
-        """
-        Plots the plotter's `Mapper` object in 2D.
+    def figure_2d(self, solution_vector=None):
+        """Plot the mapper's source-plane reconstruction."""
+        is_sub = self.mat_plot_2d.is_for_subplot
+        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
 
-        Parameters
-        ----------
-        solution_vector
-            A vector of values which can culor the pixels of the mapper's source pixels.
-        """
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.mapper,
-            visuals_2d=self.visuals_2d,
-            pixel_values=solution_vector,
-            auto_labels=AutoLabels(
-                title="Pixelization Mesh (Source-Plane)", filename="mapper"
-            ),
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d, is_sub, "mapper"
         )
+
+        try:
+            plot_inversion_reconstruction(
+                pixel_values=solution_vector,
+                mapper=self.mapper,
+                ax=ax,
+                title="Pixelization Mesh (Source-Plane)",
+                colormap=self.mat_plot_2d.cmap.cmap,
+                use_log10=self.mat_plot_2d.use_log10,
+                lines=_lines_from_visuals(self.visuals_2d),
+                output_path=output_path,
+                output_filename=filename,
+                output_format=fmt,
+            )
+        except Exception as exc:
+            logger.info(
+                f"Could not plot the source-plane via the Mapper: {exc}"
+            )
 
     def figure_2d_image(self, image):
+        """Plot an image-plane representation of the mapper."""
+        is_sub = self.mat_plot_2d.is_for_subplot
+        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
 
-        self.mat_plot_2d.plot_array(
-            array=image,
-            visuals_2d=self.visuals_2d,
-            grid_indexes=self.mapper.image_plane_data_grid.over_sampled,
-            auto_labels=AutoLabels(
-                title="Image (Image-Plane)", filename="mapper_image"
-            ),
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d, is_sub, "mapper_image"
         )
 
-    def subplot_image_and_mapper(
-        self,
-        image: Array2D,
-    ):
-        """
-        Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.
+        try:
+            arr = image.native.array
+            extent = image.geometry.extent
+        except AttributeError:
+            arr = np.asarray(image)
+            extent = None
 
-        This function can include colored points that mark the mappings between the image pixels and their
-        corresponding locations in the `Mapper` source-plane and reconstruction. This therefore visually illustrates
-        the mapping process.
+        plot_array(
+            array=arr,
+            ax=ax,
+            extent=extent,
+            mask=_mask_edge_from(image if hasattr(image, "mask") else None, self.visuals_2d),
+            lines=_lines_from_visuals(self.visuals_2d),
+            title="Image (Image-Plane)",
+            colormap=self.mat_plot_2d.cmap.cmap,
+            use_log10=self.mat_plot_2d.use_log10,
+            output_path=output_path,
+            output_filename=filename,
+            output_format=fmt,
+        )
 
-        Parameters
-        ----------
-        image
-            The image which is plotted on the subplot.
-        """
+    def subplot_image_and_mapper(self, image: Array2D):
         self.open_subplot_figure(number_subplots=2)
-
         self.figure_2d_image(image=image)
         self.figure_2d()
-
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_image_and_mapper"
         )
@@ -103,26 +101,29 @@ class MapperPlotter(AbstractPlotter):
         zoom_to_brightest: bool = True,
         auto_labels: AutoLabels = AutoLabels(),
     ):
-        """
-        Plot the source of the `Mapper` where the coloring is specified by an input set of values.
+        """Plot mapper source coloured by pixel_values."""
+        is_sub = self.mat_plot_2d.is_for_subplot
+        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
 
-        Parameters
-        ----------
-        pixel_values
-            The values of the mapper's source pixels used for coloring the figure.
-        zoom_to_brightest
-            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
-            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
-        auto_labels
-            The labels given to the figure.
-        """
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d,
+            is_sub,
+            auto_labels.filename or "reconstruction",
+        )
+
         try:
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.mapper,
-                visuals_2d=self.visuals_2d,
-                auto_labels=auto_labels,
+            plot_inversion_reconstruction(
                 pixel_values=pixel_values,
+                mapper=self.mapper,
+                ax=ax,
+                title=auto_labels.title or "Source Reconstruction",
+                colormap=self.mat_plot_2d.cmap.cmap,
+                use_log10=self.mat_plot_2d.use_log10,
                 zoom_to_brightest=zoom_to_brightest,
+                lines=_lines_from_visuals(self.visuals_2d),
+                output_path=output_path,
+                output_filename=filename,
+                output_format=fmt,
             )
         except ValueError:
             logger.info(

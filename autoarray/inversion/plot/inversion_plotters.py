@@ -7,9 +7,17 @@ from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
+from autoarray.plot.plots.array import plot_array
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
+from autoarray.structures.plot.structure_plotters import (
+    _lines_from_visuals,
+    _mask_edge_from,
+    _grid_from_visuals,
+    _positions_from_visuals,
+    _output_for_mat_plot,
+)
 
 
 class InversionPlotter(AbstractPlotter):
@@ -66,35 +74,53 @@ class InversionPlotter(AbstractPlotter):
             visuals_2d=self.visuals_2d,
         )
 
+    def _plot_array(self, array, auto_filename: str, title: str):
+        """Helper: plot an Array2D using the new direct-matplotlib function."""
+        is_sub = self.mat_plot_2d.is_for_subplot
+        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d, is_sub, auto_filename
+        )
+        try:
+            arr = array.native.array
+            extent = array.geometry.extent
+            mask_overlay = _mask_edge_from(array, self.visuals_2d)
+        except AttributeError:
+            arr = np.asarray(array)
+            extent = None
+            mask_overlay = None
+        plot_array(
+            array=arr,
+            ax=ax,
+            extent=extent,
+            mask=mask_overlay,
+            grid=_grid_from_visuals(self.visuals_2d),
+            positions=_positions_from_visuals(self.visuals_2d),
+            lines=_lines_from_visuals(self.visuals_2d),
+            title=title,
+            colormap=self.mat_plot_2d.cmap.cmap,
+            use_log10=self.mat_plot_2d.use_log10,
+            output_path=output_path,
+            output_filename=filename,
+            output_format=fmt,
+        )
+
     def figures_2d(self, reconstructed_operated_data: bool = False):
         """
         Plots the individual attributes of the plotter's `Inversion` object in 2D.
-
-        The API is such that every plottable attribute of the `Inversion` object is an input parameter of type bool of
-        the function, which if switched to `True` means that it is plotted.
-
-        Parameters
-        ----------
-        reconstructed_operated_data
-            Whether to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
         if reconstructed_operated_data:
             try:
-                self.mat_plot_2d.plot_array(
+                self._plot_array(
                     array=self.inversion.mapped_reconstructed_operated_data,
-                    visuals_2d=self.visuals_2d,
-                    auto_labels=AutoLabels(
-                        title="Reconstructed Image",
-                        filename="reconstructed_operated_data",
-                    ),
+                    auto_filename="reconstructed_operated_data",
+                    title="Reconstructed Image",
                 )
             except AttributeError:
-                self.mat_plot_2d.plot_array(
+                self._plot_array(
                     array=self.inversion.mapped_reconstructed_data,
-                    visuals_2d=self.visuals_2d,
-                    auto_labels=AutoLabels(
-                        title="Reconstructed Image", filename="reconstructed_data"
-                    ),
+                    auto_filename="reconstructed_data",
+                    title="Reconstructed Image",
                 )
 
     def figures_2d_of_pixelization(
@@ -153,19 +179,13 @@ class InversionPlotter(AbstractPlotter):
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
 
         if data_subtracted:
-            # Attribute error is cause this raises an error for interferometer inversion, because the data is
-            # visibilities not an image. Update this to be handled better in future.
-
+            # Attribute error is raised for interferometer inversion where data is visibilities not an image.
             try:
                 array = self.inversion.data_subtracted_dict[mapper_plotter.mapper]
-
-                self.mat_plot_2d.plot_array(
+                self._plot_array(
                     array=array,
-                    visuals_2d=self.visuals_2d,
-                    grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
-                    auto_labels=AutoLabels(
-                        title="Data Subtracted", filename="data_subtracted"
-                    ),
+                    auto_filename="data_subtracted",
+                    title="Data Subtracted",
                 )
             except AttributeError:
                 pass
@@ -182,13 +202,10 @@ class InversionPlotter(AbstractPlotter):
                     mapper_plotter.mapper
                 ]
 
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=array,
-                visuals_2d=self.visuals_2d,
-                grid_indexes=mapper_plotter.mapper.over_sampler.uniform_over_sampled,
-                auto_labels=AutoLabels(
-                    title="Reconstructed Image", filename="reconstructed_operated_data"
-                ),
+                auto_filename="reconstructed_operated_data",
+                title="Reconstructed Image",
             )
 
         if reconstruction:
@@ -271,29 +288,19 @@ class InversionPlotter(AbstractPlotter):
                 values=mapper_plotter.mapper.over_sampler.sub_size,
                 mask=self.inversion.dataset.mask,
             )
-
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=sub_size,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title="Sub Pixels Per Image Pixels",
-                    filename="sub_pixels_per_image_pixels",
-                ),
+                auto_filename="sub_pixels_per_image_pixels",
+                title="Sub Pixels Per Image Pixels",
             )
 
         if mesh_pixels_per_image_pixels:
             try:
-                mesh_pixels_per_image_pixels = (
-                    mapper_plotter.mapper.mesh_pixels_per_image_pixels
-                )
-
-                self.mat_plot_2d.plot_array(
-                    array=mesh_pixels_per_image_pixels,
-                    visuals_2d=self.visuals_2d,
-                    auto_labels=AutoLabels(
-                        title="Mesh Pixels Per Image Pixels",
-                        filename="mesh_pixels_per_image_pixels",
-                    ),
+                mesh_arr = mapper_plotter.mapper.mesh_pixels_per_image_pixels
+                self._plot_array(
+                    array=mesh_arr,
+                    auto_filename="mesh_pixels_per_image_pixels",
+                    title="Mesh Pixels Per Image Pixels",
                 )
             except Exception:
                 pass

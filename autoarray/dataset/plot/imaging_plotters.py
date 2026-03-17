@@ -1,10 +1,19 @@
 import copy
+import numpy as np
 from typing import Callable, Optional
 
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.plots.array import plot_array
+from autoarray.structures.plot.structure_plotters import (
+    _lines_from_visuals,
+    _positions_from_visuals,
+    _mask_edge_from,
+    _grid_from_visuals,
+    _output_for_mat_plot,
+)
 from autoarray.dataset.imaging.dataset import Imaging
 
 
@@ -15,34 +24,48 @@ class ImagingPlotterMeta(AbstractPlotter):
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
     ):
-        """
-        Plots the attributes of `Imaging` objects using the matplotlib method `imshow()` and many other matplotlib
-        functions which customize the plot's appearance.
-
-        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
-        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
-        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Imaging` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        dataset
-            The imaging dataset the plotter plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
-        """
-
         super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
-
         self.dataset = dataset
 
     @property
     def imaging(self):
         return self.dataset
+
+    def _plot_array(self, array, auto_filename: str, title: str, ax=None):
+        """Internal helper: plot an Array2D via plot_array()."""
+        if array is None:
+            return
+
+        is_sub = self.mat_plot_2d.is_for_subplot
+        if ax is None:
+            ax = self.mat_plot_2d.setup_subplot() if is_sub else None
+
+        output_path, filename, fmt = _output_for_mat_plot(
+            self.mat_plot_2d, is_sub, auto_filename
+        )
+
+        try:
+            arr = array.native.array
+            extent = array.geometry.extent
+        except AttributeError:
+            arr = np.asarray(array)
+            extent = None
+
+        plot_array(
+            array=arr,
+            ax=ax,
+            extent=extent,
+            mask=_mask_edge_from(array if hasattr(array, "mask") else None, self.visuals_2d),
+            grid=_grid_from_visuals(self.visuals_2d),
+            positions=_positions_from_visuals(self.visuals_2d),
+            lines=_lines_from_visuals(self.visuals_2d),
+            title=title,
+            colormap=self.mat_plot_2d.cmap.cmap,
+            use_log10=self.mat_plot_2d.use_log10,
+            output_path=output_path,
+            output_filename=filename,
+            output_format=fmt,
+        )
 
     def figures_2d(
         self,
@@ -54,86 +77,47 @@ class ImagingPlotterMeta(AbstractPlotter):
         over_sample_size_pixelization: bool = False,
         title_str: Optional[str] = None,
     ):
-        """
-        Plots the individual attributes of the plotter's `Imaging` object in 2D.
-
-        The API is such that every plottable attribute of the `Imaging` object is an input parameter of type bool of
-        the function, which if switched to `True` means that it is plotted.
-
-        Parameters
-        ----------
-        data
-            Whether to make a 2D plot (via `imshow`) of the image data.
-        noise_map
-            Whether to make a 2D plot (via `imshow`) of the noise map.
-        psf
-            Whether to make a 2D plot (via `imshow`) of the psf.
-        signal_to_noise_map
-            Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
-        over_sample_size_lp
-            Whether to make a 2D plot (via `imshow`) of the Over Sampling for input light profiles. If
-            adaptive sub size is used, the sub size grid for a centre of (0.0, 0.0) is used.
-        over_sample_size_pixelization
-            Whether to make a 2D plot (via `imshow`) of the Over Sampling for pixelizations.
-        """
-
         if data:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.dataset.data,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(title=title_str or f" Data", filename="data"),
+                auto_filename="data",
+                title=title_str or "Data",
             )
 
         if noise_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.dataset.noise_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(title_str or f"Noise-Map", filename="noise_map"),
+                auto_filename="noise_map",
+                title=title_str or "Noise-Map",
             )
 
         if psf:
             if self.dataset.psf is not None:
-                self.mat_plot_2d.plot_array(
+                self._plot_array(
                     array=self.dataset.psf.kernel,
-                    visuals_2d=self.visuals_2d,
-                    auto_labels=AutoLabels(
-                        title=title_str or f"Point Spread Function",
-                        filename="psf",
-                        cb_unit="",
-                    ),
+                    auto_filename="psf",
+                    title=title_str or "Point Spread Function",
                 )
 
         if signal_to_noise_map:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.dataset.signal_to_noise_map,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title=title_str or f"Signal-To-Noise Map",
-                    filename="signal_to_noise_map",
-                    cb_unit="",
-                ),
+                auto_filename="signal_to_noise_map",
+                title=title_str or "Signal-To-Noise Map",
             )
 
         if over_sample_size_lp:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.dataset.grids.over_sample_size_lp,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title=title_str or f"Over Sample Size (Light Profiles)",
-                    filename="over_sample_size_lp",
-                    cb_unit="",
-                ),
+                auto_filename="over_sample_size_lp",
+                title=title_str or "Over Sample Size (Light Profiles)",
             )
 
         if over_sample_size_pixelization:
-            self.mat_plot_2d.plot_array(
+            self._plot_array(
                 array=self.dataset.grids.over_sample_size_pixelization,
-                visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(
-                    title=title_str or f"Over Sample Size (Pixelization)",
-                    filename="over_sample_size_pixelization",
-                    cb_unit="",
-                ),
+                auto_filename="over_sample_size_pixelization",
+                title=title_str or "Over Sample Size (Pixelization)",
             )
 
     def subplot(
@@ -146,30 +130,6 @@ class ImagingPlotterMeta(AbstractPlotter):
         over_sampling_pixelization: bool = False,
         auto_filename: str = "subplot_dataset",
     ):
-        """
-        Plots the individual attributes of the plotter's `Imaging` object in 2D on a subplot.
-
-        The API is such that every plottable attribute of the `Imaging` object is an input parameter of type bool of
-        the function, which if switched to `True` means that it is included on the subplot.
-
-        Parameters
-        ----------
-        data
-            Whether to include a 2D plot (via `imshow`) of the image data.
-        noise_map
-            Whether to include a 2D plot (via `imshow`) of the noise map.
-        psf
-            Whether to include a 2D plot (via `imshow`) of the psf.
-        signal_to_noise_map
-            Whether to include a 2D plot (via `imshow`) of the signal-to-noise map.
-        over_sampling
-            Whether to include a 2D plot (via `imshow`) of the Over Sampling. If adaptive sub size is used, the
-            sub size grid for a centre of (0.0, 0.0) is used.
-        over_sampling_pixelization
-            Whether to include a 2D plot (via `imshow`) of the Over Sampling for pixelizations.
-        auto_filename
-            The default filename of the output subplot if written to hard-disk.
-        """
         self._subplot_custom_plot(
             data=data,
             noise_map=noise_map,
@@ -181,9 +141,6 @@ class ImagingPlotterMeta(AbstractPlotter):
         )
 
     def subplot_dataset(self):
-        """
-        Standard subplot of the attributes of the plotter's `Imaging` object.
-        """
         use_log10_original = self.mat_plot_2d.use_log10
 
         self.open_subplot_figure(number_subplots=9)
@@ -199,7 +156,6 @@ class ImagingPlotterMeta(AbstractPlotter):
         self.mat_plot_2d.contour = contour_original
 
         self.figures_2d(noise_map=True)
-
         self.figures_2d(psf=True)
 
         self.mat_plot_2d.use_log10 = True
@@ -207,7 +163,6 @@ class ImagingPlotterMeta(AbstractPlotter):
         self.mat_plot_2d.use_log10 = False
 
         self.figures_2d(signal_to_noise_map=True)
-
         self.figures_2d(over_sample_size_lp=True)
         self.figures_2d(over_sample_size_pixelization=True)
 
@@ -224,27 +179,6 @@ class ImagingPlotter(AbstractPlotter):
         mat_plot_2d: MatPlot2D = None,
         visuals_2d: Visuals2D = None,
     ):
-        """
-        Plots the attributes of `Imaging` objects using the matplotlib method `imshow()` and many other matplotlib
-        functions which customize the plot's appearance.
-
-        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
-        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
-        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
-
-        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Imaging` and plotted via the visuals object.
-
-        Parameters
-        ----------
-        imaging
-            The imaging dataset the plotter plots.
-        mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make 2D plots.
-        visuals_2d
-            Contains 2D visuals that can be overlaid on 2D plots.
-        """
-
         super().__init__(mat_plot_2d=mat_plot_2d, visuals_2d=visuals_2d)
 
         self.dataset = dataset
