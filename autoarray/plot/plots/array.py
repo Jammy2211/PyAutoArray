@@ -121,7 +121,7 @@ def plot_array(
             log10_min = 1.0e-4
 
         clipped = np.clip(array, log10_min, None)
-        norm = LogNorm(vmin=vmin or log10_min, vmax=vmax or clipped.max())
+        norm = LogNorm(vmin=vmin or log10_min, vmax=vmax or np.nanmax(clipped))
     elif vmin is not None or vmax is not None:
         norm = Normalize(vmin=vmin, vmax=vmax)
     else:
