@@ -59,3 +59,13 @@ from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlot
 
 from autoarray.plot.multi_plotters import MultiFigurePlotter
 from autoarray.plot.multi_plotters import MultiYX1DPlotter
+
+from autoarray.plot.plots import (
+    plot_array,
+    plot_grid,
+    plot_yx,
+    plot_inversion_reconstruction,
+    apply_extent,
+    conf_figsize,
+    save_figure,
+)
