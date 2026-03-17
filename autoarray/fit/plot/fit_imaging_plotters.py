@@ -13,6 +13,7 @@ from autoarray.structures.plot.structure_plotters import (
     _lines_from_visuals,
     _positions_from_visuals,
     _output_for_mat_plot,
+    _zoom_array,
 )
 
 
@@ -67,6 +68,8 @@ class FitImagingPlotterMeta(AbstractPlotter):
             auto_labels.filename if auto_labels else "array",
         )
 
+        array = _zoom_array(array)
+
         try:
             arr = array.native.array
             extent = array.geometry.extent
@@ -88,6 +91,7 @@ class FitImagingPlotterMeta(AbstractPlotter):
             output_path=output_path,
             output_filename=filename,
             output_format=fmt,
+            structure=array,
         )
 
     def figures_2d(

@@ -89,6 +89,29 @@ def _grid_from_visuals(visuals_2d: Visuals2D) -> Optional[np.ndarray]:
         return None
 
 
+def _zoom_array(array):
+    """
+    Apply zoom_around_mask to *array* if the config requests it.
+
+    Mirrors the behaviour of the old ``MatPlot2D.plot_array`` which read
+    ``visualize/general.yaml::zoom_around_mask`` and, when True, trimmed the
+    array to the bounding box of the unmasked region plus a 1-pixel buffer.
+    Returns the (possibly trimmed) array unchanged when the config is False or
+    the mask has no masked pixels.
+    """
+    try:
+        from autoconf import conf
+        zoom_around_mask = conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]
+    except Exception:
+        zoom_around_mask = False
+
+    if zoom_around_mask and hasattr(array, "mask") and not array.mask.is_all_false:
+        from autoarray.mask.derive.zoom_2d import Zoom2D
+        return Zoom2D(mask=array.mask).array_2d_from(array=array, buffer=1)
+
+    return array
+
+
 def _output_for_mat_plot(mat_plot, is_for_subplot: bool, auto_filename: str):
     """
     Derive (output_path, output_filename, output_format) from a MatPlot object.
@@ -138,11 +161,13 @@ class Array2DPlotter(AbstractPlotter):
             self.mat_plot_2d, is_sub, "array"
         )
 
+        array = _zoom_array(self.array)
+
         plot_array(
-            array=self.array.native.array,
+            array=array.native.array,
             ax=ax,
-            extent=self.array.geometry.extent,
-            mask=_mask_edge_from(self.array, self.visuals_2d),
+            extent=array.geometry.extent,
+            mask=_mask_edge_from(array, self.visuals_2d),
             grid=_grid_from_visuals(self.visuals_2d),
             positions=_positions_from_visuals(self.visuals_2d),
             lines=_lines_from_visuals(self.visuals_2d),
@@ -152,6 +177,7 @@ class Array2DPlotter(AbstractPlotter):
             output_path=output_path,
             output_filename=filename,
             output_format=fmt,
+            structure=array,
         )
 
 

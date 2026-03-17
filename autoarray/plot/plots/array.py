@@ -42,6 +42,7 @@ def plot_array(
     output_path: Optional[str] = None,
     output_filename: str = "array",
     output_format: str = "png",
+    structure=None,
 ) -> None:
     """
     Plot a 2D array (image) using ``plt.imshow``.
@@ -189,4 +190,5 @@ def plot_array(
             path=output_path or "",
             filename=output_filename,
             format=output_format,
+            structure=structure,
         )

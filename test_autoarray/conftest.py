@@ -26,6 +26,8 @@ class PlotPatch:
 def make_plot_patch(monkeypatch):
     plot_patch = PlotPatch()
     monkeypatch.setattr(pyplot, "savefig", plot_patch)
+    from matplotlib.figure import Figure
+    monkeypatch.setattr(Figure, "savefig", plot_patch)
     return plot_patch
 
 

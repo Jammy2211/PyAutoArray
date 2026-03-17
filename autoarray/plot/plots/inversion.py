@@ -131,6 +131,9 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
 
     shape_native = mapper.mesh_geometry.shape
 
+    if pixel_values is None:
+        pixel_values = np.zeros(shape_native[0] * shape_native[1])
+
     if isinstance(mapper.interpolator, InterpolatorRectangularUniform):
         from autoarray.structures.arrays.uniform_2d import Array2D
         from autoarray.structures.arrays import array_2d_util

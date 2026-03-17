@@ -88,7 +88,7 @@ def plot_grid(
     # --- scatter / errorbar ----------------------------------------------------
     if color_array is not None:
         cmap = plt.get_cmap(colormap)
-        colors = cmap((color_array - color_array.min()) / (color_array.ptp() or 1))
+        colors = cmap((color_array - color_array.min()) / (np.ptp(color_array) or 1))
 
         if y_errors is None and x_errors is None:
             sc = ax.scatter(grid[:, 1], grid[:, 0], s=1, c=color_array, cmap=colormap)

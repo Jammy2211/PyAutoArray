@@ -34,6 +34,7 @@ def save_figure(
     filename: str,
     format: str = "png",
     dpi: int = 300,
+    structure=None,
 ) -> None:
     """
     Save *fig* to ``<path>/<filename>.<format>`` then close it.
@@ -53,18 +54,36 @@ def save_figure(
         File format passed to ``fig.savefig`` (e.g. ``"png"``, ``"pdf"``).
     dpi
         Resolution in dots per inch.
+    structure
+        Optional autoarray structure (e.g. ``Array2D``).  Required when
+        *format* is ``"fits"`` — its ``output_to_fits`` method is used
+        instead of ``fig.savefig``.
     """
     if path:
         os.makedirs(path, exist_ok=True)
-        try:
-            fig.savefig(
-                os.path.join(path, f"{filename}.{format}"),
-                dpi=dpi,
-                bbox_inches="tight",
-                pad_inches=0.1,
-            )
-        except Exception as exc:
-            logger.warning(f"save_figure: could not save {filename}.{format}: {exc}")
+        if format == "fits":
+            if structure is not None and hasattr(structure, "output_to_fits"):
+                structure.output_to_fits(
+                    file_path=os.path.join(path, f"{filename}.fits"),
+                    overwrite=True,
+                )
+            else:
+                logger.warning(
+                    f"save_figure: fits format requested for {filename} but no "
+                    "compatible structure was provided; skipping."
+                )
+        else:
+            try:
+                fig.savefig(
+                    os.path.join(path, f"{filename}.{format}"),
+                    dpi=dpi,
+                    bbox_inches="tight",
+                    pad_inches=0.1,
+                )
+            except Exception as exc:
+                logger.warning(
+                    f"save_figure: could not save {filename}.{format}: {exc}"
+                )
     else:
         plt.show()
 

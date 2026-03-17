@@ -13,6 +13,7 @@ from autoarray.structures.plot.structure_plotters import (
     _mask_edge_from,
     _grid_from_visuals,
     _output_for_mat_plot,
+    _zoom_array,
 )
 from autoarray.dataset.imaging.dataset import Imaging
 
@@ -44,6 +45,8 @@ class ImagingPlotterMeta(AbstractPlotter):
             self.mat_plot_2d, is_sub, auto_filename
         )
 
+        array = _zoom_array(array)
+
         try:
             arr = array.native.array
             extent = array.geometry.extent
@@ -65,6 +68,7 @@ class ImagingPlotterMeta(AbstractPlotter):
             output_path=output_path,
             output_filename=filename,
             output_format=fmt,
+            structure=array,
         )
 
     def figures_2d(
