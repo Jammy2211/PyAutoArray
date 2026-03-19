@@ -5,6 +5,10 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Axis(AbstractMatWrap):
+    @property
+    def defaults(self):
+        return {}
+
     def __init__(self, symmetric_source_centre: bool = False, **kwargs):
         """
         Customizes the axis of the plotted figure.

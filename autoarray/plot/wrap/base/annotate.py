@@ -2,6 +2,10 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Annotate(AbstractMatWrap):
+    @property
+    def defaults(self):
+        return {"fontsize": 16}
+
     """
     The settings used to customize annotations on the figure.
 

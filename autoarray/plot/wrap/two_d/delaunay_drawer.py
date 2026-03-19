@@ -17,6 +17,10 @@ def facecolors_from(values, simplices):
 
 
 class DelaunayDrawer(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"alpha": 0.7, "edgecolor": "k", "linewidth": 0.0}
+
     """
     Draws Delaunay pixels from a `MapperDelaunay` object (see `inversions.mapper`). This includes both drawing
     each Delaunay cell and coloring it according to a color value.

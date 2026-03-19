@@ -15,19 +15,19 @@ def test__all_class_load_and_inherit_correctly(grid_2d_irregular_7x7_list):
         grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
     )
 
-    assert mask_scatter.config_dict["s"] == 12
+    assert mask_scatter.config_dict["s"] == 10
 
     border_scatter = aplt.BorderScatter()
     border_scatter.scatter_grid(
         grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
     )
 
-    assert border_scatter.config_dict["s"] == 13
+    assert border_scatter.config_dict["s"] == 30
 
     positions_scatter = aplt.PositionsScatter()
     positions_scatter.scatter_grid(grid=grid_2d_irregular_7x7_list)
 
-    assert positions_scatter.config_dict["s"] == 15
+    assert positions_scatter.config_dict["s"] == 32
 
     index_scatter = aplt.IndexScatter()
     index_scatter.scatter_grid_list(grid_list=grid_2d_irregular_7x7_list)
@@ -39,7 +39,7 @@ def test__all_class_load_and_inherit_correctly(grid_2d_irregular_7x7_list):
         grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
     )
 
-    assert mesh_grid_scatter.config_dict["s"] == 5
+    assert mesh_grid_scatter.config_dict["s"] == 2
 
     parallel_overscan_plot = aplt.ParallelOverscanPlot()
     parallel_overscan_plot.plot_rectangular_grid_lines(
@@ -53,11 +53,11 @@ def test__all_class_load_and_inherit_correctly(grid_2d_irregular_7x7_list):
         extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2)
     )
 
-    assert serial_overscan_plot.config_dict["linewidth"] == 2
+    assert serial_overscan_plot.config_dict["linewidth"] == 1
 
     serial_prescan_plot = aplt.SerialPrescanPlot()
     serial_prescan_plot.plot_rectangular_grid_lines(
         extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2)
     )
 
-    assert serial_prescan_plot.config_dict["linewidth"] == 3
+    assert serial_prescan_plot.config_dict["linewidth"] == 1

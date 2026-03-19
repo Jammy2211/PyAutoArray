@@ -2,6 +2,10 @@ from autoarray.plot.wrap.two_d.grid_plot import GridPlot
 
 
 class SerialPrescanPlot(GridPlot):
+    @property
+    def defaults(self):
+        return {"c": "k", "linestyle": "-", "linewidth": 1}
+
     """
     Plots the lines of a serial prescan `Region2D` object.
 

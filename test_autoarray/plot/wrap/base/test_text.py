@@ -10,12 +10,6 @@ def test__loads_values_from_config_if_not_manually_input():
 
     assert title.config_dict["fontsize"] == 1
 
-    title = aplt.Text()
-    title.is_for_subplot = True
-
-    assert title.config_dict["fontsize"] == 10
-
     title = aplt.Text(fontsize=2)
-    title.is_for_subplot = True
 
     assert title.config_dict["fontsize"] == 2

@@ -10,6 +10,10 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
 class GridScatter(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"c": "k", "marker": ".", "s": 1}
+
     """
     Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
     coordinates like a `Grid2D` or `Grid2DIrregular`. List of (y,x) coordinates are plotted with varying colors.

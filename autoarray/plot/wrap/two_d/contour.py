@@ -7,6 +7,15 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 
 class Contour(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {
+            "colors": "k",
+            "total_contours": 10,
+            "use_log10": True,
+            "include_values": True,
+        }
+
     def __init__(
         self,
         manual_levels: Optional[List[float]] = None,

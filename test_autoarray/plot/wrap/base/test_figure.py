@@ -16,14 +16,7 @@ def test__loads_values_from_config_if_not_manually_input():
     assert figure.config_dict["figsize"] == (7, 7)
     assert figure.config_dict["aspect"] == "auto"
 
-    figure = aplt.Figure()
-    figure.is_for_subplot = True
-
-    assert figure.config_dict["figsize"] == None
-    assert figure.config_dict["aspect"] == "square"
-
     figure = aplt.Figure(figsize=(6, 6))
-    figure.is_for_subplot = True
 
     assert figure.config_dict["figsize"] == (6, 6)
     assert figure.config_dict["aspect"] == "square"

@@ -20,7 +20,7 @@ def test__individual_attributes_are_output(
     dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
         positions=grid_2d_irregular_7x7_list,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     dataset_plotter.figures_2d(
@@ -57,7 +57,7 @@ def test__subplot_is_output(
 ):
     dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
+        output=aplt.Output(plot_path, format="png"),
     )
 
     dataset_plotter.subplot_dataset()
@@ -70,7 +70,7 @@ def test__output_as_fits__correct_output_format(
 ):
     dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
+        output=aplt.Output(path=plot_path, format="fits"),
     )
 
     dataset_plotter.figures_2d(data=True, psf=True)

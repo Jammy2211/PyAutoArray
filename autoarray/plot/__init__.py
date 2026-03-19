@@ -40,8 +40,6 @@ from autoarray.plot.wrap.two_d.parallel_overscan_plot import ParallelOverscanPlo
 from autoarray.plot.wrap.two_d.serial_prescan_plot import SerialPrescanPlot
 from autoarray.plot.wrap.two_d.serial_overscan_plot import SerialOverscanPlot
 
-from autoarray.plot.mat_plot.one_d import MatPlot1D
-from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 
 from autoarray.structures.plot.structure_plotters import Array2DPlotter
@@ -54,9 +52,6 @@ from autoarray.dataset.plot.imaging_plotters import ImagingPlotter
 from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
 from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotter
 from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlotter
-
-from autoarray.plot.multi_plotters import MultiFigurePlotter
-from autoarray.plot.multi_plotters import MultiYX1DPlotter
 
 from autoarray.plot.plots import (
     plot_array,

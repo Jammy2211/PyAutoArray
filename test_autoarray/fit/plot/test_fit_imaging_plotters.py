@@ -19,7 +19,7 @@ def make_plot_path_setup():
 def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_plotter.figures_2d(
@@ -62,7 +62,7 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     fit_plotter.subplot_fit()
@@ -75,7 +75,7 @@ def test__output_as_fits__correct_output_format(
 ):
     fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
+        output=aplt.Output(path=plot_path, format="fits"),
     )
 
     fit_plotter.figures_2d(data=True)

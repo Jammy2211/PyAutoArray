@@ -10,5 +10,9 @@ class ColorbarTickParams(AbstractMatWrap):
     - cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
     """
 
+    @property
+    def defaults(self):
+        return {"labelrotation": 90, "labelsize": 22}
+
     def set(self, cb):
         cb.ax.tick_params(**self.config_dict)

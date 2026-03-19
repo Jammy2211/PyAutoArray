@@ -1,10 +1,13 @@
 import numpy as np
 
+import matplotlib.pyplot as plt
+
 from autoconf import conf
 
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.plot.abstract_plotters import AbstractPlotter
-from autoarray.plot.mat_plot.two_d import MatPlot2D
+from autoarray.plot.wrap.base.output import Output
+from autoarray.plot.wrap.base.cmap import Cmap
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.plots.array import plot_array
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -15,7 +18,7 @@ from autoarray.structures.plot.structure_plotters import (
     _numpy_lines,
     _numpy_grid,
     _numpy_positions,
-    _output_for_mat_plot,
+    _output_for_plotter,
 )
 
 
@@ -23,14 +26,16 @@ class InversionPlotter(AbstractPlotter):
     def __init__(
         self,
         inversion: AbstractInversion,
-        mat_plot_2d: MatPlot2D = None,
+        output: Output = None,
+        cmap: Cmap = None,
+        use_log10: bool = False,
         mesh_grid=None,
         lines=None,
         grid=None,
         positions=None,
         residuals_symmetric_cmap: bool = True,
     ):
-        super().__init__(mat_plot_2d=mat_plot_2d)
+        super().__init__(output=output, cmap=cmap, use_log10=use_log10)
         self.inversion = inversion
         self.mesh_grid = mesh_grid
         self.lines = lines
@@ -41,19 +46,21 @@ class InversionPlotter(AbstractPlotter):
     def mapper_plotter_from(self, mapper_index: int, mesh_grid=None) -> MapperPlotter:
         return MapperPlotter(
             mapper=self.inversion.cls_list_from(cls=Mapper)[mapper_index],
-            mat_plot_2d=self.mat_plot_2d,
+            output=self.output,
+            cmap=self.cmap,
+            use_log10=self.use_log10,
             mesh_grid=mesh_grid if mesh_grid is not None else self.mesh_grid,
             lines=self.lines,
             grid=self.grid,
             positions=self.positions,
         )
 
-    def _plot_array(self, array, auto_filename: str, title: str):
-        is_sub = self.mat_plot_2d.is_for_subplot
-        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
-        output_path, filename, fmt = _output_for_mat_plot(
-            self.mat_plot_2d, is_sub, auto_filename
-        )
+    def _plot_array(self, array, auto_filename: str, title: str, ax=None):
+        if ax is None:
+            output_path, filename, fmt = _output_for_plotter(self.output, auto_filename)
+        else:
+            output_path, filename, fmt = None, auto_filename, "png"
+
         try:
             arr = array.native.array
             extent = array.geometry.extent
@@ -62,6 +69,7 @@ class InversionPlotter(AbstractPlotter):
             arr = np.asarray(array)
             extent = None
             mask_overlay = None
+
         plot_array(
             array=arr,
             ax=ax,
@@ -71,8 +79,8 @@ class InversionPlotter(AbstractPlotter):
             positions=_numpy_positions(self.positions),
             lines=_numpy_lines(self.lines),
             title=title,
-            colormap=self.mat_plot_2d.cmap.cmap,
-            use_log10=self.mat_plot_2d.use_log10,
+            colormap=self.cmap.cmap,
+            use_log10=self.use_log10,
             output_path=output_path,
             output_filename=filename,
             output_format=fmt,
@@ -108,6 +116,8 @@ class InversionPlotter(AbstractPlotter):
         magnification_per_mesh_pixel: bool = False,
         zoom_to_brightest: bool = True,
         mesh_grid=None,
+        ax=None,
+        title_override=None,
     ):
         if not self.inversion.has(cls=Mapper):
             return
@@ -122,7 +132,8 @@ class InversionPlotter(AbstractPlotter):
                 self._plot_array(
                     array=array,
                     auto_filename="data_subtracted",
-                    title="Data Subtracted",
+                    title=title_override or "Data Subtracted",
+                    ax=ax,
                 )
             except AttributeError:
                 pass
@@ -137,17 +148,18 @@ class InversionPlotter(AbstractPlotter):
             self._plot_array(
                 array=array,
                 auto_filename="reconstructed_operated_data",
-                title="Reconstructed Image",
+                title=title_override or "Reconstructed Image",
+                ax=ax,
             )
 
         if reconstruction:
             vmax_custom = False
-            if "vmax" in self.mat_plot_2d.cmap.kwargs:
-                if self.mat_plot_2d.cmap.kwargs["vmax"] is None:
+            if "vmax" in self.cmap.kwargs:
+                if self.cmap.kwargs["vmax"] is None:
                     reconstruction_vmax_factor = conf.instance["visualize"]["general"][
                         "inversion"
                     ]["reconstruction_vmax_factor"]
-                    self.mat_plot_2d.cmap.kwargs["vmax"] = (
+                    self.cmap.kwargs["vmax"] = (
                         reconstruction_vmax_factor * np.max(self.inversion.reconstruction)
                     )
                     vmax_custom = True
@@ -157,11 +169,13 @@ class InversionPlotter(AbstractPlotter):
                 pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
                 auto_labels=AutoLabels(
-                    title="Source Reconstruction", filename="reconstruction"
+                    title=title_override or "Source Reconstruction",
+                    filename="reconstruction",
                 ),
+                ax=ax,
             )
             if vmax_custom:
-                self.mat_plot_2d.cmap.kwargs["vmax"] = None
+                self.cmap.kwargs["vmax"] = None
 
         if reconstruction_noise_map:
             try:
@@ -170,8 +184,10 @@ class InversionPlotter(AbstractPlotter):
                         mapper_plotter.mapper
                     ],
                     auto_labels=AutoLabels(
-                        title="Noise Map", filename="reconstruction_noise_map"
+                        title=title_override or "Noise Map",
+                        filename="reconstruction_noise_map",
                     ),
+                    ax=ax,
                 )
             except TypeError:
                 pass
@@ -185,8 +201,10 @@ class InversionPlotter(AbstractPlotter):
                 mapper_plotter.plot_source_from(
                     pixel_values=signal_to_noise_values,
                     auto_labels=AutoLabels(
-                        title="Signal To Noise Map", filename="signal_to_noise_map"
+                        title=title_override or "Signal To Noise Map",
+                        filename="signal_to_noise_map",
                     ),
+                    ax=ax,
                 )
             except TypeError:
                 pass
@@ -198,9 +216,10 @@ class InversionPlotter(AbstractPlotter):
                         mapper_plotter.mapper
                     ],
                     auto_labels=AutoLabels(
-                        title="Regularization weight_list",
+                        title=title_override or "Regularization weight_list",
                         filename="regularization_weights",
                     ),
+                    ax=ax,
                 )
             except (IndexError, ValueError):
                 pass
@@ -213,7 +232,8 @@ class InversionPlotter(AbstractPlotter):
             self._plot_array(
                 array=sub_size,
                 auto_filename="sub_pixels_per_image_pixels",
-                title="Sub Pixels Per Image Pixels",
+                title=title_override or "Sub Pixels Per Image Pixels",
+                ax=ax,
             )
 
         if mesh_pixels_per_image_pixels:
@@ -222,7 +242,8 @@ class InversionPlotter(AbstractPlotter):
                 self._plot_array(
                     array=mesh_arr,
                     auto_filename="mesh_pixels_per_image_pixels",
-                    title="Mesh Pixels Per Image Pixels",
+                    title=title_override or "Mesh Pixels Per Image Pixels",
+                    ax=ax,
                 )
             except Exception:
                 pass
@@ -232,9 +253,10 @@ class InversionPlotter(AbstractPlotter):
                 mapper_plotter.plot_source_from(
                     pixel_values=mapper_plotter.mapper.data_weight_total_for_pix_from(),
                     auto_labels=AutoLabels(
-                        title="Image Pixels Per Source Pixel",
+                        title=title_override or "Image Pixels Per Source Pixel",
                         filename="image_pixels_per_mesh_pixel",
                     ),
+                    ax=ax,
                 )
             except TypeError:
                 pass
@@ -242,93 +264,83 @@ class InversionPlotter(AbstractPlotter):
     def subplot_of_mapper(
         self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"
     ):
-        self.open_subplot_figure(number_subplots=12)
-
-        contour_original = self.mat_plot_2d.contour
-
-        if self.mat_plot_2d.use_log10:
-            self.mat_plot_2d.contour = False
-
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, data_subtracted=True
-        )
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstructed_operated_data=True
-        )
-
-        self.mat_plot_2d.use_log10 = True
-        self.mat_plot_2d.contour = False
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstructed_operated_data=True
-        )
-        self.mat_plot_2d.use_log10 = False
-
         mapper = self.inversion.cls_list_from(cls=Mapper)[mapper_index]
 
-        # Pass mesh_grid directly to this specific call instead of mutating state
-        self.set_title(label="Mesh Pixel Grid Overlaid")
+        fig, axes = plt.subplots(3, 4, figsize=(28, 21))
+        axes = axes.flatten()
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, data_subtracted=True, ax=axes[0]
+        )
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_operated_data=True, ax=axes[1]
+        )
+
+        use_log10_orig = self.use_log10
+        self.use_log10 = True
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_operated_data=True, ax=axes[2]
+        )
+        self.use_log10 = use_log10_orig
+
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index,
             reconstructed_operated_data=True,
             mesh_grid=mapper.image_plane_mesh_grid,
+            ax=axes[3],
+            title_override="Mesh Pixel Grid Overlaid",
         )
-        self.set_title(label=None)
-
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstruction=True
+            pixelization_index=mapper_index, reconstruction=True, ax=axes[4]
         )
-
-        self.set_title(label="Source Reconstruction (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index,
             reconstruction=True,
             zoom_to_brightest=False,
+            ax=axes[5],
+            title_override="Source Reconstruction (Unzoomed)",
         )
-        self.set_title(label=None)
-
-        self.set_title(label="Noise-Map (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index,
             reconstruction_noise_map=True,
             zoom_to_brightest=False,
+            ax=axes[6],
+            title_override="Noise-Map (Unzoomed)",
         )
-
-        self.set_title(label="Regularization Weights (Unzoomed)")
         try:
             self.figures_2d_of_pixelization(
                 pixelization_index=mapper_index,
                 regularization_weights=True,
                 zoom_to_brightest=False,
+                ax=axes[7],
+                title_override="Regularization Weights (Unzoomed)",
             )
         except IndexError:
             pass
-        self.set_title(label=None)
 
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, sub_pixels_per_image_pixels=True
+            pixelization_index=mapper_index, sub_pixels_per_image_pixels=True, ax=axes[8]
         )
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, mesh_pixels_per_image_pixels=True
+            pixelization_index=mapper_index,
+            mesh_pixels_per_image_pixels=True,
+            ax=axes[9],
         )
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, image_pixels_per_mesh_pixel=True
+            pixelization_index=mapper_index,
+            image_pixels_per_mesh_pixel=True,
+            ax=axes[10],
         )
 
-        self.mat_plot_2d.output.subplot_to_figure(
+        plt.tight_layout()
+        self.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"
         )
-        self.mat_plot_2d.contour = contour_original
-        self.close_subplot_figure()
+        plt.close()
 
     def subplot_mappings(
         self, pixelization_index: int = 0, auto_filename: str = "subplot_mappings"
     ):
-        self.open_subplot_figure(number_subplots=4)
-
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, data_subtracted=True
-        )
-
         total_pixels = conf.instance["visualize"]["general"]["inversion"][
             "total_mappings_pixels"
         ]
@@ -343,23 +355,30 @@ class InversionPlotter(AbstractPlotter):
 
         indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
 
-        # Pass indexes directly to the specific call
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, reconstructed_operated_data=True
-        )
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, reconstruction=True
-        )
+        fig, axes = plt.subplots(2, 2, figsize=(14, 14))
+        axes = axes.flatten()
 
-        self.set_title(label="Source Reconstruction (Unzoomed)")
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index, data_subtracted=True, ax=axes[0]
+        )
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index,
+            reconstructed_operated_data=True,
+            ax=axes[1],
+        )
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index, reconstruction=True, ax=axes[2]
+        )
         self.figures_2d_of_pixelization(
             pixelization_index=pixelization_index,
             reconstruction=True,
             zoom_to_brightest=False,
+            ax=axes[3],
+            title_override="Source Reconstruction (Unzoomed)",
         )
-        self.set_title(label=None)
 
-        self.mat_plot_2d.output.subplot_to_figure(
+        plt.tight_layout()
+        self.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{pixelization_index}"
         )
-        self.close_subplot_figure()
+        plt.close()

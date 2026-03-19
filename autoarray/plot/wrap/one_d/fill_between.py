@@ -6,6 +6,10 @@ from autoarray.structures.arrays.uniform_1d import Array1D
 
 
 class FillBetween(AbstractMatWrap1D):
+    @property
+    def defaults(self):
+        return {"alpha": 0.7, "color": "k"}
+
     def __init__(self, match_color_to_yx: bool = True, **kwargs):
         """
         Fills between two lines on a 1D plot of y versus x using the method `plt.fill_between`.

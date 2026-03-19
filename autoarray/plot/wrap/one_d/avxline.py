@@ -4,6 +4,10 @@ from autoarray.plot.wrap.one_d.abstract import AbstractMatWrap1D
 
 
 class AXVLine(AbstractMatWrap1D):
+    @property
+    def defaults(self):
+        return {"c": "k"}
+
     def __init__(self, no_label=False, **kwargs):
         """
         Plots vertical lines on 1D plot of y versus x using the method `plt.axvline`.

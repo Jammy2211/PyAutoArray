@@ -9,6 +9,10 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
 class GridErrorbar(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"alpha": 0.5, "c": "k", "fmt": "o", "linewidth": 5, "marker": "o", "markersize": 8}
+
     """
     Plots an input set of grid points with 2D errors, for example (y,x) coordinates or data structures representing 2D
     (y,x) coordinates like a `Grid2D` or `Grid2DIrregular`. Multiple lists of (y,x) coordinates are plotted with

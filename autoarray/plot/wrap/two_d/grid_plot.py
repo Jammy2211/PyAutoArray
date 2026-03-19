@@ -10,6 +10,10 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
 class GridPlot(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"c": "w"}
+
     """
     Plots `Grid2D` data structure that are better visualized as solid lines, for example rectangular lines that are
     plotted over an image and grids of (y,x) coordinates as lines (as opposed to a scatter of points

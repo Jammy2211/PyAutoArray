@@ -2,6 +2,10 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Text(AbstractMatWrap):
+    @property
+    def defaults(self):
+        return {"fontsize": 16}
+
     """
     The settings used to customize text on the figure.
 

@@ -10,6 +10,10 @@ class Legend(AbstractMatWrap):
     - plt.legend: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.legend.html
     """
 
+    @property
+    def defaults(self):
+        return {"fontsize": 12, "include": True}
+
     def __init__(self, label=None, include=True, **kwargs):
         super().__init__(**kwargs)
 

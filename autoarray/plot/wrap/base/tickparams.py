@@ -10,6 +10,10 @@ class TickParams(AbstractMatWrap):
     - plt.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.tick_params.html
     """
 
+    @property
+    def defaults(self):
+        return {"labelsize": 16}
+
     def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
 

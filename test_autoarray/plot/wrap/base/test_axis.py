@@ -5,19 +5,13 @@ import autoarray.plot as aplt
 def test__loads_values_from_config_if_not_manually_input():
     axis = aplt.Axis()
 
-    assert axis.config_dict["emit"] is True
+    assert "emit" not in axis.config_dict
 
     axis = aplt.Axis(emit=False)
 
     assert axis.config_dict["emit"] is False
 
-    axis = aplt.Axis()
-    axis.is_for_subplot = True
-
-    assert axis.config_dict["emit"] is False
-
     axis = aplt.Axis(emit=True)
-    axis.is_for_subplot = True
 
     assert axis.config_dict["emit"] is True
 

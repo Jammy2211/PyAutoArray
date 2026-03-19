@@ -5,6 +5,10 @@ from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 
 
 class PatchOverlay(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"edgecolor": "c", "facecolor": None}
+
     """
     Adds patches to a plotted figure using matplotlib `patches` objects.
 

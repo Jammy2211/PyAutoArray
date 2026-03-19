@@ -2,9 +2,7 @@ import copy
 import logging
 import numpy as np
 
-
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
-
 from autoarray import exc
 
 logger = logging.getLogger(__name__)
@@ -12,51 +10,56 @@ logger = logging.getLogger(__name__)
 
 class Cmap(AbstractMatWrap):
     def __init__(self, symmetric: bool = False, **kwargs):
-        """
-        Customizes the Matplotlib colormap and its normalization.
-
-        This object wraps the following Matplotlib methods:
-
-        - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
-        - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
-        - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
-
-        The cmap that is created is passed into various Matplotlib methods, most notably imshow:
-
-        - https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
-
-        Parameters
-        ----------
-        symmetric
-            If True, the colormap normalization (e.g. `vmin` and `vmax`) span the same absolute values producing a
-            symmetric color bar.
-        """
-
         super().__init__(**kwargs)
-
         self._symmetric = symmetric
         self.symmetric_value = None
 
+    @property
+    def defaults(self):
+        return {
+            "cmap": "default",
+            "norm": "linear",
+            "vmin": None,
+            "vmax": None,
+            "linthresh": 0.05,
+            "linscale": 0.01,
+        }
+
     def symmetric_cmap_from(self, symmetric_value=None):
         cmap = copy.copy(self)
-
         cmap._symmetric = True
         cmap.symmetric_value = symmetric_value
-
         return cmap
 
+    def vmin_from(self, array: np.ndarray, use_log10: bool = False) -> float:
+        if self.config_dict["norm"] in "log":
+            use_log10 = True
+
+        if self.config_dict["vmin"] is None:
+            vmin = np.nanmin(array)
+        else:
+            vmin = self.config_dict["vmin"]
+
+        if use_log10 and (vmin < self.log10_min_value):
+            vmin = self.log10_min_value
+
+        return vmin
+
+    def vmax_from(self, array: np.ndarray, use_log10: bool = False) -> float:
+        if self.config_dict["norm"] in "log":
+            use_log10 = True
+
+        if self.config_dict["vmax"] is None:
+            vmax = np.nanmax(array)
+        else:
+            vmax = self.config_dict["vmax"]
+
+        if use_log10 and (vmax > self.log10_max_value):
+            vmax = self.log10_max_value
+
+        return vmax
+
     def norm_from(self, array: np.ndarray, use_log10: bool = False) -> object:
-        """
-        Returns the `Normalization` object which scales of the colormap.
-
-        If vmin / vmax are not manually input by the user, the minimum / maximum values of the data being plotted
-        are used.
-
-        Parameters
-        ----------
-        array
-            The array of data which is to be plotted.
-        """
         import matplotlib.colors as colors
 
         vmin = self.vmin_from(array=array, use_log10=use_log10)

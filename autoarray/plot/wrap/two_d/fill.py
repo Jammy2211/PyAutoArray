@@ -9,6 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class Fill(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {}
+
     def __init__(self, **kwargs):
         """
         The settings used to customize plots using fill on a figure

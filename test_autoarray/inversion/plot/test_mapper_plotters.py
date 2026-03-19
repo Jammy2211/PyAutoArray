@@ -20,13 +20,9 @@ def test__figure_2d(
     plot_path,
     plot_patch,
 ):
-    mat_plot_2d = aplt.MatPlot2D(
-        output=aplt.Output(path=plot_path, filename="mapper1", format="png")
-    )
-
     mapper_plotter = aplt.MapperPlotter(
         mapper=rectangular_mapper_7x7_3x3,
-        mat_plot_2d=mat_plot_2d,
+        output=aplt.Output(path=plot_path, filename="mapper1", format="png"),
     )
 
     mapper_plotter.figure_2d()
@@ -43,7 +39,7 @@ def test__subplot_image_and_mapper(
 ):
     mapper_plotter = aplt.MapperPlotter(
         mapper=rectangular_mapper_7x7_3x3,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        output=aplt.Output(path=plot_path, format="png"),
     )
 
     mapper_plotter.subplot_image_and_mapper(

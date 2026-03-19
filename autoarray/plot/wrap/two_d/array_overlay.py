@@ -5,6 +5,10 @@ from autoarray.mask.derive.zoom_2d import Zoom2D
 
 
 class ArrayOverlay(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"alpha": 0.5}
+
     """
     Overlays an `Array2D` data structure over a figure.
 

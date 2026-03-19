@@ -5,6 +5,10 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 
 
 class VectorYXQuiver(AbstractMatWrap2D):
+    @property
+    def defaults(self):
+        return {"alpha": 1.0, "angles": "xy", "headlength": 0, "headwidth": 1, "linewidth": 5, "pivot": "middle", "units": "xy"}
+
     """
     Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
     These are plotted as arrows representing the (y,x) components of each vector at each (y,x) coordinate of it

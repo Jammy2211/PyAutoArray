@@ -83,15 +83,6 @@ class LabelMaker:
 
     @property
     def suffix(self) -> Optional[str]:
-        """
-        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
-
-        Parameters
-        ----------
-        units
-           The units of the data structure that is plotted which informs the appropriate label text.
-        """
-
         if self.manual_suffix is not None:
             return self.manual_suffix
 
@@ -164,23 +155,10 @@ class LabelMaker:
             label.replace("{-0", "{-").replace("{+0", "{+").replace("+", "")
             for label in labels
         ]
-        #     labels = [label.replace("1e", "").replace("-0", "-").replace("+0", "+").replace("+0", "0") for label in labels]
 
         return self.with_appended_suffix(labels)
 
     def with_appended_suffix(self, labels):
-        """
-        The labels used for the y and x ticks can be append with a suffix.
-
-        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
-        is [-1.0", 0.0", 1.0"].
-
-        Parameters
-        ----------
-        labels
-            The y and x labels which are append with the suffix.
-        """
-
         labels = [str(label) for label in labels]
 
         all_end_0 = True
@@ -195,6 +173,13 @@ class LabelMaker:
         return [f"{label}{self.suffix}" for label in labels]
 
 
+# Hardcoded tick geometry defaults (previously in mat_wrap.yaml manual: section)
+_EXTENT_FACTOR_1D = 1.0
+_EXTENT_FACTOR_2D = 0.75
+_NUMBER_OF_TICKS_1D = 8
+_NUMBER_OF_TICKS_2D = 3
+
+
 class AbstractTicks(AbstractMatWrap):
     def __init__(
         self,
@@ -205,23 +190,6 @@ class AbstractTicks(AbstractMatWrap):
         manual_suffix: Optional[str] = None,
         **kwargs,
     ):
-        """
-        The settings used to customize a figure's y and x ticks using the `YTicks` and `XTicks` objects.
-
-        This object wraps the following Matplotlib methods:
-
-        - plt.yticks: https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.yticks.html
-        - plt.xticks: https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.xticks.html
-
-        Parameters
-        ----------
-        manual_values
-            Manually override the tick labels to display the labels as the input list of floats.
-        manual_units
-            Manually override the units in brackets of the tick label.
-        manual_suffix
-            A suffix applied to every tick label (e.g. for the suffix `kpc` 0.0 becomes 0.0kpc).
-        """
         super().__init__(**kwargs)
 
         self.manual_factor = manual_factor
@@ -233,14 +201,14 @@ class AbstractTicks(AbstractMatWrap):
     def factor_from(self, suffix):
         if self.manual_factor is not None:
             return self.manual_factor
-        return conf.instance["visualize"][self.config_folder][self.__class__.__name__][
-            "manual"
-        ][f"extent_factor{suffix}"]
+        if suffix == "_1d":
+            return _EXTENT_FACTOR_1D
+        return _EXTENT_FACTOR_2D
 
     def number_of_ticks_from(self, suffix):
-        return conf.instance["visualize"][self.config_folder][self.__class__.__name__][
-            "manual"
-        ][f"number_of_ticks{suffix}"]
+        if suffix == "_1d":
+            return _NUMBER_OF_TICKS_1D
+        return _NUMBER_OF_TICKS_2D
 
     def tick_maker_from(
         self, min_value: float, max_value: float, units, is_for_1d_plot: bool
@@ -345,6 +313,14 @@ class AbstractTicks(AbstractMatWrap):
 
 
 class YTicks(AbstractTicks):
+    @property
+    def defaults(self):
+        try:
+            fontsize = conf.instance["visualize"]["general"]["mat_plot"]["yticks"]["fontsize"]
+        except Exception:
+            fontsize = 22
+        return {"fontsize": fontsize, "rotation": "vertical", "va": "center"}
+
     def set(
         self,
         min_value: float,
@@ -355,20 +331,6 @@ class YTicks(AbstractTicks):
         is_for_1d_plot: bool = False,
         is_log10: bool = False,
     ):
-        """
-        Set the y ticks of a figure using the shape of an input `Array2D` object and input units.
-
-        Parameters
-        ----------
-        array
-            The 2D array of data which is plotted.
-        min_value
-            the minimum value of the yticks that figure is plotted using.
-        max_value
-            the maximum value of the yticks that figure is plotted using.
-        units
-            The units of the figure.
-        """
         import matplotlib.pyplot as plt
         from matplotlib.ticker import FormatStrFormatter
 
@@ -401,6 +363,14 @@ class YTicks(AbstractTicks):
 
 
 class XTicks(AbstractTicks):
+    @property
+    def defaults(self):
+        try:
+            fontsize = conf.instance["visualize"]["general"]["mat_plot"]["xticks"]["fontsize"]
+        except Exception:
+            fontsize = 22
+        return {"fontsize": fontsize}
+
     def set(
         self,
         min_value: float,
@@ -412,20 +382,6 @@ class XTicks(AbstractTicks):
         is_for_1d_plot: bool = False,
         is_log10: bool = False,
     ):
-        """
-        Set the x ticks of a figure using the shape of an input `Array2D` object and input units.
-
-        Parameters
-        ----------
-        array
-            The 2D array of data which is plotted.
-        min_value
-            the minimum value of the xticks that figure is plotted using.
-        max_value
-            the maximum value of the xticks that figure is plotted using.
-        units
-            The units of the figure.
-        """
         import matplotlib.pyplot as plt
         from matplotlib.ticker import FormatStrFormatter
 

@@ -16,17 +16,12 @@ def make_plot_path_setup():
 
 
 def test__plot_yx_line(plot_path, plot_patch):
-    mat_plot_1d = aplt.MatPlot1D(
-        yx_plot=aplt.YXPlot(plot_axis_type="loglog", c="k"),
-        vertical_line_axvline=aplt.AXVLine(c="k"),
-        output=aplt.Output(path=plot_path, filename="yx_1", format="png"),
-    )
-
     yx_1d_plotter = aplt.YX1DPlotter(
         y=aa.Array1D.no_mask([1.0, 2.0, 3.0], pixel_scales=1.0),
         x=aa.Array1D.no_mask([0.5, 1.0, 1.5], pixel_scales=0.5),
-        mat_plot_1d=mat_plot_1d,
+        output=aplt.Output(path=plot_path, filename="yx_1", format="png"),
         vertical_line=1.0,
+        plot_axis_type="loglog",
     )
 
     yx_1d_plotter.figure_1d()
@@ -44,9 +39,7 @@ def test__array(
 ):
     array_plotter = aplt.Array2DPlotter(
         array=array_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="array1", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="array1", format="png"),
     )
 
     array_plotter.figure_2d()
@@ -55,9 +48,7 @@ def test__array(
 
     array_plotter = aplt.Array2DPlotter(
         array=array_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="array2", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="array2", format="png"),
     )
 
     array_plotter.figure_2d()
@@ -71,9 +62,7 @@ def test__array(
         grid=grid_2d_7x7,
         positions=grid_2d_irregular_7x7_list,
         array_overlay=array_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="array3", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="array3", format="png"),
     )
 
     array_plotter.figure_2d()
@@ -86,9 +75,7 @@ def test__array__fits_files_output_correctly(array_2d_7x7, plot_path):
 
     array_plotter = aplt.Array2DPlotter(
         array=array_2d_7x7,
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="array", format="fits")
-        ),
+        output=aplt.Output(path=plot_path, filename="array", format="fits"),
     )
 
     if path.exists(plot_path):
@@ -112,9 +99,7 @@ def test__grid(
     grid_2d_plotter = aplt.Grid2DPlotter(
         grid=grid_2d_7x7,
         indexes=[0, 1, 2],
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="grid1", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="grid1", format="png"),
     )
 
     color_array = np.linspace(start=0.0, stop=1.0, num=grid_2d_7x7.shape_slim)
@@ -126,9 +111,7 @@ def test__grid(
     grid_2d_plotter = aplt.Grid2DPlotter(
         grid=grid_2d_7x7,
         indexes=[0, 1, 2],
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="grid2", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="grid2", format="png"),
     )
 
     grid_2d_plotter.figure_2d(color_array=color_array)
@@ -140,9 +123,7 @@ def test__grid(
         lines=grid_2d_irregular_7x7_list,
         positions=grid_2d_irregular_7x7_list,
         indexes=[0, 1, 2],
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="grid3", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="grid3", format="png"),
     )
 
     grid_2d_plotter.figure_2d(color_array=color_array)
@@ -157,9 +138,7 @@ def test__array_rgb(
 ):
     array_plotter = aplt.Array2DPlotter(
         array=array_2d_rgb_7x7,
-        mat_plot_2d=aplt.MatPlot2D(
-            output=aplt.Output(path=plot_path, filename="array_rgb", format="png")
-        ),
+        output=aplt.Output(path=plot_path, filename="array_rgb", format="png"),
     )
 
     array_plotter.figure_2d()

@@ -2,8 +2,8 @@ import numpy as np
 from typing import List, Optional, Union
 
 from autoarray.plot.abstract_plotters import AbstractPlotter
-from autoarray.plot.mat_plot.one_d import MatPlot1D
-from autoarray.plot.mat_plot.two_d import MatPlot2D
+from autoarray.plot.wrap.base.output import Output
+from autoarray.plot.wrap.base.cmap import Cmap
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.plot.plots.array import plot_array
 from autoarray.plot.plots.grid import plot_grid
@@ -15,7 +15,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 # ---------------------------------------------------------------------------
-# Shared helpers (no Visuals dependency)
+# Shared helpers
 # ---------------------------------------------------------------------------
 
 def _auto_mask_edge(array) -> Optional[np.ndarray]:
@@ -42,20 +42,13 @@ def _zoom_array(array):
     return array
 
 
-def _output_for_mat_plot(mat_plot, is_for_subplot: bool, auto_filename: str):
-    """Derive (output_path, output_filename, output_format) from a MatPlot object."""
-    if is_for_subplot:
-        return None, auto_filename, "png"
-
-    output = mat_plot.output
+def _output_for_plotter(output: Output, auto_filename: str):
+    """Derive (output_path, filename, fmt) from an Output object."""
     fmt_list = output.format_list
     fmt = fmt_list[0] if fmt_list else "show"
-
     filename = output.filename_from(auto_filename)
-
     if fmt == "show":
         return None, filename, "png"
-
     path = output.output_path_from(fmt)
     return path, filename, fmt
 
@@ -117,7 +110,9 @@ class Array2DPlotter(AbstractPlotter):
     def __init__(
         self,
         array: Array2D,
-        mat_plot_2d: MatPlot2D = None,
+        output: Output = None,
+        cmap: Cmap = None,
+        use_log10: bool = False,
         origin=None,
         border=None,
         grid=None,
@@ -129,7 +124,7 @@ class Array2DPlotter(AbstractPlotter):
         fill_region=None,
         array_overlay=None,
     ):
-        super().__init__(mat_plot_2d=mat_plot_2d)
+        super().__init__(output=output, cmap=cmap, use_log10=use_log10)
         self.array = array
         self.origin = origin
         self.border = border
@@ -142,15 +137,16 @@ class Array2DPlotter(AbstractPlotter):
         self.fill_region = fill_region
         self.array_overlay = array_overlay
 
-    def figure_2d(self):
+    def figure_2d(self, ax=None):
         if self.array is None or np.all(self.array == 0):
             return
 
-        is_sub = self.mat_plot_2d.is_for_subplot
-        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
-        output_path, filename, fmt = _output_for_mat_plot(self.mat_plot_2d, is_sub, "array")
-
         array = _zoom_array(self.array)
+
+        if ax is None:
+            output_path, filename, fmt = _output_for_plotter(self.output, "array")
+        else:
+            output_path, filename, fmt = None, "array", "png"
 
         plot_array(
             array=array.native.array,
@@ -167,8 +163,8 @@ class Array2DPlotter(AbstractPlotter):
             patches=self.patches,
             fill_region=self.fill_region,
             title="Array2D",
-            colormap=self.mat_plot_2d.cmap.cmap,
-            use_log10=self.mat_plot_2d.use_log10,
+            colormap=self.cmap.cmap,
+            use_log10=self.use_log10,
             output_path=output_path,
             output_filename=filename,
             output_format=fmt,
@@ -180,12 +176,12 @@ class Grid2DPlotter(AbstractPlotter):
     def __init__(
         self,
         grid: Grid2D,
-        mat_plot_2d: MatPlot2D = None,
+        output: Output = None,
         lines=None,
         positions=None,
         indexes=None,
     ):
-        super().__init__(mat_plot_2d=mat_plot_2d)
+        super().__init__(output=output)
         self.grid = grid
         self.lines = lines
         self.positions = positions
@@ -196,12 +192,14 @@ class Grid2DPlotter(AbstractPlotter):
         color_array: np.ndarray = None,
         plot_grid_lines: bool = False,
         plot_over_sampled_grid: bool = False,
+        ax=None,
     ):
-        is_sub = self.mat_plot_2d.is_for_subplot
-        ax = self.mat_plot_2d.setup_subplot() if is_sub else None
-        output_path, filename, fmt = _output_for_mat_plot(self.mat_plot_2d, is_sub, "grid")
-
         grid_plot = self.grid.over_sampled if plot_over_sampled_grid else self.grid
+
+        if ax is None:
+            output_path, filename, fmt = _output_for_plotter(self.output, "grid")
+        else:
+            output_path, filename, fmt = None, "grid", "png"
 
         plot_grid(
             grid=np.array(grid_plot.array),
@@ -220,7 +218,7 @@ class YX1DPlotter(AbstractPlotter):
         self,
         y: Union[Array1D, List],
         x: Optional[Union[Array1D, Grid1D, List]] = None,
-        mat_plot_1d: MatPlot1D = None,
+        output: Output = None,
         shaded_region=None,
         vertical_line: Optional[float] = None,
         points=None,
@@ -235,7 +233,7 @@ class YX1DPlotter(AbstractPlotter):
         if isinstance(x, list):
             x = Array1D.no_mask(values=x, pixel_scales=1.0)
 
-        super().__init__(mat_plot_1d=mat_plot_1d)
+        super().__init__(output=output)
 
         self.y = y
         self.x = y.grid_radial if x is None else x
@@ -248,15 +246,16 @@ class YX1DPlotter(AbstractPlotter):
         self.plot_yx_dict = plot_yx_dict or {}
         self.auto_labels = auto_labels
 
-    def figure_1d(self):
+    def figure_1d(self, ax=None):
         y_arr = self.y.array if hasattr(self.y, "array") else np.array(self.y)
         x_arr = self.x.array if hasattr(self.x, "array") else np.array(self.x)
 
-        is_sub = self.mat_plot_1d.is_for_subplot
-        ax = self.mat_plot_1d.setup_subplot() if is_sub else None
-        output_path, filename, fmt = _output_for_mat_plot(
-            self.mat_plot_1d, is_sub, self.auto_labels.filename or "yx"
-        )
+        if ax is None:
+            output_path, filename, fmt = _output_for_plotter(
+                self.output, self.auto_labels.filename or "yx"
+            )
+        else:
+            output_path, filename, fmt = None, self.auto_labels.filename or "yx", "png"
 
         plot_yx(
             y=y_arr,

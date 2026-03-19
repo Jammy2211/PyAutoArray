@@ -6,6 +6,10 @@ from autoarray.structures.grids.uniform_1d import Grid1D
 
 
 class YXScatter(AbstractMatWrap1D):
+    @property
+    def defaults(self):
+        return {"c": "k"}
+
     def __init__(self, **kwargs):
         """
         Scatters a 1D set of points on a 1D plot. Unlike the `YXPlot` object these are scattered over an existing plot.

@@ -7,7 +7,7 @@ import numpy as np
 def test__loads_values_from_config_if_not_manually_input():
     colorbar = aplt.Colorbar()
 
-    assert colorbar.config_dict["fraction"] == 3.0
+    assert colorbar.config_dict["fraction"] == 0.047
     assert colorbar.manual_tick_values == None
     assert colorbar.manual_tick_labels == None
 
@@ -18,13 +18,7 @@ def test__loads_values_from_config_if_not_manually_input():
     assert colorbar.manual_tick_values == (1.0, 2.0)
     assert colorbar.manual_tick_labels == (3.0, 4.0)
 
-    colorbar = aplt.Colorbar()
-    colorbar.is_for_subplot = True
-
-    assert colorbar.config_dict["fraction"] == 0.1
-
     colorbar = aplt.Colorbar(fraction=6.0)
-    colorbar.is_for_subplot = True
 
     assert colorbar.config_dict["fraction"] == 6.0
 

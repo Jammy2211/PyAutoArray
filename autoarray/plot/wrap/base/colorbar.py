@@ -19,31 +19,6 @@ class Colorbar(AbstractMatWrap):
         manual_log10: bool = False,
         **kwargs,
     ):
-        """
-        Customizes the colorbar of the plotted figure.
-
-        This object wraps the following Matplotlib method:
-
-        - plt.colorbar: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.colorbar.html
-
-        The colorbar object `cb` that is created is also customized using the following methods:
-
-        - cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
-
-        Parameters
-        ----------
-        manual_tick_labels
-            Manually override the colorbar tick labels to an input list of float.
-        manual_tick_values
-            If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
-        manual_alignment
-            The vertical alignment of the colorbar tick labels, specified via the matplotlib method  `set_yticklabels`
-            and input `va`.
-        manual_unit
-            The unit label that appears next to the colorbar tick labels, which if not input uses a default unit label
-            specified as `cb_unit` in the config file `config/visualize/general.yaml.
-        """
-
         super().__init__(**kwargs)
 
         self.manual_tick_labels = manual_tick_labels
@@ -51,6 +26,10 @@ class Colorbar(AbstractMatWrap):
         self.manual_alignment = manual_alignment
         self.manual_unit = manual_unit
         self.manual_log10 = manual_log10
+
+    @property
+    def defaults(self):
+        return {"fraction": 0.047, "pad": 0.01}
 
     @property
     def cb_unit(self):
@@ -137,9 +116,6 @@ class Colorbar(AbstractMatWrap):
     def set(
         self, units: Units, ax=None, norm=None, cb_unit=None, use_log10: bool = False
     ):
-        """
-        Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
-        """
         import matplotlib.pyplot as plt
 
         tick_values = self.tick_values_from(norm=norm, use_log10=use_log10)
@@ -168,20 +144,6 @@ class Colorbar(AbstractMatWrap):
         norm=None,
         use_log10: bool = False,
     ):
-        """
-        Set the figure's colorbar using an array of already known color values.
-
-        This method is used for producing the color bar on a Delaunay mesh plot, which is unable to use the in-built
-        Matplotlib colorbar method.
-
-        Parameters
-        ----------
-        cmap
-            The colormap used to map normalized data values to RGBA
-            colors (see https://matplotlib.org/3.3.2/api/cm_api.html).
-        color_values
-            The values of the pixels on the mesh which are used to create the colorbar.
-        """
         import matplotlib.pyplot as plt
         import matplotlib.cm as cm
 
@@ -195,12 +157,7 @@ class Colorbar(AbstractMatWrap):
         )
 
         if tick_values is None and tick_labels is None:
-
-            cb = plt.colorbar(
-                mappable=mappable,
-                ax=ax,
-                **self.config_dict,
-            )
+            cb = plt.colorbar(mappable=mappable, ax=ax, **self.config_dict)
         else:
             cb = plt.colorbar(
                 mappable=mappable,

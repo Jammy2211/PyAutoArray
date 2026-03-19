@@ -2,6 +2,7 @@ from enum import Enum
 import gc
 from typing import Union, Tuple
 
+from autoconf import conf
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
@@ -13,27 +14,34 @@ class Aspect(Enum):
 
 class Figure(AbstractMatWrap):
     """
-    Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
+    Sets up the Matplotlib figure before plotting.
 
     This object wraps the following Matplotlib methods:
 
     - plt.figure: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.figure.html
     - plt.close: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.close.html
 
-    It also controls the aspect ratio of the figure plotted.
+    The figure size can be configured in `config/visualize/general.yaml` under `mat_plot.figure.figsize`,
+    or overridden per-plot via ``Figure(figsize=(width, height))``.
     """
 
     @property
-    def config_dict(self):
-        """
-        Creates a config dict of valid inputs of the method `plt.figure` from the object's config_dict.
-        """
+    def defaults(self):
+        try:
+            figsize = conf.instance["visualize"]["general"]["mat_plot"]["figure"]["figsize"]
+            if isinstance(figsize, str):
+                figsize = tuple(map(int, figsize[1:-1].split(",")))
+        except Exception:
+            figsize = (7, 7)
+        return {"figsize": figsize, "aspect": "square"}
 
+    @property
+    def config_dict(self):
         config_dict = super().config_dict
 
-        if config_dict["figsize"] == "auto":
+        if config_dict.get("figsize") == "auto":
             config_dict["figsize"] = None
-        elif isinstance(config_dict["figsize"], str):
+        elif isinstance(config_dict.get("figsize"), str):
             config_dict["figsize"] = tuple(
                 map(int, config_dict["figsize"][1:-1].split(","))
             )
@@ -54,23 +62,13 @@ class Figure(AbstractMatWrap):
 
         raise ValueError(
             f"""
-            The `aspect` variable used to set up the figure is {aspect}. 
+            The `aspect` variable used to set up the figure is {aspect}.
 
             This is not a valid value, which must be one of square / auto / equal.
             """
         )
 
     def aspect_from(self, shape_native: Union[Tuple[int, int]]) -> Union[float, str]:
-        """
-        Returns the aspect ratio of the figure from the 2D shape of a data structure.
-
-        This is used to ensure that rectangular arrays are plotted as square figures on sub-plots.
-
-        Parameters
-        ----------
-        shape_native
-            The two dimensional shape of an `Array2D` that is to be plotted.
-        """
         if isinstance(self.config_dict["aspect"], str):
             if self.config_dict["aspect"] in "square":
                 return float(shape_native[1]) / float(shape_native[0])
@@ -78,9 +76,6 @@ class Figure(AbstractMatWrap):
         return self.config_dict["aspect"]
 
     def open(self):
-        """
-        Wraps the Matplotlib method 'plt.figure' for opening a figure.
-        """
         import matplotlib.pyplot as plt
 
         if not plt.fignum_exists(num=1):
@@ -91,9 +86,6 @@ class Figure(AbstractMatWrap):
         return None, None
 
     def close(self):
-        """
-        Wraps the Matplotlib method 'plt.close' for closing a figure.
-        """
         import matplotlib.pyplot as plt
 
         plt.close()
