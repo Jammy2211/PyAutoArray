@@ -28,6 +28,7 @@ def plot_array(
     array_overlay: Optional[np.ndarray] = None,
     patches: Optional[List] = None,
     fill_region: Optional[List] = None,
+    contours: Optional[int] = None,
     # --- cosmetics --------------------------------------------------------------
     title: str = "",
     xlabel: str = 'x (")',
@@ -195,6 +196,17 @@ def plot_array(
         y1, y2 = fill_region[0], fill_region[1]
         x_fill = np.arange(len(y1))
         ax.fill_between(x_fill, y1, y2, alpha=0.3)
+
+    if contours is not None and contours > 0:
+        try:
+            levels = np.linspace(np.nanmin(array), np.nanmax(array), contours)
+            cs = ax.contour(array[::-1], levels=levels, extent=extent, colors="k")
+            try:
+                ax.clabel(cs, levels=levels, inline=True, fontsize=8)
+            except (ValueError, IndexError):
+                pass
+        except Exception:
+            pass
 
     # --- labels / ticks --------------------------------------------------------
     ax.set_title(title, fontsize=16)

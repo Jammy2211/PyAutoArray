@@ -9,7 +9,6 @@ def test__draws_delaunay_pixels_for_sensible_input(delaunay_mapper_9_3x3):
     delaunay_drawer.draw_delaunay_pixels(
         mapper=delaunay_mapper_9_3x3,
         pixel_values=np.ones(9),
-        units=aplt.Units(),
         cmap=aplt.Cmap(),
         colorbar=None,
     )
@@ -20,7 +19,6 @@ def test__draws_delaunay_pixels_for_sensible_input(delaunay_mapper_9_3x3):
     delaunay_drawer.draw_delaunay_pixels(
         mapper=delaunay_mapper_9_3x3,
         pixel_values=values,
-        units=aplt.Units(),
         cmap=aplt.Cmap(),
         colorbar=aplt.Colorbar(fraction=0.1, pad=0.05),
     )

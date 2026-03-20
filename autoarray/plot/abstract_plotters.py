@@ -1,10 +1,24 @@
-from autoarray.plot.wrap.base.abstract import set_backend
+def _set_backend():
+    try:
+        import matplotlib
+        from autoconf import conf
+        backend = conf.get_matplotlib_backend()
+        if backend not in "default":
+            matplotlib.use(backend)
+        try:
+            hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+        except KeyError:
+            hpc_mode = False
+        if hpc_mode:
+            matplotlib.use("Agg")
+    except Exception:
+        pass
 
-set_backend()
+
+_set_backend()
 
 from autoarray.plot.wrap.base.output import Output
 from autoarray.plot.wrap.base.cmap import Cmap
-from autoarray.plot.wrap.base.title import Title
 
 
 class AbstractPlotter:
@@ -13,15 +27,15 @@ class AbstractPlotter:
         output: Output = None,
         cmap: Cmap = None,
         use_log10: bool = False,
-        title: Title = None,
+        title: str = None,
     ):
         self.output = output or Output()
         self.cmap = cmap or Cmap()
         self.use_log10 = use_log10
-        self.title = title or Title()
+        self.title = title
 
     def set_title(self, label):
-        self.title.manual_label = label
+        self.title = label
 
     def set_filename(self, filename):
         self.output.filename = filename

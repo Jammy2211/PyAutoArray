@@ -154,15 +154,17 @@ class InversionPlotter(AbstractPlotter):
 
         if reconstruction:
             vmax_custom = False
-            if "vmax" in self.cmap.kwargs:
-                if self.cmap.kwargs["vmax"] is None:
+            if self.cmap.vmax is None:
+                try:
                     reconstruction_vmax_factor = conf.instance["visualize"]["general"][
                         "inversion"
                     ]["reconstruction_vmax_factor"]
-                    self.cmap.kwargs["vmax"] = (
+                    self.cmap.vmax = (
                         reconstruction_vmax_factor * np.max(self.inversion.reconstruction)
                     )
                     vmax_custom = True
+                except Exception:
+                    pass
 
             pixel_values = self.inversion.reconstruction_dict[mapper_plotter.mapper]
             mapper_plotter.plot_source_from(
@@ -175,7 +177,7 @@ class InversionPlotter(AbstractPlotter):
                 ax=ax,
             )
             if vmax_custom:
-                self.cmap.kwargs["vmax"] = None
+                self.cmap.vmax = None
 
         if reconstruction_noise_map:
             try:

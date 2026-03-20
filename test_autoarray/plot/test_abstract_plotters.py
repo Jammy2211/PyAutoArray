@@ -13,7 +13,7 @@ def test__abstract_plotter__basic():
 def test__abstract_plotter__set_title():
     plotter = AbstractPlotter()
     plotter.set_title("test label")
-    assert plotter.title.manual_label == "test label"
+    assert plotter.title == "test label"
 
 
 def test__abstract_plotter__set_filename():
@@ -27,5 +27,5 @@ def test__abstract_plotter__custom_output_and_cmap():
     cmap = Cmap(cmap="hot")
     plotter = AbstractPlotter(output=output, cmap=cmap, use_log10=True)
     assert plotter.output.path == "/tmp"
-    assert plotter.cmap.config_dict["cmap"] == "hot"
+    assert plotter.cmap.cmap_name == "hot"
     assert plotter.use_log10 is True
