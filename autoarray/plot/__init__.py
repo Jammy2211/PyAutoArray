@@ -1,20 +1,28 @@
+def _set_backend():
+    try:
+        import matplotlib
+        from autoconf import conf
+        backend = conf.get_matplotlib_backend()
+        if backend not in "default":
+            matplotlib.use(backend)
+        try:
+            hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+        except KeyError:
+            hpc_mode = False
+        if hpc_mode:
+            matplotlib.use("Agg")
+    except Exception:
+        pass
+
+
+_set_backend()
+
+from autoarray.plot.wrap.base.output import Output
 from autoarray.plot.wrap.base.cmap import Cmap
 from autoarray.plot.wrap.base.colorbar import Colorbar
-from autoarray.plot.wrap.base.output import Output
 from autoarray.plot.wrap.two_d.delaunay_drawer import DelaunayDrawer
 
 from autoarray.plot.auto_labels import AutoLabels
-
-from autoarray.structures.plot.structure_plotters import Array2DPlotter
-from autoarray.structures.plot.structure_plotters import Grid2DPlotter
-from autoarray.structures.plot.structure_plotters import YX1DPlotter
-from autoarray.structures.plot.structure_plotters import YX1DPlotter as Array1DPlotter
-from autoarray.inversion.plot.mapper_plotters import MapperPlotter
-from autoarray.inversion.plot.inversion_plotters import InversionPlotter
-from autoarray.dataset.plot.imaging_plotters import ImagingPlotter
-from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
-from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotter
-from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlotter
 
 from autoarray.plot.plots import (
     plot_array,
@@ -24,4 +32,38 @@ from autoarray.plot.plots import (
     apply_extent,
     conf_figsize,
     save_figure,
+    subplot_save,
+    auto_mask_edge,
+    zoom_array,
+    numpy_grid,
+    numpy_lines,
+    numpy_positions,
+)
+
+from autoarray.structures.plot.structure_plots import (
+    plot_array_2d,
+    plot_grid_2d,
+    plot_yx_1d,
+)
+
+from autoarray.dataset.plot.imaging_plots import subplot_imaging_dataset
+from autoarray.dataset.plot.interferometer_plots import (
+    subplot_interferometer_dataset,
+    subplot_interferometer_dirty_images,
+)
+
+from autoarray.fit.plot.fit_imaging_plots import subplot_fit_imaging
+from autoarray.fit.plot.fit_interferometer_plots import (
+    subplot_fit_interferometer,
+    subplot_fit_interferometer_dirty_images,
+)
+
+from autoarray.inversion.plot.mapper_plots import (
+    plot_mapper,
+    plot_mapper_image,
+    subplot_image_and_mapper,
+)
+from autoarray.inversion.plot.inversion_plots import (
+    subplot_of_mapper,
+    subplot_mappings,
 )
