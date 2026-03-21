@@ -1,62 +1,65 @@
 import copy
-import logging
 import numpy as np
+from typing import Optional
 
 
-from autoarray.plot.wrap.base.abstract import AbstractMatWrap
-
-from autoarray import exc
-
-logger = logging.getLogger(__name__)
-
-
-class Cmap(AbstractMatWrap):
-    def __init__(self, symmetric: bool = False, **kwargs):
-        """
-        Customizes the Matplotlib colormap and its normalization.
-
-        This object wraps the following Matplotlib methods:
-
-        - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
-        - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
-        - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
-
-        The cmap that is created is passed into various Matplotlib methods, most notably imshow:
-
-        - https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
-
-        Parameters
-        ----------
-        symmetric
-            If True, the colormap normalization (e.g. `vmin` and `vmax`) span the same absolute values producing a
-            symmetric color bar.
-        """
-
-        super().__init__(**kwargs)
-
+class Cmap:
+    def __init__(
+        self,
+        cmap: str = "default",
+        norm: str = "linear",
+        vmin: Optional[float] = None,
+        vmax: Optional[float] = None,
+        linthresh: float = 0.05,
+        linscale: float = 0.01,
+        symmetric: bool = False,
+    ):
+        self.cmap_name = cmap
+        self.norm_type = norm
+        self.vmin = vmin
+        self.vmax = vmax
+        self.linthresh = linthresh
+        self.linscale = linscale
         self._symmetric = symmetric
         self.symmetric_value = None
 
+    @property
+    def log10_min_value(self) -> float:
+        try:
+            from autoconf import conf
+            return conf.instance["visualize"]["general"]["general"]["log10_min_value"]
+        except Exception:
+            return 1.0e-4
+
+    @property
+    def log10_max_value(self) -> float:
+        try:
+            from autoconf import conf
+            return float(conf.instance["visualize"]["general"]["general"]["log10_max_value"])
+        except Exception:
+            return 1.0e10
+
     def symmetric_cmap_from(self, symmetric_value=None):
         cmap = copy.copy(self)
-
         cmap._symmetric = True
         cmap.symmetric_value = symmetric_value
-
         return cmap
 
-    def norm_from(self, array: np.ndarray, use_log10: bool = False) -> object:
-        """
-        Returns the `Normalization` object which scales of the colormap.
+    def vmin_from(self, array: np.ndarray, use_log10: bool = False) -> float:
+        use_log10 = use_log10 or self.norm_type == "log"
+        vmin = np.nanmin(array) if self.vmin is None else self.vmin
+        if use_log10 and vmin < self.log10_min_value:
+            vmin = self.log10_min_value
+        return vmin
 
-        If vmin / vmax are not manually input by the user, the minimum / maximum values of the data being plotted
-        are used.
+    def vmax_from(self, array: np.ndarray, use_log10: bool = False) -> float:
+        use_log10 = use_log10 or self.norm_type == "log"
+        vmax = np.nanmax(array) if self.vmax is None else self.vmax
+        if use_log10 and vmax > self.log10_max_value:
+            vmax = self.log10_max_value
+        return vmax
 
-        Parameters
-        ----------
-        array
-            The array of data which is to be plotted.
-        """
+    def norm_from(self, array: np.ndarray, use_log10: bool = False):
         import matplotlib.colors as colors
 
         vmin = self.vmin_from(array=array, use_log10=use_log10)
@@ -73,35 +76,26 @@ class Cmap(AbstractMatWrap):
                     vmin = -self.symmetric_value
                     vmax = self.symmetric_value
 
-        if isinstance(self.config_dict["norm"], colors.Normalize):
-            return self.config_dict["norm"]
-
-        if self.config_dict["norm"] in "log" or use_log10:
+        if use_log10 or self.norm_type == "log":
             return colors.LogNorm(vmin=vmin, vmax=vmax)
-        elif self.config_dict["norm"] in "linear":
-            return colors.Normalize(vmin=vmin, vmax=vmax)
-        elif self.config_dict["norm"] in "symmetric_log":
+        elif self.norm_type == "symmetric_log":
             return colors.SymLogNorm(
                 vmin=vmin,
                 vmax=vmax,
-                linthresh=self.config_dict["linthresh"],
-                linscale=self.config_dict["linscale"],
+                linthresh=self.linthresh,
+                linscale=self.linscale,
             )
-        elif self.config_dict["norm"] in "diverge":
+        elif self.norm_type == "diverge":
             return colors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
-
-        raise exc.PlottingException(
-            "The normalization (norm) supplied to the plotter is not a valid string must be "
-            "{linear, log, symmetric_log}"
-        )
+        else:
+            return colors.Normalize(vmin=vmin, vmax=vmax)
 
     @property
     def cmap(self):
         from matplotlib.colors import LinearSegmentedColormap
 
-        if self.config_dict["cmap"] == "default":
+        if self.cmap_name == "default":
             from autoarray.plot.wrap.segmentdata import segmentdata
-
             return LinearSegmentedColormap(name="default", segmentdata=segmentdata)
 
-        return self.config_dict["cmap"]
+        return self.cmap_name

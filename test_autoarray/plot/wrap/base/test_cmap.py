@@ -4,28 +4,16 @@ import autoarray.plot as aplt
 import matplotlib.colors as colors
 
 
-def test__loads_values_from_config_if_not_manually_input():
+def test__cmap_defaults():
     cmap = aplt.Cmap()
 
-    assert cmap.config_dict["cmap"] == "default"
-    assert cmap.config_dict["norm"] == "linear"
+    assert cmap.cmap_name == "default"
+    assert cmap.norm_type == "linear"
 
     cmap = aplt.Cmap(cmap="cold")
 
-    assert cmap.config_dict["cmap"] == "cold"
-    assert cmap.config_dict["norm"] == "linear"
-
-    cmap = aplt.Cmap()
-    cmap.is_for_subplot = True
-
-    assert cmap.config_dict["cmap"] == "default"
-    assert cmap.config_dict["norm"] == "linear"
-
-    cmap = aplt.Cmap(cmap="cold")
-    cmap.is_for_subplot = True
-
-    assert cmap.config_dict["cmap"] == "cold"
-    assert cmap.config_dict["norm"] == "linear"
+    assert cmap.cmap_name == "cold"
+    assert cmap.norm_type == "linear"
 
 
 def test__norm_from__uses_input_vmin_and_max_if_input():
@@ -42,7 +30,7 @@ def test__norm_from__uses_input_vmin_and_max_if_input():
     norm = cmap.norm_from(array=None)
 
     assert isinstance(norm, colors.LogNorm)
-    assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
+    assert norm.vmin == 1.0e-4  # log10 min clipping applied
     assert norm.vmax == 1.0
 
     cmap = aplt.Cmap(
@@ -93,7 +81,7 @@ def test__norm_from__uses_array_to_get_vmin_and_max_if_no_manual_input():
     norm = cmap.norm_from(array=array)
 
     assert isinstance(norm, colors.LogNorm)
-    assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
+    assert norm.vmin == 1.0e-4  # log10 min clipping applied
     assert norm.vmax == 1.0
 
     cmap = aplt.Cmap(

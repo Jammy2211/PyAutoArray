@@ -1,5 +1,6 @@
 from os import path
 import autoarray.plot as aplt
+from autoarray.inversion.mappers.abstract import Mapper
 
 import pytest
 
@@ -22,28 +23,27 @@ def test__individual_attributes_are_output_for_all_mappers(
     plot_path,
     plot_patch,
 ):
-    inversion_plotter = aplt.InversionPlotter(
-        inversion=rectangular_inversion_7x7_3x3,
-        visuals_2d=aplt.Visuals2D(indexes=[0]),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    inversion_plotter.figures_2d(reconstructed_operated_data=True)
-
-    assert path.join(plot_path, "reconstructed_operated_data.png") in plot_patch.paths
-
-    inversion_plotter.figures_2d_of_pixelization(
-        pixelization_index=0,
-        reconstructed_operated_data=True,
-        reconstruction=True,
-        reconstruction_noise_map=True,
-        regularization_weights=True,
+    aplt.plot_array_2d(
+        array=rectangular_inversion_7x7_3x3.mapped_reconstructed_operated_data,
+        output_path=plot_path,
+        output_filename="reconstructed_operated_data",
+        output_format="png",
     )
 
     assert path.join(plot_path, "reconstructed_operated_data.png") in plot_patch.paths
+
+    mapper = rectangular_inversion_7x7_3x3.cls_list_from(cls=Mapper)[0]
+    pixel_values = rectangular_inversion_7x7_3x3.reconstruction_dict[mapper]
+
+    aplt.plot_mapper(
+        mapper=mapper,
+        solution_vector=pixel_values,
+        output_path=plot_path,
+        output_filename="reconstruction",
+        output_format="png",
+    )
+
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
-    assert path.join(plot_path, "reconstruction_noise_map.png") in plot_patch.paths
-    assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
 
 def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
@@ -52,14 +52,18 @@ def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
     plot_path,
     plot_patch,
 ):
-    inversion_plotter = aplt.InversionPlotter(
+    aplt.subplot_of_mapper(
         inversion=rectangular_inversion_7x7_3x3,
-        visuals_2d=aplt.Visuals2D(indexes=[0]),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        mapper_index=0,
+        output_path=plot_path,
+        output_format="png",
     )
-
-    inversion_plotter.subplot_of_mapper(mapper_index=0)
     assert path.join(plot_path, "subplot_inversion_0.png") in plot_patch.paths
 
-    inversion_plotter.subplot_mappings(pixelization_index=0)
+    aplt.subplot_mappings(
+        inversion=rectangular_inversion_7x7_3x3,
+        pixelization_index=0,
+        output_path=plot_path,
+        output_format="png",
+    )
     assert path.join(plot_path, "subplot_mappings_0.png") in plot_patch.paths

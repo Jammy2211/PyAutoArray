@@ -1,61 +1,69 @@
-from autoarray.plot.wrap.base.units import Units
-from autoarray.plot.wrap.base.figure import Figure
-from autoarray.plot.wrap.base.axis import Axis
+def _set_backend():
+    try:
+        import matplotlib
+        from autoconf import conf
+        backend = conf.get_matplotlib_backend()
+        if backend not in "default":
+            matplotlib.use(backend)
+        try:
+            hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+        except KeyError:
+            hpc_mode = False
+        if hpc_mode:
+            matplotlib.use("Agg")
+    except Exception:
+        pass
+
+
+_set_backend()
+
+from autoarray.plot.wrap.base.output import Output
 from autoarray.plot.wrap.base.cmap import Cmap
 from autoarray.plot.wrap.base.colorbar import Colorbar
-from autoarray.plot.wrap.base.colorbar_tickparams import ColorbarTickParams
-from autoarray.plot.wrap.base.tickparams import TickParams
-from autoarray.plot.wrap.base.ticks import YTicks
-from autoarray.plot.wrap.base.ticks import XTicks
-from autoarray.plot.wrap.base.title import Title
-from autoarray.plot.wrap.base.label import YLabel
-from autoarray.plot.wrap.base.label import XLabel
-from autoarray.plot.wrap.base.text import Text
-from autoarray.plot.wrap.base.annotate import Annotate
-from autoarray.plot.wrap.base.legend import Legend
-from autoarray.plot.wrap.base.output import Output
-
-from autoarray.plot.wrap.one_d.yx_plot import YXPlot
-from autoarray.plot.wrap.one_d.yx_scatter import YXScatter
-from autoarray.plot.wrap.one_d.avxline import AXVLine
-from autoarray.plot.wrap.one_d.fill_between import FillBetween
-
-from autoarray.plot.wrap.two_d.array_overlay import ArrayOverlay
-from autoarray.plot.wrap.two_d.contour import Contour
-from autoarray.plot.wrap.two_d.fill import Fill
-from autoarray.plot.wrap.two_d.grid_scatter import GridScatter
-from autoarray.plot.wrap.two_d.grid_plot import GridPlot
-from autoarray.plot.wrap.two_d.grid_errorbar import GridErrorbar
-from autoarray.plot.wrap.two_d.vector_yx_quiver import VectorYXQuiver
-from autoarray.plot.wrap.two_d.patch_overlay import PatchOverlay
 from autoarray.plot.wrap.two_d.delaunay_drawer import DelaunayDrawer
-from autoarray.plot.wrap.two_d.origin_scatter import OriginScatter
-from autoarray.plot.wrap.two_d.mask_scatter import MaskScatter
-from autoarray.plot.wrap.two_d.border_scatter import BorderScatter
-from autoarray.plot.wrap.two_d.positions_scatter import PositionsScatter
-from autoarray.plot.wrap.two_d.index_scatter import IndexScatter
-from autoarray.plot.wrap.two_d.index_plot import IndexPlot
-from autoarray.plot.wrap.two_d.mesh_grid_scatter import MeshGridScatter
-from autoarray.plot.wrap.two_d.parallel_overscan_plot import ParallelOverscanPlot
-from autoarray.plot.wrap.two_d.serial_prescan_plot import SerialPrescanPlot
-from autoarray.plot.wrap.two_d.serial_overscan_plot import SerialOverscanPlot
 
-from autoarray.plot.mat_plot.one_d import MatPlot1D
-from autoarray.plot.mat_plot.two_d import MatPlot2D
-from autoarray.plot.visuals.one_d import Visuals1D
-from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.auto_labels import AutoLabels
 
-from autoarray.structures.plot.structure_plotters import Array2DPlotter
-from autoarray.structures.plot.structure_plotters import Grid2DPlotter
-from autoarray.structures.plot.structure_plotters import YX1DPlotter
-from autoarray.structures.plot.structure_plotters import YX1DPlotter as Array1DPlotter
-from autoarray.inversion.plot.mapper_plotters import MapperPlotter
-from autoarray.inversion.plot.inversion_plotters import InversionPlotter
-from autoarray.dataset.plot.imaging_plotters import ImagingPlotter
-from autoarray.dataset.plot.interferometer_plotters import InterferometerPlotter
-from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotter
-from autoarray.fit.plot.fit_interferometer_plotters import FitInterferometerPlotter
+from autoarray.plot.plots import (
+    plot_array,
+    plot_grid,
+    plot_yx,
+    plot_inversion_reconstruction,
+    apply_extent,
+    conf_figsize,
+    save_figure,
+    subplot_save,
+    auto_mask_edge,
+    zoom_array,
+    numpy_grid,
+    numpy_lines,
+    numpy_positions,
+)
 
-from autoarray.plot.multi_plotters import MultiFigurePlotter
-from autoarray.plot.multi_plotters import MultiYX1DPlotter
+from autoarray.structures.plot.structure_plots import (
+    plot_array_2d,
+    plot_grid_2d,
+    plot_yx_1d,
+)
+
+from autoarray.dataset.plot.imaging_plots import subplot_imaging_dataset
+from autoarray.dataset.plot.interferometer_plots import (
+    subplot_interferometer_dataset,
+    subplot_interferometer_dirty_images,
+)
+
+from autoarray.fit.plot.fit_imaging_plots import subplot_fit_imaging
+from autoarray.fit.plot.fit_interferometer_plots import (
+    subplot_fit_interferometer,
+    subplot_fit_interferometer_dirty_images,
+)
+
+from autoarray.inversion.plot.mapper_plots import (
+    plot_mapper,
+    plot_mapper_image,
+    subplot_image_and_mapper,
+)
+from autoarray.inversion.plot.inversion_plots import (
+    subplot_of_mapper,
+    subplot_mappings,
+)

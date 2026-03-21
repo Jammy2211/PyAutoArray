@@ -1,4 +1,7 @@
+import jax
 import jax.numpy as jnp
+
+jax.config.update("jax_enable_x64", True)
 
 
 def pytest_configure():
@@ -26,6 +29,8 @@ class PlotPatch:
 def make_plot_patch(monkeypatch):
     plot_patch = PlotPatch()
     monkeypatch.setattr(pyplot, "savefig", plot_patch)
+    from matplotlib.figure import Figure
+    monkeypatch.setattr(Figure, "savefig", plot_patch)
     return plot_patch
 
 

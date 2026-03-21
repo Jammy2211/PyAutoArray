@@ -12,6 +12,8 @@ test_autoarray/dataset/plot/files/
 test_autoarray/fit/plot/files/
 test_autoarray/structures/arrays/one_d/files/array/
 test_autoarray/structures/plot/files/
+test_autoarray/inversion/plot/files/
+test_autoarray/plot/files/
 test_autoarray/instruments/files/
 
 .envr

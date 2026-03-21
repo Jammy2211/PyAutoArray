@@ -14,27 +14,18 @@ def make_plot_path_setup():
     )
 
 
-def test__figure_2d(
+def test__plot_mapper(
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
     plot_path,
     plot_patch,
 ):
-    visuals_2d = aplt.Visuals2D(
-        indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-    )
-
-    mat_plot_2d = aplt.MatPlot2D(
-        output=aplt.Output(path=plot_path, filename="mapper1", format="png")
-    )
-
-    mapper_plotter = aplt.MapperPlotter(
+    aplt.plot_mapper(
         mapper=rectangular_mapper_7x7_3x3,
-        visuals_2d=visuals_2d,
-        mat_plot_2d=mat_plot_2d,
+        output_path=plot_path,
+        output_filename="mapper1",
+        output_format="png",
     )
-
-    mapper_plotter.figure_2d()
 
     assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
@@ -46,15 +37,10 @@ def test__subplot_image_and_mapper(
     plot_path,
     plot_patch,
 ):
-    visuals_2d = aplt.Visuals2D(indexes=[0, 1, 2])
-
-    mapper_plotter = aplt.MapperPlotter(
+    aplt.subplot_image_and_mapper(
         mapper=rectangular_mapper_7x7_3x3,
-        visuals_2d=visuals_2d,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    mapper_plotter.subplot_image_and_mapper(
         image=imaging_7x7.data,
+        output_path=plot_path,
+        output_format="png",
     )
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
