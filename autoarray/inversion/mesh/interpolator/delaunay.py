@@ -91,6 +91,7 @@ def jax_delaunay(points, query_points, areas_factor=0.5):
         ),
         points,
         query_points,
+        vmap_method="sequential",
     )
 
 
@@ -248,6 +249,7 @@ def jax_delaunay_matern(points, query_points):
         (points_shape, simplices_padded_shape, mappings_shape),
         points,
         query_points,
+        vmap_method="sequential",
     )
 
 

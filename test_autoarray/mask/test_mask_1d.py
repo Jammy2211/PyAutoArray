@@ -62,24 +62,30 @@ def test__constructor__input_is_2d_mask__raises_exception():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("mask_values,expected", [
-    ([False, False, False, False], False),
-    ([False, False], False),
-    ([False, True, False, False], False),
-    ([True, True, True, True], True),
-])
+@pytest.mark.parametrize(
+    "mask_values,expected",
+    [
+        ([False, False, False, False], False),
+        ([False, False], False),
+        ([False, True, False, False], False),
+        ([True, True, True, True], True),
+    ],
+)
 def test__is_all_true__various_masks__returns_correct_boolean(mask_values, expected):
     mask = aa.Mask1D(mask=mask_values, pixel_scales=1.0)
 
     assert mask.is_all_true == expected
 
 
-@pytest.mark.parametrize("mask_values,expected", [
-    ([False, False, False, False], True),
-    ([False, False], True),
-    ([False, True, False, False], False),
-    ([True, True, False, False], False),
-])
+@pytest.mark.parametrize(
+    "mask_values,expected",
+    [
+        ([False, False, False, False], True),
+        ([False, False], True),
+        ([False, True, False, False], False),
+        ([True, True, False, False], False),
+    ],
+)
 def test__is_all_false__various_masks__returns_correct_boolean(mask_values, expected):
     mask = aa.Mask1D(mask=mask_values, pixel_scales=1.0)
 

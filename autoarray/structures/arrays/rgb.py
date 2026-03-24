@@ -10,7 +10,7 @@ class Array2DRGB(Array2D):
         the same functionality as `Array2D` objects.
 
         By passing an RGB image to this class, the following visualization functionality is used when the RGB
-        image is used in `Plotter` objects:
+        image is used in plotting:
 
         - The RGB image is plotted using the `imshow` function of Matplotlib.
         - Functionality which sets the scale of the axis, zooms the image, and sets the axis limits is used.

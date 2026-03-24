@@ -602,7 +602,9 @@ def splitted_data():
     return splitted_mappings, splitted_sizes, splitted_weights
 
 
-def test__reg_split_from__splitted_mapping_data__produces_correct_mappings_sizes_and_weights(splitted_data):
+def test__reg_split_from__splitted_mapping_data__produces_correct_mappings_sizes_and_weights(
+    splitted_data,
+):
 
     splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 
@@ -673,7 +675,9 @@ def test__reg_split_from__splitted_mapping_data__produces_correct_mappings_sizes
     assert splitted_weights == pytest.approx(expected_weights, abs=1.0e-4)
 
 
-def test__pixel_splitted_regularization_matrix_from__uniform_weights__correct_regularization_matrix(splitted_data):
+def test__pixel_splitted_regularization_matrix_from__uniform_weights__correct_regularization_matrix(
+    splitted_data,
+):
 
     splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 
@@ -701,7 +705,9 @@ def test__pixel_splitted_regularization_matrix_from__uniform_weights__correct_re
     assert pytest.approx(regularization_matrix, 1e-4) == np.array(expected_reg_matrix)
 
 
-def test__pixel_splitted_regularization_matrix_from__non_uniform_weights__correct_regularization_matrix(splitted_data):
+def test__pixel_splitted_regularization_matrix_from__non_uniform_weights__correct_regularization_matrix(
+    splitted_data,
+):
 
     splitted_mappings, splitted_sizes, splitted_weights = splitted_data
 

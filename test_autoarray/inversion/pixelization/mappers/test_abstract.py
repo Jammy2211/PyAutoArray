@@ -133,7 +133,9 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     assert (pixel_signals == pixel_signals_util).all()
 
 
-def test__mapped_to_source_from__delaunay_mapper__matches_mapping_matrix_util(grid_2d_7x7):
+def test__mapped_to_source_from__delaunay_mapper__matches_mapping_matrix_util(
+    grid_2d_7x7,
+):
     mesh_grid = aa.Grid2D.no_mask(
         values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),

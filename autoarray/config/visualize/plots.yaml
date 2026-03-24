@@ -3,11 +3,11 @@
 # For example, if `plots: fit: subplot_fit=True``, the ``fit_dataset.png`` subplot file will 
 # be plotted every time visualization is performed.
 
-dataset:                                   # Settings for plots of all datasets (e.g. ImagingPlotter, InterferometerPlotter).
+dataset:                                   # Settings for plots of all datasets (e.g. Imaging, Interferometer).
   subplot_dataset: true                    # Plot subplot containing all dataset quantities (e.g. the data, noise-map, etc.)?
-imaging:                                   # Settings for plots of imaging datasets (e.g. ImagingPlotter)
+imaging:                                   # Settings for plots of imaging datasets (e.g. Imaging)
    psf: false
-fit:                                       # Settings for plots of all fits (e.g. FitImagingPlotter, FitInterferometerPlotter).
+fit:                                       # Settings for plots of all fits (e.g. FitImaging, FitInterferometer).
   subplot_fit: true                        # Plot subplot of all fit quantities for any dataset (e.g. the model data, residual-map, etc.)?
   subplot_fit_log10: true                  # Plot subplot of all fit quantities for any dataset using log10 color maps (e.g. the model data, residual-map, etc.)?
   data: false                              # Plot individual plots of the data?
@@ -18,8 +18,8 @@ fit:                                       # Settings for plots of all fits (e.g
   normalized_residual_map: false           # Plot individual plots of the normalized-residual-map?
   chi_squared_map: false                   # Plot individual plots of the chi-squared-map?
   residual_flux_fraction: false            # Plot individual plots of the residual_flux_fraction?
-fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
-inversion:                                 # Settings for plots of inversions (e.g. InversionPlotter).
+fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImaging).
+inversion:                                 # Settings for plots of inversions (e.g. Inversion).
   subplot_inversion: true                  # Plot subplot of all quantities in each inversion (e.g. reconstrucuted image, reconstruction)?
   subplot_mappings: false                  # Plot subplot of the image-to-source pixels mappings of each pixelization?
   data_subtracted: false                   # Plot individual plots of the data with the other inversion linear objects subtracted?
@@ -30,6 +30,6 @@ inversion:                                 # Settings for plots of inversions (e
   reconstructed_operated_data: false               # Plot image of the reconstructed data (e.g. in the image-plane)?
   reconstruction: false                    # Plot the reconstructed inversion (e.g. the pixelization's mesh in the source-plane)?
   regularization_weights: false            # Plot the effective regularization weight of every inversion mesh pixel?
-fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometerPlotter).
+fit_interferometer:                        # Settings for plots of fits to interferometer datasets (e.g. FitInterferometer).
   subplot_fit_dirty_images: false          # Plot subplot of the dirty-images of all interferometer datasets?
   subplot_fit_real_space: false            # Plot subplot of the real-space images of all interferometer datasets?

@@ -414,7 +414,9 @@ def test__from_fits__output_to_fits__roundtrip_preserves_values_pixel_scales_and
 
 
 @pytest.mark.parametrize("resized_shape", [(1, 1), (5, 5)])
-def test__from_fits__with_resized_mask_shape__output_shape_matches_requested_shape(resized_shape):
+def test__from_fits__with_resized_mask_shape__output_shape_matches_requested_shape(
+    resized_shape,
+):
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
@@ -443,24 +445,30 @@ def test__constructor__1d_mask_without_shape_native__raises_mask_exception():
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("mask_values,expected", [
-    ([[False, False], [False, False]], False),
-    ([[False, False]], False),
-    ([[False, True], [False, False]], False),
-    ([[True, True], [True, True]], True),
-])
+@pytest.mark.parametrize(
+    "mask_values,expected",
+    [
+        ([[False, False], [False, False]], False),
+        ([[False, False]], False),
+        ([[False, True], [False, False]], False),
+        ([[True, True], [True, True]], True),
+    ],
+)
 def test__is_all_true__various_masks__returns_correct_boolean(mask_values, expected):
     mask = aa.Mask2D(mask=mask_values, pixel_scales=1.0)
 
     assert mask.is_all_true == expected
 
 
-@pytest.mark.parametrize("mask_values,expected", [
-    ([[False, False], [False, False]], True),
-    ([[False, False]], True),
-    ([[False, True], [False, False]], False),
-    ([[True, True], [False, False]], False),
-])
+@pytest.mark.parametrize(
+    "mask_values,expected",
+    [
+        ([[False, False], [False, False]], True),
+        ([[False, False]], True),
+        ([[False, True], [False, False]], False),
+        ([[True, True], [False, False]], False),
+    ],
+)
 def test__is_all_false__various_masks__returns_correct_boolean(mask_values, expected):
     mask = aa.Mask2D(mask=mask_values, pixel_scales=1.0)
 
@@ -472,50 +480,53 @@ def test__is_all_false__various_masks__returns_correct_boolean(mask_values, expe
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("mask_values,expected_shape", [
-    (
-        [
-            [True, True, True, True, True, True, True, True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        (7, 7),
-    ),
-    (
-        [
-            [True, True, True, True, True, True, True, True, False],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        (8, 8),
-    ),
-    (
-        [
-            [True, True, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        (8, 7),
-    ),
-])
+@pytest.mark.parametrize(
+    "mask_values,expected_shape",
+    [
+        (
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            (7, 7),
+        ),
+        (
+            [
+                [True, True, True, True, True, True, True, True, False],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            (8, 8),
+        ),
+        (
+            [
+                [True, True, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            (8, 7),
+        ),
+    ],
+)
 def test__shape_native_masked_pixels__various_unmasked_regions__returns_bounding_box_shape(
     mask_values, expected_shape
 ):
@@ -542,10 +553,13 @@ def test__rescaled_from__5x5_mask_with_one_masked_pixel__rescaled_mask_matches_u
     assert (mask_rescaled == mask_rescaled_manual).all()
 
 
-@pytest.mark.parametrize("new_shape,expected_masked_position", [
-    ((7, 7), (3, 3)),
-    ((3, 3), (1, 1)),
-])
+@pytest.mark.parametrize(
+    "new_shape,expected_masked_position",
+    [
+        ((7, 7), (3, 3)),
+        ((3, 3), (1, 1)),
+    ],
+)
 def test__resized_from__5x5_mask_with_center_masked__resized_mask_has_masked_pixel_at_center(
     new_shape, expected_masked_position
 ):
@@ -661,11 +675,14 @@ def test__is_circular__non_circular_mask__returns_false():
     assert mask.is_circular == False
 
 
-@pytest.mark.parametrize("shape_native,radius", [
-    ((5, 5), 1.0),
-    ((10, 10), 3.0),
-    ((10, 10), 4.0),
-])
+@pytest.mark.parametrize(
+    "shape_native,radius",
+    [
+        ((5, 5), 1.0),
+        ((10, 10), 3.0),
+        ((10, 10), 4.0),
+    ],
+)
 def test__is_circular__circular_mask__returns_true(shape_native, radius):
     mask = aa.Mask2D.circular(
         shape_native=shape_native, radius=radius, pixel_scales=(1.0, 1.0)
@@ -674,10 +691,13 @@ def test__is_circular__circular_mask__returns_true(shape_native, radius):
     assert mask.is_circular == True
 
 
-@pytest.mark.parametrize("shape_native,radius,pixel_scales", [
-    ((10, 10), 3.0, (1.0, 1.0)),
-    ((30, 30), 5.5, (0.5, 0.5)),
-])
+@pytest.mark.parametrize(
+    "shape_native,radius,pixel_scales",
+    [
+        ((10, 10), 3.0, (1.0, 1.0)),
+        ((30, 30), 5.5, (0.5, 0.5)),
+    ],
+)
 def test__circular_radius__circular_mask__returns_radius_used_to_create_mask(
     shape_native, radius, pixel_scales
 ):
