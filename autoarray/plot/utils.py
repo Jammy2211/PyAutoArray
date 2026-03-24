@@ -345,7 +345,9 @@ def save_figure(
     filename
         File name without extension.
     format
-        File format passed to ``fig.savefig`` (e.g. ``"png"``, ``"pdf"``).
+        File format(s) passed to ``fig.savefig``.  Either a single string
+        (e.g. ``"png"``) or a list/tuple of strings (e.g. ``["png", "pdf"]``)
+        to save in multiple formats in one call.
     dpi
         Resolution in dots per inch.
     structure
@@ -355,29 +357,31 @@ def save_figure(
     """
     if path:
         os.makedirs(path, exist_ok=True)
-        if format == "fits":
-            if structure is not None and hasattr(structure, "output_to_fits"):
-                structure.output_to_fits(
-                    file_path=os.path.join(path, f"{filename}.fits"),
-                    overwrite=True,
-                )
+        formats = format if isinstance(format, (list, tuple)) else [format]
+        for fmt in formats:
+            if fmt == "fits":
+                if structure is not None and hasattr(structure, "output_to_fits"):
+                    structure.output_to_fits(
+                        file_path=os.path.join(path, f"{filename}.fits"),
+                        overwrite=True,
+                    )
+                else:
+                    logger.warning(
+                        f"save_figure: fits format requested for {filename} but no "
+                        "compatible structure was provided; skipping."
+                    )
             else:
-                logger.warning(
-                    f"save_figure: fits format requested for {filename} but no "
-                    "compatible structure was provided; skipping."
-                )
-        else:
-            try:
-                fig.savefig(
-                    os.path.join(path, f"{filename}.{format}"),
-                    dpi=dpi,
-                    bbox_inches="tight",
-                    pad_inches=0.1,
-                )
-            except Exception as exc:
-                logger.warning(
-                    f"save_figure: could not save {filename}.{format}: {exc}"
-                )
+                try:
+                    fig.savefig(
+                        os.path.join(path, f"{filename}.{fmt}"),
+                        dpi=dpi,
+                        bbox_inches="tight",
+                        pad_inches=0.1,
+                    )
+                except Exception as exc:
+                    logger.warning(
+                        f"save_figure: could not save {filename}.{fmt}: {exc}"
+                    )
     else:
         plt.show()
 

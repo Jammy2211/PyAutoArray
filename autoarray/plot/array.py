@@ -20,6 +20,9 @@ from autoarray.plot.utils import (
     numpy_positions,
 )
 
+_zoom_array_2d = zoom_array
+_mask_edge_coords = auto_mask_edge
+
 
 def plot_array(
     array,
