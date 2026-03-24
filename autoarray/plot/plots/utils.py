@@ -98,6 +98,67 @@ def symmetric_vmin_vmax(array):
         return None, None
 
 
+def symmetric_cmap_from(array, symmetric_value=None):
+    """Return a matplotlib ``Normalize`` centred on zero for a symmetric colormap.
+
+    Parameters
+    ----------
+    array
+        The data array (autoarray or numpy).  Used to compute ``abs_max`` when
+        *symmetric_value* is not provided.
+    symmetric_value
+        If given, fix the half-range to this value (``vmin=-symmetric_value``,
+        ``vmax=+symmetric_value``).
+
+    Returns
+    -------
+    matplotlib.colors.Normalize or None
+    """
+    import matplotlib.colors as colors
+
+    if symmetric_value is not None:
+        abs_max = float(symmetric_value)
+    else:
+        vmin, vmax = symmetric_vmin_vmax(array)
+        if vmin is None:
+            return None
+        abs_max = max(abs(vmin), abs(vmax))
+
+    return colors.Normalize(vmin=-abs_max, vmax=abs_max)
+
+
+def set_with_color_values(ax, cmap, color_values, norm=None, fraction=0.047, pad=0.01):
+    """Attach a colorbar to *ax* driven by *color_values* rather than a plotted artist.
+
+    Useful for Delaunay mapper visualisation where ``ax.tripcolor`` already draws
+    the mesh but we need a separate colorbar tied to specific solution values.
+
+    Parameters
+    ----------
+    ax
+        The matplotlib axes to attach the colorbar to.
+    cmap
+        A matplotlib colormap name or object.
+    color_values
+        The 1-D array of values that define the colorbar range.
+    norm
+        A ``matplotlib.colors.Normalize`` instance.  If ``None`` a default
+        ``Normalize(vmin, vmax)`` is created from *color_values*.
+    fraction, pad
+        Passed directly to ``plt.colorbar``.
+    """
+    import matplotlib.cm as cm
+    import matplotlib.colors as mcolors
+
+    if norm is None:
+        arr = np.asarray(color_values)
+        norm = mcolors.Normalize(vmin=float(np.nanmin(arr)), vmax=float(np.nanmax(arr)))
+
+    mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
+    mappable.set_array(color_values)
+    return plt.colorbar(mappable=mappable, ax=ax, fraction=fraction, pad=pad)
+
+
 def subplot_save(fig, output_path, output_filename, output_format):
     """Save a subplot figure or show it, then close."""
     if output_path:

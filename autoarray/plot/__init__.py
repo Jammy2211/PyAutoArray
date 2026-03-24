@@ -18,7 +18,6 @@ def _set_backend():
 _set_backend()
 
 from autoarray.plot.wrap.base.output import Output
-from autoarray.plot.wrap.base.cmap import Cmap
 
 from autoarray.plot.auto_labels import AutoLabels
 
@@ -37,6 +36,8 @@ from autoarray.plot.plots import (
     numpy_lines,
     numpy_positions,
     symmetric_vmin_vmax,
+    symmetric_cmap_from,
+    set_with_color_values,
 )
 
 from autoarray.structures.plot.structure_plots import (

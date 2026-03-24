@@ -13,6 +13,8 @@ from autoarray.plot.plots.utils import (
     numpy_lines,
     numpy_positions,
     symmetric_vmin_vmax,
+    symmetric_cmap_from,
+    set_with_color_values,
 )
 
 __all__ = [
