@@ -4,7 +4,7 @@ def _set_backend():
         from autoconf import conf
 
         backend = conf.get_matplotlib_backend()
-        if backend not in "default":
+        if backend != "default":
             matplotlib.use(backend)
         try:
             hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]

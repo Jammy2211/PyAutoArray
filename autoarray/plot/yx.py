@@ -83,7 +83,7 @@ def plot_yx(
         x = x.array if hasattr(x, "array") else np.asarray(x)
 
     # guard: nothing to draw
-    if y is None or np.count_nonzero(y) == 0 or np.isnan(y).all():
+    if y is None or len(y) == 0 or np.isnan(y).all():
         return
 
     owns_figure = ax is None

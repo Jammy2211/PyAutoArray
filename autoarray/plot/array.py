@@ -131,7 +131,7 @@ def plot_array(
     except AttributeError:
         array = np.asarray(array)
 
-    if array is None or np.all(array == 0):
+    if array is None or array.size == 0:
         return
 
     # convert overlay params (safe for None and already-numpy inputs)
@@ -165,7 +165,15 @@ def plot_array(
         except Exception:
             log10_min = 1.0e-4
         clipped = np.clip(array, log10_min, None)
-        norm = LogNorm(vmin=vmin or log10_min, vmax=vmax or clipped.max())
+        vmin_log = vmin if (vmin is not None and np.isfinite(vmin)) else log10_min
+        if vmax is not None and np.isfinite(vmax):
+            vmax_log = vmax
+        else:
+            with np.errstate(all="ignore"):
+                vmax_log = np.nanmax(clipped)
+        if not np.isfinite(vmax_log) or vmax_log <= vmin_log:
+            vmax_log = vmin_log * 10.0
+        norm = LogNorm(vmin=vmin_log, vmax=vmax_log)
     elif vmin is not None or vmax is not None:
         norm = Normalize(vmin=vmin, vmax=vmax)
     else:

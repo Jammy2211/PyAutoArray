@@ -96,7 +96,7 @@ class Output:
             Absolute path to the output directory, or ``None`` for
             ``format == "show"``.
         """
-        if format in "show":
+        if format == "show":
             return None
 
         if self.format_folder:
