@@ -12,8 +12,8 @@ from autoarray.plot.plots.utils import conf_figsize, save_figure
 
 
 def plot_yx(
-    y: np.ndarray,
-    x: Optional[np.ndarray] = None,
+    y,
+    x=None,
     ax: Optional[plt.Axes] = None,
     # --- errors / extras --------------------------------------------------------
     y_errors: Optional[np.ndarray] = None,
@@ -74,6 +74,13 @@ def plot_yx(
     output_format
         File format, e.g. ``"png"``.
     """
+    # --- autoarray extraction --------------------------------------------------
+    if x is None and hasattr(y, "grid_radial"):
+        x = y.grid_radial
+    y = y.array if hasattr(y, "array") else np.asarray(y)
+    if x is not None:
+        x = x.array if hasattr(x, "array") else np.asarray(x)
+
     # guard: nothing to draw
     if y is None or np.count_nonzero(y) == 0 or np.isnan(y).all():
         return

@@ -8,24 +8,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm, Normalize
 
-from autoarray.plot.plots.utils import apply_extent, conf_figsize, save_figure
+from autoarray.plot.plots.utils import (
+    apply_extent,
+    conf_figsize,
+    save_figure,
+    zoom_array,
+    auto_mask_edge,
+    numpy_grid,
+    numpy_lines,
+    numpy_positions,
+)
 
 
 def plot_array(
-    array: np.ndarray,
+    array,
     ax: Optional[plt.Axes] = None,
     # --- spatial metadata -------------------------------------------------------
     extent: Optional[Tuple[float, float, float, float]] = None,
     # --- overlays ---------------------------------------------------------------
     mask: Optional[np.ndarray] = None,
-    border: Optional[np.ndarray] = None,
+    border=None,
     origin=None,
-    grid: Optional[np.ndarray] = None,
-    mesh_grid: Optional[np.ndarray] = None,
-    positions: Optional[List[np.ndarray]] = None,
-    lines: Optional[List[np.ndarray]] = None,
+    grid=None,
+    mesh_grid=None,
+    positions=None,
+    lines=None,
     vector_yx: Optional[np.ndarray] = None,
-    array_overlay: Optional[np.ndarray] = None,
+    array_overlay=None,
     patches: Optional[List] = None,
     fill_region: Optional[List] = None,
     contours: Optional[int] = None,
@@ -105,8 +114,34 @@ def plot_array(
     output_format
         File format, e.g. ``"png"``.
     """
+    # --- autoarray extraction --------------------------------------------------
+    array = zoom_array(array)
+    try:
+        if structure is None:
+            structure = array
+        if extent is None:
+            extent = array.geometry.extent
+        if mask is None:
+            mask = auto_mask_edge(array)
+        array = array.native.array
+    except AttributeError:
+        array = np.asarray(array)
+
     if array is None or np.all(array == 0):
         return
+
+    # convert overlay params (safe for None and already-numpy inputs)
+    border = numpy_grid(border)
+    origin = numpy_grid(origin)
+    grid = numpy_grid(grid)
+    mesh_grid = numpy_grid(mesh_grid)
+    positions = numpy_positions(positions)
+    lines = numpy_lines(lines)
+    if array_overlay is not None:
+        try:
+            array_overlay = array_overlay.native.array
+        except AttributeError:
+            array_overlay = np.asarray(array_overlay)
 
     owns_figure = ax is None
     if owns_figure:

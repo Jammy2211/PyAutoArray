@@ -88,6 +88,16 @@ def numpy_positions(positions) -> Optional[List[np.ndarray]]:
     return None
 
 
+def symmetric_vmin_vmax(array):
+    """Return ``(-abs_max, abs_max)`` for a symmetric (residual) colormap."""
+    try:
+        arr = array.native.array if hasattr(array, "native") else np.asarray(array)
+        abs_max = float(np.nanmax(np.abs(arr)))
+        return -abs_max, abs_max
+    except Exception:
+        return None, None
+
+
 def subplot_save(fig, output_path, output_filename, output_format):
     """Save a subplot figure or show it, then close."""
     if output_path:

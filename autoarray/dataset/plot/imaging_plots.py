@@ -1,54 +1,9 @@
-import numpy as np
 from typing import Optional
 
 import matplotlib.pyplot as plt
 
 from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import (
-    auto_mask_edge,
-    zoom_array,
-    numpy_grid,
-    numpy_lines,
-    numpy_positions,
-    subplot_save,
-)
-
-
-def _plot_dataset_array(
-    array,
-    ax,
-    title,
-    colormap,
-    use_log10,
-    grid=None,
-    positions=None,
-    lines=None,
-):
-    """Internal helper: plot one array component onto *ax*."""
-    if array is None:
-        return
-
-    array = zoom_array(array)
-
-    try:
-        arr = array.native.array
-        extent = array.geometry.extent
-    except AttributeError:
-        arr = np.asarray(array)
-        extent = None
-
-    plot_array(
-        array=arr,
-        ax=ax,
-        extent=extent,
-        mask=auto_mask_edge(array) if hasattr(array, "mask") else None,
-        grid=numpy_grid(grid),
-        positions=numpy_positions(positions),
-        lines=numpy_lines(lines),
-        title=title,
-        colormap=colormap,
-        use_log10=use_log10,
-    )
+from autoarray.plot.plots.utils import subplot_save
 
 
 def subplot_imaging_dataset(
@@ -95,17 +50,17 @@ def subplot_imaging_dataset(
     fig, axes = plt.subplots(3, 3, figsize=(21, 21))
     axes = axes.flatten()
 
-    _plot_dataset_array(dataset.data, axes[0], "Data", colormap, use_log10, grid, positions, lines)
-    _plot_dataset_array(dataset.data, axes[1], "Data (log10)", colormap, True, grid, positions, lines)
-    _plot_dataset_array(dataset.noise_map, axes[2], "Noise-Map", colormap, use_log10, grid, positions, lines)
+    plot_array(dataset.data, ax=axes[0], title="Data", colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
+    plot_array(dataset.data, ax=axes[1], title="Data (log10)", colormap=colormap, use_log10=True, grid=grid, positions=positions, lines=lines)
+    plot_array(dataset.noise_map, ax=axes[2], title="Noise-Map", colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
 
     if dataset.psf is not None:
-        _plot_dataset_array(dataset.psf.kernel, axes[3], "Point Spread Function", colormap, use_log10)
-        _plot_dataset_array(dataset.psf.kernel, axes[4], "PSF (log10)", colormap, True)
+        plot_array(dataset.psf.kernel, ax=axes[3], title="Point Spread Function", colormap=colormap, use_log10=use_log10)
+        plot_array(dataset.psf.kernel, ax=axes[4], title="PSF (log10)", colormap=colormap, use_log10=True)
 
-    _plot_dataset_array(dataset.signal_to_noise_map, axes[5], "Signal-To-Noise Map", colormap, use_log10, grid, positions, lines)
-    _plot_dataset_array(dataset.grids.over_sample_size_lp, axes[6], "Over Sample Size (Light Profiles)", colormap, use_log10)
-    _plot_dataset_array(dataset.grids.over_sample_size_pixelization, axes[7], "Over Sample Size (Pixelization)", colormap, use_log10)
+    plot_array(dataset.signal_to_noise_map, ax=axes[5], title="Signal-To-Noise Map", colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
+    plot_array(dataset.grids.over_sample_size_lp, ax=axes[6], title="Over Sample Size (Light Profiles)", colormap=colormap, use_log10=use_log10)
+    plot_array(dataset.grids.over_sample_size_pixelization, ax=axes[7], title="Over Sample Size (Pixelization)", colormap=colormap, use_log10=use_log10)
 
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)

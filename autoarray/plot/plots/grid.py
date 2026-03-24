@@ -8,17 +8,17 @@ from typing import Iterable, List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from autoarray.plot.plots.utils import apply_extent, conf_figsize, save_figure
+from autoarray.plot.plots.utils import apply_extent, conf_figsize, save_figure, numpy_lines
 
 
 def plot_grid(
-    grid: np.ndarray,
+    grid,
     ax: Optional[plt.Axes] = None,
     # --- errors -----------------------------------------------------------------
     y_errors: Optional[np.ndarray] = None,
     x_errors: Optional[np.ndarray] = None,
     # --- overlays ---------------------------------------------------------------
-    lines: Optional[Iterable[np.ndarray]] = None,
+    lines=None,
     color_array: Optional[np.ndarray] = None,
     indexes: Optional[List] = None,
     # --- cosmetics --------------------------------------------------------------
@@ -79,6 +79,21 @@ def plot_grid(
     output_format
         File format, e.g. ``"png"``.
     """
+    # --- autoarray extraction --------------------------------------------------
+    # Compute extent before converting to numpy so grid methods are available.
+    if extent is None:
+        try:
+            extent = grid.extent_with_buffer_from(buffer=buffer)
+        except AttributeError:
+            pass  # computed from numpy values below
+
+    if hasattr(grid, "array"):
+        grid = np.array(grid.array)
+    else:
+        grid = np.asarray(grid)
+
+    lines = numpy_lines(lines)
+
     owns_figure = ax is None
     if owns_figure:
         figsize = figsize or conf_figsize("figures")
@@ -133,12 +148,9 @@ def plot_grid(
 
     # --- extent ----------------------------------------------------------------
     if extent is None:
-        try:
-            extent = grid.extent_with_buffer_from(buffer=buffer)
-        except AttributeError:
-            y_vals = grid[:, 0]
-            x_vals = grid[:, 1]
-            extent = [x_vals.min(), x_vals.max(), y_vals.min(), y_vals.max()]
+        y_vals = grid[:, 0]
+        x_vals = grid[:, 1]
+        extent = [x_vals.min(), x_vals.max(), y_vals.min(), y_vals.max()]
 
     if indexes is not None:
         colors = ["r", "g", "b", "m", "c", "y"]

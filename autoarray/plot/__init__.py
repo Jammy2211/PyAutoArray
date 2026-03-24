@@ -38,6 +38,7 @@ from autoarray.plot.plots import (
     numpy_grid,
     numpy_lines,
     numpy_positions,
+    symmetric_vmin_vmax,
 )
 
 from autoarray.structures.plot.structure_plots import (
@@ -60,7 +61,6 @@ from autoarray.fit.plot.fit_interferometer_plots import (
 
 from autoarray.inversion.plot.mapper_plots import (
     plot_mapper,
-    plot_mapper_image,
     subplot_image_and_mapper,
 )
 from autoarray.inversion.plot.inversion_plots import (

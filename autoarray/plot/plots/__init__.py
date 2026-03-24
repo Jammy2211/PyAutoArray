@@ -12,6 +12,7 @@ from autoarray.plot.plots.utils import (
     numpy_grid,
     numpy_lines,
     numpy_positions,
+    symmetric_vmin_vmax,
 )
 
 __all__ = [
