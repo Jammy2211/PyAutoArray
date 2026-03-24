@@ -247,27 +247,32 @@ def test__constructor__1d_values_too_few_for_mask__raises_array_exception():
         aa.Array2D(values=[1.0, 2.0], mask=mask)
 
 
-@pytest.mark.parametrize("new_shape,expected_native", [
-    (
-        (7, 7),
-        np.array(
-            [
-                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
-                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            ]
+@pytest.mark.parametrize(
+    "new_shape,expected_native",
+    [
+        (
+            (7, 7),
+            np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                    [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                    [0.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.0],
+                    [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                    [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                ]
+            ),
         ),
-    ),
-    (
-        (3, 3),
-        np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]]),
-    ),
-])
-def test__resized_from__5x5_array_with_center_marked__resized_array_pads_or_crops_correctly(new_shape, expected_native):
+        (
+            (3, 3),
+            np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]]),
+        ),
+    ],
+)
+def test__resized_from__5x5_array_with_center_marked__resized_array_pads_or_crops_correctly(
+    new_shape, expected_native
+):
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
@@ -280,11 +285,16 @@ def test__resized_from__5x5_array_with_center_marked__resized_array_pads_or_crop
     assert array_2d.mask.pixel_scales == (1.0, 1.0)
 
 
-@pytest.mark.parametrize("kernel_shape,expected_shape", [
-    ((3, 3), (7, 7)),
-    ((5, 5), (9, 9)),
-])
-def test__padded_before_convolution_from__5x5_array__output_shape_padded_by_kernel_size(kernel_shape, expected_shape):
+@pytest.mark.parametrize(
+    "kernel_shape,expected_shape",
+    [
+        ((3, 3), (7, 7)),
+        ((5, 5), (9, 9)),
+    ],
+)
+def test__padded_before_convolution_from__5x5_array__output_shape_padded_by_kernel_size(
+    kernel_shape, expected_shape
+):
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
@@ -312,11 +322,16 @@ def test__padded_before_convolution_from__9x9_array__output_shape_padded_by_7x7_
     assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
 
-@pytest.mark.parametrize("kernel_shape,expected_native", [
-    ((3, 3), np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])),
-    ((5, 5), np.array([[2.0]])),
-])
-def test__trimmed_after_convolution_from__5x5_array_with_center_marked__trims_to_non_padded_region(kernel_shape, expected_native):
+@pytest.mark.parametrize(
+    "kernel_shape,expected_native",
+    [
+        ((3, 3), np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])),
+        ((5, 5), np.array([[2.0]])),
+    ],
+)
+def test__trimmed_after_convolution_from__5x5_array_with_center_marked__trims_to_non_padded_region(
+    kernel_shape, expected_native
+):
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 

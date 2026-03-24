@@ -7,6 +7,7 @@ import autoarray as aa
 # Helper: build the "identical model, no masking" fit used by multiple tests
 # ---------------------------------------------------------------------------
 
+
 def _make_identical_fit_no_mask():
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)

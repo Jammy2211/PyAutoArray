@@ -161,11 +161,13 @@ class Output:
                 pad_inches=0.1,
             )
         except ValueError as e:
-            logger.info(f"""
+            logger.info(
+                f"""
                 Failed to output figure as a .{format} or .fits due to the following error:
 
                 {e}
-            """)
+            """
+            )
 
     def to_figure(
         self, structure: Optional[Structure], auto_filename: Optional[str] = None

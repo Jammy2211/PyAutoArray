@@ -356,6 +356,7 @@ class TransformerNUFFT(NUFFT_cpu):
             lambda img: self._pynufft_forward_numpy(img),
             result_shape,
             image,
+            vmap_method="sequential",
         )
 
     def visibilities_from(self, image, xp=np):
