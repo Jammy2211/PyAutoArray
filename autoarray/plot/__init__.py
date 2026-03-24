@@ -37,6 +37,7 @@ from autoarray.plot.utils import (
     symmetric_vmin_vmax,
     symmetric_cmap_from,
     set_with_color_values,
+    plot_visibilities_1d,
 )
 
 from autoarray.structures.plot.structure_plots import (

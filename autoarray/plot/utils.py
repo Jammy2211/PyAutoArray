@@ -384,6 +384,33 @@ def save_figure(
     plt.close(fig)
 
 
+def plot_visibilities_1d(vis, ax: plt.Axes, title: str = "") -> None:
+    """Plot the real and imaginary components of a visibilities array as 1D line plots.
+
+    Draws two overlapping lines — one for the real part and one for the
+    imaginary part — with a legend.  Used by interferometer subplot functions
+    to visualise raw or residual visibilities.
+
+    Parameters
+    ----------
+    vis
+        A ``Visibilities`` autoarray object (accessed via ``.slim``) or any
+        array-like that can be cast to a complex numpy array.
+    ax
+        Matplotlib ``Axes`` to draw onto.
+    title
+        Axes title string.
+    """
+    try:
+        y = np.array(vis.slim if hasattr(vis, "slim") else vis)
+    except Exception:
+        y = np.asarray(vis)
+    ax.plot(y.real, label="Real", alpha=0.7)
+    ax.plot(y.imag, label="Imaginary", alpha=0.7)
+    ax.set_title(title)
+    ax.legend(fontsize=8)
+
+
 def apply_extent(
     ax: plt.Axes,
     extent: Tuple[float, float, float, float],
