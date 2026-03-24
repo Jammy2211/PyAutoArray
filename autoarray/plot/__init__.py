@@ -19,7 +19,6 @@ _set_backend()
 
 from autoarray.plot.wrap.base.output import Output
 
-from autoarray.plot.auto_labels import AutoLabels
 
 from autoarray.plot.plots import (
     plot_array,
