@@ -110,8 +110,22 @@ def subplot_image_and_mapper(
     """
     fig, axes = plt.subplots(1, 2, figsize=(14, 7))
 
-    plot_array(image, ax=axes[0], title="Image (Image-Plane)", colormap=colormap, use_log10=use_log10, lines=lines)
-    plot_mapper(mapper, colormap=colormap, use_log10=use_log10, mesh_grid=mesh_grid, lines=lines, ax=axes[1])
+    plot_array(
+        image,
+        ax=axes[0],
+        title="Image (Image-Plane)",
+        colormap=colormap,
+        use_log10=use_log10,
+        lines=lines,
+    )
+    plot_mapper(
+        mapper,
+        colormap=colormap,
+        use_log10=use_log10,
+        mesh_grid=mesh_grid,
+        lines=lines,
+        ax=axes[1],
+    )
 
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)

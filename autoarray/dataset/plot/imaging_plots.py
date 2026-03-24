@@ -50,17 +50,77 @@ def subplot_imaging_dataset(
     fig, axes = plt.subplots(3, 3, figsize=(21, 21))
     axes = axes.flatten()
 
-    plot_array(dataset.data, ax=axes[0], title="Data", colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
-    plot_array(dataset.data, ax=axes[1], title="Data (log10)", colormap=colormap, use_log10=True, grid=grid, positions=positions, lines=lines)
-    plot_array(dataset.noise_map, ax=axes[2], title="Noise-Map", colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
+    plot_array(
+        dataset.data,
+        ax=axes[0],
+        title="Data",
+        colormap=colormap,
+        use_log10=use_log10,
+        grid=grid,
+        positions=positions,
+        lines=lines,
+    )
+    plot_array(
+        dataset.data,
+        ax=axes[1],
+        title="Data (log10)",
+        colormap=colormap,
+        use_log10=True,
+        grid=grid,
+        positions=positions,
+        lines=lines,
+    )
+    plot_array(
+        dataset.noise_map,
+        ax=axes[2],
+        title="Noise-Map",
+        colormap=colormap,
+        use_log10=use_log10,
+        grid=grid,
+        positions=positions,
+        lines=lines,
+    )
 
     if dataset.psf is not None:
-        plot_array(dataset.psf.kernel, ax=axes[3], title="Point Spread Function", colormap=colormap, use_log10=use_log10)
-        plot_array(dataset.psf.kernel, ax=axes[4], title="PSF (log10)", colormap=colormap, use_log10=True)
+        plot_array(
+            dataset.psf.kernel,
+            ax=axes[3],
+            title="Point Spread Function",
+            colormap=colormap,
+            use_log10=use_log10,
+        )
+        plot_array(
+            dataset.psf.kernel,
+            ax=axes[4],
+            title="PSF (log10)",
+            colormap=colormap,
+            use_log10=True,
+        )
 
-    plot_array(dataset.signal_to_noise_map, ax=axes[5], title="Signal-To-Noise Map", colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
-    plot_array(dataset.grids.over_sample_size_lp, ax=axes[6], title="Over Sample Size (Light Profiles)", colormap=colormap, use_log10=use_log10)
-    plot_array(dataset.grids.over_sample_size_pixelization, ax=axes[7], title="Over Sample Size (Pixelization)", colormap=colormap, use_log10=use_log10)
+    plot_array(
+        dataset.signal_to_noise_map,
+        ax=axes[5],
+        title="Signal-To-Noise Map",
+        colormap=colormap,
+        use_log10=use_log10,
+        grid=grid,
+        positions=positions,
+        lines=lines,
+    )
+    plot_array(
+        dataset.grids.over_sample_size_lp,
+        ax=axes[6],
+        title="Over Sample Size (Light Profiles)",
+        colormap=colormap,
+        use_log10=use_log10,
+    )
+    plot_array(
+        dataset.grids.over_sample_size_pixelization,
+        ax=axes[7],
+        title="Over Sample Size (Pixelization)",
+        colormap=colormap,
+        use_log10=use_log10,
+    )
 
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)

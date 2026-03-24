@@ -3,6 +3,7 @@ Standalone function for plotting a 2D grid of (y, x) coordinates.
 
 This replaces the ``MatPlot2D.plot_grid`` / ``MatWrap`` system.
 """
+
 from typing import Iterable, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -156,8 +157,11 @@ def plot_grid(
         colors = ["r", "g", "b", "m", "c", "y"]
         for i, idx_list in enumerate(indexes):
             ax.scatter(
-                grid[idx_list, 1], grid[idx_list, 0],
-                s=10, c=colors[i % len(colors)], zorder=5,
+                grid[idx_list, 1],
+                grid[idx_list, 0],
+                s=10,
+                c=colors[i % len(colors)],
+                zorder=5,
             )
 
     if force_symmetric_extent and extent is not None:

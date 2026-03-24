@@ -66,17 +66,36 @@ class Output:
 
     @property
     def format(self) -> str:
+        """The output format string; defaults to ``"show"`` when none was given."""
         if self._format is None:
             return "show"
         return self._format
 
     @property
     def format_list(self):
+        """The output format(s) as a list, so iteration always works."""
         if not isinstance(self.format, list):
             return [self.format]
         return self.format
 
     def output_path_from(self, format):
+        """Return the directory path for *format*, creating it if necessary.
+
+        When *format* is ``"show"`` returns ``None`` (no file is written).
+        When ``format_folder`` is ``True`` the format name is appended as a
+        sub-directory so that ``png`` and ``pdf`` outputs are kept separate.
+
+        Parameters
+        ----------
+        format
+            File format string, e.g. ``"png"``, ``"pdf"``, or ``"show"``.
+
+        Returns
+        -------
+        str or None
+            Absolute path to the output directory, or ``None`` for
+            ``format == "show"``.
+        """
         if format in "show":
             return None
 
@@ -90,6 +109,23 @@ class Output:
         return output_path
 
     def filename_from(self, auto_filename):
+        """Build the final filename string by applying prefix / suffix.
+
+        When no explicit ``filename`` was passed to ``__init__`` the
+        *auto_filename* supplied by the calling plotter is used as the base.
+
+        Parameters
+        ----------
+        auto_filename
+            Fallback filename (without extension) when ``self.filename`` is
+            ``None``.
+
+        Returns
+        -------
+        str
+            The resolved filename with any configured prefix and suffix
+            applied.
+        """
         filename = auto_filename if self.filename is None else self.filename
 
         if self.prefix is not None:
@@ -101,7 +137,21 @@ class Output:
         return filename
 
     def savefig(self, filename: str, output_path: str, format: str):
+        """Call ``plt.savefig`` with the configured ``bbox_inches`` setting.
 
+        Catches ``ValueError`` exceptions (e.g. unsupported format) and logs
+        them without raising, so a single bad output format does not abort
+        the whole script.
+
+        Parameters
+        ----------
+        filename
+            Base file name without extension.
+        output_path
+            Directory to write the file (must already exist).
+        format
+            File format extension string, e.g. ``"png"``.
+        """
         import matplotlib.pyplot as plt
 
         try:
@@ -111,13 +161,11 @@ class Output:
                 pad_inches=0.1,
             )
         except ValueError as e:
-            logger.info(
-                f"""
+            logger.info(f"""
                 Failed to output figure as a .{format} or .fits due to the following error:
 
                 {e}
-            """
-            )
+            """)
 
     def to_figure(
         self, structure: Optional[Structure], auto_filename: Optional[str] = None
@@ -190,6 +238,20 @@ class Output:
             plt.show()
 
     def to_figure_output_mode(self, filename: str):
+        """Save the current figure as a numbered PNG snapshot in *output mode*.
+
+        Output mode is activated by setting the environment variable
+        ``PYAUTOARRAY_OUTPUT_MODE=1``.  Each call increments a global counter
+        so that figures are saved as ``0_filename.png``, ``1_filename.png``,
+        etc. in a sub-directory named after the running script.  This is useful
+        for collecting a sequence of figures during automated testing or
+        demonstration scripts.
+
+        Parameters
+        ----------
+        filename
+            Base file name (without extension) for this figure.
+        """
         global COUNT
 
         try:

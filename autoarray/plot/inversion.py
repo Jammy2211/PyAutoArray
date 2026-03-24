@@ -3,6 +3,7 @@ Standalone functions for plotting inversion / pixelization reconstructions.
 
 Replaces the inversion-specific paths in ``MatPlot2D.plot_mapper``.
 """
+
 from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -90,11 +91,17 @@ def plot_inversion_reconstruction(
     else:
         norm = None
 
-    extent = mapper.extent_from(values=pixel_values, zoom_to_brightest=zoom_to_brightest)
+    extent = mapper.extent_from(
+        values=pixel_values, zoom_to_brightest=zoom_to_brightest
+    )
 
-    if isinstance(mapper.interpolator, (InterpolatorRectangular, InterpolatorRectangularUniform)):
+    if isinstance(
+        mapper.interpolator, (InterpolatorRectangular, InterpolatorRectangularUniform)
+    ):
         _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent)
-    elif isinstance(mapper.interpolator, (InterpolatorDelaunay, InterpolatorKNearestNeighbor)):
+    elif isinstance(
+        mapper.interpolator, (InterpolatorDelaunay, InterpolatorKNearestNeighbor)
+    ):
         _plot_delaunay(ax, pixel_values, mapper, norm, colormap)
 
     # --- overlays --------------------------------------------------------------
@@ -123,7 +130,30 @@ def plot_inversion_reconstruction(
 
 
 def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
-    """Render a rectangular mesh reconstruction with pcolormesh or imshow."""
+    """Render a rectangular pixelization reconstruction onto *ax*.
+
+    Uses ``imshow`` for uniform rectangular grids
+    (``InterpolatorRectangularUniform``) and ``pcolormesh`` for non-uniform
+    rectangular grids.  Both paths add a colorbar.
+
+    Parameters
+    ----------
+    ax
+        Matplotlib ``Axes`` to draw onto.
+    pixel_values
+        1-D array of reconstructed flux values, one per source pixel.
+        ``None`` renders a zero-filled image.
+    mapper
+        Mapper object exposing ``interpolator``, ``mesh_geometry``, and
+        (for uniform grids) ``pixel_scales`` / ``origin``.
+    norm
+        ``matplotlib.colors.Normalize`` (or ``LogNorm``) instance, or
+        ``None`` for automatic scaling.
+    colormap
+        Matplotlib colormap name.
+    extent
+        ``[xmin, xmax, ymin, ymax]`` spatial extent; passed to ``imshow``.
+    """
     from autoarray.inversion.mesh.interpolator.rectangular_uniform import (
         InterpolatorRectangularUniform,
     )
@@ -159,7 +189,8 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
         y_edges, x_edges = mapper.mesh_geometry.edges_transformed.T
         Y, X = np.meshgrid(y_edges, x_edges, indexing="ij")
         im = ax.pcolormesh(
-            X, Y,
+            X,
+            Y,
             pixel_values.reshape(shape_native),
             shading="flat",
             norm=norm,
@@ -169,7 +200,28 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
 
 
 def _plot_delaunay(ax, pixel_values, mapper, norm, colormap):
-    """Render a Delaunay mesh reconstruction with tripcolor."""
+    """Render a Delaunay or KNN pixelization reconstruction onto *ax*.
+
+    Uses ``ax.tripcolor`` with Gouraud shading so that the reconstructed
+    flux is interpolated smoothly across the triangulated source-plane mesh.
+    A colorbar is attached after rendering.
+
+    Parameters
+    ----------
+    ax
+        Matplotlib ``Axes`` to draw onto.
+    pixel_values
+        1-D array of reconstructed flux values (one per source-plane pixel),
+        or an autoarray object exposing a ``.array`` attribute.
+    mapper
+        Mapper object exposing ``source_plane_mesh_grid`` — an ``(N, 2)``
+        array of ``(y, x)`` mesh-point coordinates.
+    norm
+        ``matplotlib.colors.Normalize`` (or ``LogNorm``) instance, or
+        ``None`` for automatic scaling.
+    colormap
+        Matplotlib colormap name.
+    """
     mesh_grid = mapper.source_plane_mesh_grid
     x = mesh_grid[:, 1]
     y = mesh_grid[:, 0]

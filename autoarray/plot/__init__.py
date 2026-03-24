@@ -2,6 +2,7 @@ def _set_backend():
     try:
         import matplotlib
         from autoconf import conf
+
         backend = conf.get_matplotlib_backend()
         if backend not in "default":
             matplotlib.use(backend)

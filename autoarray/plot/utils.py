@@ -1,6 +1,7 @@
 """
 Shared utilities for the direct-matplotlib plot functions.
 """
+
 import logging
 import os
 from typing import List, Optional, Tuple
@@ -15,8 +16,26 @@ logger = logging.getLogger(__name__)
 # autoarray → numpy conversion helpers (used by high-level plot functions)
 # ---------------------------------------------------------------------------
 
+
 def auto_mask_edge(array) -> Optional[np.ndarray]:
-    """Return edge-pixel (y, x) coords from array.mask, or None."""
+    """Return the edge-pixel ``(y, x)`` coordinates of an autoarray mask.
+
+    Used to overlay the mask boundary on ``plot_array`` images.  If *array*
+    has no ``mask`` attribute, or the mask is fully unmasked, ``None`` is
+    returned so no overlay is drawn.
+
+    Parameters
+    ----------
+    array
+        An autoarray ``Array2D`` (or any object with a ``.mask`` attribute
+        that exposes ``.derive_grid.edge.array``).
+
+    Returns
+    -------
+    numpy.ndarray or None
+        Shape ``(N, 2)`` float array of ``(y, x)`` edge coordinates, or
+        ``None`` when the array is unmasked or has no mask.
+    """
     try:
         if not array.mask.is_all_false:
             return np.array(array.mask.derive_grid.edge.array)
@@ -26,21 +45,59 @@ def auto_mask_edge(array) -> Optional[np.ndarray]:
 
 
 def zoom_array(array):
-    """Apply zoom_around_mask from config if requested."""
+    """Crop *array* around its mask when ``zoom_around_mask`` is enabled in config.
+
+    Reads ``visualize/general/general/zoom_around_mask`` from the autoconf
+    configuration.  When the flag is ``True`` and *array* carries a non-trivial
+    mask the array is cropped via ``Zoom2D`` so that downstream ``imshow``
+    calls fill the axes without empty black borders.
+
+    Parameters
+    ----------
+    array
+        An autoarray ``Array2D`` (or any object).  Plain numpy arrays are
+        returned unchanged.
+
+    Returns
+    -------
+    array
+        The (potentially cropped) array.  If the config flag is ``False``, or
+        *array* has no mask / the mask is all-``False``, the input is returned
+        unmodified.
+    """
     try:
         from autoconf import conf
-        zoom_around_mask = conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]
+
+        zoom_around_mask = conf.instance["visualize"]["general"]["general"][
+            "zoom_around_mask"
+        ]
     except Exception:
         zoom_around_mask = False
 
     if zoom_around_mask and hasattr(array, "mask") and not array.mask.is_all_false:
         from autoarray.mask.derive.zoom_2d import Zoom2D
+
         return Zoom2D(mask=array.mask).array_2d_from(array=array, buffer=1)
     return array
 
 
 def numpy_grid(grid) -> Optional[np.ndarray]:
-    """Convert a grid-like object to a plain (N,2) numpy array, or None."""
+    """Convert a grid-like object to a plain ``(N, 2)`` numpy array, or ``None``.
+
+    Accepts autoarray ``Grid2D`` / ``Grid2DIrregular`` objects (via their
+    ``.array`` attribute) as well as bare numpy arrays.  ``None`` inputs are
+    passed through so callers can use this as a safe no-op.
+
+    Parameters
+    ----------
+    grid
+        An autoarray grid, a ``(N, 2)`` numpy array, or ``None``.
+
+    Returns
+    -------
+    numpy.ndarray or None
+        Plain ``(N, 2)`` float array with ``(y, x)`` columns, or ``None``.
+    """
     if grid is None:
         return None
     try:
@@ -50,7 +107,23 @@ def numpy_grid(grid) -> Optional[np.ndarray]:
 
 
 def numpy_lines(lines) -> Optional[List[np.ndarray]]:
-    """Convert lines (Grid2DIrregular or list) to list of (N,2) numpy arrays."""
+    """Convert a collection of lines to a list of ``(N, 2)`` numpy arrays.
+
+    Accepts autoarray ``Grid2DIrregular`` objects or any iterable of
+    ``(N, 2)`` array-like sequences.  Each element is converted to a plain
+    numpy array; elements that cannot be converted are silently skipped.
+
+    Parameters
+    ----------
+    lines
+        An autoarray grid collection, a list of ``(N, 2)`` arrays, or ``None``.
+
+    Returns
+    -------
+    list of numpy.ndarray or None
+        List of ``(N, 2)`` float arrays (``y`` column 0, ``x`` column 1), or
+        ``None`` when *lines* is ``None`` or no valid lines are found.
+    """
     if lines is None:
         return None
     result = []
@@ -68,7 +141,25 @@ def numpy_lines(lines) -> Optional[List[np.ndarray]]:
 
 
 def numpy_positions(positions) -> Optional[List[np.ndarray]]:
-    """Convert positions to list of (N,2) numpy arrays."""
+    """Convert a positions object to a list of ``(N, 2)`` numpy arrays.
+
+    Positions can be a single ``Grid2DIrregular`` (treated as one group),
+    a plain ``(N, 2)`` array (treated as one group), or a list of such
+    objects (each becomes one group, scatter-plotted in a distinct colour).
+
+    Parameters
+    ----------
+    positions
+        An autoarray ``Grid2DIrregular``, a ``(N, 2)`` numpy array, a list
+        of the above, or ``None``.
+
+    Returns
+    -------
+    list of numpy.ndarray or None
+        Each element is a ``(N, 2)`` array of ``(y, x)`` coordinates
+        representing one group of positions, or ``None`` when *positions*
+        is ``None`` or cannot be converted.
+    """
     if positions is None:
         return None
     try:
@@ -89,7 +180,24 @@ def numpy_positions(positions) -> Optional[List[np.ndarray]]:
 
 
 def symmetric_vmin_vmax(array):
-    """Return ``(-abs_max, abs_max)`` for a symmetric (residual) colormap."""
+    """Return ``(-abs_max, abs_max)`` colour limits for a symmetric residual colormap.
+
+    Computes the maximum absolute value of *array* and returns symmetric limits
+    so that zero maps to the centre of the colormap.  Typically applied to
+    residual maps and normalised residual maps.
+
+    Parameters
+    ----------
+    array
+        An autoarray ``Array2D`` (uses ``.native.array``) or a plain numpy
+        array.
+
+    Returns
+    -------
+    tuple of (float, float) or (None, None)
+        ``(vmin, vmax)`` where ``vmin == -vmax == -abs_max``.  Returns
+        ``(None, None)`` if the computation fails (e.g. all-NaN input).
+    """
     try:
         arr = array.native.array if hasattr(array, "native") else np.asarray(array)
         abs_max = float(np.nanmax(np.abs(arr)))
@@ -160,7 +268,26 @@ def set_with_color_values(ax, cmap, color_values, norm=None, fraction=0.047, pad
 
 
 def subplot_save(fig, output_path, output_filename, output_format):
-    """Save a subplot figure or show it, then close."""
+    """Save a subplot figure to disk, or display it, then close it.
+
+    All ``subplot_*`` functions call this as their final step.  When
+    *output_path* is non-empty the figure is written to
+    ``<output_path>/<output_filename>.<output_format>``; otherwise
+    ``plt.show()`` is called.  ``plt.close(fig)`` is always called to
+    release memory.
+
+    Parameters
+    ----------
+    fig
+        The matplotlib ``Figure`` to save or show.
+    output_path
+        Directory to write the file.  Creates the directory if needed.
+        ``None`` or an empty string causes ``plt.show()`` to be called.
+    output_filename
+        Base file name without extension.
+    output_format
+        File format string, e.g. ``"png"`` or ``"pdf"``.
+    """
     if output_path:
         os.makedirs(output_path, exist_ok=True)
         try:
@@ -170,7 +297,9 @@ def subplot_save(fig, output_path, output_filename, output_format):
                 pad_inches=0.1,
             )
         except Exception as exc:
-            logger.warning(f"subplot_save: could not save {output_filename}.{output_format}: {exc}")
+            logger.warning(
+                f"subplot_save: could not save {output_filename}.{output_format}: {exc}"
+            )
     else:
         plt.show()
     plt.close(fig)

@@ -1,6 +1,7 @@
 """
 Standalone function for plotting a 2D array (image) directly with matplotlib.
 """
+
 import os
 from typing import List, Optional, Tuple
 
@@ -154,7 +155,10 @@ def plot_array(
     if use_log10:
         try:
             from autoconf import conf as _conf
-            log10_min = _conf.instance["visualize"]["general"]["general"]["log10_min_value"]
+
+            log10_min = _conf.instance["visualize"]["general"]["general"][
+                "log10_min_value"
+            ]
         except Exception:
             log10_min = 1.0e-4
         clipped = np.clip(array, log10_min, None)
@@ -196,7 +200,9 @@ def plot_array(
         origin_arr = np.asarray(origin)
         if origin_arr.ndim == 1:
             origin_arr = origin_arr[np.newaxis, :]
-        ax.scatter(origin_arr[:, 1], origin_arr[:, 0], s=20, c="r", marker="x", zorder=6)
+        ax.scatter(
+            origin_arr[:, 1], origin_arr[:, 0], s=20, c="r", marker="x", zorder=6
+        )
 
     if grid is not None:
         ax.scatter(grid[:, 1], grid[:, 0], s=1, c="k")
@@ -225,6 +231,7 @@ def plot_array(
     if patches is not None:
         for patch in patches:
             import copy
+
             ax.add_patch(copy.copy(patch))
 
     if fill_region is not None:

@@ -56,8 +56,16 @@ def subplot_of_mapper(
 
     # panel 0: data subtracted
     try:
-        plot_array(inversion.data_subtracted_dict[mapper], ax=axes[0], title="Data Subtracted",
-                   colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
+        plot_array(
+            inversion.data_subtracted_dict[mapper],
+            ax=axes[0],
+            title="Data Subtracted",
+            colormap=colormap,
+            use_log10=use_log10,
+            grid=grid,
+            positions=positions,
+            lines=lines,
+        )
     except (AttributeError, KeyError):
         pass
 
@@ -65,63 +73,145 @@ def subplot_of_mapper(
     def _recon_array():
         array = inversion.mapped_reconstructed_operated_data_dict[mapper]
         from autoarray.structures.visibilities import Visibilities
+
         if isinstance(array, Visibilities):
             array = inversion.mapped_reconstructed_data_dict[mapper]
         return array
 
     try:
-        plot_array(_recon_array(), ax=axes[1], title="Reconstructed Image",
-                   colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
-        plot_array(_recon_array(), ax=axes[2], title="Reconstructed Image (log10)",
-                   colormap=colormap, use_log10=True, grid=grid, positions=positions, lines=lines)
-        plot_array(_recon_array(), ax=axes[3], title="Mesh Pixel Grid Overlaid",
-                   colormap=colormap, use_log10=use_log10,
-                   grid=numpy_grid(mapper.image_plane_mesh_grid), positions=positions, lines=lines)
+        plot_array(
+            _recon_array(),
+            ax=axes[1],
+            title="Reconstructed Image",
+            colormap=colormap,
+            use_log10=use_log10,
+            grid=grid,
+            positions=positions,
+            lines=lines,
+        )
+        plot_array(
+            _recon_array(),
+            ax=axes[2],
+            title="Reconstructed Image (log10)",
+            colormap=colormap,
+            use_log10=True,
+            grid=grid,
+            positions=positions,
+            lines=lines,
+        )
+        plot_array(
+            _recon_array(),
+            ax=axes[3],
+            title="Mesh Pixel Grid Overlaid",
+            colormap=colormap,
+            use_log10=use_log10,
+            grid=numpy_grid(mapper.image_plane_mesh_grid),
+            positions=positions,
+            lines=lines,
+        )
     except (AttributeError, KeyError):
         pass
 
     # panels 4-5: source reconstruction zoomed / unzoomed
     pixel_values = inversion.reconstruction_dict[mapper]
-    plot_mapper(mapper, solution_vector=pixel_values, ax=axes[4], title="Source Reconstruction",
-                colormap=colormap, use_log10=use_log10, zoom_to_brightest=True, mesh_grid=mesh_grid, lines=lines)
-    plot_mapper(mapper, solution_vector=pixel_values, ax=axes[5], title="Source Reconstruction (Unzoomed)",
-                colormap=colormap, use_log10=use_log10, zoom_to_brightest=False, mesh_grid=mesh_grid, lines=lines)
+    plot_mapper(
+        mapper,
+        solution_vector=pixel_values,
+        ax=axes[4],
+        title="Source Reconstruction",
+        colormap=colormap,
+        use_log10=use_log10,
+        zoom_to_brightest=True,
+        mesh_grid=mesh_grid,
+        lines=lines,
+    )
+    plot_mapper(
+        mapper,
+        solution_vector=pixel_values,
+        ax=axes[5],
+        title="Source Reconstruction (Unzoomed)",
+        colormap=colormap,
+        use_log10=use_log10,
+        zoom_to_brightest=False,
+        mesh_grid=mesh_grid,
+        lines=lines,
+    )
 
     # panel 6: noise map
     try:
         nm = inversion.reconstruction_noise_map_dict[mapper]
-        plot_mapper(mapper, solution_vector=nm, ax=axes[6], title="Noise-Map (Unzoomed)",
-                    colormap=colormap, use_log10=use_log10, zoom_to_brightest=False, mesh_grid=mesh_grid, lines=lines)
+        plot_mapper(
+            mapper,
+            solution_vector=nm,
+            ax=axes[6],
+            title="Noise-Map (Unzoomed)",
+            colormap=colormap,
+            use_log10=use_log10,
+            zoom_to_brightest=False,
+            mesh_grid=mesh_grid,
+            lines=lines,
+        )
     except (KeyError, TypeError):
         pass
 
     # panel 7: regularization weights
     try:
         rw = inversion.regularization_weights_mapper_dict[mapper]
-        plot_mapper(mapper, solution_vector=rw, ax=axes[7], title="Regularization Weights (Unzoomed)",
-                    colormap=colormap, use_log10=use_log10, zoom_to_brightest=False, mesh_grid=mesh_grid, lines=lines)
+        plot_mapper(
+            mapper,
+            solution_vector=rw,
+            ax=axes[7],
+            title="Regularization Weights (Unzoomed)",
+            colormap=colormap,
+            use_log10=use_log10,
+            zoom_to_brightest=False,
+            mesh_grid=mesh_grid,
+            lines=lines,
+        )
     except (IndexError, ValueError, KeyError, TypeError):
         pass
 
     # panel 8: sub pixels per image pixels
     try:
-        sub_size = Array2D(values=mapper.over_sampler.sub_size, mask=inversion.dataset.mask)
-        plot_array(sub_size, ax=axes[8], title="Sub Pixels Per Image Pixels", colormap=colormap, use_log10=use_log10)
+        sub_size = Array2D(
+            values=mapper.over_sampler.sub_size, mask=inversion.dataset.mask
+        )
+        plot_array(
+            sub_size,
+            ax=axes[8],
+            title="Sub Pixels Per Image Pixels",
+            colormap=colormap,
+            use_log10=use_log10,
+        )
     except Exception:
         pass
 
     # panel 9: mesh pixels per image pixels
     try:
-        plot_array(mapper.mesh_pixels_per_image_pixels, ax=axes[9],
-                   title="Mesh Pixels Per Image Pixels", colormap=colormap, use_log10=use_log10)
+        plot_array(
+            mapper.mesh_pixels_per_image_pixels,
+            ax=axes[9],
+            title="Mesh Pixels Per Image Pixels",
+            colormap=colormap,
+            use_log10=use_log10,
+        )
     except Exception:
         pass
 
     # panel 10: image pixels per mesh pixel
     try:
         pw = mapper.data_weight_total_for_pix_from()
-        plot_mapper(mapper, solution_vector=pw, ax=axes[10], title="Image Pixels Per Source Pixel",
-                    colormap=colormap, use_log10=use_log10, zoom_to_brightest=True, mesh_grid=mesh_grid, lines=lines)
+        plot_mapper(
+            mapper,
+            solution_vector=pw,
+            ax=axes[10],
+            title="Image Pixels Per Source Pixel",
+            colormap=colormap,
+            use_log10=use_log10,
+            zoom_to_brightest=True,
+            mesh_grid=mesh_grid,
+            lines=lines,
+        )
     except (TypeError, Exception):
         pass
 
@@ -167,7 +257,9 @@ def subplot_mappings(
     mapper = inversion.cls_list_from(cls=Mapper)[pixelization_index]
 
     try:
-        total_pixels = conf.instance["visualize"]["general"]["inversion"]["total_mappings_pixels"]
+        total_pixels = conf.instance["visualize"]["general"]["inversion"][
+            "total_mappings_pixels"
+        ]
     except Exception:
         total_pixels = 10
 
@@ -183,8 +275,16 @@ def subplot_mappings(
 
     # panel 0: data subtracted
     try:
-        plot_array(inversion.data_subtracted_dict[mapper], ax=axes[0], title="Data Subtracted",
-                   colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
+        plot_array(
+            inversion.data_subtracted_dict[mapper],
+            ax=axes[0],
+            title="Data Subtracted",
+            colormap=colormap,
+            use_log10=use_log10,
+            grid=grid,
+            positions=positions,
+            lines=lines,
+        )
     except (AttributeError, KeyError):
         pass
 
@@ -192,18 +292,47 @@ def subplot_mappings(
     try:
         array = inversion.mapped_reconstructed_operated_data_dict[mapper]
         from autoarray.structures.visibilities import Visibilities
+
         if isinstance(array, Visibilities):
             array = inversion.mapped_reconstructed_data_dict[mapper]
-        plot_array(array, ax=axes[1], title="Reconstructed Image",
-                   colormap=colormap, use_log10=use_log10, grid=grid, positions=positions, lines=lines)
+        plot_array(
+            array,
+            ax=axes[1],
+            title="Reconstructed Image",
+            colormap=colormap,
+            use_log10=use_log10,
+            grid=grid,
+            positions=positions,
+            lines=lines,
+        )
     except (AttributeError, KeyError):
         pass
 
     pixel_values = inversion.reconstruction_dict[mapper]
-    plot_mapper(mapper, solution_vector=pixel_values, ax=axes[2], title="Source Reconstruction",
-                colormap=colormap, use_log10=use_log10, zoom_to_brightest=True, mesh_grid=mesh_grid, lines=lines)
-    plot_mapper(mapper, solution_vector=pixel_values, ax=axes[3], title="Source Reconstruction (Unzoomed)",
-                colormap=colormap, use_log10=use_log10, zoom_to_brightest=False, mesh_grid=mesh_grid, lines=lines)
+    plot_mapper(
+        mapper,
+        solution_vector=pixel_values,
+        ax=axes[2],
+        title="Source Reconstruction",
+        colormap=colormap,
+        use_log10=use_log10,
+        zoom_to_brightest=True,
+        mesh_grid=mesh_grid,
+        lines=lines,
+    )
+    plot_mapper(
+        mapper,
+        solution_vector=pixel_values,
+        ax=axes[3],
+        title="Source Reconstruction (Unzoomed)",
+        colormap=colormap,
+        use_log10=use_log10,
+        zoom_to_brightest=False,
+        mesh_grid=mesh_grid,
+        lines=lines,
+    )
 
     plt.tight_layout()
-    subplot_save(fig, output_path, f"{output_filename}_{pixelization_index}", output_format)
+    subplot_save(
+        fig, output_path, f"{output_filename}_{pixelization_index}", output_format
+    )

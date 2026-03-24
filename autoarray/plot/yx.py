@@ -3,6 +3,7 @@ Standalone function for plotting 1D y-vs-x data.
 
 Replaces ``MatPlot1D.plot_yx`` / ``MatWrap`` system.
 """
+
 from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -98,8 +99,14 @@ def plot_yx(
     # --- main line / scatter ---------------------------------------------------
     if y_errors is not None or x_errors is not None:
         ax.errorbar(
-            x, y, yerr=y_errors, xerr=x_errors,
-            fmt="-o", color=color, label=label, markersize=3,
+            x,
+            y,
+            yerr=y_errors,
+            xerr=x_errors,
+            fmt="-o",
+            color=color,
+            label=label,
+            markersize=3,
         )
     elif plot_axis_type == "scatter":
         ax.scatter(x, y, s=2, c=color, label=label)
