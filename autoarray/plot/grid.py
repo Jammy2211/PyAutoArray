@@ -8,7 +8,7 @@ from typing import Iterable, List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from autoarray.plot.plots.utils import apply_extent, conf_figsize, save_figure, numpy_lines
+from autoarray.plot.utils import apply_extent, conf_figsize, save_figure, numpy_lines
 
 
 def plot_grid(

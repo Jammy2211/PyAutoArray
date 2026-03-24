@@ -2,8 +2,8 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import subplot_save
+from autoarray.plot.array import plot_array
+from autoarray.plot.utils import subplot_save
 
 
 def subplot_imaging_dataset(

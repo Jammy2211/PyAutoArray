@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm, Normalize
 
-from autoarray.plot.plots.utils import apply_extent, conf_figsize, save_figure
+from autoarray.plot.utils import apply_extent, conf_figsize, save_figure
 
 
 def plot_inversion_reconstruction(

@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from autoconf import conf
 
 from autoarray.inversion.mappers.abstract import Mapper
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save
+from autoarray.plot.array import plot_array
+from autoarray.plot.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save
 from autoarray.inversion.plot.mapper_plots import plot_mapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 

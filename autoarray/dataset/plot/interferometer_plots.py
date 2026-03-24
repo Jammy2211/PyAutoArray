@@ -3,10 +3,10 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.grid import plot_grid
-from autoarray.plot.plots.yx import plot_yx
-from autoarray.plot.plots.utils import subplot_save
+from autoarray.plot.array import plot_array
+from autoarray.plot.grid import plot_grid
+from autoarray.plot.yx import plot_yx
+from autoarray.plot.utils import subplot_save
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 

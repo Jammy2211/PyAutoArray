@@ -3,9 +3,9 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 
-from autoarray.plot.plots.array import plot_array
-from autoarray.plot.plots.inversion import plot_inversion_reconstruction
-from autoarray.plot.plots.utils import numpy_grid, numpy_lines, subplot_save
+from autoarray.plot.array import plot_array
+from autoarray.plot.inversion import plot_inversion_reconstruction
+from autoarray.plot.utils import numpy_grid, numpy_lines, subplot_save
 
 logger = logging.getLogger(__name__)
 

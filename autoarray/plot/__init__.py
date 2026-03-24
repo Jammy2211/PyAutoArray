@@ -17,14 +17,13 @@ def _set_backend():
 
 _set_backend()
 
-from autoarray.plot.wrap.base.output import Output
+from autoarray.plot.output import Output
 
-
-from autoarray.plot.plots import (
-    plot_array,
-    plot_grid,
-    plot_yx,
-    plot_inversion_reconstruction,
+from autoarray.plot.array import plot_array
+from autoarray.plot.grid import plot_grid
+from autoarray.plot.yx import plot_yx
+from autoarray.plot.inversion import plot_inversion_reconstruction
+from autoarray.plot.utils import (
     apply_extent,
     conf_figsize,
     save_figure,

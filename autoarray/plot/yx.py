@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from autoarray.plot.plots.utils import conf_figsize, save_figure
+from autoarray.plot.utils import conf_figsize, save_figure
 
 
 def plot_yx(
