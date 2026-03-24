@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm, Normalize
 
-from autoarray.plot.utils import apply_extent, conf_figsize, save_figure
+from autoarray.plot.utils import apply_extent, apply_labels, conf_figsize, save_figure
 
 
 def plot_inversion_reconstruction(
@@ -125,10 +125,7 @@ def plot_inversion_reconstruction(
 
     apply_extent(ax, extent)
 
-    ax.set_title(title, fontsize=16)
-    ax.set_xlabel(xlabel, fontsize=14)
-    ax.set_ylabel(ylabel, fontsize=14)
-    ax.tick_params(labelsize=12)
+    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel)
 
     if owns_figure:
         save_figure(

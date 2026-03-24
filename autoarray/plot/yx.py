@@ -9,7 +9,7 @@ from typing import List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from autoarray.plot.utils import conf_figsize, save_figure
+from autoarray.plot.utils import apply_labels, conf_figsize, save_figure
 
 
 def plot_yx(
@@ -129,10 +129,7 @@ def plot_yx(
         ax.fill_between(x, y1, y2, alpha=0.3)
 
     # --- labels ----------------------------------------------------------------
-    ax.set_title(title, fontsize=16)
-    ax.set_xlabel(xlabel, fontsize=14)
-    ax.set_ylabel(ylabel, fontsize=14)
-    ax.tick_params(labelsize=12)
+    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel)
 
     if label is not None:
         ax.legend(fontsize=12)

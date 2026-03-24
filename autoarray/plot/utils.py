@@ -305,21 +305,100 @@ def subplot_save(fig, output_path, output_filename, output_format):
     plt.close(fig)
 
 
-def conf_figsize(context: str = "figures") -> Tuple[int, int]:
-    """
-    Read figsize from ``visualize/general.yaml`` for the given context.
+def conf_mat_plot_fontsize(section: str, default: int) -> int:
+    """Read a font size from the ``mat_plot`` section of ``visualize/general.yaml``.
 
     Parameters
     ----------
-    context
-        Either ``"figures"`` (single-panel) or ``"subplots"`` (multi-panel).
+    section
+        Sub-key inside ``mat_plot``, e.g. ``"title"``, ``"xlabel"``,
+        ``"ylabel"``, ``"xticks"``, or ``"yticks"``.
+    default
+        Value returned when the config key is absent or unreadable.
+
+    Returns
+    -------
+    int
+        The configured font size.
     """
     try:
         from autoconf import conf
 
+        return int(
+            conf.instance["visualize"]["general"]["mat_plot"][section]["fontsize"]
+        )
+    except Exception:
+        return default
+
+
+def _parse_figsize(raw) -> Tuple[int, int]:
+    """Convert *raw* (a tuple/list or a string like ``"(7, 7)"``) to a 2-tuple."""
+    if isinstance(raw, (tuple, list)):
+        return tuple(raw)
+    import ast
+
+    return tuple(ast.literal_eval(str(raw)))
+
+
+def conf_figsize(context: str = "figures") -> Tuple[int, int]:
+    """
+    Read figsize from ``visualize/general.yaml`` for the given context.
+
+    For single-panel figures the value is taken from
+    ``mat_plot/figure/figsize``; the *context* argument is kept for
+    backward compatibility with subplot callers that pass ``"subplots"``.
+
+    Parameters
+    ----------
+    context
+        ``"figures"`` (single-panel) or ``"subplots"`` (multi-panel).
+    """
+    try:
+        from autoconf import conf
+
+        if context == "figures":
+            raw = conf.instance["visualize"]["general"]["mat_plot"]["figure"]["figsize"]
+            return _parse_figsize(raw)
         return tuple(conf.instance["visualize"]["general"][context]["figsize"])
     except Exception:
         return (7, 7) if context == "figures" else (19, 16)
+
+
+def apply_labels(
+    ax: plt.Axes,
+    title: str = "",
+    xlabel: str = "",
+    ylabel: str = "",
+) -> None:
+    """Apply title, axis labels, and tick font sizes to *ax* from config.
+
+    Reads font sizes from the ``mat_plot`` section of
+    ``visualize/general.yaml`` so that users can override them globally
+    without touching call sites.  Falls back to the values that the
+    old ``MatWrap`` system used when the config is unavailable.
+
+    Parameters
+    ----------
+    ax
+        The matplotlib axes to configure.
+    title
+        Title string.
+    xlabel
+        X-axis label string.
+    ylabel
+        Y-axis label string.
+    """
+    title_fs = conf_mat_plot_fontsize("title", default=16)
+    xlabel_fs = conf_mat_plot_fontsize("xlabel", default=14)
+    ylabel_fs = conf_mat_plot_fontsize("ylabel", default=14)
+    xticks_fs = conf_mat_plot_fontsize("xticks", default=12)
+    yticks_fs = conf_mat_plot_fontsize("yticks", default=12)
+
+    ax.set_title(title, fontsize=title_fs)
+    ax.set_xlabel(xlabel, fontsize=xlabel_fs)
+    ax.set_ylabel(ylabel, fontsize=ylabel_fs)
+    ax.tick_params(axis="x", labelsize=xticks_fs)
+    ax.tick_params(axis="y", labelsize=yticks_fs)
 
 
 def save_figure(

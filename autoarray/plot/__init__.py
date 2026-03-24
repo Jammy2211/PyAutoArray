@@ -26,7 +26,9 @@ from autoarray.plot.yx import plot_yx
 from autoarray.plot.inversion import plot_inversion_reconstruction
 from autoarray.plot.utils import (
     apply_extent,
+    apply_labels,
     conf_figsize,
+    conf_mat_plot_fontsize,
     save_figure,
     subplot_save,
     auto_mask_edge,
