@@ -2,7 +2,6 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 
-from autoarray.plot.array import plot_array
 from autoarray.plot.utils import subplot_save
 
 
@@ -47,6 +46,8 @@ def subplot_imaging_dataset(
     grid, positions, lines
         Optional overlays forwarded to every panel.
     """
+    from autoarray.plot.array import plot_array
+
     fig, axes = plt.subplots(3, 3, figsize=(21, 21))
     axes = axes.flatten()
 
@@ -167,6 +168,8 @@ def subplot_imaging(
     except Exception:
         pass
 
+    from autoarray.plot.array import plot_array
+
     n = len(panels)
     fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
     axes_flat = list(axes.flatten()) if n > 1 else [axes]
@@ -200,6 +203,8 @@ def subplot_imaging_dataset_list(
     """
     if isinstance(output_format, (list, tuple)):
         output_format = output_format[0]
+
+    from autoarray.plot.array import plot_array
 
     n = len(dataset_list)
     fig, axes = plt.subplots(n, 3, figsize=(21, 7 * n))
