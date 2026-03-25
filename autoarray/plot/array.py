@@ -45,8 +45,8 @@ def plot_array(
     contours: Optional[int] = None,
     # --- cosmetics --------------------------------------------------------------
     title: str = "",
-    xlabel: str = 'x (")',
-    ylabel: str = 'y (")',
+    xlabel: str = "",
+    ylabel: str = "",
     colormap: str = "jet",
     vmin: Optional[float] = None,
     vmax: Optional[float] = None,

@@ -494,6 +494,11 @@ def plot_visibilities_1d(vis, ax: plt.Axes, title: str = "") -> None:
     ax.legend(fontsize=8)
 
 
+def _arcsec_labels(ticks) -> List[str]:
+    """Format tick values as arcsecond strings, e.g. ``-1``, ``0``, ``1"``."""
+    return [f'{v:g}"' for v in ticks]
+
+
 def apply_extent(
     ax: plt.Axes,
     extent: Tuple[float, float, float, float],
@@ -515,5 +520,9 @@ def apply_extent(
     xmin, xmax, ymin, ymax = extent
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    ax.set_xticks(np.linspace(xmin, xmax, n_ticks))
-    ax.set_yticks(np.linspace(ymin, ymax, n_ticks))
+    xticks = np.linspace(xmin, xmax, n_ticks)
+    yticks = np.linspace(ymin, ymax, n_ticks)
+    ax.set_xticks(xticks)
+    ax.set_yticks(yticks)
+    ax.set_xticklabels(_arcsec_labels(xticks))
+    ax.set_yticklabels(_arcsec_labels(yticks))

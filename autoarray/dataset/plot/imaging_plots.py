@@ -46,6 +46,9 @@ def subplot_imaging_dataset(
     grid, positions, lines
         Optional overlays forwarded to every panel.
     """
+    if isinstance(output_format, (list, tuple)):
+        output_format = output_format[0]
+
     from autoarray.plot.array import plot_array
 
     fig, axes = plt.subplots(3, 3, figsize=(21, 21))
@@ -132,51 +135,6 @@ def subplot_imaging_dataset(
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 
-
-def subplot_imaging(
-    dataset,
-    output_path=None,
-    output_filename: str = "subplot_dataset",
-    output_format="png",
-):
-    """
-    1×n subplot of core ``Imaging`` dataset components.
-
-    Panels: Data | Noise Map | Signal-To-Noise Map | PSF (if present)
-
-    Parameters
-    ----------
-    dataset
-        An ``Imaging`` dataset instance.
-    output_path
-        Directory to save the figure.  ``None`` calls ``plt.show()``.
-    output_filename
-        Base filename without extension.
-    output_format
-        File format string or list, e.g. ``"png"`` or ``["png"]``.
-    """
-    if isinstance(output_format, (list, tuple)):
-        output_format = output_format[0]
-
-    panels = [
-        (dataset.data, "Data"),
-        (dataset.noise_map, "Noise Map"),
-        (dataset.signal_to_noise_map, "Signal-To-Noise Map"),
-    ]
-    try:
-        panels.append((dataset.psf.kernel, "PSF"))
-    except Exception:
-        pass
-
-    from autoarray.plot.array import plot_array
-
-    n = len(panels)
-    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
-    axes_flat = list(axes.flatten()) if n > 1 else [axes]
-    for i, (array, title) in enumerate(panels):
-        plot_array(array, ax=axes_flat[i], title=title)
-    plt.tight_layout()
-    subplot_save(fig, output_path, output_filename, output_format)
 
 
 def subplot_imaging_dataset_list(
