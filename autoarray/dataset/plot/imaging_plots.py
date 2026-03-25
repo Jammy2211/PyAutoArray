@@ -18,17 +18,17 @@ def subplot_imaging_dataset(
     lines=None,
 ):
     """
-    3×3 subplot of all ``Imaging`` dataset components.
+    3×3 subplot of core ``Imaging`` dataset components.
 
     Panels (row-major):
     0. Data
     1. Data (log10)
     2. Noise-Map
     3. PSF (if present)
-    4. PSF log10 (if present)
+    4. PSF (log10, if present)
     5. Signal-To-Noise Map
-    6. Over-sample size (light profiles)
-    7. Over-sample size (pixelization)
+    6. Over Sample Size (Light Profiles, if present)
+    7. Over Sample Size (Pixelization, if present)
 
     Parameters
     ----------
@@ -107,20 +107,107 @@ def subplot_imaging_dataset(
         positions=positions,
         lines=lines,
     )
-    plot_array(
-        dataset.grids.over_sample_size_lp,
-        ax=axes[6],
-        title="Over Sample Size (Light Profiles)",
-        colormap=colormap,
-        use_log10=use_log10,
-    )
-    plot_array(
-        dataset.grids.over_sample_size_pixelization,
-        ax=axes[7],
-        title="Over Sample Size (Pixelization)",
-        colormap=colormap,
-        use_log10=use_log10,
-    )
 
+    over_sample_size_lp = getattr(getattr(dataset, "grids", None), "over_sample_size_lp", None)
+    if over_sample_size_lp is not None:
+        plot_array(
+            over_sample_size_lp,
+            ax=axes[6],
+            title="Over Sample Size (Light Profiles)",
+            colormap=colormap,
+            use_log10=use_log10,
+        )
+
+    over_sample_size_pix = getattr(getattr(dataset, "grids", None), "over_sample_size_pixelization", None)
+    if over_sample_size_pix is not None:
+        plot_array(
+            over_sample_size_pix,
+            ax=axes[7],
+            title="Over Sample Size (Pixelization)",
+            colormap=colormap,
+            use_log10=use_log10,
+        )
+
+    plt.tight_layout()
+    subplot_save(fig, output_path, output_filename, output_format)
+
+
+def subplot_imaging(
+    dataset,
+    output_path=None,
+    output_filename: str = "subplot_dataset",
+    output_format="png",
+):
+    """
+    1×n subplot of core ``Imaging`` dataset components.
+
+    Panels: Data | Noise Map | Signal-To-Noise Map | PSF (if present)
+
+    Parameters
+    ----------
+    dataset
+        An ``Imaging`` dataset instance.
+    output_path
+        Directory to save the figure.  ``None`` calls ``plt.show()``.
+    output_filename
+        Base filename without extension.
+    output_format
+        File format string or list, e.g. ``"png"`` or ``["png"]``.
+    """
+    if isinstance(output_format, (list, tuple)):
+        output_format = output_format[0]
+
+    panels = [
+        (dataset.data, "Data"),
+        (dataset.noise_map, "Noise Map"),
+        (dataset.signal_to_noise_map, "Signal-To-Noise Map"),
+    ]
+    try:
+        panels.append((dataset.psf.kernel, "PSF"))
+    except Exception:
+        pass
+
+    n = len(panels)
+    fig, axes = plt.subplots(1, n, figsize=(7 * n, 7))
+    axes_flat = list(axes.flatten()) if n > 1 else [axes]
+    for i, (array, title) in enumerate(panels):
+        plot_array(array, ax=axes_flat[i], title=title)
+    plt.tight_layout()
+    subplot_save(fig, output_path, output_filename, output_format)
+
+
+def subplot_imaging_dataset_list(
+    dataset_list,
+    output_path=None,
+    output_filename: str = "subplot_dataset_combined",
+    output_format="png",
+):
+    """
+    n×3 subplot showing core components for each dataset in a list.
+
+    Each row shows: Data | Noise Map | Signal-To-Noise Map
+
+    Parameters
+    ----------
+    dataset_list
+        List of ``Imaging`` dataset instances.
+    output_path
+        Directory to save the figure.  ``None`` calls ``plt.show()``.
+    output_filename
+        Base filename without extension.
+    output_format
+        File format string or list, e.g. ``"png"`` or ``["png"]``.
+    """
+    if isinstance(output_format, (list, tuple)):
+        output_format = output_format[0]
+
+    n = len(dataset_list)
+    fig, axes = plt.subplots(n, 3, figsize=(21, 7 * n))
+    if n == 1:
+        axes = [axes]
+    for i, dataset in enumerate(dataset_list):
+        plot_array(dataset.data, ax=axes[i][0], title="Data")
+        plot_array(dataset.noise_map, ax=axes[i][1], title="Noise Map")
+        plot_array(dataset.signal_to_noise_map, ax=axes[i][2], title="Signal-To-Noise Map")
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
