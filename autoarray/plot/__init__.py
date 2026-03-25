@@ -48,12 +48,6 @@ from autoarray.structures.plot.structure_plots import (
     plot_yx_1d,
 )
 
-from autoarray.dataset.plot.imaging_plots import subplot_imaging_dataset
-from autoarray.dataset.plot.interferometer_plots import (
-    subplot_interferometer_dataset,
-    subplot_interferometer_dirty_images,
-)
-
 from autoarray.fit.plot.fit_imaging_plots import subplot_fit_imaging
 from autoarray.fit.plot.fit_interferometer_plots import (
     subplot_fit_interferometer,
