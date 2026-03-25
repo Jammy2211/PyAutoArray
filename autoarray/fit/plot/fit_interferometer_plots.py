@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.yx import plot_yx
-from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax
+from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes
 
 
 def subplot_fit_interferometer(
@@ -98,6 +98,7 @@ def subplot_fit_interferometer(
         plot_axis_type="scatter",
     )
 
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 
@@ -191,5 +192,6 @@ def subplot_fit_interferometer_dirty_images(
         use_log10=use_log10,
     )
 
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)

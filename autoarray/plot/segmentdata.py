@@ -1042,3 +1042,15 @@ segmentdata = {
         ]
     ),
 }
+
+COLORMAP_NAME = "autoarray"
+
+
+def register():
+    """Register the autoarray segmentdata colormap with matplotlib (idempotent)."""
+    import matplotlib
+    import matplotlib.colors as mcolors
+
+    if COLORMAP_NAME not in matplotlib.colormaps:
+        cmap = mcolors.LinearSegmentedColormap(COLORMAP_NAME, segmentdata)
+        matplotlib.colormaps.register(cmap)

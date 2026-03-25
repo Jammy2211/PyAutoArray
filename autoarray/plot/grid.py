@@ -32,7 +32,7 @@ def plot_grid(
     title: str = "",
     xlabel: str = 'x (")',
     ylabel: str = 'y (")',
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     buffer: float = 0.1,
     extent: Optional[Tuple[float, float, float, float]] = None,
     force_symmetric_extent: bool = True,
@@ -101,6 +101,10 @@ def plot_grid(
 
     lines = numpy_lines(lines)
 
+    if colormap is None:
+        from autoarray.plot.utils import _default_colormap
+        colormap = _default_colormap()
+
     owns_figure = ax is None
     if owns_figure:
         figsize = figsize or conf_figsize("figures")
@@ -126,7 +130,8 @@ def plot_grid(
                 ecolor=colors,
             )
 
-        plt.colorbar(sc, ax=ax)
+        from autoarray.plot.utils import _apply_colorbar
+        _apply_colorbar(sc, ax)
     else:
         if y_errors is None and x_errors is None:
             ax.scatter(grid[:, 1], grid[:, 0], s=1, c="k")

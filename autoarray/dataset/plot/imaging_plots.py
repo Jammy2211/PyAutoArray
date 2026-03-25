@@ -92,6 +92,7 @@ def subplot_imaging_dataset(
             title="Point Spread Function",
             colormap=colormap,
             use_log10=use_log10,
+            cb_unit="",
         )
         plot_array(
             dataset.psf.kernel,
@@ -99,6 +100,7 @@ def subplot_imaging_dataset(
             title="PSF (log10)",
             colormap=colormap,
             use_log10=True,
+            cb_unit="",
         )
 
     plot_array(
@@ -107,6 +109,7 @@ def subplot_imaging_dataset(
         title="Signal-To-Noise Map",
         colormap=colormap,
         use_log10=use_log10,
+        cb_unit="",
         grid=grid,
         positions=positions,
         lines=lines,
@@ -120,6 +123,7 @@ def subplot_imaging_dataset(
             title="Over Sample Size (Light Profiles)",
             colormap=colormap,
             use_log10=use_log10,
+            cb_unit="",
         )
 
     over_sample_size_pix = getattr(getattr(dataset, "grids", None), "over_sample_size_pixelization", None)
@@ -130,8 +134,11 @@ def subplot_imaging_dataset(
             title="Over Sample Size (Pixelization)",
             colormap=colormap,
             use_log10=use_log10,
+            cb_unit="",
         )
 
+    from autoarray.plot.utils import hide_unused_axes
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 

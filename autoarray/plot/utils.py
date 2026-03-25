@@ -235,7 +235,7 @@ def symmetric_cmap_from(array, symmetric_value=None):
     return colors.Normalize(vmin=-abs_max, vmax=abs_max)
 
 
-def set_with_color_values(ax, cmap, color_values, norm=None, fraction=0.047, pad=0.01):
+def set_with_color_values(ax, cmap, color_values, norm=None):
     """Attach a colorbar to *ax* driven by *color_values* rather than a plotted artist.
 
     Useful for Delaunay mapper visualisation where ``ax.tripcolor`` already draws
@@ -252,8 +252,6 @@ def set_with_color_values(ax, cmap, color_values, norm=None, fraction=0.047, pad
     norm
         A ``matplotlib.colors.Normalize`` instance.  If ``None`` a default
         ``Normalize(vmin, vmax)`` is created from *color_values*.
-    fraction, pad
-        Passed directly to ``plt.colorbar``.
     """
     import matplotlib.cm as cm
     import matplotlib.colors as mcolors
@@ -264,7 +262,7 @@ def set_with_color_values(ax, cmap, color_values, norm=None, fraction=0.047, pad
 
     mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
     mappable.set_array(color_values)
-    return plt.colorbar(mappable=mappable, ax=ax, fraction=fraction, pad=pad)
+    return _apply_colorbar(mappable, ax)
 
 
 def subplot_save(fig, output_path, output_filename, output_format):
@@ -369,36 +367,32 @@ def apply_labels(
     title: str = "",
     xlabel: str = "",
     ylabel: str = "",
+    is_subplot: bool = False,
 ) -> None:
     """Apply title, axis labels, and tick font sizes to *ax* from config.
 
     Reads font sizes from the ``mat_plot`` section of
-    ``visualize/general.yaml`` so that users can override them globally
-    without touching call sites.  Falls back to the values that the
-    old ``MatWrap`` system used when the config is unavailable.
-
-    Parameters
-    ----------
-    ax
-        The matplotlib axes to configure.
-    title
-        Title string.
-    xlabel
-        X-axis label string.
-    ylabel
-        Y-axis label string.
+    ``visualize/general.yaml``.  When *is_subplot* is ``True``, reads
+    ``*_subplot`` keys (defaulting to the single-figure values / 10 for ticks).
     """
-    title_fs = conf_mat_plot_fontsize("title", default=16)
-    xlabel_fs = conf_mat_plot_fontsize("xlabel", default=14)
-    ylabel_fs = conf_mat_plot_fontsize("ylabel", default=14)
-    xticks_fs = conf_mat_plot_fontsize("xticks", default=12)
-    yticks_fs = conf_mat_plot_fontsize("yticks", default=12)
+    if is_subplot:
+        title_fs = conf_mat_plot_fontsize("title_subplot", default=conf_mat_plot_fontsize("title", default=16))
+        xlabel_fs = conf_mat_plot_fontsize("xlabel_subplot", default=conf_mat_plot_fontsize("xlabel", default=14))
+        ylabel_fs = conf_mat_plot_fontsize("ylabel_subplot", default=conf_mat_plot_fontsize("ylabel", default=14))
+        xticks_fs = conf_mat_plot_fontsize("xticks_subplot", default=22)
+        yticks_fs = conf_mat_plot_fontsize("yticks_subplot", default=22)
+    else:
+        title_fs = conf_mat_plot_fontsize("title", default=16)
+        xlabel_fs = conf_mat_plot_fontsize("xlabel", default=14)
+        ylabel_fs = conf_mat_plot_fontsize("ylabel", default=14)
+        xticks_fs = conf_mat_plot_fontsize("xticks", default=12)
+        yticks_fs = conf_mat_plot_fontsize("yticks", default=12)
 
     ax.set_title(title, fontsize=title_fs)
     ax.set_xlabel(xlabel, fontsize=xlabel_fs)
     ax.set_ylabel(ylabel, fontsize=ylabel_fs)
     ax.tick_params(axis="x", labelsize=xticks_fs)
-    ax.tick_params(axis="y", labelsize=yticks_fs)
+    ax.tick_params(axis="y", labelsize=yticks_fs, labelrotation=90)
 
 
 def save_figure(
@@ -494,34 +488,161 @@ def plot_visibilities_1d(vis, ax: plt.Axes, title: str = "") -> None:
     ax.legend(fontsize=8)
 
 
+def _conf_colorbar(key: str, default):
+    try:
+        from autoconf import conf
+        return conf.instance["visualize"]["general"]["colorbar"][key]
+    except Exception:
+        return default
+
+
+def _colorbar_tick_values(norm) -> Optional[List[float]]:
+    """Return [min, mid, max] tick positions from *norm*, with mid in log-space for LogNorm."""
+    if norm is None or norm.vmin is None or norm.vmax is None:
+        return None
+    import matplotlib.colors as mcolors
+    lo, hi = float(norm.vmin), float(norm.vmax)
+    if isinstance(norm, mcolors.LogNorm):
+        mid = 10 ** ((np.log10(lo) + np.log10(hi)) / 2.0)
+    else:
+        mid = (lo + hi) / 2.0
+    return [lo, mid, hi]
+
+
+def _fmt_tick(v: float) -> str:
+    """Format a single tick value to 2 decimal places without scientific notation."""
+    return f"{v:.2f}"
+
+
+def _colorbar_tick_labels(tick_values: List[float], cb_unit: Optional[str] = None) -> List[str]:
+    """Format tick values without scientific notation, appending *cb_unit* to the middle label.
+
+    If *cb_unit* is ``None`` the unit is read from config; pass ``""`` for unitless panels.
+    """
+    if cb_unit is None:
+        try:
+            from autoconf import conf
+            cb_unit = conf.instance["visualize"]["general"]["units"]["cb_unit"]
+        except Exception:
+            cb_unit = ""
+    labels = [_fmt_tick(v) for v in tick_values]
+    mid = len(labels) // 2
+    labels[mid] = f"{labels[mid]}{cb_unit}"
+    return labels
+
+
+def _apply_colorbar(
+    mappable,
+    ax: plt.Axes,
+    cb_unit: Optional[str] = None,
+    is_subplot: bool = False,
+) -> None:
+    """Create a colorbar with 3 ticks (min/mid/max), unit on middle label, config styling.
+
+    Parameters
+    ----------
+    cb_unit
+        Override the unit string on the middle tick.  Pass ``""`` for unitless panels.
+        ``None`` reads the unit from config.
+    is_subplot
+        When ``True`` uses ``labelsize_subplot`` from config (default 22) instead of
+        the single-figure ``labelsize`` (default 22).
+    """
+    tick_values = _colorbar_tick_values(getattr(mappable, "norm", None))
+
+    cb = plt.colorbar(
+        mappable,
+        ax=ax,
+        fraction=float(_conf_colorbar("fraction", 0.047)),
+        pad=float(_conf_colorbar("pad", 0.01)),
+        ticks=tick_values,
+    )
+    labelsize_key = "labelsize_subplot" if is_subplot else "labelsize"
+    labelsize_default = 24 if is_subplot else 22
+    labelsize = float(_conf_colorbar(labelsize_key, labelsize_default))
+    if tick_values is not None:
+        cb.ax.set_yticklabels(
+            _colorbar_tick_labels(tick_values, cb_unit=cb_unit),
+            va="center",
+            fontsize=labelsize,
+        )
+    cb.ax.tick_params(
+        labelrotation=float(_conf_colorbar("labelrotation", 90)),
+        labelsize=labelsize,
+    )
+
+
+def hide_unused_axes(axes) -> None:
+    """Turn off any axes in the flattened *axes* array that have no plotted data."""
+    for ax in axes:
+        if not ax.has_data():
+            ax.axis("off")
+
+
+def _default_colormap() -> str:
+    """Return the colormap name from config, registering the custom one if needed."""
+    try:
+        from autoconf import conf
+        name = conf.instance["visualize"]["general"]["colormap"]
+    except Exception:
+        name = "autoarray"
+    if name == "autoarray":
+        from autoarray.plot.segmentdata import register
+        register()
+    return name
+
+
+def _conf_ticks(key: str, default: float) -> float:
+    try:
+        from autoconf import conf
+        return float(conf.instance["visualize"]["general"]["ticks"][key])
+    except Exception:
+        return default
+
+
+def _inward_ticks(lo: float, hi: float, factor: float, n: int) -> np.ndarray:
+    """Return *n* tick positions pulled inward from the extent edges by *factor*."""
+    centre = (lo + hi) / 2.0
+    return np.linspace(
+        centre + (lo - centre) * factor,
+        centre + (hi - centre) * factor,
+        n,
+    )
+
+
+def _round_ticks(values: np.ndarray, sig: int = 2) -> np.ndarray:
+    """Round *values* to *sig* significant figures."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        nonzero = np.where(values != 0, np.abs(values), 1.0)
+        mags = np.where(values != 0, 10 ** (sig - 1 - np.floor(np.log10(nonzero))), 1.0)
+    return np.round(values * mags) / mags
+
+
 def _arcsec_labels(ticks) -> List[str]:
-    """Format tick values as arcsecond strings, e.g. ``-1``, ``0``, ``1"``."""
+    """Format tick values as arcsecond strings, e.g. ``-1"``, ``0"``, ``1"``."""
     return [f'{v:g}"' for v in ticks]
 
 
 def apply_extent(
     ax: plt.Axes,
     extent: Tuple[float, float, float, float],
-    n_ticks: int = 3,
 ) -> None:
     """
-    Apply axis limits and evenly spaced linear ticks to *ax*.
+    Apply axis limits and inward-pulled, rounded, arcsecond-labelled ticks to *ax*.
 
-    Parameters
-    ----------
-    ax
-        The matplotlib axes to configure.
-    extent
-        ``[xmin, xmax, ymin, ymax]`` limits.
-    n_ticks
-        Number of ticks on each axis.  ``3`` produces ``[-R, 0, R]`` for
-        a symmetric extent, matching the reference ``plot_grid`` example.
+    Tick count and inward factor are read from ``visualize/general.yaml``
+    (``ticks.number_of_ticks_2d`` and ``ticks.extent_factor_2d``), defaulting
+    to 3 ticks and factor 0.75.
     """
+    factor = _conf_ticks("extent_factor_2d", 0.75)
+    n = int(_conf_ticks("number_of_ticks_2d", 3))
+
     xmin, xmax, ymin, ymax = extent
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
-    xticks = np.linspace(xmin, xmax, n_ticks)
-    yticks = np.linspace(ymin, ymax, n_ticks)
+
+    xticks = _round_ticks(_inward_ticks(xmin, xmax, factor, n))
+    yticks = _round_ticks(_inward_ticks(ymin, ymax, factor, n))
     ax.set_xticks(xticks)
     ax.set_yticks(yticks)
     ax.set_xticklabels(_arcsec_labels(xticks))
