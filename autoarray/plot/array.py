@@ -19,6 +19,7 @@ from autoarray.plot.utils import (
     numpy_grid,
     numpy_lines,
     numpy_positions,
+    _apply_contours,
 )
 
 _zoom_array_2d = zoom_array
@@ -270,16 +271,13 @@ def plot_array(
         x_fill = np.arange(len(y1))
         ax.fill_between(x_fill, y1, y2, alpha=0.3)
 
-    if contours is not None and contours > 0:
-        try:
-            levels = np.linspace(np.nanmin(array), np.nanmax(array), contours)
-            cs = ax.contour(array[::-1], levels=levels, extent=extent, colors="k")
-            try:
-                ax.clabel(cs, levels=levels, inline=True, fontsize=8)
-            except (ValueError, IndexError):
-                pass
-        except Exception:
-            pass
+    # Contours: auto-enabled for log10 plots; explicit int enables linear contours.
+    if use_log10 or (contours is not None and contours > 0):
+        _apply_contours(
+            ax, array, extent,
+            use_log10=use_log10,
+            n=contours if (contours is not None and contours > 0) else None,
+        )
 
     # --- labels / ticks --------------------------------------------------------
     apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel, is_subplot=not owns_figure)

@@ -572,6 +572,70 @@ def _apply_colorbar(
     )
 
 
+def _apply_contours(
+    ax: plt.Axes,
+    array: np.ndarray,
+    extent,
+    use_log10: bool = False,
+    n: Optional[int] = None,
+) -> None:
+    """Draw contour lines over a 2D image panel.
+
+    For log10 plots contours are drawn automatically with log-spaced levels.
+    For linear plots contours are only drawn when *n* is given explicitly.
+
+    Level count and label visibility are read from the ``contour`` section of
+    ``visualize/general.yaml`` (keys ``total_contours`` and
+    ``include_values``).  The *n* argument overrides ``total_contours`` when
+    provided.
+
+    Parameters
+    ----------
+    ax
+        The axes to draw on.
+    array
+        2D numpy array of the plotted data (after any clipping/normalisation).
+    extent
+        ``[xmin, xmax, ymin, ymax]`` passed to ``ax.contour``.
+    use_log10
+        When ``True`` levels are log-spaced between the positive minimum and
+        maximum of *array*.
+    n
+        Explicit number of contour levels (overrides config).  When ``None``
+        the config value is used.
+    """
+    try:
+        from autoconf import conf
+        _c = conf.instance["visualize"]["general"]["contour"]
+        total = int(n if n is not None else _c.get("total_contours", 10))
+        include_values = bool(_c.get("include_values", False))
+    except Exception:
+        total = int(n) if n is not None else 10
+        include_values = False
+
+    try:
+        if use_log10:
+            positive = array[array > 0]
+            if positive.size == 0:
+                return
+            levels = np.logspace(
+                np.log10(float(np.nanmin(positive))),
+                np.log10(float(np.nanmax(array))),
+                total,
+            )
+        else:
+            levels = np.linspace(float(np.nanmin(array)), float(np.nanmax(array)), total)
+
+        cs = ax.contour(array[::-1], levels=levels, extent=extent, colors="k", alpha=0.5)
+        if include_values:
+            try:
+                ax.clabel(cs, levels=levels, inline=True, fontsize=8)
+            except (ValueError, IndexError):
+                pass
+    except Exception:
+        pass
+
+
 def hide_unused_axes(axes) -> None:
     """Turn off any axes in the flattened *axes* array that have no plotted data."""
     for ax in axes:
