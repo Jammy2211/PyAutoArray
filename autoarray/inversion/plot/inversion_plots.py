@@ -1,13 +1,15 @@
+import csv
 import logging
 import numpy as np
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 from autoconf import conf
 
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save
+from autoarray.plot.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save, hide_unused_axes
 from autoarray.inversion.plot.mapper_plots import plot_mapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -215,6 +217,7 @@ def subplot_of_mapper(
     except (TypeError, Exception):
         pass
 
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, f"{output_filename}_{mapper_index}", output_format)
 
@@ -332,7 +335,40 @@ def subplot_mappings(
         lines=lines,
     )
 
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(
         fig, output_path, f"{output_filename}_{pixelization_index}", output_format
     )
+
+
+def save_reconstruction_csv(
+    inversion,
+    output_path: Union[str, Path],
+) -> None:
+    """Write a CSV of each mapper's reconstruction and noise map to *output_path*.
+
+    One file is written per mapper: ``source_plane_reconstruction_{i}.csv``,
+    with columns ``y``, ``x``, ``reconstruction``, ``noise_map``.
+
+    Parameters
+    ----------
+    inversion
+        An ``AbstractInversion`` instance.
+    output_path
+        Directory in which to write the CSV files.
+    """
+    output_path = Path(output_path)
+    mapper_list = inversion.cls_list_from(cls=Mapper)
+
+    for i, mapper in enumerate(mapper_list):
+        y = mapper.source_plane_mesh_grid[:, 0]
+        x = mapper.source_plane_mesh_grid[:, 1]
+        reconstruction = inversion.reconstruction_dict[mapper]
+        noise_map = inversion.reconstruction_noise_map_dict[mapper]
+
+        with open(output_path / f"source_plane_reconstruction_{i}.csv", mode="w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["y", "x", "reconstruction", "noise_map"])
+            for j in range(len(x)):
+                writer.writerow([float(y[j]), float(x[j]), float(reconstruction[j]), float(noise_map[j])])

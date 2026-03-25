@@ -47,11 +47,11 @@ def plot_array(
     title: str = "",
     xlabel: str = "",
     ylabel: str = "",
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     vmin: Optional[float] = None,
     vmax: Optional[float] = None,
     use_log10: bool = False,
-    aspect: str = "auto",
+    cb_unit: Optional[str] = None,
     origin_imshow: str = "upper",
     # --- figure control (used only when ax is None) -----------------------------
     figsize: Optional[Tuple[int, int]] = None,
@@ -105,8 +105,6 @@ def plot_array(
         Explicit color scale limits.
     use_log10
         When ``True`` a ``LogNorm`` is applied.
-    aspect
-        Passed directly to ``imshow``.
     origin_imshow
         Passed directly to ``imshow`` (``"upper"`` or ``"lower"``).
     figsize
@@ -134,6 +132,10 @@ def plot_array(
 
     if array is None or array.size == 0:
         return
+
+    if colormap is None:
+        from autoarray.plot.utils import _default_colormap
+        colormap = _default_colormap()
 
     # convert overlay params (safe for None and already-numpy inputs)
     border = numpy_grid(border)
@@ -180,16 +182,33 @@ def plot_array(
     else:
         norm = None
 
+    # Compute the axes-box aspect ratio from the data extent so that the
+    # physical cell is correctly shaped and tight_layout has no whitespace
+    # to absorb.  This reproduces the old "square" subplot behaviour where
+    # ratio = x_range / y_range was passed to plt.subplot(aspect=ratio).
+    if extent is not None:
+        x_range = abs(extent[1] - extent[0])
+        y_range = abs(extent[3] - extent[2])
+        _box_aspect = (x_range / y_range) if y_range > 0 else 1.0
+    else:
+        h, w = array.shape[:2]
+        _box_aspect = (w / h) if h > 0 else 1.0
+
     im = ax.imshow(
         array,
         cmap=colormap,
         norm=norm,
         extent=extent,
-        aspect=aspect,
+        aspect="auto",  # image fills the axes box; box shape set below
         origin=origin_imshow,
     )
 
-    plt.colorbar(im, ax=ax)
+    # Shape the axes box to match the data so there is no surrounding
+    # whitespace when the panel is embedded in a subplot grid.
+    ax.set_aspect(_box_aspect, adjustable="box")
+
+    from autoarray.plot.utils import _apply_colorbar
+    _apply_colorbar(im, ax, cb_unit=cb_unit, is_subplot=not owns_figure)
 
     # --- overlays --------------------------------------------------------------
     if array_overlay is not None:
@@ -198,7 +217,7 @@ def plot_array(
             cmap="Greys",
             alpha=0.5,
             extent=extent,
-            aspect=aspect,
+            aspect="auto",
             origin=origin_imshow,
         )
 
@@ -223,7 +242,7 @@ def plot_array(
         ax.scatter(mesh_grid[:, 1], mesh_grid[:, 0], s=1, c="w", alpha=0.5)
 
     if positions is not None:
-        colors = ["r", "g", "b", "m", "c", "y"]
+        colors = ["k", "g", "b", "m", "c", "y"]
         for i, pos in enumerate(positions):
             ax.scatter(pos[:, 1], pos[:, 0], s=20, c=colors[i % len(colors)], zorder=5)
 
@@ -263,7 +282,7 @@ def plot_array(
             pass
 
     # --- labels / ticks --------------------------------------------------------
-    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel)
+    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel, is_subplot=not owns_figure)
 
     if extent is not None:
         apply_extent(ax, extent)

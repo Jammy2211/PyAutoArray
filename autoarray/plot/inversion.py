@@ -21,7 +21,7 @@ def plot_inversion_reconstruction(
     title: str = "Reconstruction",
     xlabel: str = 'x (")',
     ylabel: str = 'y (")',
-    colormap: str = "jet",
+    colormap: Optional[str] = None,
     vmin: Optional[float] = None,
     vmax: Optional[float] = None,
     use_log10: bool = False,
@@ -75,6 +75,10 @@ def plot_inversion_reconstruction(
     )
     from autoarray.inversion.mesh.interpolator.delaunay import InterpolatorDelaunay
     from autoarray.inversion.mesh.interpolator.knn import InterpolatorKNearestNeighbor
+
+    if colormap is None:
+        from autoarray.plot.utils import _default_colormap
+        colormap = _default_colormap()
 
     owns_figure = ax is None
     if owns_figure:
@@ -192,7 +196,8 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
             aspect="auto",
             origin="upper",
         )
-        plt.colorbar(im, ax=ax)
+        from autoarray.plot.utils import _apply_colorbar
+        _apply_colorbar(im, ax)
     else:
         y_edges, x_edges = mapper.mesh_geometry.edges_transformed.T
         Y, X = np.meshgrid(y_edges, x_edges, indexing="ij")
@@ -204,7 +209,8 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
             norm=norm,
             cmap=colormap,
         )
-        plt.colorbar(im, ax=ax)
+        from autoarray.plot.utils import _apply_colorbar
+        _apply_colorbar(im, ax)
 
 
 def _plot_delaunay(ax, pixel_values, mapper, norm, colormap):
@@ -240,4 +246,5 @@ def _plot_delaunay(ax, pixel_values, mapper, norm, colormap):
         vals = pixel_values
 
     tc = ax.tripcolor(x, y, vals, cmap=colormap, norm=norm, shading="gouraud")
-    plt.colorbar(tc, ax=ax)
+    from autoarray.plot.utils import _apply_colorbar
+    _apply_colorbar(tc, ax)

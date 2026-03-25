@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from autoarray.plot.array import plot_array
 from autoarray.plot.grid import plot_grid
 from autoarray.plot.yx import plot_yx
-from autoarray.plot.utils import subplot_save
+from autoarray.plot.utils import subplot_save, hide_unused_axes
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
@@ -84,6 +84,7 @@ def subplot_interferometer_dataset(
         use_log10=use_log10,
     )
 
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 
@@ -138,5 +139,6 @@ def subplot_interferometer_dirty_images(
         use_log10=use_log10,
     )
 
+    hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
