@@ -122,7 +122,7 @@ def test__fit_sub_plots(fit_interferometer_7, plot_path, plot_patch):
         output_format="png",
     )
 
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "fit.png") in plot_patch.paths
 
     aplt.subplot_fit_interferometer_dirty_images(
         fit=fit_interferometer_7,
@@ -130,4 +130,4 @@ def test__fit_sub_plots(fit_interferometer_7, plot_path, plot_patch):
         output_format="png",
     )
 
-    assert path.join(plot_path, "subplot_fit_dirty_images.png") in plot_patch.paths
+    assert path.join(plot_path, "fit_dirty_images.png") in plot_patch.paths

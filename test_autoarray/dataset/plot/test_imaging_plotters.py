@@ -2,6 +2,7 @@ from os import path
 import pytest
 import autoarray as aa
 import autoarray.plot as aplt
+from autoarray.dataset.plot.imaging_plots import subplot_imaging_dataset
 
 
 directory = path.dirname(path.realpath(__file__))
@@ -82,13 +83,13 @@ def test__individual_attributes_are_output(
 def test__subplot_is_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-    aplt.subplot_imaging_dataset(
+    subplot_imaging_dataset(
         dataset=imaging_7x7,
         output_path=plot_path,
         output_format="png",
     )
 
-    assert path.join(plot_path, "subplot_dataset.png") in plot_patch.paths
+    assert path.join(plot_path, "dataset.png") in plot_patch.paths
 
 
 def test__output_as_fits__correct_output_format(

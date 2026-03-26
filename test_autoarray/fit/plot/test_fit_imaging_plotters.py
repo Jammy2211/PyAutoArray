@@ -110,7 +110,7 @@ def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
         output_format="png",
     )
 
-    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
+    assert path.join(plot_path, "fit.png") in plot_patch.paths
 
 
 def test__output_as_fits__correct_output_format(
