@@ -2,6 +2,10 @@ from os import path
 
 import pytest
 import autoarray.plot as aplt
+from autoarray.dataset.plot.interferometer_plots import (
+    subplot_interferometer_dataset,
+    subplot_interferometer_dirty_images,
+)
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -62,18 +66,18 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 
 
 def test__subplots_are_output(interferometer_7, plot_path, plot_patch):
-    aplt.subplot_interferometer_dataset(
+    subplot_interferometer_dataset(
         dataset=interferometer_7,
         output_path=plot_path,
         output_format="png",
     )
 
-    assert path.join(plot_path, "subplot_dataset.png") in plot_patch.paths
+    assert path.join(plot_path, "dataset.png") in plot_patch.paths
 
-    aplt.subplot_interferometer_dirty_images(
+    subplot_interferometer_dirty_images(
         dataset=interferometer_7,
         output_path=plot_path,
         output_format="png",
     )
 
-    assert path.join(plot_path, "subplot_dirty_images.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_images.png") in plot_patch.paths

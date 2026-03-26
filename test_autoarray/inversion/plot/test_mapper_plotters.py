@@ -43,4 +43,4 @@ def test__subplot_image_and_mapper(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
+    assert path.join(plot_path, "image_and_mapper.png") in plot_patch.paths

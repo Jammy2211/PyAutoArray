@@ -725,8 +725,15 @@ def _round_ticks(values: np.ndarray, sig: int = 2) -> np.ndarray:
 
 
 def _arcsec_labels(ticks) -> List[str]:
-    """Format tick values as coordinate strings (no unit symbol by default)."""
-    return [f'{v:g}' for v in ticks]
+    """Format tick values as arcsecond coordinate strings.
+
+    Values that all end in ``.0`` are stripped of the decimal point before the
+    ``"`` suffix is appended, so ``[-1.0, 0.0, 1.0]`` → ``['-1"', '0"', '1"']``.
+    """
+    labels = [f'{v:g}' for v in ticks]
+    if all(label.endswith(".0") for label in labels):
+        labels = [label[:-2] for label in labels]
+    return [f'{label}"' for label in labels]
 
 
 def apply_extent(
