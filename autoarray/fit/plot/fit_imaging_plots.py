@@ -3,13 +3,13 @@ from typing import Optional
 import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes
+from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize
 
 
 def subplot_fit_imaging(
     fit,
     output_path: Optional[str] = None,
-    output_filename: str = "subplot_fit",
+    output_filename: str = "fit",
     output_format: str = "png",
     colormap=None,
     use_log10: bool = False,
@@ -43,7 +43,7 @@ def subplot_fit_imaging(
     grid, positions, lines
         Optional overlays forwarded to every panel.
     """
-    fig, axes = plt.subplots(2, 3, figsize=(21, 14))
+    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     plot_array(
@@ -103,6 +103,7 @@ def subplot_fit_imaging(
         use_log10=False,
         vmin=vmin_n,
         vmax=vmax_n,
+        cb_unit=r"$\sigma$",
         grid=grid,
         positions=positions,
         lines=lines,
@@ -113,6 +114,7 @@ def subplot_fit_imaging(
         title="Chi-Squared Map",
         colormap=colormap,
         use_log10=use_log10,
+        cb_unit=r"$\chi^2$",
         grid=grid,
         positions=positions,
         lines=lines,

@@ -28,6 +28,7 @@ from autoarray.plot.utils import (
     apply_extent,
     apply_labels,
     conf_figsize,
+    conf_subplot_figsize,
     conf_mat_plot_fontsize,
     save_figure,
     subplot_save,
