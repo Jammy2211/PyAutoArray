@@ -53,6 +53,7 @@ def plot_array(
     vmax: Optional[float] = None,
     use_log10: bool = False,
     cb_unit: Optional[str] = None,
+    line_colors: Optional[List] = None,
     origin_imshow: str = "upper",
     # --- figure control (used only when ax is None) -----------------------------
     figsize: Optional[Tuple[int, int]] = None,
@@ -243,12 +244,19 @@ def plot_array(
     if positions is not None:
         colors = ["k", "g", "b", "m", "c", "y"]
         for i, pos in enumerate(positions):
+            pos = np.asarray(pos).reshape(-1, 2)
             ax.scatter(pos[:, 1], pos[:, 0], s=20, c=colors[i % len(colors)], zorder=5)
 
+
     if lines is not None:
-        for line in lines:
+        for i, line in enumerate(lines):
             if line is not None and len(line) > 0:
-                ax.plot(line[:, 1], line[:, 0], linewidth=2)
+                line = np.asarray(line).reshape(-1, 2)
+                color = line_colors[i] if (line_colors is not None and i < len(line_colors)) else None
+                kw = {"linewidth": 2}
+                if color is not None:
+                    kw["color"] = color
+                ax.plot(line[:, 1], line[:, 0], **kw)
 
     if vector_yx is not None:
         ax.quiver(
