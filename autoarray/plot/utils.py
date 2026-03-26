@@ -379,8 +379,8 @@ def apply_labels(
         title_fs = conf_mat_plot_fontsize("title_subplot", default=conf_mat_plot_fontsize("title", default=16))
         xlabel_fs = conf_mat_plot_fontsize("xlabel_subplot", default=conf_mat_plot_fontsize("xlabel", default=14))
         ylabel_fs = conf_mat_plot_fontsize("ylabel_subplot", default=conf_mat_plot_fontsize("ylabel", default=14))
-        xticks_fs = conf_mat_plot_fontsize("xticks_subplot", default=22)
-        yticks_fs = conf_mat_plot_fontsize("yticks_subplot", default=22)
+        xticks_fs = conf_mat_plot_fontsize("xticks_subplot", default=18)
+        yticks_fs = conf_mat_plot_fontsize("yticks_subplot", default=18)
     else:
         title_fs = conf_mat_plot_fontsize("title", default=16)
         xlabel_fs = conf_mat_plot_fontsize("xlabel", default=14)
@@ -558,7 +558,7 @@ def _apply_colorbar(
         ticks=tick_values,
     )
     labelsize_key = "labelsize_subplot" if is_subplot else "labelsize"
-    labelsize_default = 24 if is_subplot else 22
+    labelsize_default = 22 if is_subplot else 22
     labelsize = float(_conf_colorbar(labelsize_key, labelsize_default))
     if tick_values is not None:
         cb.ax.set_yticklabels(
@@ -608,10 +608,10 @@ def _apply_contours(
         from autoconf import conf
         _c = conf.instance["visualize"]["general"]["contour"]
         total = int(n if n is not None else _c.get("total_contours", 10))
-        include_values = bool(_c.get("include_values", False))
+        include_values = bool(_c.get("include_values", True))
     except Exception:
         total = int(n) if n is not None else 10
-        include_values = False
+        include_values = True
 
     try:
         if use_log10:
@@ -626,10 +626,21 @@ def _apply_contours(
         else:
             levels = np.linspace(float(np.nanmin(array)), float(np.nanmax(array)), total)
 
-        cs = ax.contour(array[::-1], levels=levels, extent=extent, colors="k", alpha=0.5)
+        # Build explicit coordinate grids so the contours align with imshow.
+        # imshow with origin="upper" maps row 0 to ymax and last row to ymin,
+        # so Y must decrease across rows to match.
+        ny, nx = array.shape[:2]
+        if extent is not None:
+            xs = np.linspace(extent[0], extent[1], nx)
+            ys = np.linspace(extent[3], extent[2], ny)  # ymax → ymin
+            X, Y = np.meshgrid(xs, ys)
+            cs = ax.contour(X, Y, array, levels=levels, colors="k", alpha=0.5)
+        else:
+            cs = ax.contour(array, levels=levels, colors="k", alpha=0.5)
+
         if include_values:
             try:
-                ax.clabel(cs, levels=levels, inline=True, fontsize=8)
+                cs.clabel(levels=levels, inline=True, fontsize=8)
             except (ValueError, IndexError):
                 pass
     except Exception:
