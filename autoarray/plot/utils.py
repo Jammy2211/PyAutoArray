@@ -615,11 +615,20 @@ def _apply_contours(
 
     try:
         if use_log10:
+            try:
+                from autoconf import conf
+                log10_min = float(conf.instance["visualize"]["general"]["general"]["log10_min_value"])
+            except Exception:
+                log10_min = 1.0e-4
+
             positive = array[array > 0]
             if positive.size == 0:
                 return
+            min_value = float(np.nanmin(positive))
+            if min_value < log10_min:
+                min_value = log10_min
             levels = np.logspace(
-                np.log10(float(np.nanmin(positive))),
+                np.log10(min_value),
                 np.log10(float(np.nanmax(array))),
                 total,
             )
