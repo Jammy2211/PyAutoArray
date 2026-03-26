@@ -28,6 +28,7 @@ def plot_inversion_reconstruction(
     zoom_to_brightest: bool = True,
     # --- overlays ---------------------------------------------------------------
     lines: Optional[List[np.ndarray]] = None,
+    line_colors: Optional[List] = None,
     grid: Optional[np.ndarray] = None,
     # --- figure control (used only when ax is None) -----------------------------
     figsize: Optional[Tuple[int, int]] = None,
@@ -109,27 +110,34 @@ def plot_inversion_reconstruction(
         values=pixel_values, zoom_to_brightest=zoom_to_brightest
     )
 
+    is_subplot = not owns_figure
+
     if isinstance(
         mapper.interpolator, (InterpolatorRectangular, InterpolatorRectangularUniform)
     ):
-        _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent)
+        _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent, is_subplot=is_subplot)
     elif isinstance(
         mapper.interpolator, (InterpolatorDelaunay, InterpolatorKNearestNeighbor)
     ):
-        _plot_delaunay(ax, pixel_values, mapper, norm, colormap)
+        _plot_delaunay(ax, pixel_values, mapper, norm, colormap, is_subplot=is_subplot)
 
     # --- overlays --------------------------------------------------------------
     if lines is not None:
-        for line in lines:
+        for i, line in enumerate(lines):
             if line is not None and len(line) > 0:
-                ax.plot(line[:, 1], line[:, 0], linewidth=2)
+                line = np.asarray(line).reshape(-1, 2)
+                color = line_colors[i] if (line_colors is not None and i < len(line_colors)) else None
+                kw = {"linewidth": 2}
+                if color is not None:
+                    kw["color"] = color
+                ax.plot(line[:, 1], line[:, 0], **kw)
 
     if grid is not None:
         ax.scatter(grid[:, 1], grid[:, 0], s=1, c="w", alpha=0.5)
 
     apply_extent(ax, extent)
 
-    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel)
+    apply_labels(ax, title=title, xlabel="" if is_subplot else xlabel, ylabel="" if is_subplot else ylabel)
 
     if owns_figure:
         save_figure(
@@ -140,7 +148,7 @@ def plot_inversion_reconstruction(
         )
 
 
-def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
+def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent, is_subplot=False):
     """Render a rectangular pixelization reconstruction onto *ax*.
 
     Uses ``imshow`` for uniform rectangular grids
@@ -164,6 +172,9 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
         Matplotlib colormap name.
     extent
         ``[xmin, xmax, ymin, ymax]`` spatial extent; passed to ``imshow``.
+    is_subplot
+        When ``True`` uses ``labelsize_subplot`` from config for the colorbar
+        tick labels (matches the behaviour of :func:`~autoarray.plot.array.plot_array`).
     """
     from autoarray.inversion.mesh.interpolator.rectangular_uniform import (
         InterpolatorRectangularUniform,
@@ -174,6 +185,14 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
 
     if pixel_values is None:
         pixel_values = np.zeros(shape_native[0] * shape_native[1])
+
+    xmin, xmax, ymin, ymax = extent
+    x_range = abs(xmax - xmin)
+    y_range = abs(ymax - ymin)
+    box_aspect = (x_range / y_range) if y_range > 0 else 1.0
+    ax.set_aspect(box_aspect, adjustable="box")
+
+    from autoarray.plot.utils import _apply_colorbar
 
     if isinstance(mapper.interpolator, InterpolatorRectangularUniform):
         from autoarray.structures.arrays.uniform_2d import Array2D
@@ -196,8 +215,7 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
             aspect="auto",
             origin="upper",
         )
-        from autoarray.plot.utils import _apply_colorbar
-        _apply_colorbar(im, ax)
+        _apply_colorbar(im, ax, is_subplot=is_subplot)
     else:
         y_edges, x_edges = mapper.mesh_geometry.edges_transformed.T
         Y, X = np.meshgrid(y_edges, x_edges, indexing="ij")
@@ -209,11 +227,10 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent):
             norm=norm,
             cmap=colormap,
         )
-        from autoarray.plot.utils import _apply_colorbar
-        _apply_colorbar(im, ax)
+        _apply_colorbar(im, ax, is_subplot=is_subplot)
 
 
-def _plot_delaunay(ax, pixel_values, mapper, norm, colormap):
+def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, is_subplot=False):
     """Render a Delaunay or KNN pixelization reconstruction onto *ax*.
 
     Uses ``ax.tripcolor`` with Gouraud shading so that the reconstructed
@@ -235,6 +252,9 @@ def _plot_delaunay(ax, pixel_values, mapper, norm, colormap):
         ``None`` for automatic scaling.
     colormap
         Matplotlib colormap name.
+    is_subplot
+        When ``True`` uses ``labelsize_subplot`` from config for the colorbar
+        tick labels (matches the behaviour of :func:`~autoarray.plot.array.plot_array`).
     """
     mesh_grid = mapper.source_plane_mesh_grid
     x = mesh_grid[:, 1]
@@ -247,4 +267,4 @@ def _plot_delaunay(ax, pixel_values, mapper, norm, colormap):
 
     tc = ax.tripcolor(x, y, vals, cmap=colormap, norm=norm, shading="gouraud")
     from autoarray.plot.utils import _apply_colorbar
-    _apply_colorbar(tc, ax)
+    _apply_colorbar(tc, ax, is_subplot=is_subplot)
