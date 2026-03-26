@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.yx import plot_yx
-from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes
+from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize
 
 
 def subplot_fit_interferometer(
     fit,
     output_path: Optional[str] = None,
-    output_filename: str = "subplot_fit",
+    output_filename: str = "fit",
     output_format: str = "png",
     colormap=None,
     use_log10: bool = False,
@@ -40,7 +40,7 @@ def subplot_fit_interferometer(
         Not used here (UV-plane residuals are scatter plots); kept for API
         consistency.
     """
-    fig, axes = plt.subplots(2, 3, figsize=(21, 14))
+    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     uv = fit.dataset.uv_distances / 10**3.0
@@ -106,7 +106,7 @@ def subplot_fit_interferometer(
 def subplot_fit_interferometer_dirty_images(
     fit,
     output_path: Optional[str] = None,
-    output_filename: str = "subplot_fit_dirty_images",
+    output_filename: str = "fit_dirty_images",
     output_format: str = "png",
     colormap=None,
     use_log10: bool = False,
@@ -135,7 +135,7 @@ def subplot_fit_interferometer_dirty_images(
     residuals_symmetric_cmap
         Centre residual colour scale symmetrically around zero.
     """
-    fig, axes = plt.subplots(2, 3, figsize=(21, 14))
+    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     plot_array(
@@ -183,6 +183,7 @@ def subplot_fit_interferometer_dirty_images(
         use_log10=False,
         vmin=vmin_n,
         vmax=vmax_n,
+        cb_unit=r"$\sigma$",
     )
     plot_array(
         fit.dirty_chi_squared_map,
@@ -190,6 +191,7 @@ def subplot_fit_interferometer_dirty_images(
         title="Dirty Chi-Squared Map",
         colormap=colormap,
         use_log10=use_log10,
+        cb_unit=r"$\chi^2$",
     )
 
     hide_unused_axes(axes)

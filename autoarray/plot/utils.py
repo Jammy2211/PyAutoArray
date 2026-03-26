@@ -362,6 +362,25 @@ def conf_figsize(context: str = "figures") -> Tuple[int, int]:
         return (7, 7) if context == "figures" else (19, 16)
 
 
+def conf_subplot_figsize(rows: int, cols: int) -> Tuple[int, int]:
+    """Compute figsize for a subplot grid from config.
+
+    Reads ``mat_plot/figure/subplot_shape_to_figsize_factor`` from
+    ``visualize/general.yaml`` (default ``(6, 6)``) and returns
+    ``(cols * fx, rows * fy)``.
+    """
+    try:
+        from autoconf import conf
+
+        raw = conf.instance["visualize"]["general"]["mat_plot"]["figure"][
+            "subplot_shape_to_figsize_factor"
+        ]
+        fx, fy = _parse_figsize(raw)
+    except Exception:
+        fx, fy = 6, 6
+    return (cols * fx, rows * fy)
+
+
 def apply_labels(
     ax: plt.Axes,
     title: str = "",
@@ -376,13 +395,13 @@ def apply_labels(
     ``*_subplot`` keys (defaulting to the single-figure values / 10 for ticks).
     """
     if is_subplot:
-        title_fs = conf_mat_plot_fontsize("title_subplot", default=conf_mat_plot_fontsize("title", default=16))
+        title_fs = conf_mat_plot_fontsize("title_subplot", default=20)
         xlabel_fs = conf_mat_plot_fontsize("xlabel_subplot", default=conf_mat_plot_fontsize("xlabel", default=14))
         ylabel_fs = conf_mat_plot_fontsize("ylabel_subplot", default=conf_mat_plot_fontsize("ylabel", default=14))
         xticks_fs = conf_mat_plot_fontsize("xticks_subplot", default=18)
         yticks_fs = conf_mat_plot_fontsize("yticks_subplot", default=18)
     else:
-        title_fs = conf_mat_plot_fontsize("title", default=16)
+        title_fs = conf_mat_plot_fontsize("title", default=24)
         xlabel_fs = conf_mat_plot_fontsize("xlabel", default=14)
         ylabel_fs = conf_mat_plot_fontsize("ylabel", default=14)
         xticks_fs = conf_mat_plot_fontsize("xticks", default=12)
@@ -424,9 +443,10 @@ def save_figure(
     dpi
         Resolution in dots per inch.
     structure
-        Optional autoarray structure (e.g. ``Array2D``).  Required when
-        *format* is ``"fits"`` — its ``output_to_fits`` method is used
-        instead of ``fig.savefig``.
+        Optional autoarray structure (e.g. ``Array2D``). When *format* includes
+        ``"fits"`` and the structure has ``output_to_fits``, it is used instead
+        of ``fig.savefig``. Callers do not need to pass this; ``plot_array``
+        supplies it automatically from the input array.
     """
     if path:
         os.makedirs(path, exist_ok=True)
@@ -558,18 +578,20 @@ def _apply_colorbar(
         ticks=tick_values,
     )
     labelsize_key = "labelsize_subplot" if is_subplot else "labelsize"
-    labelsize_default = 22 if is_subplot else 22
-    labelsize = float(_conf_colorbar(labelsize_key, labelsize_default))
+    labelsize = float(_conf_colorbar(labelsize_key, 22))
+    labelrotation = float(_conf_colorbar("labelrotation", 90))
     if tick_values is not None:
         cb.ax.set_yticklabels(
             _colorbar_tick_labels(tick_values, cb_unit=cb_unit),
             va="center",
             fontsize=labelsize,
         )
-    cb.ax.tick_params(
-        labelrotation=float(_conf_colorbar("labelrotation", 90)),
-        labelsize=labelsize,
-    )
+    # tick_params stores the setting for ticks created during draw;
+    # axis='y' is explicit since colorbars are vertical.
+    cb.ax.tick_params(axis="y", labelsize=labelsize, labelrotation=labelrotation)
+    # Also drive it through the yaxis object directly so it survives
+    # any internal colorbar redraw that recreates tick Text objects.
+    cb.ax.yaxis.set_tick_params(labelsize=labelsize, labelrotation=labelrotation)
 
 
 def _apply_contours(
@@ -649,7 +671,7 @@ def _apply_contours(
 
         if include_values:
             try:
-                cs.clabel(levels=levels, inline=True, fontsize=8)
+                cs.clabel(levels=levels, inline=True, fontsize=10, fmt="%.2g")
             except (ValueError, IndexError):
                 pass
     except Exception:
@@ -703,8 +725,8 @@ def _round_ticks(values: np.ndarray, sig: int = 2) -> np.ndarray:
 
 
 def _arcsec_labels(ticks) -> List[str]:
-    """Format tick values as arcsecond strings, e.g. ``-1"``, ``0"``, ``1"``."""
-    return [f'{v:g}"' for v in ticks]
+    """Format tick values as coordinate strings (no unit symbol by default)."""
+    return [f'{v:g}' for v in ticks]
 
 
 def apply_extent(

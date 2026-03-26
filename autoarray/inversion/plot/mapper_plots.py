@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.inversion import plot_inversion_reconstruction
-from autoarray.plot.utils import numpy_grid, numpy_lines, subplot_save
+from autoarray.plot.utils import numpy_grid, numpy_lines, subplot_save, conf_subplot_figsize
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ def subplot_image_and_mapper(
     mapper,
     image,
     output_path: Optional[str] = None,
-    output_filename: str = "subplot_image_and_mapper",
+    output_filename: str = "image_and_mapper",
     output_format: str = "png",
     colormap=None,
     use_log10: bool = False,
@@ -108,7 +108,7 @@ def subplot_image_and_mapper(
     lines
         Lines to overlay on both panels.
     """
-    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
+    fig, axes = plt.subplots(1, 2, figsize=conf_subplot_figsize(1, 2))
 
     plot_array(
         image,

@@ -2,13 +2,13 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 
-from autoarray.plot.utils import subplot_save
+from autoarray.plot.utils import subplot_save, conf_subplot_figsize
 
 
 def subplot_imaging_dataset(
     dataset,
     output_path: Optional[str] = None,
-    output_filename: str = "subplot_dataset",
+    output_filename: str = "dataset",
     output_format: str = "png",
     colormap=None,
     use_log10: bool = False,
@@ -51,7 +51,7 @@ def subplot_imaging_dataset(
 
     from autoarray.plot.array import plot_array
 
-    fig, axes = plt.subplots(3, 3, figsize=(21, 21))
+    fig, axes = plt.subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
     axes = axes.flatten()
 
     plot_array(
@@ -147,7 +147,7 @@ def subplot_imaging_dataset(
 def subplot_imaging_dataset_list(
     dataset_list,
     output_path=None,
-    output_filename: str = "subplot_dataset_combined",
+    output_filename: str = "dataset_combined",
     output_format="png",
 ):
     """
@@ -172,7 +172,7 @@ def subplot_imaging_dataset_list(
     from autoarray.plot.array import plot_array
 
     n = len(dataset_list)
-    fig, axes = plt.subplots(n, 3, figsize=(21, 7 * n))
+    fig, axes = plt.subplots(n, 3, figsize=conf_subplot_figsize(n, 3))
     if n == 1:
         axes = [axes]
     for i, dataset in enumerate(dataset_list):

@@ -59,7 +59,6 @@ def plot_array(
     output_path: Optional[str] = None,
     output_filename: str = "array",
     output_format: str = "png",
-    structure=None,
 ) -> None:
     """
     Plot a 2D array (image) using ``plt.imshow``.
@@ -120,9 +119,8 @@ def plot_array(
     """
     # --- autoarray extraction --------------------------------------------------
     array = zoom_array(array)
+    structure = array
     try:
-        if structure is None:
-            structure = array
         if extent is None:
             extent = array.geometry.extent
         if mask is None:
