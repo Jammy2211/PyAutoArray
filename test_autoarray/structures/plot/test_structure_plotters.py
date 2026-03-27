@@ -145,3 +145,24 @@ def test__array_rgb(
     )
 
     assert path.join(plot_path, "array_rgb.png") in plot_patch.paths
+
+
+def test__plot_array_rgb(
+    array_2d_rgb_7x7,
+    plot_path,
+    plot_patch,
+):
+    """
+    `plot_array` (the high-level function) must handle `Array2DRGB` inputs without
+    applying a colormap, norm, or colorbar — all of which would raise errors or
+    produce nonsense for a 3-channel image.
+    """
+    aplt.plot_array(
+        array=array_2d_rgb_7x7,
+        title="RGB Test",
+        output_path=plot_path,
+        output_filename="array_rgb_high_level",
+        output_format="png",
+    )
+
+    assert path.join(plot_path, "array_rgb_high_level.png") in plot_patch.paths
