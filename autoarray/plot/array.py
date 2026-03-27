@@ -133,6 +133,8 @@ def plot_array(
     if array is None or array.size == 0:
         return
 
+    is_rgb = array.ndim == 3 and array.shape[2] in (3, 4)
+
     if colormap is None:
         from autoarray.plot.utils import _default_colormap
         colormap = _default_colormap()
@@ -194,21 +196,30 @@ def plot_array(
         h, w = array.shape[:2]
         _box_aspect = (w / h) if h > 0 else 1.0
 
-    im = ax.imshow(
-        array,
-        cmap=colormap,
-        norm=norm,
-        extent=extent,
-        aspect="auto",  # image fills the axes box; box shape set below
-        origin=origin_imshow,
-    )
+    if is_rgb:
+        im = ax.imshow(
+            array,
+            extent=extent,
+            aspect="auto",
+            origin=origin_imshow,
+        )
+    else:
+        im = ax.imshow(
+            array,
+            cmap=colormap,
+            norm=norm,
+            extent=extent,
+            aspect="auto",  # image fills the axes box; box shape set below
+            origin=origin_imshow,
+        )
 
     # Shape the axes box to match the data so there is no surrounding
     # whitespace when the panel is embedded in a subplot grid.
     ax.set_aspect(_box_aspect, adjustable="box")
 
-    from autoarray.plot.utils import _apply_colorbar
-    _apply_colorbar(im, ax, cb_unit=cb_unit, is_subplot=not owns_figure)
+    if not is_rgb:
+        from autoarray.plot.utils import _apply_colorbar
+        _apply_colorbar(im, ax, cb_unit=cb_unit, is_subplot=not owns_figure)
 
     # --- overlays --------------------------------------------------------------
     if array_overlay is not None:
