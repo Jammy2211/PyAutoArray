@@ -257,14 +257,20 @@ def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, is_subplot=False):
         tick labels (matches the behaviour of :func:`~autoarray.plot.array.plot_array`).
     """
     mesh_grid = mapper.source_plane_mesh_grid
-    x = mesh_grid[:, 1]
-    y = mesh_grid[:, 0]
+
+    if hasattr(mesh_grid, "array"):
+        mesh_grid = mesh_grid.array
+
+    mesh_grid = np.asarray(mesh_grid)
+
+    x = np.asarray(mesh_grid[:, 1], dtype=float)
+    y = np.asarray(mesh_grid[:, 0], dtype=float)
 
     if hasattr(pixel_values, "array"):
         vals = pixel_values.array
     else:
         vals = pixel_values
 
-    tc = ax.tripcolor(x, y, vals, cmap=colormap, norm=norm, shading="gouraud")
+    tc = ax.tripcolor(x, y, vals, cmap=colormap, norm=norm)
     from autoarray.plot.utils import _apply_colorbar
     _apply_colorbar(tc, ax, is_subplot=is_subplot)
