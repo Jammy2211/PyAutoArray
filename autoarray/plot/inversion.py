@@ -119,7 +119,7 @@ def plot_inversion_reconstruction(
     elif isinstance(
         mapper.interpolator, (InterpolatorDelaunay, InterpolatorKNearestNeighbor)
     ):
-        _plot_delaunay(ax, pixel_values, mapper, norm, colormap, is_subplot=is_subplot)
+        _plot_delaunay(ax, pixel_values, mapper, norm, colormap, extent, is_subplot=is_subplot)
 
     # --- overlays --------------------------------------------------------------
     if lines is not None:
@@ -230,7 +230,7 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent, is_subpl
         _apply_colorbar(im, ax, is_subplot=is_subplot)
 
 
-def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, is_subplot=False):
+def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, extent, is_subplot=False):
     """Render a Delaunay or KNN pixelization reconstruction onto *ax*.
 
     Uses ``ax.tripcolor`` with Gouraud shading so that the reconstructed
@@ -252,10 +252,19 @@ def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, is_subplot=False):
         ``None`` for automatic scaling.
     colormap
         Matplotlib colormap name.
+    extent
+        ``[xmin, xmax, ymin, ymax]`` spatial extent; used to set the axes
+        aspect ratio to match rectangular pixelization plots.
     is_subplot
         When ``True`` uses ``labelsize_subplot`` from config for the colorbar
         tick labels (matches the behaviour of :func:`~autoarray.plot.array.plot_array`).
     """
+    xmin, xmax, ymin, ymax = extent
+    x_range = abs(xmax - xmin)
+    y_range = abs(ymax - ymin)
+    box_aspect = (x_range / y_range) if y_range > 0 else 1.0
+    ax.set_aspect(box_aspect, adjustable="box")
+
     mesh_grid = mapper.source_plane_mesh_grid
 
     if hasattr(mesh_grid, "array"):
