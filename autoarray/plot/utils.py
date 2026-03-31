@@ -419,7 +419,7 @@ def save_figure(
     path: str,
     filename: str,
     format: str = "png",
-    dpi: int = 300,
+    dpi: Optional[int] = None,
     structure=None,
 ) -> None:
     """
@@ -448,6 +448,10 @@ def save_figure(
         of ``fig.savefig``. Callers do not need to pass this; ``plot_array``
         supplies it automatically from the input array.
     """
+    if dpi is None:
+        from autoconf import conf
+        dpi = int(conf.instance["visualize"]["general"]["general"]["dpi"])
+
     if path:
         os.makedirs(path, exist_ok=True)
         formats = format if isinstance(format, (list, tuple)) else [format]
@@ -717,11 +721,20 @@ def _inward_ticks(lo: float, hi: float, factor: float, n: int) -> np.ndarray:
 
 
 def _round_ticks(values: np.ndarray, sig: int = 2) -> np.ndarray:
-    """Round *values* to *sig* significant figures."""
+    """Round *values* to *sig* significant figures.
+
+    After rounding, values smaller than 1e-10 of the overall tick scale are
+    clamped to zero so that floating-point noise (e.g. 1e-16 centre ticks on
+    symmetric extents) does not appear as scientific notation in labels.
+    """
     with np.errstate(divide="ignore", invalid="ignore"):
         nonzero = np.where(values != 0, np.abs(values), 1.0)
         mags = np.where(values != 0, 10 ** (sig - 1 - np.floor(np.log10(nonzero))), 1.0)
-    return np.round(values * mags) / mags
+    rounded = np.round(values * mags) / mags
+    scale = float(np.max(np.abs(rounded))) if len(rounded) > 0 else 1.0
+    if scale > 0:
+        rounded[np.abs(rounded) < scale * 1e-10] = 0.0
+    return rounded
 
 
 def _arcsec_labels(ticks) -> List[str]:

@@ -116,13 +116,18 @@ def subplot_of_mapper(
 
     # panels 4-5: source reconstruction zoomed / unzoomed
     pixel_values = inversion.reconstruction_dict[mapper]
+    try:
+        recon_vmax = float(np.max(np.asarray(_recon_array())))
+    except Exception:
+        recon_vmax = None
     plot_mapper(
         mapper,
         solution_vector=pixel_values,
         ax=axes[4],
-        title="Source Reconstruction",
+        title="Source Plane (Zoom)",
         colormap=colormap,
         use_log10=use_log10,
+        vmax=recon_vmax,
         zoom_to_brightest=True,
         mesh_grid=mesh_grid,
         lines=lines,
@@ -131,9 +136,10 @@ def subplot_of_mapper(
         mapper,
         solution_vector=pixel_values,
         ax=axes[5],
-        title="Source Reconstruction (Unzoomed)",
+        title="Source Plane (No Zoom)",
         colormap=colormap,
         use_log10=use_log10,
+        vmax=recon_vmax,
         zoom_to_brightest=False,
         mesh_grid=mesh_grid,
         lines=lines,
@@ -316,7 +322,7 @@ def subplot_mappings(
         mapper,
         solution_vector=pixel_values,
         ax=axes[2],
-        title="Source Reconstruction",
+        title="Source Plane (Zoom)",
         colormap=colormap,
         use_log10=use_log10,
         zoom_to_brightest=True,
@@ -327,7 +333,7 @@ def subplot_mappings(
         mapper,
         solution_vector=pixel_values,
         ax=axes[3],
-        title="Source Reconstruction (Unzoomed)",
+        title="Source Plane (No Zoom)",
         colormap=colormap,
         use_log10=use_log10,
         zoom_to_brightest=False,
