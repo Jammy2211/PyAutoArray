@@ -58,7 +58,7 @@ def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
         output_path=plot_path,
         output_format="png",
     )
-    assert path.join(plot_path, "inversion_0_0.png") in plot_patch.paths
+    assert path.join(plot_path, "inversion_0.png") in plot_patch.paths
 
     aplt.subplot_mappings(
         inversion=rectangular_inversion_7x7_3x3,

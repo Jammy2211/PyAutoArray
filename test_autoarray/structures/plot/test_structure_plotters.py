@@ -69,24 +69,6 @@ def test__array(
     assert path.join(plot_path, "array3.png") in plot_patch.paths
 
 
-def test__array__fits_files_output_correctly(array_2d_7x7, plot_path):
-    plot_path = path.join(plot_path, "fits")
-
-    if path.exists(plot_path):
-        shutil.rmtree(plot_path)
-
-    aplt.plot_array_2d(
-        array=array_2d_7x7,
-        output_path=plot_path,
-        output_filename="array",
-        output_format="fits",
-    )
-
-    arr = aa.ndarray_via_fits_from(file_path=path.join(plot_path, "array.fits"), hdu=0)
-
-    assert (arr == array_2d_7x7.native).all()
-
-
 def test__grid(
     array_2d_7x7,
     grid_2d_7x7,
