@@ -475,7 +475,8 @@ def test__to_and_from_fits_methods():
 
     file_path = path.join(test_grid_dir, "grid_2d.fits")
 
-    grid_2d.output_to_fits(file_path=file_path, overwrite=True)
+    from autoconf.fitsable import output_to_fits
+    output_to_fits(values=grid_2d.native.array.astype("float"), file_path=file_path, overwrite=True, header_dict=grid_2d.mask.header_dict)
 
     grid_from_fits = aa.Grid2D.from_fits(file_path=file_path, pixel_scales=2.0)
 

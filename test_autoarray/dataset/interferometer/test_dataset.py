@@ -109,7 +109,10 @@ def test__output_all_arrays(mask_2d_7x7):
 
     os.makedirs(test_data_path)
 
-    dataset.output_to_fits(
+    from autoarray.dataset.plot.interferometer_plots import fits_interferometer
+
+    fits_interferometer(
+        dataset=dataset,
         data_path=path.join(test_data_path, "data.fits"),
         noise_map_path=path.join(test_data_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(test_data_path, "uv_wavelengths.fits"),

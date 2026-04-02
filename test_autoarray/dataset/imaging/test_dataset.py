@@ -174,10 +174,14 @@ def test__output_to_fits__round_trips_data_psf_noise_map_correctly(
     imaging_7x7, test_data_path
 ):
 
-    imaging_7x7.output_to_fits(
+    from autoarray.dataset.plot.imaging_plots import fits_imaging
+
+    fits_imaging(
+        dataset=imaging_7x7,
         data_path=path.join(test_data_path, "data.fits"),
         psf_path=path.join(test_data_path, "psf.fits"),
         noise_map_path=path.join(test_data_path, "noise_map.fits"),
+        overwrite=True,
     )
 
     dataset = aa.Imaging.from_fits(

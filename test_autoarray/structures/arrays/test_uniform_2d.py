@@ -213,7 +213,8 @@ def test__output_to_fits__3x3_ones__fits_file_has_ones_and_correct_pixel_scale_h
 
     os.makedirs(test_data_path)
 
-    array_2d.output_to_fits(file_path=path.join(test_data_path, "array.fits"))
+    from autoconf.fitsable import output_to_fits
+    output_to_fits(values=array_2d.native.array.astype("float"), file_path=path.join(test_data_path, "array.fits"), header_dict=array_2d.mask.header_dict)
 
     array_from_fits = aa.Array2D.from_fits(
         file_path=path.join(test_data_path, "array.fits"), hdu=0, pixel_scales=1.0

@@ -102,7 +102,8 @@ def test__output_to_fits():
 
     os.makedirs(test_data_path)
 
-    visibilities.output_to_fits(file_path=path.join(test_data_path, "data.fits"))
+    from autoconf.fitsable import output_to_fits
+    output_to_fits(values=visibilities.in_array, file_path=path.join(test_data_path, "data.fits"))
 
     visibilities_from_out = aa.Visibilities.from_fits(
         file_path=path.join(test_data_path, "data.fits"), hdu=0

@@ -166,7 +166,8 @@ def test__output_to_fits__ones_array__fits_file_has_correct_values_and_header():
 
     os.makedirs(test_data_path)
 
-    arr.output_to_fits(file_path=path.join(test_data_path, "array.fits"))
+    from autoconf.fitsable import output_to_fits
+    output_to_fits(values=arr.native.array.astype("float"), file_path=path.join(test_data_path, "array.fits"), header_dict=arr.mask.header_dict)
 
     array_from_out = aa.Array1D.from_fits(
         file_path=path.join(test_data_path, "array.fits"), hdu=0, pixel_scales=1.0
