@@ -42,7 +42,7 @@ def subplot_interferometer_dataset(
     fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
-    plot_grid(dataset.data.in_grid, ax=axes[0], title="Visibilities")
+    plot_grid(dataset.data.in_grid, ax=axes[0], title="Visibilities", xlabel="", ylabel="")
     plot_grid(
         Grid2DIrregular.from_yx_1d(
             y=dataset.uv_wavelengths[:, 1] / 10**3.0,
@@ -50,14 +50,16 @@ def subplot_interferometer_dataset(
         ),
         ax=axes[1],
         title="UV-Wavelengths",
+        xlabel="",
+        ylabel="",
     )
     plot_yx(
         dataset.amplitudes,
         dataset.uv_distances / 10**3.0,
         ax=axes[2],
         title="Amplitudes vs UV-distances",
-        ylabel="Jy",
-        xlabel="k$\\lambda$",
+        xtick_suffix='"',
+        ytick_suffix="Jy",
         plot_axis_type="scatter",
     )
     plot_yx(
@@ -65,8 +67,8 @@ def subplot_interferometer_dataset(
         dataset.uv_distances / 10**3.0,
         ax=axes[3],
         title="Phases vs UV-distances",
-        ylabel="deg",
-        xlabel="k$\\lambda$",
+        xtick_suffix='"',
+        ytick_suffix="deg",
         plot_axis_type="scatter",
     )
     plot_array(

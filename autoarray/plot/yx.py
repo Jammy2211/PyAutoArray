@@ -25,8 +25,10 @@ def plot_yx(
     title: str = "",
     xlabel: str = "",
     ylabel: str = "",
+    xtick_suffix: str = "",
+    ytick_suffix: str = "",
     label: Optional[str] = None,
-    color: str = "b",
+    color: str = "k",
     linestyle: str = "-",
     plot_axis_type: str = "linear",
     # --- figure control (used only when ax is None) -----------------------------
@@ -129,7 +131,21 @@ def plot_yx(
         ax.fill_between(x, y1, y2, alpha=0.3)
 
     # --- labels ----------------------------------------------------------------
-    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel)
+    apply_labels(ax, title=title, xlabel=xlabel, ylabel=ylabel, is_subplot=not owns_figure)
+
+    # --- 3-point ticks with optional unit suffixes ----------------------------
+    from autoarray.plot.utils import _inward_ticks, _round_ticks, _conf_ticks
+
+    factor = _conf_ticks("extent_factor_2d", 0.75)
+
+    xlo, xhi = ax.get_xlim()
+    ylo, yhi = ax.get_ylim()
+    xticks = _round_ticks(_inward_ticks(xlo, xhi, factor, 3))
+    yticks = _round_ticks(_inward_ticks(ylo, yhi, factor, 3))
+    ax.set_xticks(xticks)
+    ax.set_xticklabels([f"{v:g}{xtick_suffix}" for v in xticks])
+    ax.set_yticks(yticks)
+    ax.set_yticklabels([f"{v:g}{ytick_suffix}" for v in yticks])
 
     if label is not None:
         ax.legend(fontsize=12)
