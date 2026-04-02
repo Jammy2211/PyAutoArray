@@ -533,15 +533,52 @@ def _colorbar_tick_values(norm) -> Optional[List[float]]:
     return [lo, mid, hi]
 
 
+_SUPERSCRIPT_DIGITS = str.maketrans("0123456789-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+
+
+def _to_scientific(v: float) -> Optional[str]:
+    """Convert *v* to Unicode scientific notation (e.g. ``4.3×10⁴``).
+
+    Returns ``None`` when ``f"{v:.2g}"`` does not produce an exponent (unusual
+    edge case for certain values near the g-format threshold).
+    """
+    s = f"{v:.2g}"
+    if "e" not in s:
+        return None
+    mantissa, exp = s.split("e")
+    sign = "-" if exp.startswith("-") else ""
+    exp_num = exp.lstrip("+-").lstrip("0") or "0"
+    superscript = f"{sign}{exp_num}".translate(_SUPERSCRIPT_DIGITS)
+    return f"{mantissa}×10{superscript}"
+
+
 def _fmt_tick(v: float) -> str:
-    """Format a single tick value to 2 decimal places without scientific notation."""
+    """Format a single tick value compactly.
+
+    Values with 5 or more digits (abs(v) >= 10000) or very small values
+    (abs(v) < 0.001) are rendered as compact scientific notation using
+    Unicode superscripts, e.g. ``4.3×10⁴`` or ``1.2×10⁻⁵``.  This avoids
+    LaTeX expansion that would overflow the colorbar width.  Values in
+    between are rendered with ``:.2f``.
+    """
+    abs_v = abs(v)
+    if abs_v != 0 and (abs_v >= 10000 or abs_v < 0.001):
+        sci = _to_scientific(v)
+        return sci if sci is not None else f"{v:.2g}"
     return f"{v:.2f}"
 
 
 def _colorbar_tick_labels(tick_values: List[float], cb_unit: Optional[str] = None) -> List[str]:
-    """Format tick values without scientific notation, appending *cb_unit* to the middle label.
+    """Format tick values, appending *cb_unit* to the middle label.
 
-    If *cb_unit* is ``None`` the unit is read from config; pass ``""`` for unitless panels.
+    All three labels use a consistent notation style: if any tick is rendered
+    in scientific notation (``×10ⁿ``), every non-zero tick is forced through
+    the same format.  This prevents the central tick from showing e.g.
+    ``-5000.00`` when the outer ticks show ``-2×10⁴`` / ``1.5×10⁴`` because
+    the midpoint happens to fall below the per-value threshold.
+
+    If *cb_unit* is ``None`` the unit is read from config; pass ``""`` for
+    unitless panels.
     """
     if cb_unit is None:
         try:
@@ -551,6 +588,18 @@ def _colorbar_tick_labels(tick_values: List[float], cb_unit: Optional[str] = Non
             cb_unit = ""
     labels = [_fmt_tick(v) for v in tick_values]
     mid = len(labels) // 2
+
+    # Enforce consistent notation: if any label uses ×10, convert all others.
+    if any("×10" in lbl for lbl in labels):
+        for i, (lbl, v) in enumerate(zip(labels, tick_values)):
+            if "×10" not in lbl:
+                if v == 0:
+                    labels[i] = "0"
+                else:
+                    sci = _to_scientific(v)
+                    if sci is not None:
+                        labels[i] = sci
+
     labels[mid] = f"{labels[mid]}{cb_unit}"
     return labels
 
@@ -569,8 +618,8 @@ def _apply_colorbar(
         Override the unit string on the middle tick.  Pass ``""`` for unitless panels.
         ``None`` reads the unit from config.
     is_subplot
-        When ``True`` uses ``labelsize_subplot`` from config (default 22) instead of
-        the single-figure ``labelsize`` (default 22).
+        When ``True`` uses ``labelsize_subplot`` from config (default 18) instead of
+        the single-figure ``labelsize`` (default 18).
     """
     tick_values = _colorbar_tick_values(getattr(mappable, "norm", None))
 
@@ -582,7 +631,7 @@ def _apply_colorbar(
         ticks=tick_values,
     )
     labelsize_key = "labelsize_subplot" if is_subplot else "labelsize"
-    labelsize = float(_conf_colorbar(labelsize_key, 22))
+    labelsize = float(_conf_colorbar(labelsize_key, 18))
     labelrotation = float(_conf_colorbar("labelrotation", 90))
     if tick_values is not None:
         cb.ax.set_yticklabels(
