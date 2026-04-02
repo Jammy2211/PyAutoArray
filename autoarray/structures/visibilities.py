@@ -90,23 +90,6 @@ class AbstractVisibilities(Structure, ABC):
     def phases(self) -> np.ndarray:
         return np.arctan2(self.array.imag, self.array.real)
 
-    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
-        """
-        Output the visibilities to a .fits file.
-
-        The complex values are converted to a 2D NumPy float array of shape [total_visiblities, 2] before being
-        written to `.fits` format via the `in_array` property.
-
-        Parameters
-        ----------
-        file_path
-            The path the file is output to, including the filename and the ``.fits`` extension,
-            e.g. '/path/to/filename.fits'
-        overwrite
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
-        """
-        output_to_fits(values=self.in_array, file_path=file_path, overwrite=overwrite)
-
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
         """

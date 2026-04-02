@@ -7,7 +7,7 @@ from abc import abstractmethod
 
 import numpy as np
 
-from autoconf.fitsable import output_to_fits
+
 
 from typing import TYPE_CHECKING
 
@@ -134,11 +134,6 @@ class AbstractNDArray(ABC):
         new_array = self.copy()
         new_array._array = array
         return new_array
-
-    def flip_hdu_for_ds9(self, values):
-        if conf.instance["general"]["fits"]["flip_for_ds9"]:
-            return self._xp.flipud(values)
-        return values
 
     def copy(self):
         new = copy(self)
@@ -271,24 +266,6 @@ class AbstractNDArray(ABC):
         """
         Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """
-
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
-        """
-        Output the grid to a .fits file.
-
-        Parameters
-        ----------
-        file_path
-            The path the file is output to, including the filename and the .fits extension, e.g. '/path/to/filename.fits'
-        overwrite
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
-        """
-        output_to_fits(
-            values=self.native.array.astype("float"),
-            file_path=file_path,
-            overwrite=overwrite,
-            header_dict=self.mask.header_dict,
-        )
 
     @property
     def shape(self):

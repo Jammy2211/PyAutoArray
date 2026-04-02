@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import Optional
 
-from autoconf.fitsable import ndarray_via_fits_from, output_to_fits
+from autoconf.fitsable import ndarray_via_fits_from
 from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
@@ -423,47 +423,6 @@ class Interferometer(AbstractDataset):
         return self.data.with_new_array(
             signal_to_noise_map_real + 1j * signal_to_noise_map_imag
         )
-
-    def output_to_fits(
-        self,
-        data_path=None,
-        noise_map_path=None,
-        uv_wavelengths_path=None,
-        overwrite=False,
-    ):
-        """
-        Output the interferometer dataset to multiple .fits files.
-
-        Each component (visibilities, noise map, uv_wavelengths) is saved to its own .fits file.
-        Any path set to `None` means that component is not saved.
-
-        Parameters
-        ----------
-        data_path
-            The path where the visibility data is saved (e.g. '/path/to/visibilities.fits').
-            If `None`, the visibilities are not saved.
-        noise_map_path
-            The path where the noise map is saved (e.g. '/path/to/noise_map.fits').
-            If `None`, the noise map is not saved.
-        uv_wavelengths_path
-            The path where the uv_wavelengths array is saved (e.g. '/path/to/uv_wavelengths.fits').
-            If `None`, the uv_wavelengths are not saved.
-        overwrite
-            If `True`, existing .fits files are overwritten. If `False`, an exception is raised
-            if a file already exists at the given path.
-        """
-        if data_path is not None:
-            self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
-
-        if self.noise_map is not None and noise_map_path is not None:
-            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
-        if self.uv_wavelengths is not None and uv_wavelengths_path is not None:
-            output_to_fits(
-                values=self.uv_wavelengths,
-                file_path=uv_wavelengths_path,
-                overwrite=overwrite,
-            )
 
     @property
     def psf(self):

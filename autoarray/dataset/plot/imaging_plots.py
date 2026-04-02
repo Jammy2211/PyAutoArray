@@ -181,3 +181,75 @@ def subplot_imaging_dataset_list(
         plot_array(dataset.signal_to_noise_map, ax=axes[i][2], title="Signal-To-Noise Map")
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
+
+
+def fits_imaging(
+    dataset,
+    file_path=None,
+    data_path=None,
+    psf_path=None,
+    noise_map_path=None,
+    overwrite=False,
+):
+    """Write an ``Imaging`` dataset to FITS.
+
+    Supports two modes:
+
+    * **Separate files** — pass ``data_path``, ``psf_path``, ``noise_map_path``
+      to write each component to its own single-HDU FITS file.
+    * **Single multi-HDU file** — pass ``file_path`` to write all components
+      into one FITS file with named extensions (``mask``, ``data``, ``psf``,
+      ``noise_map``).
+
+    Parameters
+    ----------
+    dataset
+        The ``Imaging`` dataset to write.
+    file_path : str or Path, optional
+        Path for a single multi-HDU FITS file.
+    data_path, psf_path, noise_map_path : str or Path, optional
+        Paths for individual component files.
+    overwrite : bool
+        If ``True`` existing files are replaced.
+    """
+    from autoconf.fitsable import output_to_fits, hdu_list_for_output_from, write_hdu_list
+
+    header_dict = dataset.data.mask.header_dict if hasattr(dataset.data.mask, "header_dict") else None
+
+    if file_path is not None:
+        values_list = [dataset.data.mask.astype("float")]
+        ext_name_list = ["mask"]
+
+        values_list.append(dataset.data.native.array.astype("float"))
+        ext_name_list.append("data")
+
+        if dataset.psf is not None:
+            values_list.append(dataset.psf.kernel.native.array.astype("float"))
+            ext_name_list.append("psf")
+
+        if dataset.noise_map is not None:
+            values_list.append(dataset.noise_map.native.array.astype("float"))
+            ext_name_list.append("noise_map")
+
+        hdu_list = hdu_list_for_output_from(
+            values_list=values_list,
+            ext_name_list=ext_name_list,
+            header_dict=header_dict,
+        )
+        write_hdu_list(hdu_list, file_path=file_path, overwrite=overwrite)
+    else:
+        if data_path is not None:
+            output_to_fits(
+                values=dataset.data.native.array.astype("float"),
+                file_path=data_path, overwrite=overwrite, header_dict=header_dict,
+            )
+        if dataset.psf is not None and psf_path is not None:
+            output_to_fits(
+                values=dataset.psf.kernel.native.array.astype("float"),
+                file_path=psf_path, overwrite=overwrite,
+            )
+        if dataset.noise_map is not None and noise_map_path is not None:
+            output_to_fits(
+                values=dataset.noise_map.native.array.astype("float"),
+                file_path=noise_map_path, overwrite=overwrite, header_dict=header_dict,
+            )
