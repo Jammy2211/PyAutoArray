@@ -20,6 +20,7 @@ from autoarray.plot.utils import (
     numpy_lines,
     numpy_positions,
     _apply_contours,
+    _conf_imshow_origin,
 )
 
 _zoom_array_2d = zoom_array
@@ -54,7 +55,7 @@ def plot_array(
     use_log10: bool = False,
     cb_unit: Optional[str] = None,
     line_colors: Optional[List] = None,
-    origin_imshow: str = "upper",
+    origin_imshow: Optional[str] = None,
     # --- figure control (used only when ax is None) -----------------------------
     figsize: Optional[Tuple[int, int]] = None,
     output_path: Optional[str] = None,
@@ -118,9 +119,11 @@ def plot_array(
     output_format
         File format, e.g. ``"png"``.
     """
+    if origin_imshow is None:
+        origin_imshow = _conf_imshow_origin()
+
     # --- autoarray extraction --------------------------------------------------
     array = zoom_array(array)
-    structure = array
     try:
         if extent is None:
             extent = array.geometry.extent
@@ -309,5 +312,4 @@ def plot_array(
             path=output_path or "",
             filename=output_filename,
             format=output_format,
-            structure=structure,
         )

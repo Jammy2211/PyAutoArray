@@ -542,38 +542,3 @@ class Imaging(AbstractDataset):
             sparse_operator=sparse_operator,
         )
 
-    def output_to_fits(
-        self,
-        data_path: Union[Path, str],
-        psf_path: Optional[Union[Path, str]] = None,
-        noise_map_path: Optional[Union[Path, str]] = None,
-        overwrite: bool = False,
-    ):
-        """
-        Output an imaging dataset to multiple .fits file.
-
-        For each attribute of the imaging data (e.g. `data`, `noise_map`) the path to
-        the .fits can be specified, with `hdu=0` assumed automatically.
-
-        If the `data` has been masked, the masked data is output to .fits files. A mask can be separately output to
-        a file `mask.fits` via the `Mask` objects `output_to_fits` method.
-
-        Parameters
-        ----------
-        data_path
-            The path to the data .fits file where the image data is output (e.g. '/path/to/data.fits').
-        psf_path
-            The path to the psf .fits file where the psf is output (e.g. '/path/to/psf.fits').
-        noise_map_path
-            The path to the noise_map .fits where the noise_map is output (e.g. '/path/to/noise_map.fits').
-        overwrite
-            If `True`, the .fits files are overwritten if they already exist, if `False` they are not and an
-            exception is raised.
-        """
-        self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
-
-        if self.psf is not None and psf_path is not None:
-            self.psf.kernel.output_to_fits(file_path=psf_path, overwrite=overwrite)
-
-        if self.noise_map is not None and noise_map_path is not None:
-            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)

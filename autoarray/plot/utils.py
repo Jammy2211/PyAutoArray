@@ -265,6 +265,39 @@ def set_with_color_values(ax, cmap, color_values, norm=None):
     return _apply_colorbar(mappable, ax)
 
 
+def _output_mode_save(fig, filename):
+    """If ``PYAUTOARRAY_OUTPUT_MODE=1``, save *fig* to a numbered file in
+    ``./output_mode/<script_name>/`` and return ``True``.  Otherwise return
+    ``False`` so the caller can proceed with normal saving.
+
+    The counter is stored as a function attribute to avoid a global variable.
+    """
+    if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") != "1":
+        return False
+
+    import sys
+
+    script_name = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+    output_path = os.path.join(os.getcwd(), "output_mode", script_name)
+    os.makedirs(output_path, exist_ok=True)
+
+    count = getattr(_output_mode_save, "_count", -1) + 1
+    _output_mode_save._count = count
+
+    try:
+        fig.savefig(
+            os.path.join(output_path, f"{count}_{filename}.png"),
+            dpi=150,
+            bbox_inches="tight",
+            pad_inches=0.1,
+        )
+    except Exception as exc:
+        logger.warning(f"output_mode: could not save {count}_{filename}.png: {exc}")
+
+    plt.close(fig)
+    return True
+
+
 def subplot_save(fig, output_path, output_filename, output_format):
     """Save a subplot figure to disk, or display it, then close it.
 
@@ -286,6 +319,9 @@ def subplot_save(fig, output_path, output_filename, output_format):
     output_format
         File format string, e.g. ``"png"`` or ``"pdf"``.
     """
+    if _output_mode_save(fig, output_filename):
+        return
+
     if output_path:
         os.makedirs(output_path, exist_ok=True)
         try:
@@ -420,13 +456,14 @@ def save_figure(
     filename: str,
     format: str = "png",
     dpi: Optional[int] = None,
-    structure=None,
 ) -> None:
     """
     Save *fig* to ``<path>/<filename>.<format>`` then close it.
 
     If *path* is an empty string or ``None``, ``plt.show()`` is called instead.
     After either action ``plt.close(fig)`` is always called to free memory.
+
+    For FITS output use ``fits_array`` (in ``autogalaxy.plot``) instead.
 
     Parameters
     ----------
@@ -442,43 +479,29 @@ def save_figure(
         to save in multiple formats in one call.
     dpi
         Resolution in dots per inch.
-    structure
-        Optional autoarray structure (e.g. ``Array2D``). When *format* includes
-        ``"fits"`` and the structure has ``output_to_fits``, it is used instead
-        of ``fig.savefig``. Callers do not need to pass this; ``plot_array``
-        supplies it automatically from the input array.
     """
     if dpi is None:
         from autoconf import conf
         dpi = int(conf.instance["visualize"]["general"]["general"]["dpi"])
 
+    if _output_mode_save(fig, filename):
+        return
+
     if path:
         os.makedirs(path, exist_ok=True)
         formats = format if isinstance(format, (list, tuple)) else [format]
         for fmt in formats:
-            if fmt == "fits":
-                if structure is not None and hasattr(structure, "output_to_fits"):
-                    structure.output_to_fits(
-                        file_path=os.path.join(path, f"{filename}.fits"),
-                        overwrite=True,
-                    )
-                else:
-                    logger.warning(
-                        f"save_figure: fits format requested for {filename} but no "
-                        "compatible structure was provided; skipping."
-                    )
-            else:
-                try:
-                    fig.savefig(
-                        os.path.join(path, f"{filename}.{fmt}"),
-                        dpi=dpi,
-                        bbox_inches="tight",
-                        pad_inches=0.1,
-                    )
-                except Exception as exc:
-                    logger.warning(
-                        f"save_figure: could not save {filename}.{fmt}: {exc}"
-                    )
+            try:
+                fig.savefig(
+                    os.path.join(path, f"{filename}.{fmt}"),
+                    dpi=dpi,
+                    bbox_inches="tight",
+                    pad_inches=0.1,
+                )
+            except Exception as exc:
+                logger.warning(
+                    f"save_figure: could not save {filename}.{fmt}: {exc}"
+                )
     else:
         plt.show()
 
@@ -711,12 +734,16 @@ def _apply_contours(
             levels = np.linspace(float(np.nanmin(array)), float(np.nanmax(array)), total)
 
         # Build explicit coordinate grids so the contours align with imshow.
-        # imshow with origin="upper" maps row 0 to ymax and last row to ymin,
-        # so Y must decrease across rows to match.
+        # With origin="upper" row 0 maps to ymax (Y decreases across rows);
+        # with origin="lower" row 0 maps to ymin (Y increases across rows).
         ny, nx = array.shape[:2]
         if extent is not None:
+            origin = _conf_imshow_origin()
             xs = np.linspace(extent[0], extent[1], nx)
-            ys = np.linspace(extent[3], extent[2], ny)  # ymax → ymin
+            if origin == "upper":
+                ys = np.linspace(extent[3], extent[2], ny)  # ymax → ymin
+            else:
+                ys = np.linspace(extent[2], extent[3], ny)  # ymin → ymax
             X, Y = np.meshgrid(xs, ys)
             cs = ax.contour(X, Y, array, levels=levels, colors="k", alpha=0.5)
         else:
@@ -749,6 +776,15 @@ def _default_colormap() -> str:
         from autoarray.plot.segmentdata import register
         register()
     return name
+
+
+def _conf_imshow_origin() -> str:
+    """Return the imshow origin from config (``"upper"`` or ``"lower"``)."""
+    try:
+        from autoconf import conf
+        return conf.instance["visualize"]["general"]["general"]["imshow_origin"]
+    except Exception:
+        return "upper"
 
 
 def _conf_ticks(key: str, default: float) -> float:

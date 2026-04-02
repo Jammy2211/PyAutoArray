@@ -19,7 +19,7 @@ def subplot_interferometer_dataset(
     use_log10: bool = False,
 ):
     """
-    2×3 subplot of interferometer dataset components.
+    2x3 subplot of interferometer dataset components.
 
     Panels: Visibilities | UV-Wavelengths | Amplitudes vs UV-distances |
             Phases vs UV-distances | Dirty Image | Dirty S/N Map
@@ -100,7 +100,7 @@ def subplot_interferometer_dirty_images(
     use_log10: bool = False,
 ):
     """
-    1×3 subplot of dirty image, dirty noise map, and dirty S/N map.
+    1x3 subplot of dirty image, dirty noise map, and dirty S/N map.
 
     Parameters
     ----------
@@ -144,3 +144,72 @@ def subplot_interferometer_dirty_images(
     hide_unused_axes(axes)
     plt.tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
+
+
+def fits_interferometer(
+    dataset,
+    file_path=None,
+    data_path=None,
+    noise_map_path=None,
+    uv_wavelengths_path=None,
+    overwrite=False,
+):
+    """Write an ``Interferometer`` dataset to FITS.
+
+    Supports two modes:
+
+    * **Separate files** -- pass ``data_path``, ``noise_map_path``,
+      ``uv_wavelengths_path`` to write each component to its own FITS file.
+    * **Single multi-HDU file** -- pass ``file_path`` to write all components
+      into one FITS file with named extensions (``data``, ``noise_map``,
+      ``uv_wavelengths``).
+
+    Parameters
+    ----------
+    dataset
+        The ``Interferometer`` dataset to write.
+    file_path : str or Path, optional
+        Path for a single multi-HDU FITS file.
+    data_path, noise_map_path, uv_wavelengths_path : str or Path, optional
+        Paths for individual component files.
+    overwrite : bool
+        If ``True`` existing files are replaced.
+    """
+    from autoconf.fitsable import output_to_fits, hdu_list_for_output_from, write_hdu_list
+
+    if file_path is not None:
+        values_list = []
+        ext_name_list = []
+
+        values_list.append(np.asarray(dataset.data.in_array))
+        ext_name_list.append("data")
+
+        if dataset.noise_map is not None:
+            values_list.append(np.asarray(dataset.noise_map.in_array))
+            ext_name_list.append("noise_map")
+
+        if dataset.uv_wavelengths is not None:
+            values_list.append(np.asarray(dataset.uv_wavelengths))
+            ext_name_list.append("uv_wavelengths")
+
+        hdu_list = hdu_list_for_output_from(
+            values_list=values_list,
+            ext_name_list=ext_name_list,
+        )
+        write_hdu_list(hdu_list, file_path=file_path, overwrite=overwrite)
+    else:
+        if data_path is not None:
+            output_to_fits(
+                values=np.asarray(dataset.data.in_array),
+                file_path=data_path, overwrite=overwrite,
+            )
+        if dataset.noise_map is not None and noise_map_path is not None:
+            output_to_fits(
+                values=np.asarray(dataset.noise_map.in_array),
+                file_path=noise_map_path, overwrite=overwrite,
+            )
+        if dataset.uv_wavelengths is not None and uv_wavelengths_path is not None:
+            output_to_fits(
+                values=dataset.uv_wavelengths,
+                file_path=uv_wavelengths_path, overwrite=overwrite,
+            )

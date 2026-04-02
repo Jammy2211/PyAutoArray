@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm, Normalize
 
-from autoarray.plot.utils import apply_extent, apply_labels, conf_figsize, save_figure
+from autoarray.plot.utils import apply_extent, apply_labels, conf_figsize, save_figure, _conf_imshow_origin
 
 
 def plot_inversion_reconstruction(
@@ -213,7 +213,7 @@ def _plot_rectangular(ax, pixel_values, mapper, norm, colormap, extent, is_subpl
             norm=norm,
             extent=pix_array.geometry.extent,
             aspect="auto",
-            origin="upper",
+            origin=_conf_imshow_origin(),
         )
         _apply_colorbar(im, ax, is_subplot=is_subplot)
     else:

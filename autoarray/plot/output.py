@@ -200,12 +200,6 @@ class Output:
                     plt.show()
                 elif format == "png" or format == "pdf":
                     self.savefig(filename, output_path, format)
-                elif format == "fits":
-                    if structure is not None:
-                        structure.output_to_fits(
-                            file_path=path.join(output_path, f"{filename}.fits"),
-                            overwrite=True,
-                        )
 
     def subplot_to_figure(
         self, auto_filename: Optional[str] = None, also_show: bool = False
