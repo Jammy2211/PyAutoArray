@@ -618,8 +618,8 @@ def _apply_colorbar(
         Override the unit string on the middle tick.  Pass ``""`` for unitless panels.
         ``None`` reads the unit from config.
     is_subplot
-        When ``True`` uses ``labelsize_subplot`` from config (default 18) instead of
-        the single-figure ``labelsize`` (default 18).
+        When ``True`` uses ``labelsize_subplot`` from config (default 16) instead of
+        the single-figure ``labelsize`` (default 16).
     """
     tick_values = _colorbar_tick_values(getattr(mappable, "norm", None))
 
@@ -631,7 +631,7 @@ def _apply_colorbar(
         ticks=tick_values,
     )
     labelsize_key = "labelsize_subplot" if is_subplot else "labelsize"
-    labelsize = float(_conf_colorbar(labelsize_key, 18))
+    labelsize = float(_conf_colorbar(labelsize_key, 16))
     labelrotation = float(_conf_colorbar("labelrotation", 90))
     if tick_values is not None:
         cb.ax.set_yticklabels(
