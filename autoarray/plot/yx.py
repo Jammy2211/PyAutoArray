@@ -35,7 +35,7 @@ def plot_yx(
     figsize: Optional[Tuple[int, int]] = None,
     output_path: Optional[str] = None,
     output_filename: str = "yx",
-    output_format: str = "png",
+    output_format: str = None,
 ) -> None:
     """
     Plot 1D y versus x data.

@@ -9,7 +9,7 @@ def subplot_imaging_dataset(
     dataset,
     output_path: Optional[str] = None,
     output_filename: str = "dataset",
-    output_format: str = "png",
+    output_format: str = None,
     colormap=None,
     use_log10: bool = False,
     grid=None,
@@ -148,7 +148,7 @@ def subplot_imaging_dataset_list(
     dataset_list,
     output_path=None,
     output_filename: str = "dataset_combined",
-    output_format="png",
+    output_format=None,
 ):
     """
     n×3 subplot showing core components for each dataset in a list.

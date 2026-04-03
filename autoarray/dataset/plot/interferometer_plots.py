@@ -14,7 +14,7 @@ def subplot_interferometer_dataset(
     dataset,
     output_path: Optional[str] = None,
     output_filename: str = "dataset",
-    output_format: str = "png",
+    output_format: str = None,
     colormap=None,
     use_log10: bool = False,
 ):
@@ -95,7 +95,7 @@ def subplot_interferometer_dirty_images(
     dataset,
     output_path: Optional[str] = None,
     output_filename: str = "dirty_images",
-    output_format: str = "png",
+    output_format: str = None,
     colormap=None,
     use_log10: bool = False,
 ):
