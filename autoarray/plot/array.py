@@ -60,7 +60,7 @@ def plot_array(
     figsize: Optional[Tuple[int, int]] = None,
     output_path: Optional[str] = None,
     output_filename: str = "array",
-    output_format: str = "png",
+    output_format: str = None,
 ) -> None:
     """
     Plot a 2D array (image) using ``plt.imshow``.

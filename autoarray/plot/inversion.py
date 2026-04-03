@@ -34,7 +34,7 @@ def plot_inversion_reconstruction(
     figsize: Optional[Tuple[int, int]] = None,
     output_path: Optional[str] = None,
     output_filename: str = "reconstruction",
-    output_format: str = "png",
+    output_format: str = None,
 ) -> None:
     """
     Plot an inversion reconstruction using the appropriate mapper type.

@@ -10,7 +10,7 @@ def subplot_fit_imaging(
     fit,
     output_path: Optional[str] = None,
     output_filename: str = "fit",
-    output_format: str = "png",
+    output_format: str = None,
     colormap=None,
     use_log10: bool = False,
     residuals_symmetric_cmap: bool = True,

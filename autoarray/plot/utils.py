@@ -298,14 +298,14 @@ def _output_mode_save(fig, filename):
     return True
 
 
-def subplot_save(fig, output_path, output_filename, output_format):
+def subplot_save(fig, output_path, output_filename, output_format=None):
     """Save a subplot figure to disk, or display it, then close it.
 
     All ``subplot_*`` functions call this as their final step.  When
-    *output_path* is non-empty the figure is written to
-    ``<output_path>/<output_filename>.<output_format>``; otherwise
-    ``plt.show()`` is called.  ``plt.close(fig)`` is always called to
-    release memory.
+    *output_format* is ``"show"`` (the config default) or *output_path*
+    is empty, ``plt.show()`` is called; otherwise the figure is written to
+    ``<output_path>/<output_filename>.<output_format>``.
+    ``plt.close(fig)`` is always called to release memory.
 
     Parameters
     ----------
@@ -317,12 +317,18 @@ def subplot_save(fig, output_path, output_filename, output_format):
     output_filename
         Base file name without extension.
     output_format
-        File format string, e.g. ``"png"`` or ``"pdf"``.
+        File format string, e.g. ``"png"`` or ``"pdf"``.  ``"show"``
+        displays the figure interactively.  ``None`` reads from config.
     """
+    if output_format is None:
+        output_format = _conf_output_format()
+
     if _output_mode_save(fig, output_filename):
         return
 
-    if output_path:
+    if output_format == "show" or not output_path:
+        plt.show()
+    else:
         os.makedirs(output_path, exist_ok=True)
         try:
             fig.savefig(
@@ -334,8 +340,6 @@ def subplot_save(fig, output_path, output_filename, output_format):
             logger.warning(
                 f"subplot_save: could not save {output_filename}.{output_format}: {exc}"
             )
-    else:
-        plt.show()
     plt.close(fig)
 
 
@@ -454,13 +458,14 @@ def save_figure(
     fig: plt.Figure,
     path: str,
     filename: str,
-    format: str = "png",
+    format: str = None,
     dpi: Optional[int] = None,
 ) -> None:
     """
     Save *fig* to ``<path>/<filename>.<format>`` then close it.
 
-    If *path* is an empty string or ``None``, ``plt.show()`` is called instead.
+    If *format* is ``"show"`` (the config default) or *path* is empty/``None``,
+    ``plt.show()`` is called instead of saving.
     After either action ``plt.close(fig)`` is always called to free memory.
 
     For FITS output use ``fits_array`` (in ``autogalaxy.plot``) instead.
@@ -476,10 +481,14 @@ def save_figure(
     format
         File format(s) passed to ``fig.savefig``.  Either a single string
         (e.g. ``"png"``) or a list/tuple of strings (e.g. ``["png", "pdf"]``)
-        to save in multiple formats in one call.
+        to save in multiple formats in one call.  ``"show"`` displays the
+        figure interactively.  ``None`` reads the default from config.
     dpi
         Resolution in dots per inch.
     """
+    if format is None:
+        format = _conf_output_format()
+
     if dpi is None:
         from autoconf import conf
         dpi = int(conf.instance["visualize"]["general"]["general"]["dpi"])
@@ -487,10 +496,15 @@ def save_figure(
     if _output_mode_save(fig, filename):
         return
 
-    if path:
+    formats = format if isinstance(format, (list, tuple)) else [format]
+
+    if all(f == "show" for f in formats) or not path:
+        plt.show()
+    else:
         os.makedirs(path, exist_ok=True)
-        formats = format if isinstance(format, (list, tuple)) else [format]
         for fmt in formats:
+            if fmt == "show":
+                continue
             try:
                 fig.savefig(
                     os.path.join(path, f"{filename}.{fmt}"),
@@ -502,8 +516,6 @@ def save_figure(
                 logger.warning(
                     f"save_figure: could not save {filename}.{fmt}: {exc}"
                 )
-    else:
-        plt.show()
 
     plt.close(fig)
 
@@ -785,6 +797,15 @@ def _conf_imshow_origin() -> str:
         return conf.instance["visualize"]["general"]["general"]["imshow_origin"]
     except Exception:
         return "upper"
+
+
+def _conf_output_format() -> str:
+    """Return the default output_format from config (``"show"``, ``"png"``, etc.)."""
+    try:
+        from autoconf import conf
+        return conf.instance["visualize"]["general"]["general"]["output_format"]
+    except Exception:
+        return "show"
 
 
 def _conf_ticks(key: str, default: float) -> float:

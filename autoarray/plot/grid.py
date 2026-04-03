@@ -40,7 +40,7 @@ def plot_grid(
     figsize: Optional[Tuple[int, int]] = None,
     output_path: Optional[str] = None,
     output_filename: str = "grid",
-    output_format: str = "png",
+    output_format: str = None,
 ) -> None:
     """
     Plot a 2D grid of ``(y, x)`` coordinates as a scatter plot.
