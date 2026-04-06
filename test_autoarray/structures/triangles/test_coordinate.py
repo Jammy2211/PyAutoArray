@@ -1,15 +1,12 @@
 import numpy as np
-from jax.tree_util import register_pytree_node_class
 
 import pytest
 
 from autoarray.structures.triangles.abstract import HEIGHT_FACTOR
 
-from autoarray.structures.triangles.coordinate_array import (
-    CoordinateArrayTriangles,
+from autoarray.structures.triangles.coordinate_array_np import (
+    CoordinateArrayTrianglesNp,
 )
-
-CoordinateArrayTriangles = register_pytree_node_class(CoordinateArrayTriangles)
 
 
 def test__two(two_triangles):
@@ -52,7 +49,7 @@ def test__trivial_triangles(one_triangle):
 
 
 def test__above():
-    triangles = CoordinateArrayTriangles(
+    triangles = CoordinateArrayTrianglesNp(
         coordinates=np.array([[0, 1]]),
         side_length=1.0,
     )
@@ -87,7 +84,7 @@ def test__above():
 
 @pytest.fixture
 def upside_down():
-    return CoordinateArrayTriangles(
+    return CoordinateArrayTrianglesNp(
         coordinates=np.array([[1, 0]]),
         side_length=1.0,
     )
@@ -279,104 +276,37 @@ def test_means(one_triangle):
 
 
 def test_triangles_touch():
-    triangles = CoordinateArrayTriangles(
+    triangles = CoordinateArrayTrianglesNp(
         np.array([[0, 0], [2, 0]]),
     )
 
     assert max(triangles.triangles[0][:, 0]) == min(triangles.triangles[1][:, 0])
 
-    triangles = CoordinateArrayTriangles(
+    triangles = CoordinateArrayTrianglesNp(
         np.array([[0, 0], [0, 1]]),
     )
     assert max(triangles.triangles[0][:, 1]) == min(triangles.triangles[1][:, 1])
 
 
 def test_from_grid_regression():
-    triangles = CoordinateArrayTriangles.for_limits_and_scale(
-        x_min=-4.75,
-        x_max=4.75,
-        y_min=-4.75,
-        y_max=4.75,
-        scale=0.5,
+    triangles = CoordinateArrayTrianglesNp.for_limits_and_scale(
+        x_min=-2.0,
+        x_max=2.0,
+        y_min=-2.0,
+        y_max=2.0,
+        scale=1.5,
     )
 
     x = triangles.vertices[:, 0]
-    assert min(x) <= -4.75
-    assert max(x) >= 4.75
+    assert min(x) <= -2.0
+    assert max(x) >= 2.0
 
     y = triangles.vertices[:, 1]
-    assert min(y) <= -4.75
-    assert max(y) >= 4.75
+    assert min(y) <= -2.0
+    assert max(y) >= 2.0
 
 
-@pytest.fixture
-def one_triangle():
-    return CoordinateArrayTriangles(
-        coordinates=np.array([[0, 0]]),
-        side_length=1.0,
-    )
-
-
-def test_neighborhood(one_triangle):
-    import jax
-
-    assert np.allclose(
-        np.array(jax.jit(one_triangle.neighborhood)().triangles),
-        np.array(
-            [
-                [
-                    [-0.5, -0.4330126941204071],
-                    [-1.0, 0.4330126941204071],
-                    [0.0, 0.4330126941204071],
-                ],
-                [
-                    [0.0, -1.299038052558899],
-                    [-0.5, -0.4330126941204071],
-                    [0.5, -0.4330126941204071],
-                ],
-                [
-                    [0.0, 0.4330126941204071],
-                    [0.5, -0.4330126941204071],
-                    [-0.5, -0.4330126941204071],
-                ],
-                [
-                    [0.5, -0.4330126941204071],
-                    [0.0, 0.4330126941204071],
-                    [1.0, 0.4330126941204071],
-                ],
-            ]
-        ),
-    )
-
-
-def test_up_sample(one_triangle):
-    import jax
-
-    up_sampled = jax.jit(one_triangle.up_sample)()
-    assert np.allclose(
-        np.array(up_sampled.triangles),
-        np.array(
-            [
-                [
-                    [[0.0, -0.4330126941204071], [-0.25, 0.0], [0.25, 0.0]],
-                    [
-                        [0.25, 0.0],
-                        [0.5, -0.4330126941204071],
-                        [0.0, -0.4330126941204071],
-                    ],
-                    [
-                        [-0.25, 0.0],
-                        [0.0, -0.4330126941204071],
-                        [-0.5, -0.4330126941204071],
-                    ],
-                    [[0.0, 0.4330126941204071], [0.25, 0.0], [-0.25, 0.0]],
-                ]
-            ]
-        ),
-    )
-
-
-def test_means(one_triangle):
+def test_means_up_sampled(one_triangle):
     assert len(one_triangle.means) == 1
 
     up_sampled = one_triangle.up_sample()

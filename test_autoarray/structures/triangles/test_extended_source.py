@@ -1,13 +1,13 @@
 import pytest
 import numpy as np
 
-from autoarray.structures.triangles.array import ArrayTriangles
+from autoarray.structures.triangles.array_np import ArrayTrianglesNp
 from autoarray.structures.triangles.shape import Circle
 
 
 @pytest.fixture
 def triangles():
-    return ArrayTriangles(
+    return ArrayTrianglesNp(
         indices=np.array(
             [
                 [0, 1, 2],
@@ -49,7 +49,7 @@ def test_small_point(triangles, point, indices):
             radius=0.001,
         )
     )
-    assert [i for i in containing_triangles.tolist() if i != -1] == indices
+    assert containing_triangles.tolist() == indices
 
 
 @pytest.mark.parametrize(
@@ -72,4 +72,4 @@ def test_large_circle(
             radius=radius,
         )
     )
-    assert [i for i in containing_triangles.tolist() if i != -1] == indices
+    assert containing_triangles.tolist() == indices
