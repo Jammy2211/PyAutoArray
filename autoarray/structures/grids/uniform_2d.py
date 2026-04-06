@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
@@ -486,6 +487,11 @@ class Grid2D(Structure):
         origin
             The origin of the grid's mask.
         """
+        if os.environ.get("PYAUTO_WORKSPACE_SMALL_DATASETS") == "1":
+            if shape_native[0] > 15 or shape_native[1] > 15:
+                shape_native = (15, 15)
+                pixel_scales = 0.6
+
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(

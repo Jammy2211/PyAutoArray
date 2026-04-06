@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import os
 from enum import Enum
 import numpy as np
 from pathlib import Path
@@ -358,6 +359,11 @@ class Mask2D(Mask):
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
+
+        if os.environ.get("PYAUTO_WORKSPACE_SMALL_DATASETS") == "1":
+            if shape_native[0] > 15 or shape_native[1] > 15:
+                shape_native = (15, 15)
+                pixel_scales = 0.6
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
