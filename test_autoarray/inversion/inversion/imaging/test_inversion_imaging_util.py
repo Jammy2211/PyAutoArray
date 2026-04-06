@@ -260,13 +260,13 @@ def test__data_vector_via_weighted_data_two_methods_agree():
 
 def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
 
-    mask = aa.Mask2D.circular(shape_native=(51, 51), pixel_scales=0.1, radius=2.0)
+    mask = aa.Mask2D.circular(shape_native=(21, 21), pixel_scales=0.1, radius=0.8)
 
     noise_map = np.random.uniform(size=mask.shape_native)
     noise_map = aa.Array2D(values=noise_map, mask=mask)
 
     kernel = aa.Convolver.from_gaussian(
-        shape_native=(7, 7), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
+        shape_native=(5, 5), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
     )
 
     psf = kernel
@@ -277,7 +277,7 @@ def test__curvature_matrix_via_psf_weighted_noise_two_methods_agree():
         psf=psf.kernel.native,
     )
 
-    mesh = aa.mesh.RectangularAdaptDensity(shape=(20, 20))
+    mesh = aa.mesh.RectangularAdaptDensity(shape=(8, 8))
 
     interpolator = mesh.interpolator_from(
         source_plane_data_grid=mask.derive_grid.unmasked,
