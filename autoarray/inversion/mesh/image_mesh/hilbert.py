@@ -12,6 +12,7 @@ from autoarray.inversion.mesh.image_mesh.abstract_weighted import (
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray import exc
+from autofit.non_linear.test_mode import is_test_mode
 
 
 def gilbert2d(width, height):
@@ -330,7 +331,7 @@ class Hilbert(AbstractImageMeshWeighted):
             an exception is raised.
         """
 
-        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+        if is_test_mode():
             return
 
         if image_mesh_min_mesh_pixels_per_pixel is not None:
@@ -397,7 +398,7 @@ class Hilbert(AbstractImageMeshWeighted):
             an exception is raised.
         """
 
-        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+        if is_test_mode():
             return
 
         if image_mesh_adapt_background_percent_threshold is not None:
