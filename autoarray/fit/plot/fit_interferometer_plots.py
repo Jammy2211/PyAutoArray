@@ -1,11 +1,10 @@
 import numpy as np
 from typing import Optional
 
-import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.yx import plot_yx
-from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize, tight_layout
 
 
 def subplot_fit_interferometer(
@@ -40,7 +39,7 @@ def subplot_fit_interferometer(
         Not used here (UV-plane residuals are scatter plots); kept for API
         consistency.
     """
-    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
+    fig, axes = subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     uv = fit.dataset.uv_distances / 10**3.0
@@ -135,7 +134,7 @@ def subplot_fit_interferometer_dirty_images(
     residuals_symmetric_cmap
         Centre residual colour scale symmetrically around zero.
     """
-    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
+    fig, axes = subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     plot_array(

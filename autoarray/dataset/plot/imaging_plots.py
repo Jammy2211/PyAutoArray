@@ -1,8 +1,7 @@
 from typing import Optional
 
-import matplotlib.pyplot as plt
 
-from autoarray.plot.utils import subplot_save, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, subplot_save, conf_subplot_figsize, tight_layout
 
 
 def subplot_imaging_dataset(
@@ -51,7 +50,7 @@ def subplot_imaging_dataset(
 
     from autoarray.plot.array import plot_array
 
-    fig, axes = plt.subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
+    fig, axes = subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
     axes = axes.flatten()
 
     plot_array(
@@ -172,7 +171,7 @@ def subplot_imaging_dataset_list(
     from autoarray.plot.array import plot_array
 
     n = len(dataset_list)
-    fig, axes = plt.subplots(n, 3, figsize=conf_subplot_figsize(n, 3))
+    fig, axes = subplots(n, 3, figsize=conf_subplot_figsize(n, 3))
     if n == 1:
         axes = [axes]
     for i, dataset in enumerate(dataset_list):

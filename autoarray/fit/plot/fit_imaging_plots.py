@@ -1,9 +1,8 @@
 from typing import Optional
 
-import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize, tight_layout
 
 
 def subplot_fit_imaging(
@@ -43,7 +42,7 @@ def subplot_fit_imaging(
     grid, positions, lines
         Optional overlays forwarded to every panel.
     """
-    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
+    fig, axes = subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     plot_array(

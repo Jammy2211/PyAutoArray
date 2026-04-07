@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import linalg as slg
 
 from autoarray.util.cholesky_funcs import cholinsertlast, choldeleteindexes
 
@@ -27,6 +26,7 @@ def fnnls_cholesky(
     """
     Similar to fnnls, but use solving the lstsq problem by updating Cholesky factorisation.
     """
+    from scipy import linalg as slg
 
     lstsq = lambda A, x: slg.solve(
         A,
@@ -147,6 +147,8 @@ def fix_constraint_cholesky(ZTx, s_chol, d, P, P_inorder, U, tolerance):
     # solve the lstsq problem by cho_solve
 
     if len(P_inorder):
+        from scipy import linalg as slg
+
         # there could be a case where P_inorder is empty.
         s_chol[P_inorder] = slg.cho_solve((U, False), ZTx[P_inorder])
 

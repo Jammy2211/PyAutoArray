@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 import numpy as np
 from pathlib import Path
-import scipy
 from typing import Optional, Tuple, Union
 import warnings
 
@@ -116,6 +115,8 @@ class ConvolverState:
         full_shape = tuple(
             s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native)
         )
+        import scipy.fft
+
         fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
 
         self.fft_shape = fft_shape

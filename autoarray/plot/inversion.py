@@ -6,17 +6,16 @@ Replaces the inversion-specific paths in ``MatPlot2D.plot_mapper``.
 
 from typing import List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LogNorm, Normalize
 
-from autoarray.plot.utils import apply_extent, apply_labels, conf_figsize, save_figure, _conf_imshow_origin
+from autoarray.plot.utils import subplots, apply_extent, apply_labels, conf_figsize, save_figure, _conf_imshow_origin
 
 
 def plot_inversion_reconstruction(
     pixel_values: np.ndarray,
     mapper,
-    ax: Optional[plt.Axes] = None,
+    ax=None,
     # --- cosmetics --------------------------------------------------------------
     title: str = "Reconstruction",
     xlabel: str = 'x (")',
@@ -84,7 +83,7 @@ def plot_inversion_reconstruction(
     owns_figure = ax is None
     if owns_figure:
         figsize = figsize or conf_figsize("figures")
-        fig, ax = plt.subplots(1, 1, figsize=figsize)
+        fig, ax = subplots(1, 1, figsize=figsize)
     else:
         fig = ax.get_figure()
 

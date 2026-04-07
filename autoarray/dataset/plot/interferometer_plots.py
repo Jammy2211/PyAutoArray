@@ -1,12 +1,11 @@
 import numpy as np
 from typing import Optional
 
-import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.grid import plot_grid
 from autoarray.plot.yx import plot_yx
-from autoarray.plot.utils import subplot_save, hide_unused_axes, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, subplot_save, hide_unused_axes, conf_subplot_figsize, tight_layout
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
@@ -39,7 +38,7 @@ def subplot_interferometer_dataset(
     use_log10
         Apply log10 normalisation to image panels.
     """
-    fig, axes = plt.subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
+    fig, axes = subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
     plot_grid(dataset.data.in_grid, ax=axes[0], title="Visibilities", xlabel="", ylabel="")
@@ -117,7 +116,7 @@ def subplot_interferometer_dirty_images(
     use_log10
         Apply log10 normalisation.
     """
-    fig, axes = plt.subplots(1, 3, figsize=conf_subplot_figsize(1, 3))
+    fig, axes = subplots(1, 3, figsize=conf_subplot_figsize(1, 3))
 
     plot_array(
         dataset.dirty_image,

@@ -6,16 +6,15 @@ Replaces ``MatPlot1D.plot_yx`` / ``MatWrap`` system.
 
 from typing import List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 
-from autoarray.plot.utils import apply_labels, conf_figsize, save_figure
+from autoarray.plot.utils import subplots, apply_labels, conf_figsize, save_figure
 
 
 def plot_yx(
     y,
     x=None,
-    ax: Optional[plt.Axes] = None,
+    ax=None,
     # --- errors / extras --------------------------------------------------------
     y_errors: Optional[np.ndarray] = None,
     x_errors: Optional[np.ndarray] = None,
@@ -91,7 +90,7 @@ def plot_yx(
     owns_figure = ax is None
     if owns_figure:
         figsize = figsize or conf_figsize("figures")
-        fig, ax = plt.subplots(1, 1, figsize=figsize)
+        fig, ax = subplots(1, 1, figsize=figsize)
     else:
         fig = ax.get_figure()
 

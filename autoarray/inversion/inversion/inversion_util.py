@@ -5,7 +5,6 @@ from typing import List, Optional, Type
 from autoarray.settings import Settings
 
 from autoarray import exc
-from autoarray.util.fnnls import fnnls_cholesky
 
 
 def curvature_matrix_diag_via_psf_weighted_noise_from(
@@ -280,6 +279,8 @@ def reconstruction_positive_only_from(
         return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
 
     try:
+
+        from autoarray.util.fnnls import fnnls_cholesky
 
         return fnnls_cholesky(
             curvature_reg_matrix,
