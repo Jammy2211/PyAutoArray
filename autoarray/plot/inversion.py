@@ -136,7 +136,7 @@ def plot_inversion_reconstruction(
 
     apply_extent(ax, extent)
 
-    apply_labels(ax, title=title, xlabel="" if is_subplot else xlabel, ylabel="" if is_subplot else ylabel)
+    apply_labels(ax, title=title, xlabel="" if is_subplot else xlabel, ylabel="" if is_subplot else ylabel, is_subplot=is_subplot)
 
     if owns_figure:
         save_figure(
