@@ -9,7 +9,7 @@ from autoconf import conf
 
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save, hide_unused_axes, conf_subplot_figsize
+from autoarray.plot.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save, hide_unused_axes, conf_subplot_figsize, tight_layout
 from autoarray.inversion.plot.mapper_plots import plot_mapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -224,7 +224,7 @@ def subplot_of_mapper(
         pass
 
     hide_unused_axes(axes)
-    plt.tight_layout()
+    tight_layout()
     subplot_save(fig, output_path, f"{output_filename}_{mapper_index}", output_format)
 
 
@@ -342,7 +342,7 @@ def subplot_mappings(
     )
 
     hide_unused_axes(axes)
-    plt.tight_layout()
+    tight_layout()
     subplot_save(
         fig, output_path, f"{output_filename}_{pixelization_index}", output_format
     )

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.inversion import plot_inversion_reconstruction
-from autoarray.plot.utils import numpy_grid, numpy_lines, subplot_save, conf_subplot_figsize
+from autoarray.plot.utils import numpy_grid, numpy_lines, subplot_save, conf_subplot_figsize, tight_layout
 
 logger = logging.getLogger(__name__)
 
@@ -133,5 +133,5 @@ def subplot_image_and_mapper(
         ax=axes[1],
     )
 
-    plt.tight_layout()
+    tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)

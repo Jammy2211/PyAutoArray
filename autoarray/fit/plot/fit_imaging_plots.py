@@ -3,7 +3,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize
+from autoarray.plot.utils import subplot_save, symmetric_vmin_vmax, hide_unused_axes, conf_subplot_figsize, tight_layout
 
 
 def subplot_fit_imaging(
@@ -121,5 +121,5 @@ def subplot_fit_imaging(
     )
 
     hide_unused_axes(axes)
-    plt.tight_layout()
+    tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
