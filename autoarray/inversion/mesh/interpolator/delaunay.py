@@ -1,6 +1,4 @@
 import numpy as np
-import scipy.spatial
-from scipy.spatial import cKDTree, Delaunay, Voronoi
 
 from autoconf import cached_property
 
@@ -12,6 +10,7 @@ from autoarray.inversion.regularization.regularization_util import (
 
 def scipy_delaunay(points_np, query_points_np, areas_factor):
     """Compute Delaunay simplices (simplices_padded) and Voronoi areas in one call."""
+    from scipy.spatial import Delaunay
 
     max_simplices = 2 * points_np.shape[0]
 
@@ -182,6 +181,8 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     # Case 2: Outside → KDTree NN
     # ---------------------------
     if outside_mask.any():
+        from scipy.spatial import cKDTree
+
         tree = cKDTree(delaunay_points)
         _, idx = tree.query(data_grid[outside_mask], k=1)
         out[outside_mask, 0] = idx.astype(np.int32)
@@ -202,6 +203,7 @@ def scipy_delaunay_matern(points_np, query_points_np):
         typically of shape (Q, 3), where each row gives the indices of the
         Delaunay mesh vertices ("pixels") associated with that query point.
     """
+    from scipy.spatial import Delaunay
 
     max_simplices = 2 * points_np.shape[0]
 

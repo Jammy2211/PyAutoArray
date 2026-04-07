@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import linalg
 import math
 import time
 from autoarray import numba_util
@@ -46,6 +45,8 @@ def _cholupdate(U, x):
 
 
 def cholinsert(U, index, x):
+    from scipy import linalg
+
     S = np.insert(np.insert(U, index, 0, axis=0), index, 0, axis=1)
 
     S[:index, index] = S12 = linalg.solve_triangular(
@@ -70,6 +71,8 @@ def cholinsertlast(U, x):
     As in current Cholesky scheme implemented in fnnls, we only use this kind of insertion, so I
         separate it out from the `cholinsert`.
     """
+    from scipy import linalg
+
     index = U.shape[0]
 
     S = np.insert(np.insert(U, index, 0, axis=0), index, 0, axis=1)

@@ -1,6 +1,5 @@
 import numpy as np
 import warnings
-from scipy.ndimage import binary_dilation
 from typing import Tuple
 
 from autoarray import exc
@@ -465,7 +464,6 @@ import warnings
 from typing import Tuple
 
 import numpy as np
-from scipy.ndimage import binary_dilation
 
 
 def required_shape_for_kernel(
@@ -608,6 +606,8 @@ def blurring_mask_2d_from(
     )
 
     # Pixels within kernel footprint of any unmasked pixel
+    from scipy.ndimage import binary_dilation
+
     near_unmasked_padded = binary_dilation(unmasked_padded, structure=structure)
     near_unmasked = near_unmasked_padded[
         pad_y : pad_y + mask_2d.shape[0],
