@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Dependency Graph
+
+PyAutoArray depends on **autoconf** (shared configuration and utilities).
+PyAutoArray does **NOT** depend on PyAutoFit, PyAutoGalaxy, or PyAutoLens.
+Never import from `autofit`, `autogalaxy`, or `autolens` in this repo.
+Shared utilities (e.g. `test_mode`, `jax_wrapper`) belong in autoconf.
+
 ## Commands
 
 ### Install

@@ -12,7 +12,7 @@ from autoarray.inversion.mesh.image_mesh.abstract_weighted import (
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray import exc
-from autofit.non_linear.test_mode import is_test_mode
+from autoconf.test_mode import is_test_mode
 
 
 def gilbert2d(width, height):
