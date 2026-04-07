@@ -1,11 +1,10 @@
 import logging
 from typing import Optional
 
-import matplotlib.pyplot as plt
 
 from autoarray.plot.array import plot_array
 from autoarray.plot.inversion import plot_inversion_reconstruction
-from autoarray.plot.utils import numpy_grid, numpy_lines, subplot_save, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, numpy_grid, numpy_lines, subplot_save, conf_subplot_figsize, tight_layout
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +113,7 @@ def subplot_image_and_mapper(
     lines
         Lines to overlay on both panels.
     """
-    fig, axes = plt.subplots(1, 2, figsize=conf_subplot_figsize(1, 2))
+    fig, axes = subplots(1, 2, figsize=conf_subplot_figsize(1, 2))
 
     plot_array(
         image,

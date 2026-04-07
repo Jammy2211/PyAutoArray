@@ -5,11 +5,9 @@ Standalone function for plotting a 2D array (image) directly with matplotlib.
 import os
 from typing import List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.colors import LogNorm, Normalize
-
 from autoarray.plot.utils import (
+    subplots,
     apply_extent,
     apply_labels,
     conf_figsize,
@@ -29,7 +27,7 @@ _mask_edge_coords = auto_mask_edge
 
 def plot_array(
     array,
-    ax: Optional[plt.Axes] = None,
+    ax=None,
     # --- spatial metadata -------------------------------------------------------
     extent: Optional[Tuple[float, float, float, float]] = None,
     # --- overlays ---------------------------------------------------------------
@@ -158,7 +156,7 @@ def plot_array(
     owns_figure = ax is None
     if owns_figure:
         figsize = figsize or conf_figsize("figures")
-        fig, ax = plt.subplots(1, 1, figsize=figsize)
+        fig, ax = subplots(1, 1, figsize=figsize)
     else:
         fig = ax.get_figure()
 
@@ -181,8 +179,10 @@ def plot_array(
                 vmax_log = np.nanmax(clipped)
         if not np.isfinite(vmax_log) or vmax_log <= vmin_log:
             vmax_log = vmin_log * 10.0
+        from matplotlib.colors import LogNorm
         norm = LogNorm(vmin=vmin_log, vmax=vmax_log)
     elif vmin is not None or vmax is not None:
+        from matplotlib.colors import Normalize
         norm = Normalize(vmin=vmin, vmax=vmax)
     else:
         norm = None

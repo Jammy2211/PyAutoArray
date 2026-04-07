@@ -6,13 +6,26 @@ import logging
 import os
 from typing import List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 
 _FAST_PLOTS = os.environ.get("PYAUTO_FAST_PLOTS") == "1"
+
+
+def subplots(*args, **kwargs):
+    """Lazy wrapper around ``plt.subplots`` that defers the matplotlib import."""
+    import matplotlib.pyplot as plt
+
+    return plt.subplots(*args, **kwargs)
+
+
+def get_cmap(name):
+    """Lazy wrapper around ``plt.get_cmap`` that defers the matplotlib import."""
+    import matplotlib.pyplot as plt
+
+    return plt.get_cmap(name)
 
 
 def tight_layout():
@@ -24,6 +37,9 @@ def tight_layout():
     """
     if _FAST_PLOTS:
         return
+
+    import matplotlib.pyplot as plt
+
     plt.tight_layout()
 
 
@@ -281,6 +297,8 @@ def set_with_color_values(ax, cmap, color_values, norm=None):
 
 
 def _output_mode_save(fig, filename):
+    import matplotlib.pyplot as plt
+
     """If ``PYAUTOARRAY_OUTPUT_MODE=1``, save *fig* to a numbered file in
     ``./output_mode/<script_name>/`` and return ``True``.  Otherwise return
     ``False`` so the caller can proceed with normal saving.
@@ -335,6 +353,8 @@ def subplot_save(fig, output_path, output_filename, output_format=None):
         File format string, e.g. ``"png"`` or ``"pdf"``.  ``"show"``
         displays the figure interactively.  ``None`` reads from config.
     """
+    import matplotlib.pyplot as plt
+
     if output_format is None:
         output_format = _conf_output_format()
 
@@ -441,7 +461,7 @@ def conf_subplot_figsize(rows: int, cols: int) -> Tuple[int, int]:
 
 
 def apply_labels(
-    ax: plt.Axes,
+    ax,
     title: str = "",
     xlabel: str = "",
     ylabel: str = "",
@@ -474,7 +494,7 @@ def apply_labels(
 
 
 def save_figure(
-    fig: plt.Figure,
+    fig,
     path: str,
     filename: str,
     format: str = None,
@@ -505,6 +525,8 @@ def save_figure(
     dpi
         Resolution in dots per inch.
     """
+    import matplotlib.pyplot as plt
+
     if format is None:
         format = _conf_output_format()
 
@@ -543,7 +565,7 @@ def save_figure(
     plt.close(fig)
 
 
-def plot_visibilities_1d(vis, ax: plt.Axes, title: str = "") -> None:
+def plot_visibilities_1d(vis, ax, title: str = "") -> None:
     """Plot the real and imaginary components of a visibilities array as 1D line plots.
 
     Draws two overlapping lines — one for the real part and one for the
@@ -664,7 +686,7 @@ def _colorbar_tick_labels(tick_values: List[float], cb_unit: Optional[str] = Non
 
 def _apply_colorbar(
     mappable,
-    ax: plt.Axes,
+    ax,
     cb_unit: Optional[str] = None,
     is_subplot: bool = False,
 ) -> None:
@@ -679,6 +701,8 @@ def _apply_colorbar(
         When ``True`` uses ``labelsize_subplot`` from config (default 16) instead of
         the single-figure ``labelsize`` (default 16).
     """
+    import matplotlib.pyplot as plt
+
     tick_values = _colorbar_tick_values(getattr(mappable, "norm", None))
 
     cb = plt.colorbar(
@@ -706,7 +730,7 @@ def _apply_colorbar(
 
 
 def _apply_contours(
-    ax: plt.Axes,
+    ax,
     array: np.ndarray,
     extent,
     use_log10: bool = False,
@@ -879,7 +903,7 @@ def _arcsec_labels(ticks) -> List[str]:
 
 
 def apply_extent(
-    ax: plt.Axes,
+    ax,
     extent: Tuple[float, float, float, float],
 ) -> None:
     """

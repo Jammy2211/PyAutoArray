@@ -4,12 +4,11 @@ import numpy as np
 from pathlib import Path
 from typing import Optional, Union
 
-import matplotlib.pyplot as plt
 from autoconf import conf
 
 from autoarray.inversion.mappers.abstract import Mapper
 from autoarray.plot.array import plot_array
-from autoarray.plot.utils import numpy_grid, numpy_lines, numpy_positions, subplot_save, hide_unused_axes, conf_subplot_figsize, tight_layout
+from autoarray.plot.utils import subplots, numpy_grid, numpy_lines, numpy_positions, subplot_save, hide_unused_axes, conf_subplot_figsize, tight_layout
 from autoarray.inversion.plot.mapper_plots import plot_mapper
 from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -53,7 +52,7 @@ def subplot_of_mapper(
     """
     mapper = inversion.cls_list_from(cls=Mapper)[mapper_index]
 
-    fig, axes = plt.subplots(3, 4, figsize=conf_subplot_figsize(3, 4))
+    fig, axes = subplots(3, 4, figsize=conf_subplot_figsize(3, 4))
     axes = axes.flatten()
 
     # panel 0: data subtracted
@@ -279,7 +278,7 @@ def subplot_mappings(
     )
     mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
 
-    fig, axes = plt.subplots(2, 2, figsize=conf_subplot_figsize(2, 2))
+    fig, axes = subplots(2, 2, figsize=conf_subplot_figsize(2, 2))
     axes = axes.flatten()
 
     # panel 0: data subtracted

@@ -6,10 +6,11 @@ This replaces the ``MatPlot2D.plot_grid`` / ``MatWrap`` system.
 
 from typing import Iterable, List, Optional, Tuple
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from autoarray.plot.utils import (
+    subplots,
+    get_cmap,
     apply_extent,
     apply_labels,
     conf_figsize,
@@ -20,7 +21,7 @@ from autoarray.plot.utils import (
 
 def plot_grid(
     grid,
-    ax: Optional[plt.Axes] = None,
+    ax=None,
     # --- errors -----------------------------------------------------------------
     y_errors: Optional[np.ndarray] = None,
     x_errors: Optional[np.ndarray] = None,
@@ -108,13 +109,13 @@ def plot_grid(
     owns_figure = ax is None
     if owns_figure:
         figsize = figsize or conf_figsize("figures")
-        fig, ax = plt.subplots(1, 1, figsize=figsize)
+        fig, ax = subplots(1, 1, figsize=figsize)
     else:
         fig = ax.get_figure()
 
     # --- scatter / errorbar ----------------------------------------------------
     if color_array is not None:
-        cmap = plt.get_cmap(colormap)
+        cmap = get_cmap(colormap)
         colors = cmap((color_array - color_array.min()) / (np.ptp(color_array) or 1))
 
         if y_errors is None and x_errors is None:
