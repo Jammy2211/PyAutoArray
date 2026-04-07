@@ -12,6 +12,18 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+def tight_layout():
+    """Call ``plt.tight_layout()`` unless fast-plot mode is active.
+
+    When ``PYAUTO_FAST_PLOTS=1`` the expensive layout-optimisation pass
+    is skipped.  All figure creation, data computation, and rendering
+    still execute — only the final spacing adjustment is bypassed.
+    """
+    if os.environ.get("PYAUTO_FAST_PLOTS") == "1":
+        return
+    plt.tight_layout()
+
+
 # ---------------------------------------------------------------------------
 # autoarray → numpy conversion helpers (used by high-level plot functions)
 # ---------------------------------------------------------------------------

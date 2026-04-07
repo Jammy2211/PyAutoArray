@@ -2,7 +2,7 @@ from typing import Optional
 
 import matplotlib.pyplot as plt
 
-from autoarray.plot.utils import subplot_save, conf_subplot_figsize
+from autoarray.plot.utils import subplot_save, conf_subplot_figsize, tight_layout
 
 
 def subplot_imaging_dataset(
@@ -139,7 +139,7 @@ def subplot_imaging_dataset(
 
     from autoarray.plot.utils import hide_unused_axes
     hide_unused_axes(axes)
-    plt.tight_layout()
+    tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 
 
@@ -179,7 +179,7 @@ def subplot_imaging_dataset_list(
         plot_array(dataset.data, ax=axes[i][0], title="Data")
         plot_array(dataset.noise_map, ax=axes[i][1], title="Noise Map")
         plot_array(dataset.signal_to_noise_map, ax=axes[i][2], title="Signal-To-Noise Map")
-    plt.tight_layout()
+    tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 
 

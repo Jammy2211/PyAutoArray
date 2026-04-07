@@ -32,6 +32,7 @@ from autoarray.plot.utils import (
     conf_mat_plot_fontsize,
     save_figure,
     subplot_save,
+    tight_layout,
     auto_mask_edge,
     zoom_array,
     numpy_grid,
