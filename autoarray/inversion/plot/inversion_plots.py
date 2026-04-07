@@ -27,6 +27,7 @@ def subplot_of_mapper(
     lines=None,
     grid=None,
     positions=None,
+    title_prefix: str = None,
 ):
     """
     3×4 subplot showing all pixelization diagnostics for one mapper.
@@ -52,6 +53,8 @@ def subplot_of_mapper(
     """
     mapper = inversion.cls_list_from(cls=Mapper)[mapper_index]
 
+    _pf = (lambda t: f"{title_prefix.rstrip()} {t}") if title_prefix else (lambda t: t)
+
     fig, axes = subplots(3, 4, figsize=conf_subplot_figsize(3, 4))
     axes = axes.flatten()
 
@@ -60,7 +63,7 @@ def subplot_of_mapper(
         plot_array(
             inversion.data_subtracted_dict[mapper],
             ax=axes[0],
-            title="Data Subtracted",
+            title=_pf("Data Subtracted"),
             colormap=colormap,
             use_log10=use_log10,
             grid=grid,
@@ -83,7 +86,7 @@ def subplot_of_mapper(
         plot_array(
             _recon_array(),
             ax=axes[1],
-            title="Reconstructed Image",
+            title=_pf("Reconstructed Image"),
             colormap=colormap,
             use_log10=use_log10,
             grid=grid,
@@ -93,7 +96,7 @@ def subplot_of_mapper(
         plot_array(
             _recon_array(),
             ax=axes[2],
-            title="Reconstructed Image (log10)",
+            title=_pf("Reconstructed Image (log10)"),
             colormap=colormap,
             use_log10=True,
             grid=grid,
@@ -103,7 +106,7 @@ def subplot_of_mapper(
         plot_array(
             _recon_array(),
             ax=axes[3],
-            title="Mesh Pixel Grid Overlaid",
+            title=_pf("Mesh Pixel Grid Overlaid"),
             colormap=colormap,
             use_log10=use_log10,
             grid=numpy_grid(mapper.image_plane_mesh_grid),
@@ -123,7 +126,7 @@ def subplot_of_mapper(
         mapper,
         solution_vector=pixel_values,
         ax=axes[4],
-        title="Source Plane (Zoom)",
+        title=_pf("Source Plane (Zoom)"),
         colormap=colormap,
         use_log10=use_log10,
         vmax=recon_vmax,
@@ -135,7 +138,7 @@ def subplot_of_mapper(
         mapper,
         solution_vector=pixel_values,
         ax=axes[5],
-        title="Source Plane (No Zoom)",
+        title=_pf("Source Plane (No Zoom)"),
         colormap=colormap,
         use_log10=use_log10,
         vmax=recon_vmax,
@@ -151,7 +154,7 @@ def subplot_of_mapper(
             mapper,
             solution_vector=nm,
             ax=axes[6],
-            title="Noise-Map (Unzoomed)",
+            title=_pf("Noise-Map (No Zoom)"),
             colormap=colormap,
             use_log10=use_log10,
             zoom_to_brightest=False,
@@ -168,7 +171,7 @@ def subplot_of_mapper(
             mapper,
             solution_vector=rw,
             ax=axes[7],
-            title="Regularization Weights (Unzoomed)",
+            title=_pf("Regularization (No Zoom)"),
             colormap=colormap,
             use_log10=use_log10,
             zoom_to_brightest=False,
@@ -186,7 +189,7 @@ def subplot_of_mapper(
         plot_array(
             sub_size,
             ax=axes[8],
-            title="Sub Pixels Per Image Pixels",
+            title=_pf("Sub Pixels Per Image Pixels"),
             colormap=colormap,
             use_log10=use_log10,
         )
@@ -198,7 +201,7 @@ def subplot_of_mapper(
         plot_array(
             mapper.mesh_pixels_per_image_pixels,
             ax=axes[9],
-            title="Mesh Pixels Per Image Pixels",
+            title=_pf("Mesh Pixels Per Image Pixels"),
             colormap=colormap,
             use_log10=use_log10,
         )
@@ -212,7 +215,7 @@ def subplot_of_mapper(
             mapper,
             solution_vector=pw,
             ax=axes[10],
-            title="Image Pixels Per Source Pixel",
+            title=_pf("Image Pixels Per Source Pixel"),
             colormap=colormap,
             use_log10=use_log10,
             zoom_to_brightest=True,

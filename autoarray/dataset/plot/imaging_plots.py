@@ -14,6 +14,7 @@ def subplot_imaging_dataset(
     grid=None,
     positions=None,
     lines=None,
+    title_prefix: str = None,
 ):
     """
     3×3 subplot of core ``Imaging`` dataset components.
@@ -50,13 +51,15 @@ def subplot_imaging_dataset(
 
     from autoarray.plot.array import plot_array
 
+    _pf = (lambda t: f"{title_prefix.rstrip()} {t}") if title_prefix else (lambda t: t)
+
     fig, axes = subplots(3, 3, figsize=conf_subplot_figsize(3, 3))
     axes = axes.flatten()
 
     plot_array(
         dataset.data,
         ax=axes[0],
-        title="Data",
+        title=_pf("Data"),
         colormap=colormap,
         use_log10=use_log10,
         grid=grid,
@@ -66,7 +69,7 @@ def subplot_imaging_dataset(
     plot_array(
         dataset.data,
         ax=axes[1],
-        title="Data (log10)",
+        title=_pf("Data (log10)"),
         colormap=colormap,
         use_log10=True,
         grid=grid,
@@ -76,7 +79,7 @@ def subplot_imaging_dataset(
     plot_array(
         dataset.noise_map,
         ax=axes[2],
-        title="Noise-Map",
+        title=_pf("Noise-Map"),
         colormap=colormap,
         use_log10=use_log10,
         grid=grid,
@@ -88,7 +91,7 @@ def subplot_imaging_dataset(
         plot_array(
             dataset.psf.kernel,
             ax=axes[3],
-            title="Point Spread Function",
+            title=_pf("Point Spread Function"),
             colormap=colormap,
             use_log10=use_log10,
             cb_unit="",
@@ -96,7 +99,7 @@ def subplot_imaging_dataset(
         plot_array(
             dataset.psf.kernel,
             ax=axes[4],
-            title="PSF (log10)",
+            title=_pf("PSF (log10)"),
             colormap=colormap,
             use_log10=True,
             cb_unit="",
@@ -105,7 +108,7 @@ def subplot_imaging_dataset(
     plot_array(
         dataset.signal_to_noise_map,
         ax=axes[5],
-        title="Signal-To-Noise Map",
+        title=_pf("Signal-To-Noise Map"),
         colormap=colormap,
         use_log10=use_log10,
         cb_unit="",
@@ -148,6 +151,7 @@ def subplot_imaging_dataset_list(
     output_path=None,
     output_filename: str = "dataset_combined",
     output_format=None,
+    title_prefix: str = None,
 ):
     """
     n×3 subplot showing core components for each dataset in a list.
@@ -164,20 +168,24 @@ def subplot_imaging_dataset_list(
         Base filename without extension.
     output_format
         File format string or list, e.g. ``"png"`` or ``["png"]``.
+    title_prefix
+        Optional string prepended (with an automatic space) to every panel title.
     """
     if isinstance(output_format, (list, tuple)):
         output_format = output_format[0]
 
     from autoarray.plot.array import plot_array
 
+    _pf = (lambda t: f"{title_prefix.rstrip()} {t}") if title_prefix else (lambda t: t)
+
     n = len(dataset_list)
     fig, axes = subplots(n, 3, figsize=conf_subplot_figsize(n, 3))
     if n == 1:
         axes = [axes]
     for i, dataset in enumerate(dataset_list):
-        plot_array(dataset.data, ax=axes[i][0], title="Data")
-        plot_array(dataset.noise_map, ax=axes[i][1], title="Noise Map")
-        plot_array(dataset.signal_to_noise_map, ax=axes[i][2], title="Signal-To-Noise Map")
+        plot_array(dataset.data, ax=axes[i][0], title=_pf("Data"))
+        plot_array(dataset.noise_map, ax=axes[i][1], title=_pf("Noise Map"))
+        plot_array(dataset.signal_to_noise_map, ax=axes[i][2], title=_pf("Signal-To-Noise Map"))
     tight_layout()
     subplot_save(fig, output_path, output_filename, output_format)
 
