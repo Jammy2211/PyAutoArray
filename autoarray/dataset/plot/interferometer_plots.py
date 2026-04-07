@@ -16,6 +16,7 @@ def subplot_interferometer_dataset(
     output_format: str = None,
     colormap=None,
     use_log10: bool = False,
+    title_prefix: str = None,
 ):
     """
     2x3 subplot of interferometer dataset components.
@@ -38,17 +39,19 @@ def subplot_interferometer_dataset(
     use_log10
         Apply log10 normalisation to image panels.
     """
+    _pf = (lambda t: f"{title_prefix.rstrip()} {t}") if title_prefix else (lambda t: t)
+
     fig, axes = subplots(2, 3, figsize=conf_subplot_figsize(2, 3))
     axes = axes.flatten()
 
-    plot_grid(dataset.data.in_grid, ax=axes[0], title="Visibilities", xlabel="", ylabel="")
+    plot_grid(dataset.data.in_grid, ax=axes[0], title=_pf("Visibilities"), xlabel="", ylabel="")
     plot_grid(
         Grid2DIrregular.from_yx_1d(
             y=dataset.uv_wavelengths[:, 1] / 10**3.0,
             x=dataset.uv_wavelengths[:, 0] / 10**3.0,
         ),
         ax=axes[1],
-        title="UV-Wavelengths",
+        title=_pf("UV-Wavelengths"),
         xlabel="",
         ylabel="",
     )
@@ -56,7 +59,7 @@ def subplot_interferometer_dataset(
         dataset.amplitudes,
         dataset.uv_distances / 10**3.0,
         ax=axes[2],
-        title="Amplitudes vs UV-distances",
+        title=_pf("Amplitudes vs UV-distances"),
         xtick_suffix='"',
         ytick_suffix="Jy",
         plot_axis_type="scatter",
@@ -65,7 +68,7 @@ def subplot_interferometer_dataset(
         dataset.phases,
         dataset.uv_distances / 10**3.0,
         ax=axes[3],
-        title="Phases vs UV-distances",
+        title=_pf("Phases vs UV-distances"),
         xtick_suffix='"',
         ytick_suffix="deg",
         plot_axis_type="scatter",
@@ -73,14 +76,14 @@ def subplot_interferometer_dataset(
     plot_array(
         dataset.dirty_image,
         ax=axes[4],
-        title="Dirty Image",
+        title=_pf("Dirty Image"),
         colormap=colormap,
         use_log10=use_log10,
     )
     plot_array(
         dataset.dirty_signal_to_noise_map,
         ax=axes[5],
-        title="Dirty Signal-To-Noise Map",
+        title=_pf("Dirty Signal-To-Noise Map"),
         colormap=colormap,
         use_log10=use_log10,
     )
