@@ -12,6 +12,9 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+_FAST_PLOTS = os.environ.get("PYAUTO_FAST_PLOTS") == "1"
+
+
 def tight_layout():
     """Call ``plt.tight_layout()`` unless fast-plot mode is active.
 
@@ -19,7 +22,7 @@ def tight_layout():
     is skipped.  All figure creation, data computation, and rendering
     still execute — only the final spacing adjustment is bypassed.
     """
-    if os.environ.get("PYAUTO_FAST_PLOTS") == "1":
+    if _FAST_PLOTS:
         return
     plt.tight_layout()
 
@@ -338,6 +341,10 @@ def subplot_save(fig, output_path, output_filename, output_format=None):
     if _output_mode_save(fig, output_filename):
         return
 
+    if _FAST_PLOTS:
+        plt.close(fig)
+        return
+
     if output_format == "show" or not output_path:
         plt.show()
     else:
@@ -506,6 +513,10 @@ def save_figure(
         dpi = int(conf.instance["visualize"]["general"]["general"]["dpi"])
 
     if _output_mode_save(fig, filename):
+        return
+
+    if _FAST_PLOTS:
+        plt.close(fig)
         return
 
     formats = format if isinstance(format, (list, tuple)) else [format]
