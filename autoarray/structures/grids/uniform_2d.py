@@ -171,6 +171,9 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
+        if os.environ.get("PYAUTO_WORKSPACE_SMALL_DATASETS") == "1":
+            over_sample_size = 2
+
         self._over_sample_size = over_sample_size
 
         self._over_sampler = over_sampler
