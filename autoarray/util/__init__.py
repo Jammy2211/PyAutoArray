@@ -29,3 +29,4 @@ from autoarray.inversion.inversion.interferometer import (
 
 from autoarray.operators import transformer_util as transformer
 from autoarray.util import misc_util as misc
+from autoarray.util import dataset_util as dataset
