@@ -305,3 +305,10 @@ class InterpolatorRectangular(AbstractInterpolator):
         sizes = 4 * self._xp.ones(len(mappings), dtype="int")
 
         return mappings, sizes, weights
+
+    @cached_property
+    def _mappings_sizes_weights_split(self):
+        # Rectangular pixelizations use bilinear interpolation which already factors
+        # in the 4-corner neighbourhood, so no separate split-cross calculation is
+        # needed — split regularization reuses the same mappings.
+        return self._mappings_sizes_weights
