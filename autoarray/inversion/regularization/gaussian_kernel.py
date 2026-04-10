@@ -115,4 +115,19 @@ class GaussianKernel(AbstractRegularization):
             xp=xp,
         )
 
-        return self.coefficient * xp.linalg.inv(covariance_matrix)
+        regularization_matrix = self.coefficient * xp.linalg.inv(covariance_matrix)
+
+        # inv() loses exact symmetry and can introduce tiny negative eigenvalues
+        # when the covariance matrix is near-singular (e.g. scale >> pixel
+        # spacing). Symmetrise and add a trace-scaled diagonal jitter so the
+        # downstream cholesky in log_det_regularization_matrix_term cannot
+        # fail on floating-point noise.
+        regularization_matrix = 0.5 * (regularization_matrix + regularization_matrix.T)
+        N = regularization_matrix.shape[0]
+        diag_mean = xp.mean(xp.diag(regularization_matrix))
+        jitter = 1e-8 * xp.abs(diag_mean)
+        regularization_matrix = regularization_matrix + xp.eye(
+            N, dtype=regularization_matrix.dtype
+        ) * jitter
+
+        return regularization_matrix
