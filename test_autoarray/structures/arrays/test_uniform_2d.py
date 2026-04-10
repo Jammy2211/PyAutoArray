@@ -514,6 +514,74 @@ def test__brightest_coordinate_in_region_from__5x5_array_asymmetric_region__corr
     assert brightest_coordinate == pytest.approx((-0.1, 0.2), 1.0e-4)
 
 
+def test__brightest_coordinate_in_region_from__region_offset_from_origin__correct_peak_coordinate():
+    mask = aa.Mask2D.all_false(shape_native=(7, 7), pixel_scales=0.1)
+    values = np.zeros((7, 7))
+    values[5, 1] = 99.0
+    array_2d = aa.Array2D(values=values, mask=mask)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.25, -0.05, -0.25, -0.05)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.2, -0.2), 1.0e-4)
+
+
+def test__brightest_coordinate_in_region_from__region_fully_offset_negative_quadrant__correct_peak_coordinate():
+    mask = aa.Mask2D.all_false(shape_native=(11, 11), pixel_scales=0.1)
+    values = np.zeros((11, 11))
+    values[8, 2] = 77.0
+    array_2d = aa.Array2D(values=values, mask=mask)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(-0.45, -0.15, -0.45, -0.15)
+    )
+
+    assert brightest_coordinate == pytest.approx((-0.3, -0.3), 1.0e-4)
+
+
+def test__brightest_coordinate_in_region_from__region_offset_positive_quadrant__correct_peak_coordinate():
+    mask = aa.Mask2D.all_false(shape_native=(11, 11), pixel_scales=0.1)
+    values = np.zeros((11, 11))
+    values[2, 8] = 55.0
+    array_2d = aa.Array2D(values=values, mask=mask)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(0.15, 0.45, 0.15, 0.45)
+    )
+
+    assert brightest_coordinate == pytest.approx((0.3, 0.3), 1.0e-4)
+
+
+def test__brightest_coordinate_in_region_from__region_clipped_to_array_bounds__correct_peak_coordinate():
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.1)
+    values = np.zeros((5, 5))
+    values[0, 0] = 42.0
+    array_2d = aa.Array2D(values=values, mask=mask)
+
+    brightest_coordinate = array_2d.brightest_coordinate_in_region_from(
+        region=(0.15, 0.45, -0.45, -0.15)
+    )
+
+    assert brightest_coordinate == pytest.approx((0.2, -0.2), 1.0e-4)
+
+
+def test__brightest_sub_pixel_coordinate_in_region_from__region_offset_from_origin__correct_sub_pixel_peak():
+    mask = aa.Mask2D.all_false(shape_native=(7, 7), pixel_scales=0.1)
+    values = np.zeros((7, 7))
+    values[5, 1] = 100.0
+    values[5, 2] = 50.0
+    values[4, 1] = 50.0
+    array_2d = aa.Array2D(values=values, mask=mask)
+
+    brightest_coordinate = array_2d.brightest_sub_pixel_coordinate_in_region_from(
+        region=(-0.25, -0.05, -0.25, -0.05), box_size=1
+    )
+
+    assert brightest_coordinate[0] < -0.15
+    assert brightest_coordinate[1] > -0.2
+
+
 def test__brightest_sub_pixel_coordinate_in_region_from__4x4_array__correct_sub_pixel_peak():
     mask = aa.Mask2D.all_false(shape_native=(4, 4), pixel_scales=0.1)
     array_2d = aa.Array2D(

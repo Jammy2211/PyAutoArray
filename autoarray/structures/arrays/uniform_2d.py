@@ -426,24 +426,31 @@ class AbstractArray2D(Structure):
         The coordinates of the brightest pixel in scaled units (converted from pixels units).
         """
 
-        y1, y0 = self.geometry.pixel_coordinates_2d_from(
-            scaled_coordinates_2d=(
-                region[0] - self.pixel_scales[0] / 2.0,
-                region[2] + self.pixel_scales[0] / 2.0,
-            )
+        ps_y, ps_x = self.pixel_scales
+
+        py_min, _ = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=(region[1] - ps_y / 2.0, 0.0)
         )
-        x0, x1 = self.geometry.pixel_coordinates_2d_from(
-            scaled_coordinates_2d=(
-                region[1] - self.pixel_scales[1] / 2.0,
-                region[3] + self.pixel_scales[1] / 2.0,
-            )
+        py_max, _ = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=(region[0] + ps_y / 2.0, 0.0)
+        )
+        _, px_min = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=(0.0, region[2] + ps_x / 2.0)
+        )
+        _, px_max = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=(0.0, region[3] - ps_x / 2.0)
         )
 
-        extracted_region = self.native[y0:y1, x0:x1]
+        py_min = max(0, py_min)
+        px_min = max(0, px_min)
+        py_max = min(self.shape_native[0] - 1, py_max)
+        px_max = min(self.shape_native[1] - 1, px_max)
+
+        extracted_region = self.native[py_min : py_max + 1, px_min : px_max + 1]
 
         brightest_pixel_value = np.max(extracted_region)
         extracted_pixels = np.argwhere(extracted_region == brightest_pixel_value)[0]
-        pixel_coordinates_2d = (y0 + extracted_pixels[0], x0 + extracted_pixels[1])
+        pixel_coordinates_2d = (py_min + extracted_pixels[0], px_min + extracted_pixels[1])
 
         if return_in_pixels:
             return pixel_coordinates_2d
