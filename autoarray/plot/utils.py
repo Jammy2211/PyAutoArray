@@ -105,7 +105,7 @@ def zoom_array(array):
     except Exception:
         zoom_around_mask = False
 
-    if zoom_around_mask and hasattr(array, "mask") and not array.mask.is_all_false:
+    if zoom_around_mask and hasattr(array, "mask") and hasattr(array.mask, "is_all_false") and not array.mask.is_all_false:
         from autoarray.mask.derive.zoom_2d import Zoom2D
 
         return Zoom2D(mask=array.mask).array_2d_from(array=array, buffer=1)
