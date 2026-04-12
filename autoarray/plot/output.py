@@ -193,7 +193,7 @@ class Output:
                 os.makedirs(output_path, exist_ok=True)
 
             if not self.bypass:
-                if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") == "1":
+                if os.environ.get("PYAUTO_OUTPUT_MODE") == "1":
                     return self.to_figure_output_mode(filename=filename)
 
                 if format == "show":
@@ -222,7 +222,7 @@ class Output:
             if format != "show":
                 os.makedirs(output_path, exist_ok=True)
 
-            if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") == "1":
+            if os.environ.get("PYAUTO_OUTPUT_MODE") == "1":
                 return self.to_figure_output_mode(filename=filename)
 
             if format == "show":
@@ -237,7 +237,7 @@ class Output:
         """Save the current figure as a numbered PNG snapshot in *output mode*.
 
         Output mode is activated by setting the environment variable
-        ``PYAUTOARRAY_OUTPUT_MODE=1``.  Each call increments a global counter
+        ``PYAUTO_OUTPUT_MODE=1``.  Each call increments a global counter
         so that figures are saved as ``0_filename.png``, ``1_filename.png``,
         etc. in a sub-directory named after the running script.  This is useful
         for collecting a sequence of figures during automated testing or
