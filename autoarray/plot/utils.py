@@ -299,13 +299,13 @@ def set_with_color_values(ax, cmap, color_values, norm=None):
 def _output_mode_save(fig, filename):
     import matplotlib.pyplot as plt
 
-    """If ``PYAUTOARRAY_OUTPUT_MODE=1``, save *fig* to a numbered file in
+    """If ``PYAUTO_OUTPUT_MODE=1``, save *fig* to a numbered file in
     ``./output_mode/<script_name>/`` and return ``True``.  Otherwise return
     ``False`` so the caller can proceed with normal saving.
 
     The counter is stored as a function attribute to avoid a global variable.
     """
-    if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") != "1":
+    if os.environ.get("PYAUTO_OUTPUT_MODE") != "1":
         return False
 
     import sys

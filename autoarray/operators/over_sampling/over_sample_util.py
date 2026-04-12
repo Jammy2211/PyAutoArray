@@ -232,7 +232,7 @@ def over_sample_size_via_radial_bins_from(
     """
     Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
 
-    When ``PYAUTO_WORKSPACE_SMALL_DATASETS=1`` returns a uniform size-2 array
+    When ``PYAUTO_SMALL_DATASETS=1`` returns a uniform size-2 array
     immediately, skipping the expensive radial-bin computation and numba JIT.
 
     The adaptive sub-grid size is computed as follows:
@@ -269,7 +269,7 @@ def over_sample_size_via_radial_bins_from(
 
     import os
 
-    if os.environ.get("PYAUTO_WORKSPACE_SMALL_DATASETS") == "1":
+    if os.environ.get("PYAUTO_SMALL_DATASETS") == "1":
         return Array2D(values=np.full(grid.shape_slim, 2.0), mask=grid.mask)
 
     if centre_list is None:
