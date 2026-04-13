@@ -13,7 +13,7 @@ from autoarray.operators.over_sampling import over_sample_util
 
 class OverSampler:
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
-        """
+        r"""
          Over samples grid calculations using a uniform sub-grid.
 
         When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
