@@ -77,6 +77,14 @@ class AbstractNDArray(ABC):
         self.use_jax = xp is not np
 
     @property
+    def is_transformed(self) -> bool:
+        return self._is_transformed
+
+    @is_transformed.setter
+    def is_transformed(self, value: bool):
+        self._is_transformed = value
+
+    @property
     def _xp(self):
         if self.use_jax:
             import jax.numpy as jnp
