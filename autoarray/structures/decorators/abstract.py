@@ -1,10 +1,6 @@
-from typing import Union
-
 import numpy as np
 
-from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -18,19 +14,15 @@ class AbstractMaker:
         This is used by the `to_array`, `to_grid` and `to_vector_yx` decorators to ensure that the input grid and output
         data structure are consistent.
 
-        There are three types of consistent data structures and therefore decorated function mappings:
+        There are two types of consistent data structures and therefore decorated function mappings:
 
         - Uniform: 2D structures defined on a uniform grid of data points, for example the `Array2D` and `Grid2D`
         objects. Both structures are defined according to a `Mask2D`, which the maker object ensures is passed through
         self consistently.
 
         - Irregular: 2D structures defined on an irregular grid of data points, for example an `ArrayIrregular`
-        and `Grid2DIrregular` objects. Neither structure is defined according to a mask and the maker sures the lack of
+        and `Grid2DIrregular` objects. Neither structure is defined according to a mask and the maker ensures the lack of
         a mask does not prevent the function from being evaluated.
-
-        - 1D: 1D structures defined on a 1D grid of data points, for example the `Array1D` and `Grid1D` objects.
-        These project the 1D grid to a 2D grid to ensure the function can be evaluated, and then deproject the 2D grid
-        back to a 1D grid to ensure the output data structure is consistent with the input grid.
 
         Parameters
         ----------
@@ -66,7 +58,7 @@ class AbstractMaker:
         return np
 
     @property
-    def mask(self) -> Union[Mask1D, Mask2D]:
+    def mask(self) -> Mask2D:
         return self.grid.mask
 
     @property
@@ -79,30 +71,8 @@ class AbstractMaker:
     def via_grid_2d_irr(self, result):
         raise NotImplementedError
 
-    def via_grid_1d(self, result):
-        raise NotImplementedError
-
     @property
     def evaluate_func(self):
-        """
-        Evaluate the function that is being decorated, using the grid that is passed to the maker object when it is
-        initialized.
-
-        In normal usage, the input grid is 2D and it is simply passed to the decorated function.
-
-        However, if the input grid is 1D, the grid is projected to a 2D grid before being passed to the function. This
-        is because the function is expected to evaluate a 2D grid, and the maker object ensures that the function can
-        be evaluated by projecting the 1D grid to a 2D grid.
-
-        Returns
-        -------
-        The result of the function that is being decorated, which is the output data structure that is consistent with
-        the input grid.
-        """
-
-        if isinstance(self.grid, Grid1D):
-            grid = self.grid.grid_2d_radial_projected_from()
-            return self.func(self.obj, grid, self._xp, *self.args, **self.kwargs)
         return self.func(self.obj, self.grid, self._xp, *self.args, **self.kwargs)
 
     @property
@@ -111,21 +81,17 @@ class AbstractMaker:
         The result of the function that is being decorated, which this function converts to the output data structure
         that is consistent with the input grid.
 
-        This function called one of three methods, depending on the type of the input grid:
+        This function calls one of two methods, depending on the type of the input grid:
 
         - `via_grid_2d`: If the input grid is a `Grid2D` object.
         - `via_grid_2d_irr`: If the input grid is a `Grid2DIrregular` object.
-        - `via_grid_1d`: If the input grid is a `Grid1D` object.
 
-        These functions are over written depending on whether the decorated function returns an array, grid or vector.
-        The over written functions are in the child classes `ArrayMaker`, `GridMaker` and `VectorYXMaker`.
+        If the input is a raw ndarray (e.g. numpy or JAX), the function result is returned unchanged.
         """
 
         if isinstance(self.grid, Grid2D):
             return self.via_grid_2d(self.evaluate_func)
         elif isinstance(self.grid, Grid2DIrregular):
             return self.via_grid_2d_irr(self.evaluate_func)
-        elif isinstance(self.grid, Grid1D):
-            return self.via_grid_1d(self.evaluate_func)
 
         return self.evaluate_func

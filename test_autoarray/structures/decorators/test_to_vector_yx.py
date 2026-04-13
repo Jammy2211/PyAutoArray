@@ -101,3 +101,15 @@ def test__in_grid_2d_irregular__out_ndarray_yx_2d_list():
 
     assert isinstance(ndarray_yx_2d_list[1], aa.VectorYX2DIrregular)
     assert ndarray_yx_2d_list[1].in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
+
+
+def test__in_ndarray__out_ndarray():
+    obj = aa.m.MockGrid2DLikeObj()
+
+    grid = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+
+    result = obj.ndarray_yx_2d_from(grid=grid)
+
+    assert isinstance(result, np.ndarray)
+    assert not isinstance(result, aa.VectorYX2D)
+    assert not isinstance(result, aa.VectorYX2DIrregular)
