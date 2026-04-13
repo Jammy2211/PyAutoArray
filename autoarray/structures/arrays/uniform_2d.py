@@ -36,7 +36,7 @@ class AbstractArray2D(Structure):
         *args,
         **kwargs,
     ):
-        """
+        r"""
         A uniform 2D array of values, which are paired with a 2D mask of pixels.
 
         The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) has in-built functionality which:

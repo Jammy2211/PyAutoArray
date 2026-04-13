@@ -26,7 +26,7 @@ class VectorYX2D(AbstractVectorYX2D):
         mask: Mask2D,
         store_native: bool = False,
     ):
-        """
+        r"""
         A collection of (y,x) vectors which are located on a regular 2D grid of (y,x) coordinates.
 
         The vectors are paired to a uniform 2D mask of pixels. Each vector corresponds to a value at

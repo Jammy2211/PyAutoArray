@@ -84,7 +84,7 @@ def curvature_matrix_via_mapping_matrix_from(
     settings: "Settings" = Settings(),
     xp=np,
 ) -> np.ndarray:
-    """
+    r"""
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
      (see Warren & Dye 2003).
 

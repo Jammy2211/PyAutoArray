@@ -74,7 +74,7 @@ def data_vector_via_psf_weighted_data_from(
     vals: np.ndarray,  # (nnz,) float64 mapping weights incl sub_fraction
     S: int,  # number of source pixels
 ) -> np.ndarray:
-    """
+    r"""
     Returns the data vector `D` from the `psf_weighted_data` matrix (see `psf_weighted_data_from`), which encodes the
     the 1D image `d` and 1D noise-map values `\sigma` (see Warren & Dye 2003).
 
@@ -107,7 +107,7 @@ def data_vector_via_psf_weighted_data_from(
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
-    """
+    r"""
     Returns the data vector `D` from a blurred mapping matrix `f` and the 1D image `d` and 1D noise-map $\sigma$`
     (see Warren & Dye 2003).
 

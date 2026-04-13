@@ -33,7 +33,7 @@ class Grid2D(Structure):
         *args,
         **kwargs,
     ):
-        """
+        r"""
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels. Each entry
         on the grid corresponds to the (y,x) coordinates at the centre of a pixel of an unmasked pixel.
 

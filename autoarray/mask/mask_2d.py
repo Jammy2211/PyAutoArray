@@ -54,7 +54,7 @@ class Mask2D(Mask):
         *args,
         **kwargs,
     ):
-        """
+        r"""
         A 2D mask, used for masking values which are associated with a a uniform rectangular grid of pixels.
 
         When applied to 2D data with the same shape, values in the mask corresponding to ``False`` entries are
