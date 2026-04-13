@@ -2,6 +2,7 @@ from functools import wraps
 import numpy as np
 from typing import Union
 
+from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
