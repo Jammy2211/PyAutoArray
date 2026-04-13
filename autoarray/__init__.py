@@ -84,7 +84,8 @@ from .structures.triangles.shape import Circle
 from .structures.triangles.shape import Triangle
 from .structures.triangles.shape import Square
 from .structures.triangles.shape import Polygon
-from .structures import decorators as grid_dec
+from .structures import decorators as grid_dec  # deprecated alias
+from .structures import decorators
 from .structures.header import Header
 from .layout.region import Region1D
 from .layout.region import Region2D

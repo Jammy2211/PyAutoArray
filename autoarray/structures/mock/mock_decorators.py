@@ -81,6 +81,25 @@ def ndarray_2d_yx_from(profile, grid, *args, **kwargs):
     return 2.0 * grid
 
 
+class MockTransformProfile:
+    def __init__(self, centre=(1.0, 2.0)):
+        self.centre = centre
+
+    def transformed_to_reference_frame_grid_from(self, grid, xp=None, **kwargs):
+        return grid - np.array(self.centre)
+
+    def rotated_grid_from_reference_frame_from(self, grid, xp=None, **kwargs):
+        return -1.0 * grid
+
+    @decorators.transform
+    def scalar_from(self, grid, xp=None, *args, **kwargs):
+        return np.sum(grid, axis=1)
+
+    @decorators.transform(rotate_back=True)
+    def vector_from(self, grid, xp=None, *args, **kwargs):
+        return 2.0 * grid
+
+
 class MockGrid1DLikeObj:
     def __init__(self, centre=(0.0, 0.0), angle=0.0):
         self.centre = centre
@@ -104,6 +123,10 @@ class MockGrid2DLikeObj:
         """
         return np.ones(shape=grid.shape[0])
 
+    @decorators.to_array
+    def ndarray_1d_no_oversample_from(self, grid, *args, **kwargs):
+        return np.ones(shape=grid.shape[0])
+
     @decorators.to_grid
     def ndarray_2d_from(self, grid, *args, **kwargs):
         """
@@ -113,6 +136,10 @@ class MockGrid2DLikeObj:
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
         return np.multiply(2.0, grid.array)
+
+    @decorators.to_grid
+    def ndarray_2d_raw_from(self, grid, *args, **kwargs):
+        return np.multiply(2.0, grid)
 
     @decorators.to_vector_yx
     def ndarray_yx_2d_from(self, grid, *args, **kwargs):

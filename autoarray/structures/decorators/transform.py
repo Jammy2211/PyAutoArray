@@ -2,7 +2,6 @@ from functools import wraps
 import numpy as np
 from typing import Union
 
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -64,31 +63,11 @@ def transform(func=None, *, rotate_back=False):
         @wraps(func)
         def wrapper(
             obj: object,
-            grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+            grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
             xp=np,
             *args,
             **kwargs,
         ) -> Union[np.ndarray, Grid2D, Grid2DIrregular]:
-            """
-            This decorator checks whether the input grid has been transformed to the reference frame of the class
-            that owns the function. If it has not been transformed, it is transformed.
-
-            The transform state is tracked via the ``is_transformed`` property on the grid object itself.
-            When a decorated function calls another decorated function with the same (already-transformed)
-            grid, the flag prevents the grid from being transformed a second time.
-
-            Parameters
-            ----------
-            obj
-                An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
-            grid
-                The (y, x) coordinates in the original reference frame of the grid.
-
-            Returns
-            -------
-                A grid_like object whose coordinates may be transformed.
-            """
-
             if not getattr(grid, "is_transformed", False):
                 transformed_grid = obj.transformed_to_reference_frame_grid_from(
                     grid, xp, **kwargs
