@@ -3,10 +3,8 @@ from functools import wraps
 from typing import List, Union
 
 from autoarray.structures.arrays.irregular import ArrayIrregular
-from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.decorators.abstract import AbstractMaker
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -21,11 +19,6 @@ class ArrayMaker(AbstractMaker):
         if not isinstance(result, list):
             return ArrayIrregular(values=result)
         return [ArrayIrregular(values=res) for res in result]
-
-    def via_grid_1d(self, result) -> Union[Array1D, List[Array1D]]:
-        if not isinstance(result, list):
-            return Array1D(values=result, mask=self.mask)
-        return [Array1D(values=res, mask=self.mask) for res in result]
 
 
 def to_array(func):
@@ -46,11 +39,11 @@ def to_array(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         xp=np,
         *args,
         **kwargs,
-    ) -> Union[np.ndarray, Array1D, Array2D, ArrayIrregular, List]:
+    ) -> Union[np.ndarray, Array2D, ArrayIrregular, List]:
         return ArrayMaker(func=func, obj=obj, grid=grid, xp=xp, *args, **kwargs).result
 
     return wrapper

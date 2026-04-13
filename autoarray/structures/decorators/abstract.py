@@ -1,10 +1,6 @@
-from typing import Union
-
 import numpy as np
 
-from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -62,7 +58,7 @@ class AbstractMaker:
         return np
 
     @property
-    def mask(self) -> Union[Mask1D, Mask2D]:
+    def mask(self) -> Mask2D:
         return self.grid.mask
 
     @property
@@ -75,14 +71,8 @@ class AbstractMaker:
     def via_grid_2d_irr(self, result):
         raise NotImplementedError
 
-    def via_grid_1d(self, result):
-        raise NotImplementedError
-
     @property
     def evaluate_func(self):
-        if isinstance(self.grid, Grid1D):
-            grid = self.grid.grid_2d_radial_projected_from()
-            return self.func(self.obj, grid, self._xp, *self.args, **self.kwargs)
         return self.func(self.obj, self.grid, self._xp, *self.args, **self.kwargs)
 
     @property
@@ -103,7 +93,5 @@ class AbstractMaker:
             return self.via_grid_2d(self.evaluate_func)
         elif isinstance(self.grid, Grid2DIrregular):
             return self.via_grid_2d_irr(self.evaluate_func)
-        elif isinstance(self.grid, Grid1D):
-            return self.via_grid_1d(self.evaluate_func)
 
         return self.evaluate_func

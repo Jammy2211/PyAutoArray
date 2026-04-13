@@ -3,7 +3,6 @@ import numpy as np
 from typing import List, Union
 
 from autoarray.structures.decorators.abstract import AbstractMaker
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -35,13 +34,6 @@ class GridMaker(AbstractMaker):
             return Grid2DIrregular(values=result)
         return [Grid2DIrregular(values=res) for res in result]
 
-    def via_grid_1d(self, result) -> Union[Grid2D, List[Grid2D]]:
-        if not isinstance(result, list):
-            return Grid2D(values=result, mask=self.mask.derive_mask.to_mask_2d)
-        return [
-            Grid2D(values=res, mask=self.mask.derive_mask.to_mask_2d) for res in result
-        ]
-
 
 def to_grid(func):
     """
@@ -61,7 +53,7 @@ def to_grid(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         xp=np,
         *args,
         **kwargs,

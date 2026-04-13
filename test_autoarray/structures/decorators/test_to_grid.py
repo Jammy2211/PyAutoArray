@@ -4,41 +4,6 @@ import pytest
 import autoarray as aa
 
 
-def test__in_grid_1d__out_ndarray_2d():
-    mask_1d = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,))
-
-    grid_1d = aa.Grid1D.from_mask(mask=mask_1d)
-
-    obj = aa.m.MockGrid2DLikeObj()
-
-    ndarray_2d = obj.ndarray_2d_from(grid=grid_1d)
-
-    assert isinstance(ndarray_2d, aa.Grid2D)
-    assert ndarray_2d.native == pytest.approx(
-        np.array([[[0.0, 0.0], [0.0, -1.0], [0.0, 1.0], [0.0, 0.0]]]), abs=1.0e-4
-    )
-
-
-def test__in_dgrid_1d__out_ndarray_2d_list():
-    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,))
-
-    grid_1d = aa.Grid1D.from_mask(mask=mask)
-
-    obj = aa.m.MockGrid2DLikeObj()
-
-    ndarray_2d_list = obj.ndarray_2d_list_from(grid=grid_1d)
-
-    assert isinstance(ndarray_2d_list[0], aa.Grid2D)
-    assert ndarray_2d_list[0].native == pytest.approx(
-        np.array([[[0.0, 0.0], [0.0, -0.5], [0.0, 0.5], [0.0, 0.0]]]), abs=1.0e-4
-    )
-
-    assert isinstance(ndarray_2d_list[1], aa.Grid2D)
-    assert ndarray_2d_list[1].native == pytest.approx(
-        np.array([[[0.0, 0.0], [0.0, -1.0], [0.0, 1.0], [0.0, 0.0]]]), abs=1.0e-4
-    )
-
-
 def test__in_grid_2d__out_ndarray_2d():
     mask = aa.Mask2D(
         mask=[
