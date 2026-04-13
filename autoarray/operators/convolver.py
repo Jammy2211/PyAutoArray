@@ -116,8 +116,14 @@ class ConvolverState:
             s1 + s2 - 1 for s1, s2 in zip(mask_shape, self.kernel.shape_native)
         )
         import scipy.fft
+        from autoarray.mask.mask_2d_util import required_shape_for_kernel
 
-        fft_shape = tuple(scipy.fft.next_fast_len(s, real=True) for s in full_shape)
+        min_blur_shape = required_shape_for_kernel(mask, self.kernel.shape_native)
+
+        fft_shape = tuple(
+            scipy.fft.next_fast_len(max(s, r), real=True)
+            for s, r in zip(full_shape, min_blur_shape)
+        )
 
         self.fft_shape = fft_shape
         self.mask = mask.resized_from(self.fft_shape, pad_value=1)

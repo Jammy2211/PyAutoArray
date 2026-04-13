@@ -710,7 +710,7 @@ class Grid2D(Structure):
         """
 
         blurring_mask = mask.derive_mask.blurring_from(
-            kernel_shape_native=kernel_shape_native
+            kernel_shape_native=kernel_shape_native, allow_padding=True
         )
 
         return cls.from_mask(
