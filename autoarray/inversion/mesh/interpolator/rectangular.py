@@ -83,6 +83,50 @@ def create_transforms(traced_points, mesh_weight_map=None, xp=np):
         t = xp.cumsum(t, axis=0)
 
     if xp.__name__.startswith("jax"):
+        # --------------------------------------------------------------
+        # Gradient stabilisation for `jnp.interp`.
+        #
+        # Ray-traced source grids commonly contain near-duplicate or
+        # exactly-duplicate coordinates — e.g. an Isothermal lens over
+        # a circular mask produces ~50% gaps that are exactly zero
+        # after sorting. This breaks `jnp.interp` for autodiff in two
+        # distinct ways, both of which have to be patched here:
+        #
+        # (1) Knot-gradient term. The vjp of `jnp.interp` w.r.t. its
+        #     knot array `xp` divides by `xp[i+1] - xp[i]`, which is
+        #     0/0 at duplicate knots and emits O(1e24) cotangents.
+        #     We freeze this path with `stop_gradient`. This is
+        #     semantically correct: the only downstream consumer of
+        #     the transformed grid is `adaptive_rectangular_mappings_
+        #     weights_..._from`, which uses `floor`/`ceil` to select
+        #     the 4 corner pixels. That bin assignment already has
+        #     zero gradient, so the knot-gradient term has no
+        #     downstream consumer anyway.
+        #
+        # (2) Query-gradient term. The vjp w.r.t. the query `x` is
+        #     the local slope `(yp[i+1] - yp[i]) / (xp[i+1] - xp[i])`.
+        #     Even with frozen knots, this blows up when the knot gap
+        #     is near zero. We prevent that by adding a strictly-
+        #     monotonic offset `arange(N) * JITTER` to `sort_points`.
+        #     For the default `mesh_weight_map=None` path, `t` moves
+        #     in steps of `1/(N+1)`; with `JITTER = 1e-7` and
+        #     `N ~ 1.5e4`, the worst-case slope is bounded by
+        #     `(1/(N+1)) / JITTER ~ 650`, which is harmless, and the
+        #     forward interpolation value is perturbed by at most
+        #     `N * JITTER ~ 1.5e-3` in the source-plane scaled units
+        #     — well below the `(source_grid_size - 3)` downstream
+        #     multiplier's sensitivity to sub-pixel placement.
+        #
+        # Together these two patches make the rectangular interpolator
+        # differentiable end-to-end and bring the mapping-matrix
+        # gradient into agreement with finite differences.
+        import jax
+
+        JITTER = 1e-7
+        jitter = xp.arange(sort_points.shape[0], dtype=sort_points.dtype) * JITTER
+        jitter = xp.stack([jitter, jitter], axis=1)
+        sort_points = jax.lax.stop_gradient(sort_points + jitter)
+
         transform = partial(forward_interp, sort_points, t)
         inv_transform = partial(reverse_interp, t, sort_points)
         return transform, inv_transform
