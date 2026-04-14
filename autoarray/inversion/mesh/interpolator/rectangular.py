@@ -23,6 +23,94 @@ def reverse_interp(xp, yp, x):
     return jax.vmap(jnp.interp, in_axes=(1, 1, 1), out_axes=(1))(x, xp, yp)
 
 
+def forward_interp_safe(xp, yp, x, eps=1e-30):
+    """
+    NOT CURRENTLY USED — kept as a reference implementation for a follow-up
+    switch away from the ``JITTER`` offset in ``create_transforms``. See
+    ``admin_jammy/prompt/autoarray/rectangular_interp_custom_vjp.md``.
+
+    Drop-in replacement for ``forward_interp`` that is robust to duplicate
+    and near-duplicate knots in ``xp`` without perturbing the forward
+    interpolation value.
+
+    Motivation
+    ----------
+    ``jnp.interp``'s autodiff rule divides by ``xp[i+1] - xp[i]`` in both
+    the knot-gradient and query-gradient branches. Ray-traced source-plane
+    grids regularly contain large runs of exact-duplicate coordinates
+    (e.g. ~50% for an Isothermal lens over a circular mask), which makes
+    that division a literal 0/0 and emits O(1e24) cotangents.
+
+    The current shipping fix (see below in ``create_transforms``) adds a
+    ``JITTER ~ 1e-7`` monotonic offset to ``sort_points`` before feeding
+    them to ``jnp.interp``. That fixes the gradient but perturbs the
+    forward interpolation value by up to ``N * JITTER ~ 1.5e-3`` in
+    scaled source-plane units, which is enough to drift integration-test
+    reference likelihoods by ~1e-4 relative.
+
+    This function keeps the forward value **exact** (no jitter) and uses
+    a ``jnp.where`` (double-where) guard on the slope computation so the
+    backward pass floors the denominator at ``eps``. The gradient
+    magnitude is then bounded by ``|dy| / eps``, which is finite, and
+    the forward path is identical to ``jnp.interp`` at well-separated
+    knots.
+
+    At duplicate knots, this implementation returns ``yp[i]`` (the
+    left-duplicate's value) rather than ``jnp.interp``'s implementation-
+    defined behaviour, but the mapping matrix consumes only
+    ``floor``/``ceil`` of the result, so the choice at a zero-measure
+    set of query points does not affect bilinear weights in practice.
+
+    Notes / TODO for the expert reviewer
+    ------------------------------------
+    * Does ``jnp.searchsorted(..., side='right') - 1`` reproduce
+      ``jnp.interp``'s bin convention in the edge cases ``x == xp[0]``
+      and ``x == xp[-1]``?  The extrapolation clamping below uses
+      ``left=0, right=1`` to mirror the current ``forward_interp``
+      signature, but the bin picked at the boundary may differ from
+      what ``jnp.interp`` picks internally.
+    * Should this use ``jax.custom_vjp`` instead, so the *forward*
+      stays bit-identical to ``jnp.interp`` and only the backward is
+      customised? That may be preferable if any downstream test is
+      sensitive to the duplicate-bin return value.
+    * The default ``eps=1e-30`` floors the slope at ``|dy|/1e-30``,
+      which is effectively "no floor" — relying on the double-``where``
+      to block the 0/0 path entirely. A realistic EPS like ``1e-12``
+      would bound the slope at ``1/N * 1e12 ~ 1e8`` for ``N ~ 1e4``
+      — still finite, still harmless. Choice of ``eps`` interacts
+      with downstream numerical stability.
+    """
+    import jax
+    import jax.numpy as jnp
+
+    def _safe_interp_1d(xp_col, yp_col, x_col):
+        idx = jnp.clip(
+            jnp.searchsorted(xp_col, x_col, side="right") - 1,
+            0,
+            xp_col.shape[0] - 2,
+        )
+        x0 = xp_col[idx]
+        x1 = xp_col[idx + 1]
+        y0 = yp_col[idx]
+        y1 = yp_col[idx + 1]
+
+        gap = x1 - x0
+        safe_gap = jnp.where(gap > eps, gap, jnp.ones_like(gap))
+        t = jnp.where(
+            gap > eps,
+            (x_col - x0) / safe_gap,
+            jnp.zeros_like(x_col),
+        )
+        result = y0 + t * (y1 - y0)
+
+        # Match jnp.interp(..., left=0, right=1) clamping used by forward_interp.
+        result = jnp.where(x_col < xp_col[0], jnp.zeros_like(result), result)
+        result = jnp.where(x_col > xp_col[-1], jnp.ones_like(result), result)
+        return result
+
+    return jax.vmap(_safe_interp_1d, in_axes=(1, 1, 1), out_axes=1)(xp, yp, x)
+
+
 def forward_interp_np(xp, yp, x):
     """
     xp: (N, M)
@@ -83,6 +171,50 @@ def create_transforms(traced_points, mesh_weight_map=None, xp=np):
         t = xp.cumsum(t, axis=0)
 
     if xp.__name__.startswith("jax"):
+        # --------------------------------------------------------------
+        # Gradient stabilisation for `jnp.interp`.
+        #
+        # Ray-traced source grids commonly contain near-duplicate or
+        # exactly-duplicate coordinates — e.g. an Isothermal lens over
+        # a circular mask produces ~50% gaps that are exactly zero
+        # after sorting. This breaks `jnp.interp` for autodiff in two
+        # distinct ways, both of which have to be patched here:
+        #
+        # (1) Knot-gradient term. The vjp of `jnp.interp` w.r.t. its
+        #     knot array `xp` divides by `xp[i+1] - xp[i]`, which is
+        #     0/0 at duplicate knots and emits O(1e24) cotangents.
+        #     We freeze this path with `stop_gradient`. This is
+        #     semantically correct: the only downstream consumer of
+        #     the transformed grid is `adaptive_rectangular_mappings_
+        #     weights_..._from`, which uses `floor`/`ceil` to select
+        #     the 4 corner pixels. That bin assignment already has
+        #     zero gradient, so the knot-gradient term has no
+        #     downstream consumer anyway.
+        #
+        # (2) Query-gradient term. The vjp w.r.t. the query `x` is
+        #     the local slope `(yp[i+1] - yp[i]) / (xp[i+1] - xp[i])`.
+        #     Even with frozen knots, this blows up when the knot gap
+        #     is near zero. We prevent that by adding a strictly-
+        #     monotonic offset `arange(N) * JITTER` to `sort_points`.
+        #     For the default `mesh_weight_map=None` path, `t` moves
+        #     in steps of `1/(N+1)`; with `JITTER = 1e-7
+        #     `N ~ 1.5e4`, the worst-case slope is bounded by
+        #     `(1/(N+1)) / JITTER ~ 650`, which is harmless, and the
+        #     forward interpolation value is perturbed by at most
+        #     `N * JITTER ~ 1.5e-3` in the source-plane scaled units
+        #     — well below the `(source_grid_size - 3)` downstream
+        #     multiplier's sensitivity to sub-pixel placement.
+        #
+        # Together these two patches make the rectangular interpolator
+        # differentiable end-to-end and bring the mapping-matrix
+        # gradient into agreement with finite differences.
+        import jax
+
+        JITTER = 1e-7
+        jitter = xp.arange(sort_points.shape[0], dtype=sort_points.dtype) * JITTER
+        jitter = xp.stack([jitter, jitter], axis=1)
+        sort_points = jax.lax.stop_gradient(sort_points + jitter)
+
         transform = partial(forward_interp, sort_points, t)
         inv_transform = partial(reverse_interp, t, sort_points)
         return transform, inv_transform
