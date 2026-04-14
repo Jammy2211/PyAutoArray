@@ -275,6 +275,29 @@ def reconstruction_positive_only_from(
     if xp.__name__.startswith("jax"):
 
         import jaxnnls
+        from autoconf import conf
+
+        try:
+            use_jacobi = conf.instance["general"]["inversion"][
+                "nnls_jacobi_preconditioning"
+            ]
+        except KeyError:
+            # Workspaces ship their own general.yaml that shadows autoarray's;
+            # default to True so gradients remain well-defined unless the user
+            # explicitly disables preconditioning in the shadowing config.
+            use_jacobi = True
+
+        if use_jacobi:
+            # Ill-conditioned Q makes jaxnnls's relaxed-KKT backward pass
+            # produce NaN gradients. Rescale Q so its diagonal is unit:
+            # solve (D Q D) y = D q with y >= 0, recover x = D y. D is
+            # diagonal positive, so non-negativity is preserved and the
+            # primal solution is mathematically equivalent.
+            d = xp.sqrt(xp.diag(curvature_reg_matrix))
+            D = 1.0 / d
+            Q_pc = (curvature_reg_matrix * D[:, None]) * D[None, :]
+            q_pc = data_vector * D
+            return jaxnnls.solve_nnls_primal(Q_pc, q_pc) * D
 
         return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
 
