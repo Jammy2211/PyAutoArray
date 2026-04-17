@@ -7,6 +7,7 @@ inversion:
   no_regularization_add_to_curvature_diag_value : 1.0e-3 # The default value added to the curvature matrix's diagonal when regularization is not applied to a linear object, which prevents inversion's failing due to the matrix being singular.
   use_border_relocator: false          # If True, by default a pixelization's border is used to relocate all pixels outside its border to the border.
   nnls_jacobi_preconditioning: true   # If True (default), the curvature matrix passed to jaxnnls.solve_nnls_primal is Jacobi-preconditioned (D Q D y = D q, x = D y). Fixes NaN backward-pass gradients on ill-conditioned Q and roughly halves forward solve time. Set False to restore the raw unpreconditioned solve.
+  nnls_target_kappa: 1.0e-2           # Central-path relaxation parameter passed to jaxnnls.solve_nnls_primal. Larger values smooth the relaxed-KKT backward pass and prevent NaN gradients on ill-conditioned Q; smaller values tighten the primal solve. 1.0e-2 is the smallest value empirically verified to produce finite gradients across MGE pipelines. jaxnnls's own default (1e-3) is too aggressive for the backward pass.
   reconstruction_vmax_factor: 0.5     # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
 numba:
   use_numba: true

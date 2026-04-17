@@ -287,6 +287,19 @@ def reconstruction_positive_only_from(
             # explicitly disables preconditioning in the shadowing config.
             use_jacobi = True
 
+        try:
+            target_kappa = conf.instance["general"]["inversion"][
+                "nnls_target_kappa"
+            ]
+        except KeyError:
+            # jaxnnls's hardcoded default (1e-3) produces NaN in the relaxed-KKT
+            # backward pass on ill-conditioned curvature matrices, even after
+            # Jacobi preconditioning. 1e-2 is the smallest value empirically
+            # verified to produce finite gradients across MGE pipelines (see
+            # autolens_workspace_developer/jax_profiling/imaging/mge_gradients.py
+            # _diagnose_kappa).
+            target_kappa = 1.0e-2
+
         if use_jacobi:
             # Ill-conditioned Q makes jaxnnls's relaxed-KKT backward pass
             # produce NaN gradients. Rescale Q so its diagonal is unit:
@@ -297,9 +310,14 @@ def reconstruction_positive_only_from(
             D = 1.0 / d
             Q_pc = (curvature_reg_matrix * D[:, None]) * D[None, :]
             q_pc = data_vector * D
-            return jaxnnls.solve_nnls_primal(Q_pc, q_pc) * D
+            return (
+                jaxnnls.solve_nnls_primal(Q_pc, q_pc, target_kappa=target_kappa)
+                * D
+            )
 
-        return jaxnnls.solve_nnls_primal(curvature_reg_matrix, data_vector)
+        return jaxnnls.solve_nnls_primal(
+            curvature_reg_matrix, data_vector, target_kappa=target_kappa
+        )
 
     try:
 
