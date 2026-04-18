@@ -182,7 +182,7 @@ class Grid2DIrregular(AbstractNDArray):
         deflection_grid
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
-        return Grid2DIrregular(values=self - deflection_grid)
+        return Grid2DIrregular(values=self - deflection_grid, xp=self._xp)
 
     def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
