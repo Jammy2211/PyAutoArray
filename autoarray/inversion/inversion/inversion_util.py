@@ -292,13 +292,14 @@ def reconstruction_positive_only_from(
                 "nnls_target_kappa"
             ]
         except KeyError:
-            # jaxnnls's hardcoded default (1e-3) produces NaN in the relaxed-KKT
-            # backward pass on ill-conditioned curvature matrices, even after
-            # Jacobi preconditioning. 1e-2 is the smallest value empirically
-            # verified to produce finite gradients across MGE pipelines (see
-            # autolens_workspace_developer/jax_profiling/imaging/mge_gradients.py
-            # _diagnose_kappa).
-            target_kappa = 1.0e-2
+            # Workspaces ship their own general.yaml that shadows autoarray's;
+            # fall back to the same value autoarray's general.yaml declares.
+            # jaxnnls's own 1e-3 default produces NaN in the relaxed-KKT
+            # backward pass on ill-conditioned curvature matrices; 1e-11 is
+            # finite across all MGE/rectangular/delaunay pipelines (imaging +
+            # interferometer) with scale invariance verified over 5 orders of
+            # magnitude in noise.
+            target_kappa = 1.0e-11
 
         if use_jacobi:
             # Ill-conditioned Q makes jaxnnls's relaxed-KKT backward pass
