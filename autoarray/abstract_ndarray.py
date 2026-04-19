@@ -62,6 +62,75 @@ def unwrap_array(func):
     return wrapper
 
 
+_pytree_registered_classes: set = set()
+
+
+def _register_as_pytree(cls):
+    """Register ``cls`` with ``jax.tree_util`` via the lazy autoconf wrapper.
+
+    Gated: only called when a subclass instance is constructed on the JAX path
+    (``xp is not np``). The registration is class-scoped via
+    ``_pytree_registered_classes`` so each subclass pays the cost at most once
+    regardless of how many instances are created. No-ops if JAX is not installed.
+    """
+    if cls in _pytree_registered_classes:
+        return
+    from autoconf.jax_wrapper import register_pytree_node
+
+    register_pytree_node(cls, cls.instance_flatten, cls.instance_unflatten)
+    _pytree_registered_classes.add(cls)
+
+
+def register_instance_pytree(cls, no_flatten=()):
+    """Register any class with ``jax.tree_util`` via ``__dict__`` flattening.
+
+    Generic counterpart to :func:`_register_as_pytree` for classes that are
+    *not* ``AbstractNDArray`` subclasses but still need to round-trip through
+    ``jax.jit`` (e.g. ``FitImaging``, ``Tracer``, ``Imaging``). Attributes are
+    partitioned using ``no_flatten``:
+
+    * Names **not** in ``no_flatten`` ride as pytree children — JAX traces them
+      and can substitute new values on unflatten (dynamic per fit).
+    * Names **in** ``no_flatten`` ride as ``aux_data`` — JAX treats them as
+      opaque Python objects, closing over the original reference across the
+      JIT boundary. Appropriate for per-analysis constants (dataset, settings,
+      cosmology, adapt images).
+
+    Reconstructs via ``cls.__new__`` + ``setattr`` (side-effect-free — no
+    ``__init__`` re-entry). Idempotent.
+    """
+    if cls in _pytree_registered_classes:
+        return
+    from autoconf.jax_wrapper import register_pytree_node
+
+    no_flatten_set = frozenset(no_flatten)
+
+    def flatten(instance):
+        dyn: list = []
+        static: list = []
+        for key, value in sorted(instance.__dict__.items()):
+            if key in no_flatten_set:
+                static.append((key, value))
+            else:
+                dyn.append((key, value))
+        dyn_keys = tuple(k for k, _ in dyn)
+        dyn_values = tuple(v for _, v in dyn)
+        static_items = tuple(static)
+        return dyn_values, (dyn_keys, static_items)
+
+    def unflatten(aux, children):
+        dyn_keys, static_items = aux
+        new = cls.__new__(cls)
+        for key, value in zip(dyn_keys, children):
+            setattr(new, key, value)
+        for key, value in static_items:
+            setattr(new, key, value)
+        return new
+
+    register_pytree_node(cls, flatten, unflatten)
+    _pytree_registered_classes.add(cls)
+
+
 class AbstractNDArray(ABC):
 
     __no_flatten__ = ()
@@ -75,6 +144,9 @@ class AbstractNDArray(ABC):
         self._array = array
 
         self.use_jax = xp is not np
+
+        if self.use_jax:
+            _register_as_pytree(type(self))
 
     @property
     def is_transformed(self) -> bool:
