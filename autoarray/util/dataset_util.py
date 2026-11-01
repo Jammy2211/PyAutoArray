@@ -535,11 +535,16 @@ def should_simulate(dataset_path):
     then loaded silently, producing deterministic, environment-only failures
     that could not be reproduced in CI (autolens_workspace_test#260).
 
-    Use this as a drop-in replacement for ``not path.exists(dataset_path)`` in
-    the workspace auto-simulation pattern::
+    Workspace scripts should not call this directly to auto-simulate their
+    dataset; use :func:`simulate_if_needed`, which wraps this predicate and the
+    simulator subprocess in one line::
 
-        if aa.util.dataset.should_simulate(dataset_path):
-            subprocess.run([sys.executable, "scripts/.../simulator.py"], check=True)
+        aa.util.dataset.simulate_if_needed(
+            dataset_path, simulator="scripts/.../simulator.py"
+        )
+
+    Call this predicate directly only when the "simulate" step is something
+    other than running a simulator script.
 
     Precedence
     ----------
@@ -662,6 +667,51 @@ def should_simulate(dataset_path):
         # preferred over the shape heuristic, but it is not unfalsifiable.
 
     return not Path(dataset_path).exists()
+
+
+def simulate_if_needed(dataset_path, simulator):
+    """
+    Run the ``simulator`` script if the dataset at ``dataset_path`` needs to be
+    (re)simulated, as decided by :func:`should_simulate`.
+
+    This is the one-line form of the workspace auto-simulation pattern::
+
+        aa.util.dataset.simulate_if_needed(
+            dataset_path, simulator="scripts/simulator/lens_x2.py"
+        )
+
+    The simulator is run in a **separate Python process** (``sys.executable``),
+    not in-process via ``runpy``: a simulator configures JAX, matplotlib and
+    module-level state that must not leak into the calling script. The run is
+    ``check=True``, so a failing simulator raises
+    ``subprocess.CalledProcessError`` rather than letting the caller load a
+    missing dataset.
+
+    Parameters
+    ----------
+    dataset_path
+        The dataset directory (``str`` or ``Path``) passed to
+        :func:`should_simulate` -- which may delete it, see that function.
+    simulator
+        Path (``str`` or ``Path``) to the simulator script, resolved relative to
+        the current working directory exactly as the ``subprocess.run`` call it
+        replaces was.
+
+    Returns
+    -------
+    bool
+        ``True`` if the simulator was run, ``False`` if the dataset was kept.
+    """
+    if not should_simulate(str(dataset_path)):
+        return False
+
+    import subprocess
+    import sys
+
+    subprocess.run([sys.executable, str(simulator)], check=True)
+
+    return True
+
 
 SMALL_DATASETS_N_CATALOGUE = 25
 
