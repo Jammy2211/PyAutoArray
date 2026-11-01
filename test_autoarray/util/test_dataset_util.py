@@ -857,3 +857,58 @@ def test__cap_card__written_by_the_stack_is_read_back(monkeypatch, tmp_path):
         SMALL_DATASETS_SHAPE_NATIVE
     )
     assert should_simulate(str(dataset_path)) is False
+
+
+@pytest.mark.parametrize("as_path", [False, True])
+def test__simulate_if_needed__runs_simulator_only_when_should_simulate(
+    monkeypatch, tmp_path, as_path
+):
+    import subprocess
+    import sys
+
+    from autoarray.util import dataset_util
+
+    calls = []
+    monkeypatch.setattr(subprocess, "run", lambda *a, **kw: calls.append((a, kw)))
+
+    dataset_path = tmp_path / "dataset"
+    simulator = tmp_path / "scripts" / "simulator.py"
+    if not as_path:
+        dataset_path, simulator = str(dataset_path), str(simulator)
+
+    seen = []
+
+    def fake_should_simulate(path):
+        seen.append(path)
+        return True
+
+    monkeypatch.setattr(dataset_util, "should_simulate", fake_should_simulate)
+
+    assert aa.util.dataset.simulate_if_needed(dataset_path, simulator) is True
+    assert seen == [str(dataset_path)]
+    assert calls == [(([sys.executable, str(simulator)],), {"check": True})]
+
+    monkeypatch.setattr(dataset_util, "should_simulate", lambda path: False)
+    calls.clear()
+
+    assert (
+        aa.util.dataset.simulate_if_needed(dataset_path, simulator=simulator)
+        is False
+    )
+    assert calls == []
+
+
+def test__simulate_if_needed__missing_dataset__runs_simulator(
+    monkeypatch, tmp_path
+):
+    import subprocess
+
+    monkeypatch.delenv("PYAUTO_SMALL_DATASETS", raising=False)
+
+    calls = []
+    monkeypatch.setattr(subprocess, "run", lambda *a, **kw: calls.append(a[0]))
+
+    assert aa.util.dataset.simulate_if_needed(
+        tmp_path / "missing", simulator="scripts/simulator.py"
+    )
+    assert calls[0][1] == "scripts/simulator.py"
