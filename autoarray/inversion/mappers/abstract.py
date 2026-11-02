@@ -581,7 +581,44 @@ class Mapper(LinearObj):
         )
 
     def data_pixel_area_for_pix_from(self) -> np.ndarray:
-        pass
+        """
+        Returns the image-plane area, in arc-seconds squared, that maps to every pixelization pixel.
+
+        Each column of the `mapping_matrix` gives the fraction of every image pixel that maps to that pixelization
+        pixel (over-sampled sub-pixels contribute their sub-fraction, spread over the pixels they interpolate to), so
+        its column sum is the number of image pixels mapping to it. Multiplying by the area of one image pixel gives
+        the image-plane area.
+
+        Summed over every pixelization pixel this is the total area of the mask.
+        """
+        pixel_area = self.mask.pixel_scales[0] * self.mask.pixel_scales[1]
+
+        return np.asarray(self.mapping_matrix).sum(axis=0) * pixel_area
+
+    @property
+    def mesh_magnification(self) -> np.ndarray:
+        """
+        The magnification of every pixelization pixel: the image-plane area that maps to it divided by its
+        source-plane area.
+
+        For a lensed source this is how much the lens magnifies the region of the source plane each mesh pixel
+        covers, summed over all the images of that region. The source-plane areas are the mesh's
+        `areas_for_magnification` (exact cell areas for a rectangular mesh, barycentric dual areas for a Delaunay mesh,
+        integrated basis weights for a k-nearest-neighbour mesh), so the image area attributed to each pixel follows
+        the same interpolation as the reconstruction and `sum(mesh_magnification * areas_for_magnification)` is the
+        total area of the mask.
+
+        Pixels with zero source-plane area, or with no image area mapping to them, have a magnification of zero.
+        """
+        image_areas = self.data_pixel_area_for_pix_from()
+        source_areas = np.asarray(self.mesh_geometry.areas_for_magnification)
+
+        return np.divide(
+            image_areas,
+            source_areas,
+            out=np.zeros_like(image_areas),
+            where=source_areas > 0.0,
+        )
 
     def mapped_to_source_from(self, array: Array2D) -> np.ndarray:
         """

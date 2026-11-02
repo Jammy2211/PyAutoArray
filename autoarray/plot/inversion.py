@@ -34,6 +34,7 @@ def plot_inversion_reconstruction(
     vmin: Optional[float] = None,
     vmax: Optional[float] = None,
     use_log10: bool = False,
+    cb_unit: Optional[str] = None,
     zoom_to_brightest: bool = True,
     zoom_extent_scale: float = 1.0,
     arcsec_after_decimal: Optional[bool] = None,
@@ -74,6 +75,8 @@ def plot_inversion_reconstruction(
         Explicit colour scale limits.
     use_log10
         Apply ``LogNorm``.
+    cb_unit
+        Unit appended to the middle colour-bar label. ``None`` reads it from config; ``""`` shows no unit.
     zoom_to_brightest
         Pass through to ``mapper.extent_from``.
     arcsec_after_decimal
@@ -141,13 +144,27 @@ def plot_inversion_reconstruction(
         mapper.interpolator, (InterpolatorRectangular, InterpolatorRectangularUniform)
     ):
         raster_extent = _plot_rectangular(
-            ax, pixel_values, mapper, norm, colormap, extent, is_subplot=is_subplot
+            ax,
+            pixel_values,
+            mapper,
+            norm,
+            colormap,
+            extent,
+            is_subplot=is_subplot,
+            cb_unit=cb_unit,
         )
     elif isinstance(
         mapper.interpolator, (InterpolatorDelaunay, InterpolatorKNearestNeighbor)
     ):
         _plot_delaunay(
-            ax, pixel_values, mapper, norm, colormap, extent, is_subplot=is_subplot
+            ax,
+            pixel_values,
+            mapper,
+            norm,
+            colormap,
+            extent,
+            is_subplot=is_subplot,
+            cb_unit=cb_unit,
         )
 
     # --- overlays --------------------------------------------------------------
@@ -229,7 +246,7 @@ def plot_inversion_reconstruction(
 
 
 def _plot_rectangular(
-    ax, pixel_values, mapper, norm, colormap, extent, is_subplot=False
+    ax, pixel_values, mapper, norm, colormap, extent, is_subplot=False, cb_unit=None
 ):
     """Render a rectangular pixelization reconstruction onto *ax*.
 
@@ -303,7 +320,7 @@ def _plot_rectangular(
             aspect="auto",
             origin=_conf_imshow_origin(),
         )
-        _apply_colorbar(im, ax, is_subplot=is_subplot)
+        _apply_colorbar(im, ax, cb_unit=cb_unit, is_subplot=is_subplot)
         return pix_array.geometry.extent
     else:
         y_edges, x_edges = mapper.mesh_geometry.edges_transformed.T
@@ -316,11 +333,13 @@ def _plot_rectangular(
             norm=norm,
             cmap=colormap,
         )
-        _apply_colorbar(im, ax, is_subplot=is_subplot)
+        _apply_colorbar(im, ax, cb_unit=cb_unit, is_subplot=is_subplot)
         return None
 
 
-def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, extent, is_subplot=False):
+def _plot_delaunay(
+    ax, pixel_values, mapper, norm, colormap, extent, is_subplot=False, cb_unit=None
+):
     """Render a Delaunay or KNN pixelization reconstruction onto *ax*.
 
     Uses ``ax.tripcolor`` with its default *flat* shading: each triangle is
@@ -400,4 +419,4 @@ def _plot_delaunay(ax, pixel_values, mapper, norm, colormap, extent, is_subplot=
         tc = ax.tripcolor(x, y, vals, cmap=colormap, norm=norm)
     from autoarray.plot.utils import _apply_colorbar
 
-    _apply_colorbar(tc, ax, is_subplot=is_subplot)
+    _apply_colorbar(tc, ax, cb_unit=cb_unit, is_subplot=is_subplot)
