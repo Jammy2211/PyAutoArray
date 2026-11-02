@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 import autoarray as aa
+from autonerves import conf
 
 from autoarray import exc
 from autoarray.inversion.inversion.imaging_numba.sparse import (
@@ -266,6 +267,94 @@ def test__apply_mask__data_noise_map_psf_correctly_masked(
     )
 
     assert type(masked_imaging_7x7.psf) == aa.Convolver
+
+
+def test__apply_mask__trim_to_mask__native_cut_to_mask_plus_psf_half_width__slim_unchanged(
+    imaging_7x7, mask_2d_7x7
+):
+    untrimmed = imaging_7x7.apply_mask(mask=mask_2d_7x7, trim_to_mask=False)
+    trimmed = imaging_7x7.apply_mask(mask=mask_2d_7x7, trim_to_mask=True)
+
+    # The 3x3 unmasked block plus the 3x3 PSF's half-width of 1 on each side.
+    assert trimmed.data.shape_native == (5, 5)
+    assert trimmed.noise_map.shape_native == (5, 5)
+    assert trimmed.over_sample_size_lp.shape_native == (5, 5)
+    assert trimmed.over_sample_size_pixelization.shape_native == (5, 5)
+    assert trimmed.mask.shape_native == (5, 5)
+    assert trimmed.psf._state.fft_shape[0] <= untrimmed.psf._state.fft_shape[0]
+
+    # Only masked pixels were removed.
+    assert (trimmed.data.slim == untrimmed.data.slim).all()
+    assert (trimmed.noise_map.slim == untrimmed.noise_map.slim).all()
+    assert (trimmed.over_sample_size_lp.slim == untrimmed.over_sample_size_lp.slim).all()
+    assert (trimmed.mask == untrimmed.mask.resized_from(new_shape=(5, 5), pad_value=True)).all()
+    assert (trimmed.data.native[1:4, 1:4] == untrimmed.data.native[2:5, 2:5]).all()
+
+    # The central pixel stays on the same pixel: scaled coordinates are unchanged.
+    assert (trimmed.grids.lp.slim == untrimmed.grids.lp.slim).all()
+    assert trimmed.mask.origin == untrimmed.mask.origin
+
+    # The convolution gives the same blurred image.
+    image = aa.Array2D(values=np.arange(9, dtype=float), mask=untrimmed.mask)
+    blurring_untrimmed = aa.Array2D(
+        values=np.arange(untrimmed.grids.blurring.shape[0], dtype=float),
+        mask=untrimmed.grids.blurring.mask,
+    )
+    blurring_trimmed = aa.Array2D(
+        values=blurring_untrimmed.slim.array, mask=trimmed.grids.blurring.mask
+    )
+    convolved_untrimmed = untrimmed.psf.convolved_image_from(
+        image=image, blurring_image=blurring_untrimmed
+    )
+    convolved_trimmed = trimmed.psf.convolved_image_from(
+        image=aa.Array2D(values=np.arange(9, dtype=float), mask=trimmed.mask),
+        blurring_image=blurring_trimmed,
+    )
+    assert np.asarray(convolved_trimmed) == pytest.approx(np.asarray(convolved_untrimmed), 1e-10)
+
+
+def test__apply_mask__trim_to_mask__default_from_config(
+    imaging_7x7, mask_2d_7x7, monkeypatch
+):
+    # The test config sets [dataset] trim_to_mask: false.
+    masked = imaging_7x7.apply_mask(mask=mask_2d_7x7)
+
+    assert masked.data.shape_native == (7, 7)
+
+    monkeypatch.setitem(conf.instance["general"]["dataset"], "trim_to_mask", True)
+
+    masked = imaging_7x7.apply_mask(mask=mask_2d_7x7)
+
+    assert masked.data.shape_native == (5, 5)
+
+
+def test__trimmed_to_mask_from__already_minimal__returns_self__covariance_kept():
+    image = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=(1.0, 1.0))
+    noise_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=(1.0, 1.0))
+    noise_covariance_matrix = np.array(
+        [[1.0, 0.1, 0.0, 0.0], [0.1, 2.0, 0.0, 0.0], [0.0, 0.0, 3.0, 0.2], [0.0, 0.0, 0.2, 4.0]]
+    )
+    psf = aa.Convolver(
+        kernel=aa.Array2D.no_mask(values=[[1.0]], pixel_scales=(1.0, 1.0))
+    )
+    imaging = aa.Imaging(
+        data=image,
+        noise_map=noise_map,
+        psf=psf,
+        noise_covariance_matrix=noise_covariance_matrix,
+        over_sample_size_lp=1,
+    )
+
+    mask = aa.Mask2D(mask=[[True, False], [False, True]], pixel_scales=(1.0, 1.0))
+
+    masked = imaging.apply_mask(mask=mask, trim_to_mask=False)
+
+    assert masked.trimmed_to_mask_from() is masked
+
+    trimmed = imaging.apply_mask(mask=mask, trim_to_mask=True)
+
+    assert trimmed.data.shape_native == (2, 2)
+    assert (trimmed.noise_covariance_matrix == masked.noise_covariance_matrix).all()
 
 
 def test__apply_noise_scaling__masked_pixel_data_zeroed_and_noise_set_to_noise_value(

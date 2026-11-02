@@ -12,9 +12,11 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import ConvolverState
 from autoarray.operators.convolver import Convolver
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.mask import mask_2d_util
 from autoarray import type as ty
 
 from autoarray import exc
+from autonerves import conf
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
@@ -413,7 +415,9 @@ class Imaging(AbstractDataset):
             convolve_over_sample_size_pixelization=convolve_over_sample_size_pixelization,
         )
 
-    def apply_mask(self, mask: Mask2D) -> "Imaging":
+    def apply_mask(
+        self, mask: Mask2D, trim_to_mask: Optional[bool] = None
+    ) -> "Imaging":
         """
         Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
         quantities one-by-one.
@@ -422,6 +426,11 @@ class Imaging(AbstractDataset):
         `over_sample_size_pixelization` arrays. If a `noise_covariance_matrix` is present, the rows
         and columns corresponding to masked pixels are removed so it stays consistent with the
         remaining unmasked pixels. The PSF `ConvolverState` is recomputed for the new mask.
+
+        With `trim_to_mask` the native arrays are then cut down to the smallest centred frame that
+        holds the unmasked pixels plus a PSF half-width (see `trimmed_to_mask_from`), so a small
+        mask on a large image does not pay for the empty frame in every FFT convolution. The
+        default comes from the config (`general.yaml` `[dataset] trim_to_mask`).
 
         The `apply_mask` function cannot be called multiple times — a new mask cannot expand the
         unmasked region beyond what was already unmasked, as the underlying data has already been
@@ -432,6 +441,9 @@ class Imaging(AbstractDataset):
         ----------
         mask
             The 2D mask that is applied to the image.
+        trim_to_mask
+            If True, the masked dataset is trimmed with `trimmed_to_mask_from`; if None, the
+            config setting `[dataset] trim_to_mask` decides.
 
         Returns
         -------
@@ -487,6 +499,80 @@ class Imaging(AbstractDataset):
 
         logger.info(
             f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels"
+        )
+
+        if trim_to_mask is None:
+            trim_to_mask = conf.instance["general"]["dataset"]["trim_to_mask"]
+
+        if trim_to_mask:
+            dataset = dataset.trimmed_to_mask_from()
+
+        return dataset
+
+    def trimmed_to_mask_from(self) -> "Imaging":
+        """
+        Return the dataset with its native arrays cut down to the smallest frame that holds every
+        unmasked pixel at least a PSF half-width from the edge.
+
+        A lens or galaxy is usually fitted inside a mask that covers a small part of the image it
+        was cut from, and the FFT convolution of every model image (and of every column of a
+        pixelization's mapping matrix) runs on a frame that is set by the native array, not by the
+        mask. For a 1.5" mask on a 12" JWST stamp that frame is 16 times the area the fit needs.
+        This method removes the surplus: the frame it keeps is the one `ConvolverState` already
+        pads to for the blurring region (`mask_2d_util.trimmed_shape_for_kernel`), so the FFT
+        shape falls to the minimum the mask and kernel allow.
+
+        Nothing a fit sees changes. The trim removes masked pixels only, so the slim `data`,
+        `noise_map`, over-sampling sizes and `noise_covariance_matrix` are identical; the central
+        pixel stays on the same pixel (the parity of each dimension is preserved), so scaled
+        coordinates, positions and priors are unchanged; the blurring region is kept whole, so the
+        convolution is the same to floating-point rounding. What changes is the native shape of
+        every array (and of the images a fit produces), the PSF `ConvolverState`, and the memory
+        and time of each convolution. A mask whose unmasked pixels sit closer to the edge than the
+        PSF half-width is padded instead, as the convolver would pad it internally.
+
+        Applied automatically by `apply_mask` when the config setting `[dataset] trim_to_mask` is
+        True. A `sparse_operator` is discarded, as by `apply_mask`.
+
+        Returns
+        -------
+        Imaging
+            A new `Imaging` dataset on the trimmed frame, or this dataset if it is already that size.
+        """
+        kernel_shape = (
+            self.psf.kernel.shape_native if self.psf is not None else (1, 1)
+        )
+
+        new_shape = mask_2d_util.trimmed_shape_for_kernel(
+            mask_2d=np.array(self.data.mask), kernel_shape_native=kernel_shape
+        )
+
+        if tuple(new_shape) == tuple(self.data.shape_native):
+            return self
+
+        _warn_sparse_operator_discarded(
+            sparse_operator=self.sparse_operator, method_name="trimmed_to_mask_from"
+        )
+
+        def trimmed(array):
+            return array.resized_from(new_shape=new_shape, mask_pad_value=True)
+
+        dataset = Imaging(
+            data=trimmed(self.data),
+            noise_map=trimmed(self.noise_map),
+            psf=self.psf,
+            psf_setup_state=True,
+            noise_covariance_matrix=self.noise_covariance_matrix,
+            over_sample_size_lp=trimmed(self.over_sample_size_lp),
+            over_sample_size_pixelization=trimmed(self.over_sample_size_pixelization),
+            convolve_over_sample_size_lp=self.convolve_over_sample_size_lp,
+            convolve_over_sample_size_pixelization=self.convolve_over_sample_size_pixelization,
+            check_noise_map=False,
+        )
+
+        logger.info(
+            f"IMAGING - Data trimmed to the mask, native shape {tuple(self.data.shape_native)} -> "
+            f"{tuple(new_shape)} (PSF kernel {tuple(kernel_shape)})"
         )
 
         return dataset

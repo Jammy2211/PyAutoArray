@@ -1104,3 +1104,61 @@ def test__buffed_mask_2d_from():
             ]
         )
     ).all()
+
+
+def test__trimmed_shape_for_kernel__centred_square_region__shape_is_region_plus_half_kernel():
+    mask = np.full((7, 7), True)
+    mask[2:5, 2:5] = False
+
+    assert util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(3, 3)) == (5, 5)
+    assert util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(1, 1)) == (3, 3)
+    assert util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(5, 3)) == (7, 5)
+
+
+def test__trimmed_shape_for_kernel__parity_preserved_and_centre_kept():
+    # Even frame: the central pixel is the lower of the central pair (3 of 0..7), and the
+    # unmasked 2x2 block sits on pixels 3 and 4, so it is symmetric about the pixel boundary.
+    mask = np.full((8, 8), True)
+    mask[3:5, 3:5] = False
+
+    shape = util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(3, 3))
+
+    assert shape == (4, 4)
+
+    # Cutting to that shape about the centre keeps every unmasked pixel one pixel from the edge.
+    trimmed = util.array_2d.resized_array_2d_from(
+        array_2d=mask.astype(float), resized_shape=shape, pad_value=1.0
+    ).astype(bool)
+    assert trimmed.sum() == mask.sum() - (64 - 16)
+    assert util.mask_2d.min_false_distance_to_edge(trimmed) == (1, 1)
+
+    # Odd frame, region offset from the centre: the frame grows symmetrically so the
+    # central pixel stays put, rather than re-centring on the region.
+    mask = np.full((9, 9), True)
+    mask[1:3, 5:8] = False
+
+    shape = util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(3, 3))
+
+    assert shape == (9, 9)
+    assert shape[0] % 2 == 1 and shape[1] % 2 == 1
+
+
+def test__trimmed_shape_for_kernel__region_at_edge__frame_pads_rather_than_cuts():
+    mask = np.full((5, 5), True)
+    mask[0, 2] = False
+
+    shape = util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(5, 5))
+
+    # The pixel at row 0 needs two rows above it: 2 before the centre + 2 pad, so 9 rows.
+    assert shape == (9, 5)
+
+
+def test__trimmed_shape_for_kernel__invalid_inputs_raise():
+    mask = np.full((5, 5), True)
+    mask[2, 2] = False
+
+    with pytest.raises(ValueError):
+        util.mask_2d.trimmed_shape_for_kernel(mask, kernel_shape_native=(0, 3))
+
+    with pytest.raises(ValueError):
+        util.mask_2d.trimmed_shape_for_kernel(np.full((5, 5), True), kernel_shape_native=(3, 3))
