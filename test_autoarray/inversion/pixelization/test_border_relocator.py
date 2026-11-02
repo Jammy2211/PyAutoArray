@@ -5,6 +5,7 @@ import autoarray as aa
 
 from autoarray.inversion.mesh.border_relocator import (
     ellipse_params_via_border_pca_from,
+    max_at_argmax_from,
     sub_border_pixel_slim_indexes_from,
 )
 
@@ -378,6 +379,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     assert relocated_grid.over_sampled[1] == pytest.approx([1.95, 1.0], 1e-4)
 
+
 def test__ellipse_params__near_isotropic_border_uses_deterministic_axis():
     border_grid = np.array(
         [
@@ -414,3 +416,27 @@ def test__ellipse_params__anisotropic_border_retains_pca_major_axis():
     assert abs(float(phi)) == pytest.approx(np.pi / 2.0)
     assert float(a) > float(b)
 
+
+def test__max_at_argmax_from__tied_maximum_gradient_lands_on_one_element():
+    """
+    The border extents of a lens centred on the mask's symmetry centre are tied maxima.
+    JAX's `max` reduction shares the gradient among tied entries found by equality, which is
+    unstable under `jit` (PyAutoArray#671); the gradient must instead land on one element,
+    identically under eager and `jit`.
+    """
+    jax = pytest.importorskip("jax")
+    jax.config.update("jax_enable_x64", True)
+    import jax.numpy as jnp
+
+    values = jnp.array([0.3, 2.1, -0.4, 2.1, 1.7])
+
+    def maximum(values):
+        return max_at_argmax_from(values, xp=jnp)
+
+    assert float(maximum(values)) == pytest.approx(2.1)
+
+    for gradient in [jax.grad(maximum), jax.jit(jax.grad(maximum))]:
+        grad = np.asarray(gradient(values))
+
+        assert grad.sum() == pytest.approx(1.0)
+        assert np.count_nonzero(grad) == 1

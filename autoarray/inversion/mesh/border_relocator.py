@@ -266,10 +266,34 @@ def ellipse_params_via_border_pca_from(border_grid, xp=np, eps=1e-12):
     yprime = -s * dx + c * dy
 
     # Semi-axes from maximal extent
-    a = xp.max(xp.abs(xprime)) + eps
-    b = xp.max(xp.abs(yprime)) + eps
+    a = max_at_argmax_from(xp.abs(xprime), xp=xp) + eps
+    b = max_at_argmax_from(xp.abs(yprime), xp=xp) + eps
 
     return origin, a, b, phi
+
+
+def max_at_argmax_from(values, xp=np):
+    """
+    The maximum of a 1D array, taken as the element at its argmax rather than by a `max`
+    reduction, so that its gradient lands on exactly one element even when the maximum is
+    tied.
+
+    A lens centred on the mask's symmetry centre traces the border into exact +/- pairs, so
+    the border extents are tied maxima. JAX's `max` gradient shares itself among the entries
+    equal to the result, and under `jit` that equality test is unstable once XLA fuses the
+    operand into a larger graph and recomputes it with different rounding: the reverse-mode
+    gradient of the semi-minor axis came out 2x or 0.5x the true value (PyAutoArray#671).
+    Gathering one element gives the same gradient under eager and `jit`. At a tie any single
+    element's derivative is a valid one-sided derivative of the maximum.
+
+    Parameters
+    ----------
+    values
+        1D array whose maximum is returned.
+    xp
+        numpy-like module (np or jax.numpy).
+    """
+    return values[xp.argmax(values)]
 
 
 def relocated_grid_via_ellipse_border_from(grid, origin, a, b, phi, xp=np, eps=1e-12):
