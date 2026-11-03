@@ -202,10 +202,7 @@ class Imaging(AbstractDataset):
                 f"resolution."
             )
 
-        if (
-            sparse_operator is not None
-            and convolve_over_sample_size_pixelization > 1
-        ):
+        if sparse_operator is not None and convolve_over_sample_size_pixelization > 1:
             raise exc.DatasetException(
                 "convolve_over_sample_size_pixelization > 1 is incompatible with the "
                 "sparse linear algebra formalism (sparse_operator), whose PSF "
@@ -229,15 +226,13 @@ class Imaging(AbstractDataset):
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
                 zero_entries = np.argwhere(self.noise_map.native <= 0.0)
 
-                raise exc.DatasetException(
-                    f"""
+                raise exc.DatasetException(f"""
                     A value in the noise-map of the dataset is {np.min(self.noise_map)}. 
 
                     This is less than or equal to zero, and therefore an ill-defined value which must be corrected.
                     
                     The 2D indexes of the arrays in the native noise map array are {zero_entries}.
-                    """
-                )
+                    """)
 
         convolve_over_sample_size = max(
             self.convolve_over_sample_size_lp,
@@ -373,7 +368,9 @@ class Imaging(AbstractDataset):
         noise_map = Array2D.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
-        noise_map, pixel_scales = cap_array_2d_for_small_datasets(noise_map, pixel_scales)
+        noise_map, pixel_scales = cap_array_2d_for_small_datasets(
+            noise_map, pixel_scales
+        )
 
         if psf_path is not None:
 
@@ -428,9 +425,10 @@ class Imaging(AbstractDataset):
         remaining unmasked pixels. The PSF `ConvolverState` is recomputed for the new mask.
 
         With `trim_to_mask` the native arrays are then cut down to the smallest centred frame that
-        holds the unmasked pixels plus a PSF half-width (see `trimmed_to_mask_from`), so a small
-        mask on a large image does not pay for the empty frame in every FFT convolution. The
-        default comes from the config (`general.yaml` `[dataset] trim_to_mask`).
+        holds the unmasked pixels plus a PSF half-width and a one-pixel buffer (see
+        `trimmed_to_mask_from`), so a small mask on a large image does not pay for the empty frame
+        in every FFT convolution. The default comes from the config (`general.yaml`
+        `[dataset] trim_to_mask`, packaged True).
 
         The `apply_mask` function cannot be called multiple times — a new mask cannot expand the
         unmasked region beyond what was already unmasked, as the underlying data has already been
@@ -509,18 +507,19 @@ class Imaging(AbstractDataset):
 
         return dataset
 
-    def trimmed_to_mask_from(self) -> "Imaging":
+    def trimmed_to_mask_from(self, buffer: int = 1) -> "Imaging":
         """
         Return the dataset with its native arrays cut down to the smallest frame that holds every
-        unmasked pixel at least a PSF half-width from the edge.
+        unmasked pixel at least a PSF half-width plus `buffer` pixels from the edge.
 
         A lens or galaxy is usually fitted inside a mask that covers a small part of the image it
         was cut from, and the FFT convolution of every model image (and of every column of a
         pixelization's mapping matrix) runs on a frame that is set by the native array, not by the
         mask. For a 1.5" mask on a 12" JWST stamp that frame is 16 times the area the fit needs.
         This method removes the surplus: the frame it keeps is the one `ConvolverState` already
-        pads to for the blurring region (`mask_2d_util.trimmed_shape_for_kernel`), so the FFT
-        shape falls to the minimum the mask and kernel allow.
+        pads to for the blurring region (`mask_2d_util.trimmed_shape_for_kernel`) plus a margin of
+        `buffer` masked pixels on every side, so the FFT shape falls to close to the minimum the
+        mask and kernel allow without being cut exactly at the blurring region's edge.
 
         Nothing a fit sees changes. The trim removes masked pixels only, so the slim `data`,
         `noise_map`, over-sampling sizes and `noise_covariance_matrix` are identical; the central
@@ -534,17 +533,22 @@ class Imaging(AbstractDataset):
         Applied automatically by `apply_mask` when the config setting `[dataset] trim_to_mask` is
         True. A `sparse_operator` is discarded, as by `apply_mask`.
 
+        Parameters
+        ----------
+        buffer
+            Extra masked pixels kept on every side beyond the PSF half-width (default 1).
+
         Returns
         -------
         Imaging
             A new `Imaging` dataset on the trimmed frame, or this dataset if it is already that size.
         """
-        kernel_shape = (
-            self.psf.kernel.shape_native if self.psf is not None else (1, 1)
-        )
+        kernel_shape = self.psf.kernel.shape_native if self.psf is not None else (1, 1)
 
         new_shape = mask_2d_util.trimmed_shape_for_kernel(
-            mask_2d=np.array(self.data.mask), kernel_shape_native=kernel_shape
+            mask_2d=np.array(self.data.mask),
+            kernel_shape_native=kernel_shape,
+            buffer=buffer,
         )
 
         if tuple(new_shape) == tuple(self.data.shape_native):
@@ -751,9 +755,7 @@ class Imaging(AbstractDataset):
         """
 
         if self.psf is not None and self.psf.convolve_over_sample_size > 1:
-            raise exc.DatasetException(
-                _SPARSE_OPERATOR_CONVOLVE_OVER_SAMPLE_SIZE_ERROR
-            )
+            raise exc.DatasetException(_SPARSE_OPERATOR_CONVOLVE_OVER_SAMPLE_SIZE_ERROR)
 
         logger.info(
             "IMAGING - Setting Up Sparse Operator For low Memory Pixelizations."
@@ -801,9 +803,7 @@ class Imaging(AbstractDataset):
             enabling efficient pixelized source reconstruction on CPU hardware.
         """
         if self.psf is not None and self.psf.convolve_over_sample_size > 1:
-            raise exc.DatasetException(
-                _SPARSE_OPERATOR_CONVOLVE_OVER_SAMPLE_SIZE_ERROR
-            )
+            raise exc.DatasetException(_SPARSE_OPERATOR_CONVOLVE_OVER_SAMPLE_SIZE_ERROR)
 
         try:
             import numba
@@ -853,4 +853,3 @@ class Imaging(AbstractDataset):
             check_noise_map=False,
             sparse_operator=sparse_operator,
         )
-
