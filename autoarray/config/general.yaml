@@ -25,6 +25,6 @@ numba:
   use_numba: true # If True, use numba-accelerated mapper and Sibson interpolation paths when eligible.
   cache: true # If True, cache numba compiled functions on disk.
   nopython: true # If True, require numba compilation without the Python interpreter.
-  parallel: false # If True, enable numba parallel compilation.
+  parallel: false # If True, enable numba parallel compilation. For single-process benchmarking only: it compiles every numba_util.jit kernel with parallel=True, which is unsafe under multiprocessing searches (number_of_cores > 1) on numba's GNU OpenMP threading layer (forked workers are terminated) and oversubscribes the node. The Sibson and direct_conv prange kernels already switch to serial in search workers.
 structures:
   native_binned_only: false           # If True, data structures are only stored in their native and binned format. This is used to reduce memory usage in autocti.

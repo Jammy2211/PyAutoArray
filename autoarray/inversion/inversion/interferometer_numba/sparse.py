@@ -4,6 +4,7 @@ from typing import List, Union
 from autonerves import cached_property, conf
 
 from autoarray import exc
+from autoarray import numba_util
 from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.interferometer.sparse import (
@@ -308,8 +309,13 @@ def _numba_parallel() -> bool:
     Whether the parallel (`prange`) kernel is used, read from the same
     `general.yaml -> numba -> parallel` flag the shared `numba_util.jit` decorator reads,
     with the same fallback when no config supplies it.
+
+    Always False in a search worker process
+    (:func:`autoarray.numba_util.parallel_kernel_allowed`), which takes the serial
+    route: numba parallel threads inside a multiprocessing search are never used.
     """
     try:
-        return bool(conf.instance["general"]["numba"]["parallel"])
+        parallel = bool(conf.instance["general"]["numba"]["parallel"])
     except Exception:
         return False
+    return parallel and numba_util.parallel_kernel_allowed()
