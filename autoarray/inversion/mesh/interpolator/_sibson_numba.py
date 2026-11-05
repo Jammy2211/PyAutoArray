@@ -11,6 +11,8 @@ import numba
 import numpy as np
 from numba import prange
 
+from autoarray import numba_util
+
 # float64 machine constants as module globals, which numba freezes into the
 # compiled code (and the on-disk cache) as literals.
 EPS = 2.220446049250313e-16
@@ -106,8 +108,7 @@ def _pairwise_sum(values):
     return partials[0]
 
 
-@numba.njit(cache=True, parallel=True, nogil=True)
-def _sibson_from_tables_parallel(
+def _sibson_from_tables(
     query_points,
     seeds,
     fallbacks,
@@ -365,3 +366,14 @@ def _sibson_from_tables_parallel(
         degenerate_out[q] = degenerate
 
     return mappings, sizes, weights, cavity_sizes, overflow_out, degenerate_out
+
+
+# One body, compiled twice: ``prange`` runs as ``range`` under ``parallel=False``, so the two
+# kernels compute identical results. The serial one is a renamed copy so both hit numba's
+# on-disk cache (see ``numba_util.function_copy``).
+_sibson_from_tables_parallel = numba.njit(cache=True, parallel=True, nogil=True)(
+    _sibson_from_tables
+)
+_sibson_from_tables_serial = numba.njit(cache=True, nogil=True)(
+    numba_util.function_copy(_sibson_from_tables, "_sibson_from_tables_serial")
+)

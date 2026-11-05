@@ -597,7 +597,7 @@ def _sibson_use_numba():
     return True
 
 
-def sibson_numba_kernel():
+def sibson_numba_kernel(parallel: bool = True):
     """
     Compile (once) the numba kernel evaluating every Sibson query in parallel.
 
@@ -628,6 +628,13 @@ def sibson_numba_kernel():
     on-disk cache still hits across processes -- closures built inside this
     function recompiled in every new process.
 
+    Parameters
+    ----------
+    parallel
+        The ``parallel=True`` (``prange``) kernel, or its ``parallel=False``
+        compilation of the same body (identical results), which search worker
+        processes use; see :func:`autoarray.numba_util.parallel_kernel_allowed`.
+
     Returns
     -------
     The compiled kernel ``(query_points, seeds, fallbacks, points,
@@ -635,15 +642,18 @@ def sibson_numba_kernel():
     circumcircle_valid, max_cavity_triangles, max_neighbors)`` returning the six
     arrays of :func:`sibson_mappings_weights_from_tables`.
     """
-    if "kernel" in _SIBSON_NUMBA_CACHE:
-        return _SIBSON_NUMBA_CACHE["kernel"]
+    if parallel in _SIBSON_NUMBA_CACHE:
+        return _SIBSON_NUMBA_CACHE[parallel]
 
-    from autoarray.inversion.mesh.interpolator._sibson_numba import (
-        _sibson_from_tables_parallel,
+    from autoarray.inversion.mesh.interpolator import _sibson_numba
+
+    kernel = (
+        _sibson_numba._sibson_from_tables_parallel
+        if parallel
+        else _sibson_numba._sibson_from_tables_serial
     )
-
-    _SIBSON_NUMBA_CACHE["kernel"] = _sibson_from_tables_parallel
-    return _sibson_from_tables_parallel
+    _SIBSON_NUMBA_CACHE[parallel] = kernel
+    return kernel
 
 
 def _sibson_numba_eligible(query_points, points):
@@ -665,9 +675,14 @@ def _sibson_mappings_weights_numba(
     max_cavity_triangles,
     max_neighbors,
 ):
-    """NumPy-path Sibson tables from the parallel numba kernel."""
+    """
+    NumPy-path Sibson tables from the numba kernel: the parallel one, or the serial one in a
+    search worker process (:func:`autoarray.numba_util.parallel_kernel_allowed`).
+    """
+    from autoarray import numba_util
+
     circumcentres, circumradii_squared, circumcircle_valid = circumcircles
-    kernel = sibson_numba_kernel()
+    kernel = sibson_numba_kernel(parallel=numba_util.parallel_kernel_allowed())
     return kernel(
         np.ascontiguousarray(query_points, dtype=np.float64),
         np.ascontiguousarray(simplex_indexes, dtype=np.int64),
